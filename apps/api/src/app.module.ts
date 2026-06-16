@@ -6,12 +6,13 @@ import { UserModule } from "./modules/user/user.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { AuthModule } from "./modules/auth/auth.module";
 import jwtConfig from "./common/config/jwt.config";
+import cookieConfig from "./common/config/cookie.config";
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [jwtConfig],
+      load: [jwtConfig, cookieConfig],
     }),
     PrismaModule,
     UserModule,
