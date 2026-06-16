@@ -1,0 +1,10 @@
+{
+  "name": "pocketnote-monorepo",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm -r --parallel dev"
+  },
+  "workspaces": [
+    "apps/*"
+  ]
+}
