@@ -1,9 +1,19 @@
-import { Body, Controller, Post, Response } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Response,
+  UseGuards,
+} from "@nestjs/common";
 import * as express from "express";
 import { ConfigService } from "@nestjs/config";
 import { AuthService } from "../services/auth.service";
 import { RegisterDto } from "../dto/register.dto";
 import { LoginDto } from "../dto/login.dto";
+import { JwtAuthGuard } from "../guards/jwt-auth.guard";
+import { CurrentUser } from "../decorators/current-user.decorator";
+import { User, Profile } from "@prisma/client";
 
 @Controller("auth")
 export class AuthController {
@@ -30,9 +40,12 @@ export class AuthController {
   ) {
     const { accessToken, user } = await this.authService.login(loginDto);
 
-    const domain = this.configService.get<string>("cookie.domain") || "localhost";
+    const domain =
+      this.configService.get<string>("cookie.domain") || "localhost";
     const secure = this.configService.get<boolean>("cookie.secure") ?? false;
-    const sameSite = this.configService.get<"lax" | "strict" | "none">("cookie.sameSite") || "lax";
+    const sameSite =
+      this.configService.get<"lax" | "strict" | "none">("cookie.sameSite") ||
+      "lax";
 
     res.cookie("access_token", accessToken, {
       httpOnly: true,
@@ -43,5 +56,34 @@ export class AuthController {
     });
 
     return { user };
+  }
+
+  @Get("me")
+  @UseGuards(JwtAuthGuard)
+  async getMe(@CurrentUser() user: User & { profile: Profile | null }) {
+    return {
+      id: user.id,
+      email: user.email,
+      displayName: user.profile?.firstName ?? "User",
+    };
+  }
+
+  @Post("logout")
+  async logout(@Response({ passthrough: true }) res: express.Response) {
+    const domain =
+      this.configService.get<string>("cookie.domain") || "localhost";
+    const secure = this.configService.get<boolean>("cookie.secure") ?? false;
+    const sameSite =
+      this.configService.get<"lax" | "strict" | "none">("cookie.sameSite") ||
+      "lax";
+
+    res.clearCookie("access_token", {
+      httpOnly: true,
+      secure,
+      sameSite,
+      domain,
+    });
+
+    return { success: true };
   }
 }
