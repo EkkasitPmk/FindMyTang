@@ -1,10 +1,14 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe, VersioningType } from '@nestjs/common';
-import request from 'supertest';
-import { App } from 'supertest/types';
-import { AppModule } from './../src/app.module';
+import { Test, TestingModule } from "@nestjs/testing";
+import {
+  INestApplication,
+  ValidationPipe,
+  VersioningType,
+} from "@nestjs/common";
+import request from "supertest";
+import { App } from "supertest/types";
+import { AppModule } from "./../src/app.module";
 
-describe('AppController (e2e)', () => {
+describe("AppController (e2e)", () => {
   let app: INestApplication<App>;
 
   beforeEach(async () => {
@@ -13,10 +17,10 @@ describe('AppController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    app.setGlobalPrefix('api');
+    app.setGlobalPrefix("api");
     app.enableVersioning({
       type: VersioningType.URI,
-      defaultVersion: '1',
+      defaultVersion: "1",
     });
     app.useGlobalPipes(
       new ValidationPipe({
@@ -28,11 +32,11 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/api/v1 (GET)', () => {
+  it("/api/v1 (GET)", () => {
     return request(app.getHttpServer())
-      .get('/api/v1')
+      .get("/api/v1")
       .expect(200)
-      .expect('Hello World!');
+      .expect("Hello World!");
   });
 
   afterEach(async () => {
