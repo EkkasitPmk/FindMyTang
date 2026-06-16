@@ -1,11 +1,11 @@
 "use client";
-
 import React, { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import DesktopSidebar from "../components/DesktopSidebar";
 import MobileDrawer from "../components/MobileDrawer";
 import MobileBottomNav from "../components/MobileBottomNav";
+import LogoutConfirmModal from "../components/LogoutConfirmModal";
 import { useMeQuery, useLogoutMutation } from "@/features/nav/hooks/auth.hook";
 
 interface NavContainerProps {
@@ -18,6 +18,7 @@ export default function NavContainer({
   const pathname = usePathname();
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
 
   const { data: user, isLoading } = useMeQuery();
 
@@ -44,7 +45,7 @@ export default function NavContainer({
           pathname={pathname}
           user={user}
           isLoading={isLoading}
-          onLogout={() => logoutUser()}
+          onLogout={() => setLogoutConfirmOpen(true)}
         />
 
         {/* Right Content Area */}
@@ -63,7 +64,7 @@ export default function NavContainer({
         pathname={pathname}
         user={user}
         isLoading={isLoading}
-        onLogout={() => logoutUser()}
+        onLogout={() => setLogoutConfirmOpen(true)}
       />
 
       {/* Mobile Bottom Navigation Bar */}
@@ -71,6 +72,13 @@ export default function NavContainer({
         pathname={pathname}
         mobileMenuOpen={mobileMenuOpen}
         onMenuOpen={() => setMobileMenuOpen(true)}
+      />
+
+      {/* Logout Confirmation Modal */}
+      <LogoutConfirmModal
+        isOpen={logoutConfirmOpen}
+        onClose={() => setLogoutConfirmOpen(false)}
+        onConfirm={logoutUser}
       />
     </div>
   );
