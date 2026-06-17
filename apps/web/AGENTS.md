@@ -860,7 +860,6 @@ Rules:
 
 - Use App Router.
 - Prefer Server Components when client-side features are not required.
-- Use Client Components only when necessary.
 - Keep page files lightweight.
 - Pages should primarily render feature containers.
 

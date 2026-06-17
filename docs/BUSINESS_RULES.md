@@ -1,0 +1,4 @@
+- Expense ลด Balance
+- Income เพิ่ม Balance
+- Edit = Revert + Apply
+- Delete = Revert
