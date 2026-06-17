@@ -5,17 +5,22 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 import { UserRepository } from "../../user/repositories/user.repository";
+import { SessionRepository } from "../../session/repositories/session.repository";
+import { ConfigService } from "@nestjs/config";
 import { RegisterDto } from "../dto/register.dto";
 import { LoginDto } from "../dto/login.dto";
 import { JwtService } from "@nestjs/jwt";
 import { JwtPayload } from "../interfaces/jwt-payload.interface";
 import * as bcrypt from "bcrypt";
+import * as crypto from "crypto";
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly jwtService: JwtService,
+    private readonly sessionRepository: SessionRepository,
+    private readonly configService: ConfigService,
   ) {}
 
   async login(loginDto: LoginDto) {
@@ -40,8 +45,38 @@ export class AuthService {
     };
     const accessToken = await this.jwtService.signAsync(payload);
 
+    const refreshSecret = this.configService.get<string>("jwt.refreshSecret");
+    const refreshExpiresIn =
+      this.configService.get<string>("jwt.refreshExpiresIn") || "7d";
+
+    const refreshToken = await this.jwtService.signAsync(
+      { ...payload, jti: crypto.randomUUID() },
+      {
+        secret: refreshSecret,
+        expiresIn: refreshExpiresIn as unknown as number,
+      },
+    );
+
+    // Hash refresh token for DB session using SHA-256 to avoid bcrypt's 72-character limit
+    const hashedRefreshToken = crypto
+      .createHash("sha256")
+      .update(refreshToken)
+      .digest("hex");
+
+    // Create session in DB
+    const expiresAt = new Date();
+    // ponytail: hardcoded 7 days offset matching '7d' expiration limit.
+    expiresAt.setDate(expiresAt.getDate() + 7);
+
+    await this.sessionRepository.create({
+      token: hashedRefreshToken,
+      userId: user.id,
+      expiresAt,
+    });
+
     return {
       accessToken,
+      refreshToken,
       user: {
         id: user.id,
         email: user.email,
@@ -80,5 +115,109 @@ export class AuthService {
     });
 
     return user;
+  }
+
+  async refresh(refreshToken: string): Promise<{
+    accessToken: string;
+    refreshToken: string;
+    user: {
+      id: string;
+      email: string | null;
+      displayName: string;
+    };
+  }> {
+    // 1. Verify token signature
+    const refreshSecret = this.configService.get<string>("jwt.refreshSecret");
+    let payload: JwtPayload;
+    try {
+      payload = await this.jwtService.verifyAsync<JwtPayload>(refreshToken, {
+        secret: refreshSecret,
+      });
+    } catch {
+      throw new UnauthorizedException("Invalid refresh token");
+    }
+
+    const userId = payload.sub;
+
+    // 2. Find session by hashed token
+    const hashedRefreshToken = crypto
+      .createHash("sha256")
+      .update(refreshToken)
+      .digest("hex");
+
+    const session =
+      await this.sessionRepository.findByToken(hashedRefreshToken);
+    if (!session || session.userId !== userId) {
+      throw new UnauthorizedException("Invalid or expired session");
+    }
+
+    // Check expiry
+    if (session.expiresAt < new Date()) {
+      await this.sessionRepository.delete(session.id).catch(() => {});
+      throw new UnauthorizedException("Invalid or expired session");
+    }
+
+    // 3. Generate new Access Token and Refresh Token (rotation)
+    const newPayload: JwtPayload = {
+      sub: userId,
+      email: payload.email,
+    };
+
+    const newAccessToken = await this.jwtService.signAsync(newPayload);
+    const refreshExpiresIn =
+      this.configService.get<string>("jwt.refreshExpiresIn") || "7d";
+    const newRefreshToken = await this.jwtService.signAsync(
+      { ...newPayload, jti: crypto.randomUUID() },
+      {
+        secret: refreshSecret,
+        expiresIn: refreshExpiresIn as unknown as number,
+      },
+    );
+
+    // Hash the new refresh token using SHA-256 to avoid bcrypt's 72-character limit
+    const newHashedRefreshToken = crypto
+      .createHash("sha256")
+      .update(newRefreshToken)
+      .digest("hex");
+
+    // Update session in DB
+    const expiresAt = new Date();
+    // ponytail: hardcoded 7 days offset matching '7d' expiration limit.
+    expiresAt.setDate(expiresAt.getDate() + 7);
+
+    await this.sessionRepository.update(session.id, {
+      token: newHashedRefreshToken,
+      expiresAt,
+    });
+
+    // Also get user object
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      throw new UnauthorizedException("User not found");
+    }
+
+    return {
+      accessToken: newAccessToken,
+      refreshToken: newRefreshToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        displayName: user.profile?.firstName ?? "User",
+      },
+    };
+  }
+
+  async logout(refreshToken?: string): Promise<void> {
+    if (!refreshToken) return;
+    const hashedRefreshToken = crypto
+      .createHash("sha256")
+      .update(refreshToken)
+      .digest("hex");
+
+    const session =
+      await this.sessionRepository.findByToken(hashedRefreshToken);
+    if (session) {
+      await this.sessionRepository.delete(session.id);
+    }
   }
 }
