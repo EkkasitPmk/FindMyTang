@@ -9,6 +9,7 @@ import { TransactionModule } from "./modules/transaction/transaction.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { AuthModule } from "./modules/auth/auth.module";
 import { SessionModule } from "./modules/session/session.module";
+import { SummaryModule } from "./modules/summary/summary.module";
 import jwtConfig from "./common/config/jwt.config";
 import cookieConfig from "./common/config/cookie.config";
 
@@ -25,6 +26,7 @@ import cookieConfig from "./common/config/cookie.config";
     TransactionModule,
     AuthModule,
     SessionModule,
+    SummaryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
