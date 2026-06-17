@@ -18,7 +18,11 @@ describe("App & Auth (e2e)", () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    app.use(cookieParser(process.env.COOKIE_SECRET || "super-secret-cookie-key-for-development"));
+    app.use(
+      cookieParser(
+        process.env.COOKIE_SECRET || "super-secret-cookie-key-for-development",
+      ),
+    );
     app.setGlobalPrefix("api");
     app.enableVersioning({
       type: VersioningType.URI,
@@ -47,9 +51,7 @@ describe("App & Auth (e2e)", () => {
     const displayName = "John Test";
 
     it("/api/v1/auth/me should return 401 Unauthorized if not logged in", () => {
-      return request(app.getHttpServer())
-        .get("/api/v1/auth/me")
-        .expect(401);
+      return request(app.getHttpServer()).get("/api/v1/auth/me").expect(401);
     });
 
     it("should register, login, and fetch /api/v1/auth/me correctly", async () => {
@@ -73,9 +75,11 @@ describe("App & Auth (e2e)", () => {
         })
         .expect(201);
 
-      const cookies = loginRes.headers["set-cookie"];
+      const cookies = loginRes.headers["set-cookie"] as string[];
       expect(cookies).toBeDefined();
-      expect(cookies.some((cookie: string) => cookie.includes("access_token"))).toBe(true);
+      expect(
+        cookies.some((cookie: string) => cookie.includes("access_token")),
+      ).toBe(true);
 
       // 3. Get profile using the cookie
       const meRes = await request(app.getHttpServer())
@@ -91,6 +95,63 @@ describe("App & Auth (e2e)", () => {
       expect(meRes.body.password).toBeUndefined();
       expect(meRes.body.session).toBeUndefined();
       expect(meRes.body.role).toBeUndefined();
+
+      // 4. Refresh token
+      const refreshRes = await request(app.getHttpServer())
+        .post("/api/v1/auth/refresh")
+        .set("Cookie", cookies)
+        .expect(200);
+
+      expect(refreshRes.body).toBeDefined();
+      expect(refreshRes.body.user).toBeDefined();
+      expect(refreshRes.body.user.email).toBe(email);
+
+      const newCookies = refreshRes.headers["set-cookie"] as string[];
+      expect(newCookies).toBeDefined();
+      expect(
+        newCookies.some((cookie: string) => cookie.includes("access_token")),
+      ).toBe(true);
+      expect(
+        newCookies.some((cookie: string) => cookie.includes("refresh_token")),
+      ).toBe(true);
+
+      // Verify that the old refresh token can no longer be used (since it's rotated/invalidated)
+      await request(app.getHttpServer())
+        .post("/api/v1/auth/refresh")
+        .set("Cookie", cookies)
+        .expect(401);
+
+      // 5. Logout
+      const logoutRes = await request(app.getHttpServer())
+        .post("/api/v1/auth/logout")
+        .set("Cookie", newCookies)
+        .expect(200);
+
+      expect(logoutRes.body).toBeDefined();
+      const logoutBody = logoutRes.body as Record<string, unknown>;
+      expect(logoutBody.message).toBe("Logged out successfully");
+
+      const clearedCookies = logoutRes.headers["set-cookie"] as string[];
+      expect(clearedCookies).toBeDefined();
+      expect(
+        clearedCookies.some((cookie: string) =>
+          cookie.includes("access_token="),
+        ),
+      ).toBe(true);
+      expect(
+        clearedCookies.some((cookie: string) =>
+          cookie.includes("refresh_token="),
+        ),
+      ).toBe(true);
+
+      // Verify that calling refresh with the rotated refresh token now fails with 401 (since session is deleted)
+      await request(app.getHttpServer())
+        .post("/api/v1/auth/refresh")
+        .set("Cookie", newCookies)
+        .expect(401);
+
+      // Verify /auth/me without cookies returns 401
+      await request(app.getHttpServer()).get("/api/v1/auth/me").expect(401);
     });
   });
 
