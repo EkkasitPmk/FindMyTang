@@ -118,7 +118,7 @@ export class AuthService {
           { name: "🍜 Food", type: CategoryType.EXPENSE },
           { name: "🚗 Transport", type: CategoryType.EXPENSE },
           { name: "🛒 Shopping", type: CategoryType.EXPENSE },
-          { name: "💼 Salary", type: CategoryType.INCOME },
+          { name: "💰 Salary", type: CategoryType.INCOME },
           { name: "🎁 Gift", type: CategoryType.INCOME },
         ],
       },
