@@ -27,7 +27,7 @@ export const useCreateCategoryMutation = (options?: {
     mutationFn: createCategoryApi,
     ...options,
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      void queryClient.invalidateQueries({ queryKey: ["categories"] });
       options?.onSuccess?.(data);
     },
   });
@@ -46,7 +46,7 @@ export const useUpdateCategoryMutation = (options?: {
     mutationFn: ({ id, data }) => updateCategory(id, data),
     ...options,
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      void queryClient.invalidateQueries({ queryKey: ["categories"] });
       options?.onSuccess?.(data);
     },
   });
@@ -68,7 +68,7 @@ export const useDeleteCategoryMutation = (options?: {
     mutationFn: deleteCategory,
     ...options,
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      void queryClient.invalidateQueries({ queryKey: ["categories"] });
       options?.onSuccess?.(data);
     },
   });

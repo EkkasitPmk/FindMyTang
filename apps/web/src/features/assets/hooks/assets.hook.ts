@@ -31,7 +31,7 @@ export const useCreateAssetMutation = (options?: {
     mutationFn: createAssetApi,
     ...options,
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["assets"] });
+      void queryClient.invalidateQueries({ queryKey: ["assets"] });
       options?.onSuccess?.(data);
     },
   });
@@ -50,7 +50,7 @@ export const useUpdateAssetMutation = (options?: {
     mutationFn: ({ id, data }) => updateAssetApi(id, data),
     ...options,
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["assets"] });
+      void queryClient.invalidateQueries({ queryKey: ["assets"] });
       options?.onSuccess?.(data);
     },
   });
@@ -76,7 +76,7 @@ export const useDeleteAssetMutation = (options?: {
     mutationFn: deleteAssetApi,
     ...options,
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["assets"] });
+      void queryClient.invalidateQueries({ queryKey: ["assets"] });
       options?.onSuccess?.(data);
     },
   });
