@@ -59,10 +59,17 @@ model Asset {
   updatedAt    DateTime      @updatedAt
 }
 
+enum CategoryType {
+  INCOME
+  EXPENSE
+}
+
 model Category {
-  id           String        @id @default(uuid())
+  id           String        @id @default(cuid())
   name         String
-  type         String        // "INCOME" | "EXPENSE"
+  type         CategoryType
+  color        String?
+  icon         String?
   userId       String
   user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   transactions Transaction[]
