@@ -72,4 +72,28 @@ export class AssetRepository {
       where: { id },
     });
   }
+
+  async incrementBalance(
+    id: string,
+    userId: string,
+    amount: number,
+  ): Promise<Asset> {
+    // ponytail: atomic increment — Prisma handles it in a single UPDATE, no read-then-write race.
+    return this.prisma.asset.update({
+      where: { id, userId },
+      data: { balance: { increment: amount } },
+    });
+  }
+
+  async decrementBalance(
+    id: string,
+    userId: string,
+    amount: number,
+  ): Promise<Asset> {
+    // ponytail: atomic decrement — same as above. Negative-balance guard is a service concern, not repo.
+    return this.prisma.asset.update({
+      where: { id, userId },
+      data: { balance: { decrement: amount } },
+    });
+  }
 }
