@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../../prisma/prisma.service";
-import { User, Profile } from "@prisma/client";
+import { User, Profile, CategoryType } from "@prisma/client";
 
 export interface CreateUserData {
   email?: string;
@@ -12,6 +12,14 @@ export interface CreateUserData {
       lastName?: string;
       avatarUrl?: string;
     };
+  };
+  categories?: {
+    create: Array<{
+      name: string;
+      type: CategoryType;
+      color?: string;
+      icon?: string;
+    }>;
   };
 }
 

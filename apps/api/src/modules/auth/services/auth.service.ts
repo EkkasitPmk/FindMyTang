@@ -1,3 +1,4 @@
+import { CategoryType } from "@prisma/client";
 import {
   BadRequestException,
   ConflictException,
@@ -111,6 +112,15 @@ export class AuthService {
         create: {
           firstName: displayName,
         },
+      },
+      categories: {
+        create: [
+          { name: "🍜 Food", type: CategoryType.EXPENSE },
+          { name: "🚗 Transport", type: CategoryType.EXPENSE },
+          { name: "🛒 Shopping", type: CategoryType.EXPENSE },
+          { name: "💼 Salary", type: CategoryType.INCOME },
+          { name: "🎁 Gift", type: CategoryType.INCOME },
+        ],
       },
     });
 
