@@ -14,3 +14,18 @@ export const getCategoriesApi = async (): Promise<Category[]> => {
   const response = await http.get<Category[]>("/categories");
   return response.data;
 };
+
+export const updateCategory = async (
+  id: string,
+  data: Partial<CreateCategoryRequest>,
+): Promise<Category> => {
+  // ponytail: Category update api call.
+  const response = await http.patch<Category>(`/categories/${id}`, data);
+  return response.data;
+};
+
+export const deleteCategory = async (id: string): Promise<Category> => {
+  // ponytail: Category deletion api call.
+  const response = await http.delete<Category>(`/categories/${id}`);
+  return response.data;
+};

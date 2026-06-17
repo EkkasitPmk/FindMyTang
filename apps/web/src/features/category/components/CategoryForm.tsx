@@ -12,6 +12,8 @@ interface CategoryFormProps {
   errors: FieldErrors<CreateCategoryFormValues>;
   isPending: boolean;
   globalError: string | null;
+  isEditing?: boolean;
+  onCancel?: () => void;
 }
 
 export default function CategoryForm({
@@ -21,15 +23,19 @@ export default function CategoryForm({
   errors,
   isPending,
   globalError,
+  isEditing = false,
+  onCancel,
 }: Readonly<CategoryFormProps>) {
   return (
     <div className="w-full max-w-md mx-auto p-6 bg-surface-container rounded-2xl shadow-xl border border-outline/10 animate-in fade-in duration-300">
       <div className="mb-6">
         <h2 className="text-xl font-bold text-on-surface mb-2">
-          Create New Category
+          {isEditing ? "Edit Category" : "Create New Category"}
         </h2>
         <p className="text-sm text-on-surface-variant">
-          Add a category to organize your income and expenses.
+          {isEditing
+            ? "Update your category details below."
+            : "Add a category to organize your income and expenses."}
         </p>
       </div>
 
@@ -129,14 +135,30 @@ export default function CategoryForm({
           )}
         </div>
 
-        {/* Submit */}
-        <button
-          type="submit"
-          disabled={isPending}
-          className="w-full h-12 mt-4 bg-primary text-white font-semibold rounded-lg flex items-center justify-center hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer"
-        >
-          {isPending ? "Saving Category..." : "Save"}
-        </button>
+        {/* Submit & Cancel */}
+        <div className="flex flex-col gap-2 mt-4">
+          <button
+            type="submit"
+            disabled={isPending}
+            className="w-full h-12 bg-primary text-white font-semibold rounded-lg flex items-center justify-center hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer"
+          >
+            {isPending
+              ? "Saving Category..."
+              : isEditing
+                ? "Save Changes"
+                : "Save"}
+          </button>
+
+          {isEditing && onCancel && (
+            <button
+              type="button"
+              onClick={onCancel}
+              className="w-full h-12 bg-surface-container-high text-on-surface font-semibold rounded-lg flex items-center justify-center hover:opacity-90 active:scale-[0.98] transition-all cursor-pointer border border-outline/10"
+            >
+              Cancel
+            </button>
+          )}
+        </div>
       </form>
     </div>
   );

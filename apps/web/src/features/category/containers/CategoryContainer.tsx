@@ -9,12 +9,16 @@ import {
 } from "../schemas/category.schema";
 import {
   useCreateCategoryMutation,
+  useUpdateCategoryMutation,
   useCategories,
+  useDeleteCategoryMutation,
 } from "../hooks/category.hook";
+import { Category } from "../types/category.type";
 import CategoryForm from "../components/CategoryForm";
 
 export default function CategoryContainer() {
   const [globalError, setGlobalError] = useState<string | null>(null);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
 
   const { data: categories, isLoading, error } = useCategories();
 
@@ -34,55 +38,172 @@ export default function CategoryContainer() {
     },
   });
 
-  const { mutate: createCategory, isPending } = useCreateCategoryMutation({
-    onSuccess: (data) => {
-      toast.success(`Category "${data.name}" created successfully!`);
-      reset();
-    },
-    onError: (err) => {
-      const message = err.response?.data?.message;
-      let errorList: string[] = [];
-      if (Array.isArray(message)) {
-        errorList = message;
-      } else if (message) {
-        errorList = [message];
-      }
-
-      if (errorList.length === 0) {
-        setGlobalError("Failed to create category. Please check your inputs.");
-        return;
-      }
-
-      let hasGlobalError = false;
-      errorList.forEach((msg) => {
-        const lowerMsg = msg.toLowerCase();
-        if (lowerMsg.includes("name")) {
-          setError("name", { type: "server", message: msg });
-        } else if (lowerMsg.includes("type")) {
-          setError("type", { type: "server", message: msg });
-        } else if (lowerMsg.includes("color")) {
-          setError("color", { type: "server", message: msg });
-        } else if (lowerMsg.includes("icon")) {
-          setError("icon", { type: "server", message: msg });
-        } else {
-          setGlobalError(msg);
-          hasGlobalError = true;
+  const { mutate: createCategory, isPending: isCreating } =
+    useCreateCategoryMutation({
+      onSuccess: (data) => {
+        toast.success(`Category "${data.name}" created successfully!`);
+        reset();
+      },
+      onError: (err) => {
+        const message = err.response?.data?.message;
+        let errorList: string[] = [];
+        if (Array.isArray(message)) {
+          errorList = message;
+        } else if (message) {
+          errorList = [message];
         }
-      });
 
-      if (!hasGlobalError) {
-        setGlobalError(null);
-      }
-    },
-  });
+        if (errorList.length === 0) {
+          setGlobalError(
+            "Failed to create category. Please check your inputs.",
+          );
+          return;
+        }
+
+        let hasGlobalError = false;
+        errorList.forEach((msg) => {
+          const lowerMsg = msg.toLowerCase();
+          if (lowerMsg.includes("name")) {
+            setError("name", { type: "server", message: msg });
+          } else if (lowerMsg.includes("type")) {
+            setError("type", { type: "server", message: msg });
+          } else if (lowerMsg.includes("color")) {
+            setError("color", { type: "server", message: msg });
+          } else if (lowerMsg.includes("icon")) {
+            setError("icon", { type: "server", message: msg });
+          } else {
+            setGlobalError(msg);
+            hasGlobalError = true;
+          }
+        });
+
+        if (!hasGlobalError) {
+          setGlobalError(null);
+        }
+      },
+    });
+
+  const { mutate: updateCategory, isPending: isUpdating } =
+    useUpdateCategoryMutation({
+      onSuccess: (data) => {
+        toast.success(`Category "${data.name}" updated successfully!`);
+        setEditingCategory(null);
+        reset({
+          name: "",
+          type: "EXPENSE",
+          color: "",
+          icon: "",
+        });
+      },
+      onError: (err) => {
+        const message = err.response?.data?.message;
+        let errorList: string[] = [];
+        if (Array.isArray(message)) {
+          errorList = message;
+        } else if (message) {
+          errorList = [message];
+        }
+
+        if (errorList.length === 0) {
+          setGlobalError(
+            "Failed to update category. Please check your inputs.",
+          );
+          return;
+        }
+
+        let hasGlobalError = false;
+        errorList.forEach((msg) => {
+          const lowerMsg = msg.toLowerCase();
+          if (lowerMsg.includes("name")) {
+            setError("name", { type: "server", message: msg });
+          } else if (lowerMsg.includes("type")) {
+            setError("type", { type: "server", message: msg });
+          } else if (lowerMsg.includes("color")) {
+            setError("color", { type: "server", message: msg });
+          } else if (lowerMsg.includes("icon")) {
+            setError("icon", { type: "server", message: msg });
+          } else {
+            setGlobalError(msg);
+            hasGlobalError = true;
+          }
+        });
+
+        if (!hasGlobalError) {
+          setGlobalError(null);
+        }
+      },
+    });
+
+  const { mutate: deleteCategory, isPending: isDeleting } =
+    useDeleteCategoryMutation({
+      onSuccess: (data) => {
+        toast.success(`Category "${data.name}" deleted successfully!`);
+        if (editingCategory?.id === data.id) {
+          cancelEdit();
+        }
+      },
+      onError: (err) => {
+        const message = err.response?.data?.message;
+        const errorMsg = Array.isArray(message)
+          ? message[0]
+          : message || "Failed to delete category.";
+        toast.error(errorMsg);
+      },
+    });
+
+  const isPending = isCreating || isUpdating || isDeleting;
+
+  const handleDelete = (category: Category) => {
+    // ponytail: Uses native confirm dialog to minimize code complexity.
+    const confirmed = globalThis.confirm(
+      `Are you sure you want to delete category "${category.name}"?`,
+    );
+    if (confirmed) {
+      deleteCategory(category.id);
+    }
+  };
 
   const onSubmit = (values: CreateCategoryFormValues) => {
     setGlobalError(null);
-    createCategory({
-      name: values.name.trim(),
-      type: values.type,
-      color: values.color?.trim() || undefined,
-      icon: values.icon?.trim() || undefined,
+    if (editingCategory) {
+      updateCategory({
+        id: editingCategory.id,
+        data: {
+          name: values.name.trim(),
+          type: values.type,
+          color: values.color?.trim() || undefined,
+          icon: values.icon?.trim() || undefined,
+        },
+      });
+    } else {
+      createCategory({
+        name: values.name.trim(),
+        type: values.type,
+        color: values.color?.trim() || undefined,
+        icon: values.icon?.trim() || undefined,
+      });
+    }
+  };
+
+  const startEdit = (category: Category) => {
+    setGlobalError(null);
+    setEditingCategory(category);
+    reset({
+      name: category.name,
+      type: category.type,
+      color: category.color || "",
+      icon: category.icon || "",
+    });
+  };
+
+  const cancelEdit = () => {
+    setGlobalError(null);
+    setEditingCategory(null);
+    reset({
+      name: "",
+      type: "EXPENSE",
+      color: "",
+      icon: "",
     });
   };
 
@@ -130,35 +251,55 @@ export default function CategoryContainer() {
               key={category.id}
               className="flex items-center justify-between p-4 rounded-xl border border-outline-variant/65 bg-surface-container-lowest hover:bg-surface-container-low/20 transition-all duration-200"
             >
-              <div className="flex items-center gap-3">
-                {/* Color chip representation */}
-                <div
-                  style={colorStyle}
-                  className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-semibold ${
-                    hasColor
-                      ? "text-white"
-                      : "bg-primary-container/8 text-primary"
-                  }`}
-                >
-                  {category.icon
-                    ? category.icon.substring(0, 2).toUpperCase()
-                    : category.name.substring(0, 2).toUpperCase()}
+              <div className="flex items-center gap-3 justify-between w-full">
+                <div className="flex items-center gap-3">
+                  {/* Color chip representation */}
+                  <div
+                    style={colorStyle}
+                    className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-semibold ${
+                      hasColor
+                        ? "text-white"
+                        : "bg-primary-container/8 text-primary"
+                    }`}
+                  >
+                    {category.icon
+                      ? category.icon.substring(0, 2).toUpperCase()
+                      : category.name.substring(0, 2).toUpperCase()}
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-sm text-on-surface leading-tight">
+                      {category.name}
+                    </h4>
+                    <p className="text-xs text-on-surface-variant/80 mt-1 capitalize font-medium">
+                      Type: {category.type === "INCOME" ? "Income" : "Expense"}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-semibold text-sm text-on-surface leading-tight">
-                    {category.name}
-                  </h4>
-                  <p className="text-[10px] text-on-surface-variant/80 mt-1 uppercase tracking-wider font-semibold">
-                    {category.icon || "no-icon"}
-                  </p>
+
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`px-2.5 py-1 rounded-full text-[10px] font-bold border ${typeColor}`}
+                  >
+                    {category.type}
+                  </span>
+                  <button
+                    onClick={() => startEdit(category)}
+                    disabled={isPending}
+                    className="px-2 py-1 text-on-surface-variant hover:text-primary hover:bg-primary/8 rounded-lg transition-all text-xs font-medium flex items-center gap-1 cursor-pointer border border-outline/10 disabled:opacity-50 disabled:cursor-not-allowed"
+                    title="Edit Category"
+                  >
+                    ✏️ Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(category)}
+                    disabled={isPending}
+                    className="px-2 py-1 text-on-surface-variant hover:text-error hover:bg-error/8 rounded-lg transition-all text-xs font-medium flex items-center gap-1 cursor-pointer border border-outline/10 disabled:opacity-50 disabled:cursor-not-allowed"
+                    title="Delete Category"
+                  >
+                    🗑 Delete
+                  </button>
                 </div>
               </div>
-
-              <span
-                className={`px-2.5 py-1 rounded-full text-[10px] font-bold border ${typeColor}`}
-              >
-                {category.type}
-              </span>
             </div>
           );
         })}
@@ -168,7 +309,7 @@ export default function CategoryContainer() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-      {/* Category Creation Form */}
+      {/* Category Creation / Edit Form */}
       <div className="lg:col-span-1">
         <CategoryForm
           register={register}
@@ -177,6 +318,8 @@ export default function CategoryContainer() {
           errors={errors}
           isPending={isPending}
           globalError={globalError}
+          isEditing={!!editingCategory}
+          onCancel={cancelEdit}
         />
       </div>
 
