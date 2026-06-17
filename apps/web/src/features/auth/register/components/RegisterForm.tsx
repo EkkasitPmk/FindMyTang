@@ -29,7 +29,7 @@ export default function RegisterForm({
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   return (
-    <main className="min-h-screen flex flex-col justify-center px-container-padding py-stack-gap-lg">
+    <div className="min-h-screen flex flex-col justify-center px-container-padding py-stack-gap-lg">
       {/* Main Registration Content */}
       <div className="w-full max-w-sm mx-auto animate-subtle-pop">
         {/* Header Section */}
@@ -206,6 +206,6 @@ export default function RegisterForm({
       {/* Decorative Elements */}
       <div className="fixed bottom-0 right-0 w-64 h-64 opacity-10 pointer-events-none z-0 blur-3xl bg-primary-container rounded-full translate-x-1/2 translate-y-1/2"></div>
       <div className="fixed top-0 left-0 w-64 h-64 opacity-5 pointer-events-none z-0 blur-3xl bg-secondary-container rounded-full -translate-x-1/2 -translate-y-1/2"></div>
-    </main>
+    </div>
   );
 }

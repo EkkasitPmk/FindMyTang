@@ -32,7 +32,7 @@ export default function LoginForm({
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <main className="min-h-screen flex flex-col justify-center px-container-padding py-stack-gap-lg">
+    <div className="min-h-screen flex flex-col justify-center px-container-padding py-stack-gap-lg">
       <div className="w-full max-w-sm mx-auto animate-subtle-pop">
         {/* Brand Logo Section */}
         <div className="mb-stack-gap-lg text-center flex flex-col items-center">
@@ -196,6 +196,6 @@ export default function LoginForm({
           </p>
         </div>
       </div>
-    </main>
+    </div>
   );
 }
