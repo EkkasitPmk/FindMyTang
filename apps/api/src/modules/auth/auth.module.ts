@@ -20,7 +20,7 @@ import { JwtRefreshGuard } from "./guards/jwt-refresh.guard";
         secret: configService.get<string>("jwt.secret"),
         signOptions: {
           expiresIn: (configService.get<string>("jwt.expiresIn") ||
-            "15m") as any,
+            "15m") as never,
         },
       }),
     }),

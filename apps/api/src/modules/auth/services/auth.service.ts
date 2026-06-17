@@ -13,7 +13,7 @@ import { LoginDto } from "../dto/login.dto";
 import { JwtService } from "@nestjs/jwt";
 import { JwtPayload } from "../interfaces/jwt-payload.interface";
 import * as bcrypt from "bcrypt";
-import * as crypto from "crypto";
+import * as crypto from "node:crypto";
 
 @Injectable()
 export class AuthService {
@@ -29,7 +29,7 @@ export class AuthService {
 
     // 1. Find user by email
     const user = await this.userRepository.findByEmail(email);
-    if (!user || !user.password) {
+    if (!user?.password) {
       throw new UnauthorizedException("Invalid email or password");
     }
 
@@ -157,7 +157,7 @@ export class AuthService {
 
     const session =
       await this.sessionRepository.findByToken(hashedRefreshToken);
-    if (!session || session.userId !== userId) {
+    if (session?.userId !== userId) {
       throw new UnauthorizedException("Invalid or expired session");
     }
 

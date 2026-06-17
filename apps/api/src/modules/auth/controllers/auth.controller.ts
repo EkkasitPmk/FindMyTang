@@ -19,6 +19,8 @@ import { JwtRefreshGuard } from "../guards/jwt-refresh.guard";
 import { CurrentUser } from "../decorators/current-user.decorator";
 import { User, Profile } from "@prisma/client";
 
+type CookieSameSite = "lax" | "strict" | "none";
+
 @Controller("auth")
 export class AuthController {
   constructor(
@@ -49,8 +51,7 @@ export class AuthController {
       this.configService.get<string>("cookie.domain") || "localhost";
     const secure = this.configService.get<boolean>("cookie.secure") ?? false;
     const sameSite =
-      this.configService.get<"lax" | "strict" | "none">("cookie.sameSite") ||
-      "lax";
+      this.configService.get<CookieSameSite>("cookie.sameSite") || "lax";
 
     res.cookie("access_token", accessToken, {
       httpOnly: true,
@@ -94,8 +95,7 @@ export class AuthController {
       this.configService.get<string>("cookie.domain") || "localhost";
     const secure = this.configService.get<boolean>("cookie.secure") ?? false;
     const sameSite =
-      this.configService.get<"lax" | "strict" | "none">("cookie.sameSite") ||
-      "lax";
+      this.configService.get<CookieSameSite>("cookie.sameSite") || "lax";
 
     res.cookie("access_token", accessToken, {
       httpOnly: true,
@@ -118,7 +118,7 @@ export class AuthController {
 
   @Get("me")
   @UseGuards(JwtAuthGuard)
-  async getMe(@CurrentUser() user: User & { profile: Profile | null }) {
+  getMe(@CurrentUser() user: User & { profile: Profile | null }) {
     return {
       id: user.id,
       email: user.email,
@@ -141,8 +141,7 @@ export class AuthController {
       this.configService.get<string>("cookie.domain") || "localhost";
     const secure = this.configService.get<boolean>("cookie.secure") ?? false;
     const sameSite =
-      this.configService.get<"lax" | "strict" | "none">("cookie.sameSite") ||
-      "lax";
+      this.configService.get<CookieSameSite>("cookie.sameSite") || "lax";
 
     res.clearCookie("access_token", {
       httpOnly: true,
