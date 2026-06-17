@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../../prisma/prisma.service";
-import { Transaction, TransactionType } from "@prisma/client";
+import { Transaction, TransactionType, Prisma } from "@prisma/client";
+import { TransactionQueryDto } from "../dto/transaction-query.dto";
 
 export interface CreateTransactionData {
   type: TransactionType;
@@ -28,12 +29,49 @@ export class TransactionRepository {
     return this.prisma.transaction.findUnique({ where: { id } });
   }
 
-  async findAllByUserId(userId: string): Promise<Transaction[]> {
-    // ponytail: no pagination yet — ceiling ~10k rows; upgrade to cursor-based pagination
-    return this.prisma.transaction.findMany({
-      where: { userId },
-      orderBy: { date: "desc" },
-    });
+  async findAllByUserId(
+    userId: string,
+    query: TransactionQueryDto = {},
+  ): Promise<{ items: Transaction[]; total: number }> {
+    const {
+      page = 1,
+      limit = 20,
+      type,
+      assetId,
+      categoryId,
+      from,
+      to,
+    } = query;
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.TransactionWhereInput = {
+      userId,
+      ...(type && { type }),
+      ...(assetId && { assetId }),
+      ...(categoryId && { categoryId }),
+      ...((from || to) && {
+        date: {
+          ...(from && { gte: new Date(from) }),
+          ...(to && { lte: new Date(to) }),
+        },
+      }),
+    };
+
+    const [items, total] = await Promise.all([
+      this.prisma.transaction.findMany({
+        where,
+        include: {
+          asset: true,
+          category: true,
+        },
+        orderBy: { date: "desc" },
+        skip,
+        take: limit,
+      }),
+      this.prisma.transaction.count({ where }),
+    ]);
+
+    return { items, total };
   }
 
   async update(

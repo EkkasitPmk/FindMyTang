@@ -10,9 +10,12 @@ import { CategoryRepository } from "../../category/repositories/category.reposit
 import { PrismaService } from "../../../prisma/prisma.service";
 import { CreateTransactionDto } from "../dto/create-transaction.dto";
 import { CreateExpenseDto } from "../dto/create-expense.dto";
+import { CreateIncomeDto } from "../dto/create-income.dto";
 import { UpdateTransactionDto } from "../dto/update-transaction.dto";
 import { Transaction, TransactionType } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
+
+import { TransactionQueryDto } from "../dto/transaction-query.dto";
 
 @Injectable()
 export class TransactionService {
@@ -22,6 +25,46 @@ export class TransactionService {
     private readonly categoryRepository: CategoryRepository,
     private readonly prisma: PrismaService,
   ) {}
+
+  async createIncome(
+    userId: string,
+    dto: CreateIncomeDto,
+  ): Promise<Transaction> {
+    // 1. Validate asset exists and belongs to user
+    const asset = await this.assetRepository.findById(dto.assetId);
+    if (!asset) throw new NotFoundException("Asset not found");
+    if (asset.userId !== userId)
+      throw new ForbiddenException("You do not own this asset");
+
+    // 2. Validate category exists, belongs to user, and is INCOME type
+    const category = await this.categoryRepository.findById(dto.categoryId);
+    if (!category) throw new NotFoundException("Category not found");
+    if (category.userId !== userId)
+      throw new ForbiddenException("You do not own this category");
+    if (category.type !== "INCOME")
+      throw new BadRequestException("Category must be of type INCOME");
+
+    // 3. Prisma $transaction — create record + increment balance atomically
+    const [tx] = await this.prisma.$transaction([
+      this.prisma.transaction.create({
+        data: {
+          type: TransactionType.INCOME,
+          amount: dto.amount,
+          note: dto.note,
+          date: new Date(dto.transactionDate),
+          userId,
+          assetId: dto.assetId,
+          categoryId: dto.categoryId,
+        },
+      }),
+      this.prisma.asset.update({
+        where: { id: dto.assetId },
+        data: { balance: { increment: dto.amount } },
+      }),
+    ]);
+
+    return tx;
+  }
 
   async createExpense(
     userId: string,
@@ -82,8 +125,11 @@ export class TransactionService {
     });
   }
 
-  async findAll(userId: string): Promise<Transaction[]> {
-    return this.transactionRepository.findAllByUserId(userId);
+  async findAll(
+    userId: string,
+    query: TransactionQueryDto,
+  ): Promise<{ items: Transaction[]; total: number }> {
+    return this.transactionRepository.findAllByUserId(userId, query);
   }
 
   async update(
