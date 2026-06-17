@@ -5,6 +5,7 @@ import { AppService } from "./app.service";
 import { UserModule } from "./modules/user/user.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { AuthModule } from "./modules/auth/auth.module";
+import { SessionModule } from "./modules/session/session.module";
 import jwtConfig from "./common/config/jwt.config";
 import cookieConfig from "./common/config/cookie.config";
 
@@ -17,6 +18,7 @@ import cookieConfig from "./common/config/cookie.config";
     PrismaModule,
     UserModule,
     AuthModule,
+    SessionModule,
   ],
   controllers: [AppController],
   providers: [AppService],
