@@ -11,6 +11,8 @@ import {
   Download,
   Trash2,
   Lock,
+  Tag,
+  Wallet,
 } from "lucide-react";
 
 interface MoreContainerProps {
@@ -143,6 +145,53 @@ export default function MoreContainer({
               ))}
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Management Section */}
+      <div className="space-y-2">
+        <h5 className="font-label-caps text-on-surface-variant/80 px-1">
+          Management
+        </h5>
+        <div className="bg-surface-container-lowest border border-outline-variant/60 rounded-md divide-y divide-outline-variant/50">
+          <Link
+            href="/categories"
+            onClick={onClose}
+            className="w-full flex justify-between items-center p-3 hover:bg-surface-container-low/20 transition-colors text-left outline-none cursor-pointer"
+          >
+            <div className="flex items-center gap-2.5">
+              <Tag
+                className="w-4 h-4 text-on-surface-variant"
+                strokeWidth={1.5}
+              />
+              <span className="text-xs font-semibold text-on-surface">
+                Manage Categories
+              </span>
+            </div>
+            <ChevronRight
+              className="w-3.5 h-3.5 text-on-surface-variant/70"
+              strokeWidth={1.5}
+            />
+          </Link>
+          <Link
+            href="/assets"
+            onClick={onClose}
+            className="w-full flex justify-between items-center p-3 hover:bg-surface-container-low/20 transition-colors text-left outline-none cursor-pointer"
+          >
+            <div className="flex items-center gap-2.5">
+              <Wallet
+                className="w-4 h-4 text-on-surface-variant"
+                strokeWidth={1.5}
+              />
+              <span className="text-xs font-semibold text-on-surface">
+                Manage Assets
+              </span>
+            </div>
+            <ChevronRight
+              className="w-3.5 h-3.5 text-on-surface-variant/70"
+              strokeWidth={1.5}
+            />
+          </Link>
         </div>
       </div>
 
