@@ -77,9 +77,17 @@ model Category {
   updatedAt    DateTime      @updatedAt
 }
 
+enum TransactionType {
+  INCOME
+  EXPENSE
+  TRANSFER
+}
+
 model Transaction {
   id           String                  @id @default(uuid())
+  type         TransactionType
   amount       Decimal
+  note         String?
   date         DateTime
   userId       String
   user         User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
