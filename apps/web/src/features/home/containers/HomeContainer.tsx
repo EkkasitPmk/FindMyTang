@@ -106,8 +106,8 @@ export default function HomeContainer() {
   };
 
   return (
-    <div className="p-2 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Asset List</h1>
+    <>
+      <h2 className="text-xl font-bold mb-4">Asset List</h2>
       {!assets || assets.length === 0 ? (
         <p className="text-gray-500">No assets found.</p>
       ) : (
@@ -227,6 +227,6 @@ export default function HomeContainer() {
           </table>
         </div>
       )}
-    </div>
+    </>
   );
 }
