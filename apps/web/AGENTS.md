@@ -1,6 +1,6 @@
 # AGENTS.md
 
-# Table of Contents
+# Table of Contents for Frontend Developer only
 
 1. Tech Stack
 2. Architecture Rules
