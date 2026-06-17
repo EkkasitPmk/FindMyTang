@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, NotFoundException, ForbiddenException } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from "@nestjs/common";
 import { AssetRepository } from "../repositories/asset.repository";
 import { CreateAssetDto } from "../dto/create-asset.dto";
 import { UpdateAssetDto } from "../dto/update-asset.dto";
@@ -30,7 +35,11 @@ export class AssetService {
     return this.assetRepository.findAllByUserId(userId);
   }
 
-  async update(id: string, userId: string, dto: UpdateAssetDto): Promise<Asset> {
+  async update(
+    id: string,
+    userId: string,
+    dto: UpdateAssetDto,
+  ): Promise<Asset> {
     // ponytail: Business logic to find, check ownership, validate, and update the asset.
     const asset = await this.assetRepository.findById(id);
     if (!asset) {

@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from "@nestjs/common";
 import { AssetService } from "../services/asset.service";
 import { CreateAssetDto } from "../dto/create-asset.dto";
 import { UpdateAssetDto } from "../dto/update-asset.dto";
@@ -61,10 +70,7 @@ export class AssetController {
 
   @Delete(":id")
   @UseGuards(JwtAuthGuard)
-  async delete(
-    @Param("id") id: string,
-    @CurrentUser() user: User,
-  ) {
+  async delete(@Param("id") id: string, @CurrentUser() user: User) {
     // ponytail: Delete asset endpoint, mapping Prisma Decimal to number in response.
     const asset = await this.assetService.delete(id, user.id);
     return {

@@ -3,7 +3,11 @@ import { AssetService } from "./asset.service";
 import { AssetRepository } from "../repositories/asset.repository";
 import { CreateAssetDto } from "../dto/create-asset.dto";
 import { AssetType } from "@prisma/client";
-import { BadRequestException, NotFoundException, ForbiddenException } from "@nestjs/common";
+import {
+  BadRequestException,
+  NotFoundException,
+  ForbiddenException,
+} from "@nestjs/common";
 
 describe("AssetService", () => {
   let service: AssetService;
