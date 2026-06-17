@@ -33,10 +33,11 @@ export class CategoryRepository {
     });
   }
 
-  async findAllByUserId(userId: string): Promise<Category[]> {
-    // ponytail: Fetches all categories belonging to the user.
+  async findAll(userId: string): Promise<Category[]> {
+    // ponytail: Fetches all categories belonging to the user sorted by createdAt ASC.
     return this.prisma.category.findMany({
       where: { userId },
+      orderBy: { createdAt: "asc" },
     });
   }
 
@@ -45,17 +46,21 @@ export class CategoryRepository {
     userId: string,
     data: Partial<CreateCategoryData>,
   ): Promise<Category> {
-    // ponytail: Updates a category after checking ownership.
-    const category = await this.prisma.category.findFirst({
+    // ponytail: Updates a category using updateMany for a strict owner check, then returns the updated category.
+    const result = await this.prisma.category.updateMany({
       where: { id, userId },
-    });
-    if (!category) {
-      throw new Error("Category not found or access denied");
-    }
-    return this.prisma.category.update({
-      where: { id },
       data,
     });
+    if (result.count === 0) {
+      throw new Error("Category not found or access denied");
+    }
+    const updated = await this.prisma.category.findUnique({
+      where: { id },
+    });
+    if (!updated) {
+      throw new Error("Category not found after update");
+    }
+    return updated;
   }
 
   async delete(id: string, userId: string): Promise<Category> {

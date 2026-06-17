@@ -32,7 +32,7 @@ export class CategoryService {
 
   async findAll(userId: string): Promise<Category[]> {
     // ponytail: Retrieves all categories belonging to the specified user.
-    return this.categoryRepository.findAllByUserId(userId);
+    return this.categoryRepository.findAll(userId);
   }
 
   async update(
