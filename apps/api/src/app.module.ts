@@ -3,6 +3,7 @@ import { ConfigModule } from "@nestjs/config";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { UserModule } from "./modules/user/user.module";
+import { AssetModule } from "./modules/asset/asset.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { AuthModule } from "./modules/auth/auth.module";
 import { SessionModule } from "./modules/session/session.module";
@@ -17,6 +18,7 @@ import cookieConfig from "./common/config/cookie.config";
     }),
     PrismaModule,
     UserModule,
+    AssetModule,
     AuthModule,
     SessionModule,
   ],
