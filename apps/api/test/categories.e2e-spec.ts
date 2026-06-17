@@ -125,9 +125,7 @@ describe("Category (e2e)", () => {
 
   describe("GET /api/v1/categories", () => {
     it("should return 401 if unauthorized", () => {
-      return request(app.getHttpServer())
-        .get("/api/v1/categories")
-        .expect(401);
+      return request(app.getHttpServer()).get("/api/v1/categories").expect(401);
     });
 
     it("should return list of user's categories", async () => {
