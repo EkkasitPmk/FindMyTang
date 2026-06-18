@@ -18,6 +18,8 @@ export interface CreateAssetResponse {
   type: AssetType;
   balance: number;
   currency: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Asset {
@@ -26,4 +28,6 @@ export interface Asset {
   type: AssetType;
   balance: number;
   currency: string;
+  createdAt: string;
+  updatedAt: string;
 }
