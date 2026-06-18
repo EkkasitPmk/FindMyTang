@@ -1,0 +1,48 @@
+import {
+  Utensils,
+  CakeSlice,
+  CupSoda,
+  Smartphone,
+  CarFront,
+  CircleUserRound,
+  House,
+  Shirt,
+  HousePlus,
+  SmilePlus,
+  HeartPulse,
+  GraduationCap,
+  CircleQuestionMark,
+  Wallet,
+  PiggyBank,
+  Gift,
+  ChartPie,
+  Bitcoin,
+  HandCoins,
+  LucideIcon,
+} from "lucide-react";
+
+export const iconMappingExpense: Record<string, LucideIcon> = {
+  food: Utensils,
+  snack: CakeSlice,
+  drink: CupSoda,
+  phone: Smartphone,
+  transport: CarFront,
+  personal: CircleUserRound,
+  home: House,
+  laundry: Shirt,
+  household: HousePlus,
+  cosmetic: SmilePlus,
+  medical: HeartPulse,
+  education: GraduationCap,
+  other: CircleQuestionMark,
+};
+
+export const iconMappingIncome: Record<string, LucideIcon> = {
+  salary: Wallet,
+  wallet: PiggyBank,
+  bonus: Gift,
+  freelance: ChartPie,
+  investment: Bitcoin,
+  other: HandCoins,
+  personal: CircleQuestionMark,
+};
