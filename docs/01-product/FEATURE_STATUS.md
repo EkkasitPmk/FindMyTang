@@ -32,6 +32,11 @@
     - รองรับ Soft Delete
 - [x] **Summary Module:** ปรับปรุงให้รองรับการกรองข้อมูลที่ถูกลบ (Soft Delete)
 
+### 4. Frontend & Shared Core Fixes
+- [x] แก้ไข TypeScript Lint Error ใน HTTP Client (`apps/web/src/shared/lib/api/http.ts`) โดยเปลี่ยน `any` เป็น `unknown` เพื่อความปลอดภัยของประเภทข้อมูล
+- [x] ปรับปรุง HTTP Client ให้ใช้ `throw error` แทน `Promise.reject(error)` และลบ Promise catch block ที่ซ้ำซ้อนออก เพื่อความสะอาดและสอดคล้องกับมาตรฐาน async/await
+- [x] แก้ไข TypeScript/ESLint Warning ใน Auth Module (`apps/api/src/modules/auth/controllers/auth.controller.ts`) เรื่อง "Unsafe return of a value of type error" โดยระบุชนิดข้อมูลผลลัพธ์ของ `syncGuest` ทั้งใน Service และ Controller อย่างชัดเจน (`Promise<{ success: boolean }>`)
+
 ---
 
 ## 🚀 สิ่งที่ต้องทำต่อไป (Next Actions)
@@ -41,7 +46,9 @@
 - [x] ย้ายรายการหมวดหมู่เริ่มต้นไปไว้ใน `common/constants` เพื่อให้ใช้ร่วมกันได้ทั้งระบบ
 
 ### 2. สร้าง Guest Sync Endpoint
-- [ ] เพิ่ม Endpoint `POST /auth/sync-guest` ใน Auth Module เพื่อรับข้อมูลจาก LocalStorage ขึ้น DB
+- [x] เพิ่ม Endpoint `POST /auth/sync-guest` ใน Auth Module เพื่อรับข้อมูลจาก LocalStorage ขึ้น DB
+- [x] ออกแบบ `SyncGuestDto` เพื่อรองรับการแมป Client-side ID กับ Server-side ID
+- [x] พัฒนา Sync Logic ใน `AuthService` โดยใช้ Transaction เพื่อความถูกต้องของข้อมูล
 
 ### 3. Frontend & Guest Sync
 - [ ] พัฒนาระบบ Guest Mode ใน `apps/web` (Zustand + LocalStorage) ให้เก็บข้อมูลตามโครงสร้าง Domain ใหม่
