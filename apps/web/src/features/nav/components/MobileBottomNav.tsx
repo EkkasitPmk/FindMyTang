@@ -13,7 +13,7 @@ export default function MobileBottomNav({
   onMenuOpen,
 }: Readonly<MobileBottomNavProps>) {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-surface/90 backdrop-blur-md border-t border-outline-variant/65 flex justify-around items-center py-2 px-4 shadow-sm">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-surface/90 backdrop-blur-md border-t border-outline-variant/65 grid grid-cols-5 items-center py-2 px-4 shadow-sm">
       {navItems.map((item) => {
         const Icon = item.icon;
         const isActive = pathname.startsWith(item.href);

@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { LogOut } from "lucide-react";
 
 interface LogoutConfirmModalProps {
@@ -12,22 +11,6 @@ export default function LogoutConfirmModal({
   onClose,
   onConfirm,
 }: Readonly<LogoutConfirmModalProps>) {
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        onClose();
-      }
-    };
-    if (isOpen) {
-      globalThis.addEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "hidden";
-    }
-    return () => {
-      globalThis.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "";
-    };
-  }, [isOpen, onClose]);
-
   if (!isOpen) return null;
 
   return (
@@ -63,10 +46,7 @@ export default function LogoutConfirmModal({
               Cancel
             </button>
             <button
-              onClick={() => {
-                onConfirm();
-                onClose();
-              }}
+              onClick={onConfirm}
               className="flex-1 py-2.5 px-4 rounded-md bg-error hover:bg-error/95 text-on-error text-xs font-semibold active-press transition-colors cursor-pointer"
             >
               Log Out
