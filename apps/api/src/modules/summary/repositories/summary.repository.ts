@@ -15,12 +15,14 @@ export class SummaryRepository {
     const result = await this.prisma.transaction.aggregate({
       where: {
         userId,
+        deletedAt: null,
         date: {
           gte: today,
           lt: tomorrow,
         },
         category: {
           type: CategoryType.INCOME,
+          deletedAt: null,
         },
       },
       _sum: {
@@ -40,12 +42,14 @@ export class SummaryRepository {
     const result = await this.prisma.transaction.aggregate({
       where: {
         userId,
+        deletedAt: null,
         date: {
           gte: today,
           lt: tomorrow,
         },
         category: {
           type: CategoryType.EXPENSE,
+          deletedAt: null,
         },
       },
       _sum: {

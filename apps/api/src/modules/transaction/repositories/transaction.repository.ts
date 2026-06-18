@@ -9,6 +9,7 @@ export interface CreateTransactionData {
   note?: string;
   date: Date;
   assetId: string;
+  toAssetId?: string;
   categoryId?: string;
 }
 
@@ -26,7 +27,9 @@ export class TransactionRepository {
   }
 
   async findById(id: string): Promise<Transaction | null> {
-    return this.prisma.transaction.findUnique({ where: { id } });
+    return this.prisma.transaction.findFirst({
+      where: { id, deletedAt: null },
+    });
   }
 
   async findAllByUserId(
@@ -46,6 +49,7 @@ export class TransactionRepository {
 
     const where: Prisma.TransactionWhereInput = {
       userId,
+      deletedAt: null,
       ...(type && { type }),
       ...(assetId && { assetId }),
       ...(categoryId && { categoryId }),
@@ -80,7 +84,7 @@ export class TransactionRepository {
     data: Partial<CreateTransactionData>,
   ): Promise<Transaction> {
     const tx = await this.prisma.transaction.findFirst({
-      where: { id, userId },
+      where: { id, userId, deletedAt: null },
     });
     if (!tx) throw new Error("Transaction not found or access denied");
     return this.prisma.transaction.update({ where: { id }, data });
@@ -88,9 +92,12 @@ export class TransactionRepository {
 
   async delete(id: string, userId: string): Promise<Transaction> {
     const tx = await this.prisma.transaction.findFirst({
-      where: { id, userId },
+      where: { id, userId, deletedAt: null },
     });
     if (!tx) throw new Error("Transaction not found or access denied");
-    return this.prisma.transaction.delete({ where: { id } });
+    return this.prisma.transaction.update({
+      where: { id },
+      data: { deletedAt: new Date() },
+    });
   }
 }

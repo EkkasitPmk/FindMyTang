@@ -34,7 +34,7 @@ export class AuthController {
     return {
       id: user.id,
       email: user.email,
-      displayName: user.profile?.firstName ?? registerDto.displayName,
+      displayName: user.profile?.displayName ?? registerDto.displayName,
       createdAt: user.createdAt,
     };
   }
@@ -122,7 +122,7 @@ export class AuthController {
     return {
       id: user.id,
       email: user.email,
-      displayName: user.profile?.firstName ?? "User",
+      displayName: user.profile?.displayName ?? "User",
     };
   }
 

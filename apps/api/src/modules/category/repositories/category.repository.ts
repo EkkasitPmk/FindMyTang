@@ -7,6 +7,7 @@ export interface CreateCategoryData {
   type: CategoryType;
   color?: string;
   icon?: string;
+  isSystem?: boolean;
 }
 
 @Injectable()
@@ -21,22 +22,23 @@ export class CategoryRepository {
         type: data.type,
         color: data.color,
         icon: data.icon,
+        isSystem: data.isSystem ?? false,
         userId,
       },
     });
   }
 
   async findById(id: string): Promise<Category | null> {
-    // ponytail: Finds a category by its ID.
-    return this.prisma.category.findUnique({
-      where: { id },
+    // ponytail: Finds a category by its ID, ensuring it's not soft-deleted.
+    return this.prisma.category.findFirst({
+      where: { id, deletedAt: null },
     });
   }
 
   async findAll(userId: string): Promise<Category[]> {
-    // ponytail: Fetches all categories belonging to the user sorted by createdAt ASC.
+    // ponytail: Fetches all categories belonging to the user that are not soft-deleted, sorted by createdAt ASC.
     return this.prisma.category.findMany({
-      where: { userId },
+      where: { userId, deletedAt: null },
       orderBy: { createdAt: "asc" },
     });
   }
@@ -46,33 +48,30 @@ export class CategoryRepository {
     userId: string,
     data: Partial<CreateCategoryData>,
   ): Promise<Category> {
-    // ponytail: Updates a category using updateMany for a strict owner check, then returns the updated category.
-    const result = await this.prisma.category.updateMany({
-      where: { id, userId },
-      data,
-    });
-    if (result.count === 0) {
-      throw new Error("Category not found or access denied");
-    }
-    const updated = await this.prisma.category.findUnique({
-      where: { id },
-    });
-    if (!updated) {
-      throw new Error("Category not found after update");
-    }
-    return updated;
-  }
-
-  async delete(id: string, userId: string): Promise<Category> {
-    // ponytail: Deletes a category after checking ownership.
+    // ponytail: Updates a category matching id and userId to prevent cross-user updates.
     const category = await this.prisma.category.findFirst({
-      where: { id, userId },
+      where: { id, userId, deletedAt: null },
     });
     if (!category) {
       throw new Error("Category not found or access denied");
     }
-    return this.prisma.category.delete({
+    return this.prisma.category.update({
       where: { id },
+      data,
+    });
+  }
+
+  async delete(id: string, userId: string): Promise<Category> {
+    // ponytail: Soft deletes a category matching id and userId.
+    const category = await this.prisma.category.findFirst({
+      where: { id, userId, deletedAt: null },
+    });
+    if (!category) {
+      throw new Error("Category not found or access denied");
+    }
+    return this.prisma.category.update({
+      where: { id },
+      data: { deletedAt: new Date() },
     });
   }
 }

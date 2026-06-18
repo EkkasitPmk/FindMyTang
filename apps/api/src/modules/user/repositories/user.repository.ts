@@ -8,9 +8,11 @@ export interface CreateUserData {
   isGuest?: boolean;
   profile?: {
     create: {
-      firstName?: string;
-      lastName?: string;
+      displayName?: string;
       avatarUrl?: string;
+      currency?: string;
+      language?: string;
+      timezone?: string;
     };
   };
   categories?: {
@@ -29,9 +31,11 @@ export interface UpdateUserData {
   isGuest?: boolean;
   profile?: {
     update: {
-      firstName?: string;
-      lastName?: string;
+      displayName?: string;
       avatarUrl?: string;
+      currency?: string;
+      language?: string;
+      timezone?: string;
     };
   };
 }

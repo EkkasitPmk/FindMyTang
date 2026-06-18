@@ -27,6 +27,8 @@ export class AssetService {
       type: dto.type,
       balance: dto.balance,
       currency: dto.currency,
+      color: dto.color,
+      icon: dto.icon,
     });
   }
 
@@ -60,7 +62,15 @@ export class AssetService {
       dto.name = trimmedName;
     }
 
-    return this.assetRepository.update(id, userId, dto);
+    return this.assetRepository.update(id, userId, {
+      name: dto.name,
+      type: dto.type,
+      balance: dto.balance,
+      currency: dto.currency,
+      color: dto.color,
+      icon: dto.icon,
+      isArchived: dto.isArchived,
+    });
   }
 
   async delete(id: string, userId: string): Promise<Asset> {

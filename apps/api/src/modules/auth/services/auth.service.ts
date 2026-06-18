@@ -14,6 +14,7 @@ import { JwtService } from "@nestjs/jwt";
 import { JwtPayload } from "../interfaces/jwt-payload.interface";
 import * as bcrypt from "bcrypt";
 import * as crypto from "node:crypto";
+import { DEFAULT_CATEGORIES } from "../../../common/constants/default-categories";
 
 @Injectable()
 export class AuthService {
@@ -81,7 +82,7 @@ export class AuthService {
       user: {
         id: user.id,
         email: user.email,
-        displayName: user.profile?.firstName ?? "User",
+        displayName: user.profile?.displayName ?? "User",
       },
     };
   }
@@ -110,17 +111,17 @@ export class AuthService {
       password: hashedPassword,
       profile: {
         create: {
-          firstName: displayName,
+          displayName,
         },
       },
       categories: {
-        create: [
-          { name: "🍜 Food", type: CategoryType.EXPENSE },
-          { name: "🚗 Transport", type: CategoryType.EXPENSE },
-          { name: "🛒 Shopping", type: CategoryType.EXPENSE },
-          { name: "💰 Salary", type: CategoryType.INCOME },
-          { name: "🎁 Gift", type: CategoryType.INCOME },
-        ],
+        create: DEFAULT_CATEGORIES.map((cat) => ({
+          name: `${cat.icon} ${cat.name}`,
+          type: cat.type,
+          color: cat.color,
+          icon: cat.icon,
+          isSystem: false,
+        })),
       },
     });
 
@@ -212,7 +213,7 @@ export class AuthService {
       user: {
         id: user.id,
         email: user.email,
-        displayName: user.profile?.firstName ?? "User",
+        displayName: user.profile?.displayName ?? "User",
       },
     };
   }

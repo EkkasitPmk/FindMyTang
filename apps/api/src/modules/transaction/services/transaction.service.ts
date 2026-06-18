@@ -26,102 +26,104 @@ export class TransactionService {
     private readonly prisma: PrismaService,
   ) {}
 
-  async createIncome(
-    userId: string,
-    dto: CreateIncomeDto,
-  ): Promise<Transaction> {
-    // 1. Validate asset exists and belongs to user
-    const asset = await this.assetRepository.findById(dto.assetId);
-    if (!asset) throw new NotFoundException("Asset not found");
-    if (asset.userId !== userId)
-      throw new ForbiddenException("You do not own this asset");
-
-    // 2. Validate category exists, belongs to user, and is INCOME type
-    const category = await this.categoryRepository.findById(dto.categoryId);
-    if (!category) throw new NotFoundException("Category not found");
-    if (category.userId !== userId)
-      throw new ForbiddenException("You do not own this category");
-    if (category.type !== "INCOME")
-      throw new BadRequestException("Category must be of type INCOME");
-
-    // 3. Prisma $transaction — create record + increment balance atomically
-    const [tx] = await this.prisma.$transaction([
-      this.prisma.transaction.create({
-        data: {
-          type: TransactionType.INCOME,
-          amount: dto.amount,
-          note: dto.note,
-          date: new Date(dto.transactionDate),
-          userId,
-          assetId: dto.assetId,
-          categoryId: dto.categoryId,
-        },
-      }),
-      this.prisma.asset.update({
-        where: { id: dto.assetId },
-        data: { balance: { increment: dto.amount } },
-      }),
-    ]);
-
-    return tx;
-  }
-
-  async createExpense(
-    userId: string,
-    dto: CreateExpenseDto,
-  ): Promise<Transaction> {
-    // 1. Validate asset exists and belongs to user
-    const asset = await this.assetRepository.findById(dto.assetId);
-    if (!asset) throw new NotFoundException("Asset not found");
-    if (asset.userId !== userId)
-      throw new ForbiddenException("You do not own this asset");
-
-    // 2. Validate category exists, belongs to user, and is EXPENSE type
-    const category = await this.categoryRepository.findById(dto.categoryId);
-    if (!category) throw new NotFoundException("Category not found");
-    if (category.userId !== userId)
-      throw new ForbiddenException("You do not own this category");
-    if (category.type !== "EXPENSE")
-      throw new BadRequestException("Category must be of type EXPENSE");
-
-    // 3. Check sufficient balance
-    if (new Decimal(asset.balance).lessThan(dto.amount))
-      throw new BadRequestException("Insufficient asset balance");
-
-    // 4. Prisma $transaction — create record + decrement balance atomically
-    // ponytail: both ops in one DB transaction; if either fails, both roll back
-    const [tx] = await this.prisma.$transaction([
-      this.prisma.transaction.create({
-        data: {
-          type: TransactionType.EXPENSE,
-          amount: dto.amount,
-          note: dto.note,
-          date: new Date(dto.transactionDate),
-          userId,
-          assetId: dto.assetId,
-          categoryId: dto.categoryId,
-        },
-      }),
-      this.prisma.asset.update({
-        where: { id: dto.assetId },
-        data: { balance: { decrement: dto.amount } },
-      }),
-    ]);
-
-    return tx;
-  }
-
   async create(
     userId: string,
     dto: CreateTransactionDto,
   ): Promise<Transaction> {
-    return this.transactionRepository.create(userId, {
-      type: dto.type,
-      amount: dto.amount,
-      note: dto.note,
-      date: new Date(dto.date),
-      assetId: dto.assetId,
-      categoryId: dto.categoryId,
+    // 1. Validate main asset
+    const asset = await this.assetRepository.findById(dto.assetId);
+    if (!asset) throw new NotFoundException("Asset not found");
+    if (asset.userId !== userId)
+      throw new ForbiddenException("You do not own this asset");
+
+    // 2. Handle based on type
+    return this.prisma.$transaction(async (tx) => {
+      let transaction: Transaction;
+
+      if (dto.type === TransactionType.TRANSFER) {
+        if (!dto.toAssetId) {
+          throw new BadRequestException("Target asset is required for transfer");
+        }
+        const toAsset = await this.assetRepository.findById(dto.toAssetId);
+        if (!toAsset) throw new NotFoundException("Target asset not found");
+        if (toAsset.userId !== userId)
+          throw new ForbiddenException("You do not own the target asset");
+
+        transaction = await tx.transaction.create({
+          data: {
+            type: TransactionType.TRANSFER,
+            amount: dto.amount,
+            note: dto.note,
+            date: new Date(dto.date),
+            userId,
+            assetId: dto.assetId,
+            toAssetId: dto.toAssetId,
+          },
+        });
+
+        // Decrement From, Increment To
+        await tx.asset.update({
+          where: { id: dto.assetId },
+          data: { balance: { decrement: dto.amount } },
+        });
+        await tx.asset.update({
+          where: { id: dto.toAssetId },
+          data: { balance: { increment: dto.amount } },
+        });
+      } else if (dto.type === TransactionType.ADJUSTMENT) {
+        transaction = await tx.transaction.create({
+          data: {
+            type: TransactionType.ADJUSTMENT,
+            amount: dto.amount,
+            note: dto.note,
+            date: new Date(dto.date),
+            userId,
+            assetId: dto.assetId,
+          },
+        });
+
+        // Update balance by delta (amount can be positive or negative)
+        await tx.asset.update({
+          where: { id: dto.assetId },
+          data: { balance: { increment: dto.amount } },
+        });
+      } else {
+        // INCOME or EXPENSE
+        if (!dto.categoryId) {
+          throw new BadRequestException("Category is required for income/expense");
+        }
+        const category = await this.categoryRepository.findById(dto.categoryId);
+        if (!category) throw new NotFoundException("Category not found");
+        if (category.userId !== userId)
+          throw new ForbiddenException("You do not own this category");
+
+        if (dto.type === TransactionType.INCOME && category.type !== "INCOME") {
+          throw new BadRequestException("Category must be of type INCOME");
+        }
+        if (dto.type === TransactionType.EXPENSE && category.type !== "EXPENSE") {
+          throw new BadRequestException("Category must be of type EXPENSE");
+        }
+
+        transaction = await tx.transaction.create({
+          data: {
+            type: dto.type,
+            amount: dto.amount,
+            note: dto.note,
+            date: new Date(dto.date),
+            userId,
+            assetId: dto.assetId,
+            categoryId: dto.categoryId,
+          },
+        });
+
+        const increment = dto.type === TransactionType.INCOME ? dto.amount : -dto.amount;
+        await tx.asset.update({
+          where: { id: dto.assetId },
+          data: { balance: { increment } },
+        });
+      }
+
+      return transaction;
     });
   }
 

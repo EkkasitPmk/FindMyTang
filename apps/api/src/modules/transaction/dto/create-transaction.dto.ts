@@ -49,7 +49,16 @@ export class CreateTransactionDto {
   assetId: string;
 
   @ApiProperty({
-    description: "Category ID (optional for TRANSFER)",
+    description: "Target Asset ID (required for TRANSFER)",
+    required: false,
+    example: "uuid-here",
+  })
+  @IsString()
+  @IsOptional()
+  toAssetId?: string;
+
+  @ApiProperty({
+    description: "Category ID (optional for TRANSFER and ADJUSTMENT)",
     required: false,
   })
   @IsString()

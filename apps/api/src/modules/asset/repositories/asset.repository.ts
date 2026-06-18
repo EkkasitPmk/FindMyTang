@@ -7,6 +7,8 @@ export interface CreateAssetData {
   type: AssetType;
   balance?: number;
   currency?: string;
+  color?: string;
+  icon?: string;
 }
 
 @Injectable()
@@ -21,23 +23,26 @@ export class AssetRepository {
         type: data.type,
         balance: data.balance,
         currency: data.currency,
+        color: data.color,
+        icon: data.icon,
         userId,
       },
     });
   }
 
   async findById(id: string): Promise<Asset | null> {
-    // ponytail: Finds an asset by its unique database ID.
-    return this.prisma.asset.findUnique({
-      where: { id },
+    // ponytail: Finds an asset by its unique database ID, ensuring it's not soft-deleted.
+    return this.prisma.asset.findFirst({
+      where: { id, deletedAt: null },
     });
   }
 
   async findAllByUserId(userId: string): Promise<Asset[]> {
-    // ponytail: Fetches all assets associated with the authenticated user.
+    // ponytail: Fetches all assets associated with the authenticated user that are not soft-deleted.
     return this.prisma.asset.findMany({
       where: {
         userId,
+        deletedAt: null,
       },
     });
   }
@@ -45,11 +50,11 @@ export class AssetRepository {
   async update(
     id: string,
     userId: string,
-    data: Partial<CreateAssetData>,
+    data: Partial<CreateAssetData & { isArchived: boolean }>,
   ): Promise<Asset> {
     // ponytail: Updates an asset matching id and userId to prevent cross-user updates.
     const asset = await this.prisma.asset.findFirst({
-      where: { id, userId },
+      where: { id, userId, deletedAt: null },
     });
     if (!asset) {
       throw new Error("Asset not found or access denied");
@@ -61,15 +66,16 @@ export class AssetRepository {
   }
 
   async delete(id: string, userId: string): Promise<Asset> {
-    // ponytail: Deletes an asset matching id and userId to prevent cross-user deletion.
+    // ponytail: Soft deletes an asset matching id and userId.
     const asset = await this.prisma.asset.findFirst({
-      where: { id, userId },
+      where: { id, userId, deletedAt: null },
     });
     if (!asset) {
       throw new Error("Asset not found or access denied");
     }
-    return this.prisma.asset.delete({
+    return this.prisma.asset.update({
       where: { id },
+      data: { deletedAt: new Date() },
     });
   }
 

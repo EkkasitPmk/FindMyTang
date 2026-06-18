@@ -49,4 +49,22 @@ export class CreateAssetDto {
   @IsNotEmpty()
   @IsOptional()
   currency?: string;
+
+  @ApiProperty({
+    description: "Hex color code for the asset",
+    example: "#3B82F6",
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  color?: string;
+
+  @ApiProperty({
+    description: "Icon name for the asset",
+    example: "bank",
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  icon?: string;
 }

@@ -16,7 +16,8 @@ import { CreateIncomeDto } from "../dto/create-income.dto";
 import { UpdateTransactionDto } from "../dto/update-transaction.dto";
 import { JwtAuthGuard } from "../../auth/guards/jwt-auth.guard";
 import { CurrentUser } from "../../auth/decorators/current-user.decorator";
-import type { User, Transaction, Asset, Category } from "@prisma/client";
+import { TransactionType } from "@prisma/client";
+import type { User, Transaction } from "@prisma/client";
 import { TransactionQueryDto } from "../dto/transaction-query.dto";
 
 // ponytail: maps Prisma Transaction to a plain JSON-safe object (Decimal → number)
@@ -64,7 +65,11 @@ export class TransactionController {
     @Body() dto: CreateIncomeDto,
   ) {
     return toResponse(
-      await this.transactionService.createIncome(user.id, dto),
+      await this.transactionService.create(user.id, {
+        ...dto,
+        type: TransactionType.INCOME,
+        date: dto.transactionDate,
+      }),
     );
   }
 
@@ -75,7 +80,11 @@ export class TransactionController {
     @Body() dto: CreateExpenseDto,
   ) {
     return toResponse(
-      await this.transactionService.createExpense(user.id, dto),
+      await this.transactionService.create(user.id, {
+        ...dto,
+        type: TransactionType.EXPENSE,
+        date: dto.transactionDate,
+      }),
     );
   }
 
