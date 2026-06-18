@@ -1,373 +1,88 @@
 # API Specification
 
-Version: 0.1
+## General Information
+
+- **Base URL**: `/api/v1`
+- **Format**: JSON
+- **Auth**: JWT Bearer Token in Header `Authorization: Bearer <token>`
 
 ---
 
-# Purpose
+## Authentication Endpoints
 
-Define API contracts between Frontend and Backend.
+### POST `/auth/register`
+- สมัครสมาชิกใหม่
+- Body: `email`, `password`, `displayName`
 
-This document focuses on:
+### POST `/auth/login`
+- เข้าสู่ระบบ
+- Body: `email`, `password`
+- Response: `accessToken`, `user`
 
-- Endpoint naming
-- Request format
-- Response format
-- Validation
-- Error handling
-- Authentication
-- Versioning
-
----
-
-# API Principles
-
-- RESTful API
-- JSON only
-- UTF-8 encoding
-- Stateless
-- JWT Authentication
-- HTTPS only
+### POST `/auth/sync-guest`
+- ซิงค์ข้อมูลทั้งหมดจาก LocalStorage ของ Guest ขึ้น Cloud (ทำครั้งเดียวหลังสมัครสมาชิกหรือ Login ครั้งแรกที่มีข้อมูล Local)
+- Body: `assets` (Array), `categories` (Array), `transactions` (Array)
+- Response: Status 200 OK (ยืนยันการบันทึกสำเร็จ)
 
 ---
 
-# Base URL
+## User & Profile Endpoints
 
-Development
+### GET `/me`
+- ดึงข้อมูลผู้ใช้ปัจจุบันและโปรไฟล์
 
-```
-http://localhost:3000/api/v1
-```
-
-Production
-
-```
-https://api.example.com/v1
-```
+### PATCH `/me/profile`
+- แก้ไขข้อมูลโปรไฟล์ (DisplayName, Currency, Language, Timezone)
 
 ---
 
-# API Versioning
+## Asset Endpoints
 
-```
-/api/v1
-```
+### GET `/assets`
+- รายการสินทรัพย์ทั้งหมดของผู้ใช้
 
-Future
+### POST `/assets`
+- สร้างสินทรัพย์ใหม่ (Name, Type, Initial Balance)
 
-```
-/api/v2
-```
-
----
-
-# HTTP Methods
-
-| Method | Usage          |
-| ------ | -------------- |
-| GET    | Read           |
-| POST   | Create         |
-| PATCH  | Partial Update |
-| PUT    | Replace        |
-| DELETE | Remove         |
+### PATCH `/assets/:id`
+- แก้ไขข้อมูลสินทรัพย์ หรือ Archive สินทรัพย์
 
 ---
 
-# Authentication
+## Category Endpoints
 
-Protected endpoints require
+### GET `/categories`
+- รายการหมวดหมู่ทั้งหมด (แยก Income/Expense)
 
-```
-Authorization: Bearer <JWT_TOKEN>
-```
-
----
-
-# Response Format
-
-Every response follows the same structure.
-
-Success
-
-```json
-{
-  "success": true,
-  "message": "Transaction created successfully.",
-  "data": {}
-}
-```
-
-Error
-
-```json
-{
-  "success": false,
-  "message": "Validation failed.",
-  "errors": [
-    {
-      "field": "amount",
-      "message": "Amount must be greater than zero."
-    }
-  ]
-}
-```
+### POST `/categories`
+- สร้างหมวดหมู่ใหม่
 
 ---
 
-# HTTP Status Codes
+## Transaction Endpoints
 
-| Code | Meaning               |
-| ---- | --------------------- |
-| 200  | OK                    |
-| 201  | Created               |
-| 204  | No Content            |
-| 400  | Bad Request           |
-| 401  | Unauthorized          |
-| 403  | Forbidden             |
-| 404  | Not Found             |
-| 409  | Conflict              |
-| 422  | Validation Error      |
-| 500  | Internal Server Error |
+### GET `/transactions`
+- รายการบันทึก (รองรับ Query: month, year, assetId, type, search)
 
----
+### POST `/transactions`
+- บันทึกรายการใหม่
+- Body: `type`, `amount`, `date`, `assetId`, `categoryId`, `note`, `toAssetId` (เฉพาะ Transfer)
 
-# Resource Naming
+### PATCH `/transactions/:id`
+- แก้ไขรายการบันทึก
 
-Plural nouns only.
-
-```
-/users
-/accounts
-/categories
-/transactions
-/budgets
-/goals
-/tags
-/profiles
-```
+### DELETE `/transactions/:id`
+- ลบรายการบันทึก
 
 ---
 
-# Endpoint Convention
+## Analytics Endpoints
 
-List
+### GET `/analytics/summary`
+- สรุปภาพรวมสำหรับ Dashboard
 
-GET /transactions
+### GET `/analytics/categories`
+- สรุปยอดตามหมวดหมู่ในช่วงเวลาที่กำหนด
 
-Get One
-
-GET /transactions/:id
-
-Create
-
-POST /transactions
-
-Update
-
-PATCH /transactions/:id
-
-Delete
-
-DELETE /transactions/:id
-
----
-
-# Pagination
-
-Request
-
-```
-?page=1&limit=20
-```
-
-Response
-
-```json
-{
-  "data": [],
-  "pagination": {
-    "page": 1,
-    "limit": 20,
-    "total": 150,
-    "totalPages": 8
-  }
-}
-```
-
----
-
-# Sorting
-
-```
-?sort=date
-?order=asc
-```
-
----
-
-# Filtering
-
-```
-?categoryId=
-?accountId=
-?type=
-?from=
-?to=
-```
-
----
-
-# Validation Rules
-
-- Validate every request
-- Reject unknown fields
-- Never trust client input
-- Return field-level validation errors
-
----
-
-# Authentication Endpoints
-
-POST /auth/register
-
-POST /auth/login
-
-POST /auth/refresh
-
-POST /auth/logout
-
-GET /auth/me
-
----
-
-# User Endpoints
-
-GET /profile
-
-PATCH /profile
-
-PATCH /profile/avatar
-
----
-
-# Account Endpoints
-
-GET /accounts
-
-GET /accounts/:id
-
-POST /accounts
-
-PATCH /accounts/:id
-
-DELETE /accounts/:id
-
----
-
-# Category Endpoints
-
-GET /categories
-
-POST /categories
-
-PATCH /categories/:id
-
-DELETE /categories/:id
-
----
-
-# Transaction Endpoints
-
-GET /transactions
-
-GET /transactions/:id
-
-POST /transactions
-
-PATCH /transactions/:id
-
-DELETE /transactions/:id
-
----
-
-# Budget Endpoints
-
-GET /budgets
-
-POST /budgets
-
-PATCH /budgets/:id
-
-DELETE /budgets/:id
-
----
-
-# Goal Endpoints
-
-GET /goals
-
-POST /goals
-
-PATCH /goals/:id
-
-DELETE /goals/:id
-
----
-
-# Tag Endpoints
-
-GET /tags
-
-POST /tags
-
-PATCH /tags/:id
-
-DELETE /tags/:id
-
----
-
-# File Upload
-
-Multipart Form Data
-
-```
-POST /uploads
-```
-
-Returns
-
-```json
-{
-  "url": "https://..."
-}
-```
-
----
-
-# Error Codes
-
-AUTH_INVALID_TOKEN
-
-AUTH_EXPIRED_TOKEN
-
-RESOURCE_NOT_FOUND
-
-VALIDATION_ERROR
-
-PERMISSION_DENIED
-
-CONFLICT_RESOURCE
-
-UNKNOWN_ERROR
-
----
-
-# Future APIs
-
-- Reports
-- Dashboard
-- OCR Receipt
-- AI Insights
-- Shared Wallet
-- Notifications
-- Exchange Rate
+### GET `/analytics/trends`
+- ข้อมูลแนวโน้มรายรับ-รายจ่ายรายเดือน

@@ -2,7 +2,7 @@
 
 ## Architecture Style
 
-Offline First Web Application
+Client-Server Web Application (Online-First with Guest Mode)
 
 ---
 
@@ -10,7 +10,7 @@ Offline First Web Application
 
 Framework
 
-- Next.js
+- Next.js (App Router)
 - TypeScript
 
 UI
@@ -20,16 +20,11 @@ UI
 
 State Management
 
-- Zustand
+- Zustand (Client State & Guest Mode persistence)
 
-Data Fetching
+Data Fetching & Server State
 
-- TanStack Query
-
-Local Storage
-
-- Dexie
-- IndexedDB
+- TanStack Query (React Query)
 
 Validation
 
@@ -54,7 +49,7 @@ ORM
 
 Authentication
 
-- JWT
+- JWT (Json Web Token)
 
 Password Hashing
 
@@ -64,68 +59,47 @@ Password Hashing
 
 ## High Level Flow
 
-User
+**กรณี Guest User (ยังไม่ Login)**
+User → Next.js (Web Frontend) ↔ Zustand & LocalStorage (เก็บข้อมูลชั่วคราว)
 
-↓
+**กรณี Authenticated User (Login แล้ว)**
+User → Next.js (Web Frontend) → API Calls (REST) → NestJS (API Backend) → Prisma ORM → PostgreSQL (Database)
 
-Next.js Application
-
-↓
-
-IndexedDB (Primary Local Storage)
-
-↓
-
-Sync Layer
-
-↓
-
-NestJS API
-
-↓
-
-PostgreSQL
+**กรณีการ Sync (Guest -> Login)**
+User กด Login/Register → Web Frontend รวบรวมข้อมูลใน LocalStorage → ส่งผ่าน API `/auth/sync-guest` → NestJS บันทึกลง Database → เคลียร์ LocalStorage และเปลี่ยนเป็น Online Mode
 
 ---
 
 ## Core Principles
 
-### Local First
+### API Driven (Online Mode)
 
-User actions should be saved locally before cloud synchronization.
+การจัดการข้อมูลหลักจะผ่านระบบ API เป็นหลัก เพื่อความปลอดภัยและความถูกต้องของข้อมูลบนเซิร์ฟเวอร์
 
-### Fast UI
+### Guest First (LocalStorage)
 
-The user interface should not wait for API responses.
-
-### Sync Later
-
-Cloud synchronization is secondary to local persistence.
+อนุญาตให้ผู้ใช้ใช้งานได้ทันทีโดยไม่ต้องสมัครสมาชิก โดยใช้ LocalStorage เป็นที่เก็บข้อมูลชั่วคราวบนเครื่องผู้ใช้
 
 ### Transaction Driven
 
-Financial data should be derived from transactions.
-
-Asset balances should be calculated from transaction history whenever possible.
+ข้อมูลทางการเงินทั้งหมดจะถูกคำนวณจาก Transaction History เพื่อความแม่นยำและตรวจสอบย้อนหลังได้
 
 ---
 
 ## Initial Backend Modules
 
-- auth
-- users
-- assets
-- categories
-- transactions
-- analytics
-- sync
+- auth: จัดการการเข้าสู่ระบบ สมัครสมาชิก และการ Sync ข้อมูลจาก Guest
+- users: จัดการข้อมูลผู้ใช้และโปรไฟล์
+- assets: จัดการสินทรัพย์และยอดเงินคงเหลือ
+- categories: จัดการหมวดหมู่รายรับ-รายจ่าย
+- transactions: จัดการรายการบันทึกทั้งหมด (Income, Expense, Transfer, Adjustment)
+- analytics: ระบบประมวลผลข้อมูลเพื่อแสดงรายงาน
 
 ---
 
 ## Future Expansion
 
-- PWA Support
-- Push Notifications
-- Multi Device Sync
-- Data Export
-- AI Insights
+- PWA (Progressive Web App) สำหรับการใช้งานที่สะดวกบน Mobile
+- Push Notifications แจ้งเตือนรายการสำคัญ
+- Data Export (CSV/PDF)
+- AI Spending Insights

@@ -7,140 +7,118 @@ Project Foundation
 Frontend
 
 - Next.js Setup
-- Tailwind Setup
-- shadcn Setup
-- Zustand Setup
-- Dexie Setup
-- Layout Setup
-- Navigation Setup
+- Tailwind & shadcn Setup
+- Zustand & TanStack Query Setup
+- Layout & Navigation Structure (Responsive)
 
 Backend
 
 - NestJS Setup
-- PostgreSQL Setup
-- Prisma Setup
-- Health Check Endpoint
-- Module Scaffolding
+- PostgreSQL & Prisma Setup
+- Health Check & Basic Module Scaffolding
+- Auth Module (Login/Register)
 
 Goal
 
-Project is ready for feature development.
+โปรเจกต์พร้อมสำหรับการพัฒนาฟีเจอร์หลัก โดยมีระบบ Authentication เป็นพื้นฐาน
 
 ---
 
 ## Sprint 1
 
-Transaction Foundation
+Transaction & Asset Core
 
 Features
 
-- Add Expense
-- Add Income
-- Add Transfer
-- Transaction Timeline
-- Dexie Persistence
+- Asset CRUD (สร้าง/แก้ไข/ปิดบัญชี)
+- Basic Category Management
+- Add Expense/Income (บันทึกผ่าน API)
+- Transaction Timeline (เบื้องต้น)
 
 Goal
 
-User can record transactions locally.
+ผู้ใช้สามารถสร้างบัญชีและเริ่มบันทึกรายการรายรับ-รายจ่ายลงระบบได้จริง
 
 ---
 
 ## Sprint 2
 
-Assets
+Journal & Advanced Transactions
 
 Features
 
-- Asset CRUD
-- Asset Balance
-- Asset Overview
+- Transfer (การโอนระหว่างบัญชี)
+- Balance Adjustment (การปรับยอดเงิน)
+- Journal Timeline & Calendar View
+- Search & Filter Transactions
 
 Goal
 
-User can manage financial accounts.
+ระบบบันทึกรายการมีความสมบูรณ์ รองรับการจัดการเงินที่ซับซ้อนขึ้น และดูประวัติย้อนหลังได้หลายมุมมอง
 
 ---
 
 ## Sprint 3
 
-Categories
+Home Dashboard
 
 Features
 
-- Category CRUD
-- Category Selection
-- Category Management
+- Total Assets Calculation
+- Monthly Income/Expense Summary
+- Net Cash Flow Analysis
+- Recent Transactions Feed
 
 Goal
 
-Transactions can be categorized.
+หน้าแรกสามารถแสดงภาพรวมทางการเงินที่สำคัญที่สุดให้ผู้ใช้เห็นได้ทันทีที่เปิดแอป
 
 ---
 
 ## Sprint 4
 
-Journal
+Analytics & Insights
 
 Features
 
-- Timeline View
-- Calendar View
-- Search
-- Filter
+- Category Breakdown (รายจ่าย/รายรับตามหมวดหมู่)
+- Asset Distribution Analysis
+- Monthly Trends & Growth
+- Drill-down Transactions from Reports
 
 Goal
 
-User can explore transaction history.
+ผู้ใช้สามารถทำความเข้าใจพฤติกรรมการใช้เงินผ่านรายงานและกราฟต่างๆ ได้อย่างละเอียด
 
 ---
 
 ## Sprint 5
 
-Home Dashboard
+User Profile & Settings
 
 Features
 
-- Total Assets
-- Income Summary
-- Expense Summary
-- Net Flow
-- Recent Activity
+- Profile Management (Name, Currency, Language)
+- Custom Category Management
+- System Preferences & Security
 
 Goal
 
-User can understand current financial status.
+ผู้ใช้สามารถปรับแต่งแอปให้เข้ากับการใช้งานส่วนตัวได้มากขึ้น
 
 ---
 
 ## Sprint 6
 
-Analytics
+Final Polish & Deployment
 
 Features
 
-- Expense Analysis
-- Income Analysis
-- Asset Analysis
-- Monthly Reports
+- UI/UX Refinement
+- Performance Optimization
+- Bug Fixing & QA
+- Production Deployment
 
 Goal
 
-User can understand financial behavior.
-
----
-
-## Sprint 7
-
-Authentication & Sync
-
-Features
-
-- Register
-- Login
-- JWT Authentication
-- Local to Cloud Sync
-
-Goal
-
-User can backup and sync data.
+ผลิตภัณฑ์มีความเสถียรและพร้อมสำหรับการใช้งานจริง

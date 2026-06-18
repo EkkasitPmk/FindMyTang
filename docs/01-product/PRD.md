@@ -4,45 +4,41 @@ Version: 1.0 Draft
 
 ## Product Vision
 
-PocketNote is a personal finance dashboard designed to help users understand their financial situation through simple daily transaction tracking, asset management, and financial insights.
+PocketNote คือ Personal Finance Dashboard ที่ออกแบบมาเพื่อให้ผู้ใช้เข้าใจสถานะทางการเงินของตนเองผ่านการบันทึกรายการประจำวัน การจัดการสินทรัพย์ และการวิเคราะห์ข้อมูลทางการเงินที่เข้าใจง่าย
 
-The product focuses on:
+จุดเน้นของผลิตภัณฑ์:
 
-- Fast transaction entry
-- Clear financial overview
-- Guest-first onboarding
-- Simple and modern user experience
+- การบันทึกรายการที่รวดเร็ว (Fast Entry)
+- ภาพรวมทางการเงินที่ชัดเจน (Clear Overview)
+- ระบบที่เป็นมิตรต่อผู้ใช้งานใหม่ (Onboarding Friendly)
+- ประสบการณ์การใช้งานที่เรียบง่ายและทันสมัย (Simple & Modern UX)
 
 ---
 
 ## Product Principles
 
-### Guest First
+### API First (Online) with Guest Mode
 
-Users can start using the application immediately without registration.
-
-### Sync Later
-
-Users may create an account later and sync local data to cloud storage.
+เน้นการทำงานผ่านระบบออนไลน์เพื่อให้ข้อมูลเป็นปัจจุบันและเชื่อมโยงกับระบบคลาวด์โดยตรง แต่ยังคงรองรับ **Guest Mode** ที่ให้ผู้ใช้ทดลองใช้งานได้ทันทีโดยเก็บข้อมูลชั่วคราวไว้ใน LocalStorage และจะถูกซิงค์ขึ้นระบบเมื่อทำการสมัครสมาชิกหรือเข้าสู่ระบบ
 
 ### Fast Entry
 
-Recording a transaction should take less than 5 seconds.
+การบันทึกรายการต้องรวดเร็วและใช้เวลาให้น้อยที่สุด (ไม่เกิน 5 วินาที)
 
 ### Simplicity
 
-The application should prioritize clarity over complexity.
+ให้ความสำคัญกับความเรียบง่ายและความชัดเจนของข้อมูลมากกว่าความซับซ้อน
 
 ---
 
 ## Target Audience
 
-Individual users who want to:
+บุคคลทั่วไปที่ต้องการ:
 
-- Track expenses
-- Track income
-- Manage personal assets
-- Understand spending habits
+- ติดตามรายรับ-รายจ่าย
+- จัดการสินทรัพย์ส่วนตัว (Assets)
+- ทำความเข้าใจพฤติกรรมการใช้เงิน
+- วางแผนและสรุปภาพรวมทางการเงิน
 
 ---
 
@@ -50,108 +46,57 @@ Individual users who want to:
 
 ### Assets
 
-- Create asset
-- Edit asset
-- Archive asset
-- Adjust balance
-
-Supported asset types:
-
-- Cash
-- Bank Account
-- E-Wallet
-- Investment
-- Crypto
-- Other
+- สร้าง แก้ไข และปิดการใช้งานสินทรัพย์
+- ปรับยอดเงิน (Adjustment)
+- รองรับประเภท: เงินสด, บัญชีธนาคาร, E-Wallet, การลงทุน, คริปโต และอื่นๆ
 
 ### Categories
 
-Expense Categories
-
-- Food
-- Drink
-- Transport
-- Shopping
-- Medical
-- Other
-
-Income Categories
-
-- Salary
-- Bonus
-- Freelance
-- Investment
-- Other
+- หมวดหมู่รายจ่าย (เช่น อาหาร, เดินทาง, ช้อปปิ้ง)
+- หมวดหมู่รายรับ (เช่น เงินเดือน, โบนัส, การลงทุน)
+- ผู้ใช้สามารถสร้างและแก้ไขหมวดหมู่เองได้
 
 ### Transactions
 
-Transaction Types
-
-- Expense
-- Income
-- Transfer
-- Adjustment
-
-Required Fields
-
-- Amount
-- Asset
-- Category
-- Date
-
-Optional Fields
-
-- Note
+- ประเภท: รายรับ (Income), รายจ่าย (Expense), การโอนเงิน (Transfer) และการปรับยอด (Adjustment)
+- ข้อมูลที่จำเป็น: จำนวนเงิน, สินทรัพย์, หมวดหมู่, วันที่
+- ข้อมูลเพิ่มเติม: บันทึก (Note)
 
 ### Journal
 
-Views
-
-- Timeline
-- Calendar
-
-Features
-
-- Search
-- Filter
-- Edit
-- Delete
+- มุมมอง Timeline: รายการตามลำดับเวลา
+- มุมมอง Calendar: สรุปยอดรายวันบนปฏิทิน
+- ระบบค้นหาและกรองข้อมูล
 
 ### Home Dashboard
 
-Displays:
-
-- Total Assets
-- Monthly Income
-- Monthly Expense
-- Net Flow
-- Recent Transactions
+- สินทรัพย์รวม (Total Assets)
+- รายรับ/รายจ่ายประจำเดือน
+- กระแสเงินสดสุทธิ (Net Flow)
+- รายการล่าสุด
 
 ### Analytics
 
-Displays:
+- สรุปรายจ่ายตามหมวดหมู่
+- สรุปรายรับตามแหล่งที่มา
+- สัดส่วนการกระจายสินทรัพย์
+- กราฟแนวโน้มรายเดือน
 
-- Expense Breakdown
-- Income Breakdown
-- Asset Distribution
-- Monthly Summary
+### Authentication
 
-### Account & Sync
-
-- Guest Mode
-- Register
-- Login
-- Local to Cloud Sync
+- ระบบสมัครสมาชิกและเข้าสู่ระบบ
+- การจัดการโปรไฟล์เบื้องต้น
 
 ---
 
 ## Out of Scope (V1)
 
-- Budget Planning
-- Financial Goals
-- OCR Receipt
-- Bank Integration
-- AI Assistant
-- Recurring Transactions
-- Multi User Support
-- Tax Planning
+- งบประมาณ (Budget Planning)
+- เป้าหมายการออม (Financial Goals)
+- การสแกนใบเสร็จ (OCR Receipt)
+- การเชื่อมต่อธนาคารอัตโนมัติ (Bank Integration)
+- ระบบแนะนำด้วย AI
+- รายการบันทึกซ้ำอัตโนมัติ (Recurring Transactions)
+- การแชร์บัญชีร่วมกับผู้อื่น
+- การวางแผนภาษี (Tax Planning)
+�ษี (Tax Planning)

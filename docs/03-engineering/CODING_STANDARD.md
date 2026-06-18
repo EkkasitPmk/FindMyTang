@@ -1,339 +1,45 @@
 # Coding Standard
 
-Version: 0.1
+## General Principles
+
+- **Type Safety**: ใช้ TypeScript อย่างเคร่งครัด หลีกเลี่ยงการใช้ `any`
+- **Readability**: เขียนโค้ดให้อ่านง่าย ตั้งชื่อตัวแปรและฟังก์ชันให้สื่อความหมาย
+- **Consistency**: ปฏิบัติตามโครงสร้างและรูปแบบที่กำหนดไว้ในโปรเจกต์
 
 ---
 
-# Goal
+## Naming Conventions
 
-Maintain a consistent, readable, and scalable codebase.
-
----
-
-# General Principles
-
-- Readability over cleverness.
-- Keep functions small.
-- Single Responsibility Principle.
-- Prefer composition over inheritance.
-- Avoid premature optimization.
+- **Variables & Functions**: `camelCase` (เช่น `totalAmount`, `calculateBalance`)
+- **Classes & Types/Interfaces**: `PascalCase` (เช่น `TransactionService`, `UserDto`)
+- **Files**: `kebab-case` (เช่น `transaction-form.tsx`, `asset.service.ts`)
+- **Components**: `PascalCase` (เช่น `AssetCard.tsx`)
 
 ---
 
-# Naming Convention
+## Frontend Standards (Next.js)
 
-## Variables
-
-camelCase
-
-```
-totalAmount
-createdAt
-```
+- **Structure**: ใช้ Feature-based Architecture (แยกตามฟีเจอร์ เช่น `features/assets`, `features/transactions`)
+- **Components**: แยก Presentation Component (UI) และ Container Component (Logic) เมื่อจำเป็น
+- **Hooks**: ใช้ Custom Hooks สำหรับจัดการ Business Logic หรือการดึงข้อมูล
+- **State**:
+    - ใช้ **Zustand** สำหรับ Client State ที่ใช้ร่วมกันหลายจุด
+    - ใช้ **TanStack Query** สำหรับ Server State (Data Fetching, Caching, Mutations)
 
 ---
 
-## Functions
+## Backend Standards (NestJS)
 
-camelCase
-
-```
-createTransaction()
-
-calculateBalance()
-```
+- **Modular**: แยกการทำงานเป็น Module, Controller, Service
+- **Validation**: ใช้ `class-validator` และ `Zod` สำหรับการทำ Request Validation
+- **DTOs**: ใช้ Data Transfer Objects สำหรับทุกการส่งข้อมูลผ่าน API
+- **Error Handling**: ใช้ Built-in HTTP Exceptions ของ NestJS
+- **ORM**: ใช้ Prisma อย่างเหมาะสม และจัดการ Transaction เมื่อมีการเขียนข้อมูลหลายตารางพร้อมกัน
 
 ---
 
-## Components
-
-PascalCase
-
-```
-TransactionCard.tsx
-
-AccountForm.tsx
-```
-
----
-
-## Types
-
-PascalCase
-
-```
-TransactionDto
-
-UserProfile
-```
-
----
-
-## Constants
-
-UPPER_SNAKE_CASE
-
-```
-MAX_FILE_SIZE
-
-DEFAULT_PAGE_SIZE
-```
-
----
-
-## Files
-
-React
-
-```
-transaction-card.tsx
-
-account-form.tsx
-```
-
-NestJS
-
-```
-transaction.service.ts
-
-transaction.controller.ts
-```
-
----
-
-# Folder Structure
-
-Frontend
-
-```
-src/
-
-app/
-
-components/
-
-features/
-
-hooks/
-
-lib/
-
-services/
-
-types/
-
-utils/
-```
-
-Backend
-
-```
-src/
-
-modules/
-
-common/
-
-config/
-
-database/
-```
-
----
-
-# TypeScript Rules
-
-- Strict mode enabled
-- Avoid `any`
-- Prefer `unknown`
-- Prefer interfaces for object contracts
-- Prefer enums only when necessary
-- Explicit return types for public functions
-
----
-
-# React Rules
-
-- Functional Components only
-- Server Components by default
-- Client Components only when required
-- Hooks start with `use`
-- Avoid prop drilling
-- Prefer composition
-- Memoize only when necessary
-
----
-
-# Next.js Rules
-
-- App Router
-- Feature-based architecture
-- Route Groups for pages
-- Server Actions only when appropriate
-- Keep page.tsx minimal
-
----
-
-# NestJS Rules
-
-- Modular architecture
-- One controller per module
-- Business logic in services
-- Controllers should stay thin
-- DTO validation required
-- Dependency Injection everywhere
-
----
-
-# Prisma Rules
-
-- UUID/CUID primary keys
-- Never expose Prisma directly to frontend
-- Use transactions when multiple writes occur
-- Avoid raw SQL unless necessary
-
----
-
-# API Rules
-
-- RESTful endpoints
-- Consistent response format
-- Proper status codes
-- Validate every request
-- JWT authentication
-
----
-
-# Error Handling
-
-- Throw domain-specific exceptions
-- Never expose stack traces
-- Log unexpected errors
-- Return user-friendly messages
-
----
-
-# Logging
-
-- Structured logging
-- Log errors with context
-- Avoid logging sensitive information
-
----
-
-# Testing
-
-- Unit tests for business logic
-- Integration tests for API
-- E2E tests for critical user flows
-
----
-
-# Git Convention
-
-Branch
-
-```
-feature/account
-
-feature/auth
-
-fix/login
-
-refactor/database
-
-docs/domain-model
-```
-
-Commit (Conventional Commits)
-
-```
-feat:
-
-fix:
-
-refactor:
-
-docs:
-
-style:
-
-test:
-
-chore:
-
-ci:
-```
-
----
-
-# Import Order
-
-1. Node modules
-2. Internal aliases
-3. Relative imports
-4. Styles
-
----
-
-# Code Formatting
-
-- ESLint
-- Prettier
-- Husky
-- lint-staged
-
-Every commit must pass:
-
-- lint
-- type-check
-- tests
-
----
-
-# Security
-
-- Never trust client input
-- Escape user-generated content
-- Store passwords using Argon2
-- JWT secrets via environment variables
-- Never commit secrets
-
----
-
-# Performance
-
-- Lazy load when possible
-- Optimize images
-- Minimize unnecessary renders
-- Paginate large datasets
-- Cache expensive queries
-
----
-
-# Documentation
-
-Every public service should include:
-
-- Purpose
-- Parameters
-- Return value
-- Possible exceptions
-
-Complex business logic should include explanatory comments.
-
----
-
-# Definition of Done
-
-A feature is complete only if:
-
-- Requirements implemented
-- Type-safe
-- Tested
-- Linted
-- Formatted
-- Documented
-- Reviewed
-- No TypeScript errors
-- No ESLint warnings
+## Database Standards (Prisma)
+
+- **Naming**: ใช้ `snake_case` สำหรับชื่อ Table ใน DB แต่ใช้ `camelCase` ใน Prisma Model
+- **Primary Keys**: ใช้ `UUID` หรือ `CUID` เป็นค่าเริ่มต้น
+- **Relations**: นิยามความสัมพันธ์ให้ชัดเจนและใช้ `onDelete: Cascade` อย่างระมัดระวัง

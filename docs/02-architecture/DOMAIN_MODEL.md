@@ -1,344 +1,58 @@
 # Domain Model
 
-Version: 0.1
+## Ubiquitous Language
+
+| คำศัพท์ | ความหมาย |
+|-------|---------|
+| User | เจ้าของข้อมูลผู้ใช้งานระบบ |
+| Profile | ข้อมูลส่วนตัวเบื้องต้นของผู้ใช้ (ชื่อ, รูปภาพ, การตั้งค่า) |
+| Asset | แหล่งเก็บเงิน/สินทรัพย์ (เช่น เงินสด, ธนาคาร, หุ้น) |
+| Category | หมวดหมู่สำหรับจัดกลุ่มรายรับหรือรายจ่าย |
+| Transaction | รายการบันทึกทางการเงินที่เกิดขึ้น (รายรับ, รายจ่าย, โอน, ปรับยอด) |
+| Journal | ศูนย์รวมประวัติรายการบันทึกทั้งหมด |
+| Dashboard | หน้าสรุปภาพรวมทางการเงินหลัก |
 
 ---
 
-# Purpose
+## Aggregates & Entities
 
-Describe business entities and relationships.
+### User & Profile
+- **User**: เอนทิตีหลักสำหรับการยืนยันตัวตน (Email, Password)
+- **Profile**: ข้อมูลส่วนตัว (DisplayName, Avatar, Preferred Currency, Language)
 
-This file is independent from database implementation.
+### Asset (สินทรัพย์)
+- เป็น Root สำหรับการติดตามยอดเงิน
+- ประกอบด้วย: Name, Type (Cash, Bank, etc.), Balance (Calculated), Color, Icon
 
-Database tables (Prisma) will be generated from this model later.
+### Category (หมวดหมู่)
+- ใช้สำหรับจำแนกประเภทของรายการ
+- ประกอบด้วย: Name, Type (Income, Expense), Icon, Color
 
----
-
-# Ubiquitous Language
-
-| Term                  | Meaning                                 |
-| --------------------- | --------------------------------------- |
-| User                  | Person who owns accounts and records    |
-| Profile               | Optional personal information of a user |
-| Account               | Money container                         |
-| Category              | Income / Expense classification         |
-| Transaction           | Income / Expense record                 |
-| Budget                | Spending limit                          |
-| Goal                  | Saving target                           |
-| Recurring Transaction | Auto-created transaction                |
-| Attachment            | Receipt / Image                         |
-| Tag                   | Flexible labels                         |
-| Currency              | Money unit                              |
+### Transaction (รายการบันทึก)
+- เป็นเอนทิตีที่สำคัญที่สุดที่เป็นตัวกำหนดการเปลี่ยนแปลงของข้อมูล
+- ประเภท (Type):
+    - **INCOME**: เพิ่มเงินใน Asset
+    - **EXPENSE**: ลดเงินใน Asset
+    - **TRANSFER**: โอนเงินระหว่าง Assets (From -> To)
+    - **ADJUSTMENT**: ปรับยอดเงินให้ตรงกับความเป็นจริง
+- ข้อมูลประกอบ: Amount, Date, Note, Category, Asset
 
 ---
 
-# Aggregate
-
-User
-└── Profile (optional)
-
-User
-├── Accounts
-├── Categories
-├── Transactions
-├── Budgets
-├── Goals
-└── Tags
-
-Account
-└── Transactions
-
-Category
-└── Transactions
-
-Transaction
-└── Attachments
-
-Goal
-└── Contributions (future)
-
-## User
-
-Represents authentication identity.
-
-Fields
-
-- id
-- email
-- passwordHash
-- createdAt
-- updatedAt
-
-Rules
-
-- Email must be unique.
-- Password is hashed.
-- User owns every resource.
-
-## Profile
-
-Optional profile information.
-
-Relationship
-
-User (1) ---- (0..1) Profile
-
-Fields
-
-- id
-- userId
-- displayName
-- avatarUrl (optional)
-- timezone
-- locale
-- currency
-
-Rules
-
-- User may not have a profile.
-- One user has only one profile.
-- Avatar is optional.
-- Default values are generated during onboarding.
-
-## Account
-
-Represents a wallet or bank account.
-
-Fields
-
-- id
-- userId
-- name
-- type
-- balance
-- currency
-- color
-- icon
-- isArchived
-
-Relationship
-
-User (1) ---- (N) Accounts
-
-Rules
-
-- Name cannot be empty.
-- Balance may be negative.
-- Archived accounts cannot receive new transactions.
-
-## Category
-
-Represents transaction classification.
-
-Fields
-
-- id
-- userId
-- name
-- type (Income / Expense)
-- color
-- icon
-- isDefault
-
-Relationship
-
-User (1) ---- (N) Categories
-
-Rules
-
-- Category type never changes.
-- Default categories cannot be deleted.
-
-## Transaction
-
-Represents income or expense.
-
-Fields
-
-- id
-- userId
-- accountId
-- categoryId
-- amount
-- type
-- note
-- date
-- status
-
-Relationship
-
-User
-└── Transactions
-
-Account
-└── Transactions
-
-Category
-└── Transactions
-
-Rules
-
-- Amount > 0
-- One transaction belongs to one account.
-- One transaction belongs to one category.
-
-## Attachment
-
-Receipt or image attached to transaction.
-
-Fields
-
-- id
-- transactionId
-- url
-- mimeType
-
-Relationship
-
-Transaction (1)
-|
-+---- (N) Attachments
-
-## Budget
-
-Monthly spending limit.
-
-Fields
-
-- id
-- userId
-- categoryId
-- amount
-- month
-- year
-
-Rules
-
-- One category can have one budget per month.
-
-## Goal
-
-Saving target.
-
-Fields
-
-- id
-- userId
-- name
-- targetAmount
-- currentAmount
-- deadline
-- status
-
-Rules
-
-- currentAmount <= targetAmount
-
-## Tag
-
-Flexible labels.
-
-Fields
-
-- id
-- userId
-- name
-- color
-
-Relationship
-
-Transaction (N)
-|
-Tag (N)
-
-## Currency
-
-Supported currencies.
-
-Examples
-
-- THB
-- USD
-- EUR
-
-Rules
-
-- ISO-4217
-
-## Relationships
-
-User
-│
-├── Profile (0..1)
-│
-├── Account (1..N)
-│ │
-│ └── Transaction (1..N)
-│
-├── Category (1..N)
-│ │
-│ └── Transaction
-│
-├── Budget (1..N)
-│
-├── Goal (1..N)
-│
-└── Tag (1..N)
-
-Transaction
-│
-├── Attachment (0..N)
-│
-└── Tag (0..N)
-
-## Future Features
-
-Planned Domain
-
-- Shared Wallet
-- Family Account
-- Multiple Currency
-- Investment Portfolio
-- Debt Tracking
-- Loan
-- Subscription
-- Recurring Payment
-- OCR Receipt
-- AI Spending Analysis
-
-## Domain Constraints
-
-- Every resource belongs to exactly one User.
-- No cross-user access.
-- Transaction amount is always positive.
-- Expense / Income determined by Transaction.type.
-- Category.type must match Transaction.type.
-- Archived Account cannot accept new Transactions.
-- Budget is unique per Category per Month.
-
-## Naming Convention
-
-Entity
-
-Singular
-
-User
-Transaction
-Account
-
-Repository
-
-UserRepository
-TransactionRepository
-
-Service
-
-BudgetService
-
-GoalService
-
-DTO
-
-CreateTransactionDto
-
-UpdateProfileDto
+## Domain Relationships
+
+- **User (1) <-> (1) Profile**: ผู้ใช้หนึ่งคนมีหนึ่งโปรไฟล์
+- **User (1) <-> (N) Asset**: ผู้ใช้สามารถมีกี่สินทรัพย์ก็ได้
+- **User (1) <-> (N) Category**: ผู้ใช้สามารถมีหมวดหมู่ของตนเองได้
+- **User (1) <-> (N) Transaction**: ผู้ใช้เป็นเจ้าของรายการบันทึกทั้งหมด
+- **Asset (1) <-> (N) Transaction**: หนึ่งสินทรัพย์เกี่ยวข้องกับหลายรายการ
+- **Category (1) <-> (N) Transaction**: หนึ่งหมวดหมู่เกี่ยวข้องกับหลายรายการ
+
+---
+
+## Core Business Rules
+
+1. **Asset-Centric Balance**: ยอดเงินคงเหลือใน Asset มาจากการประมวลผล Transactions ทั้งหมดที่เกี่ยวข้อง
+2. **Transaction Integrity**: รายการบันทึกเมื่อเกิดขึ้นแล้ว ข้อมูลจำนวนเงินและวันที่ต้องมีความถูกต้องและตรวจสอบได้
+3. **No Cross-User Access**: ข้อมูลทั้งหมดต้องถูกกั้นแยกตาม User ID อย่างเข้มงวด
+4. **Consistency**: การโอนเงิน (Transfer) ต้องมีสถานะที่สมบูรณ์ทั้งฝ่ายต้นทางและปลายทางในคราวเดียว

@@ -10,7 +10,7 @@ Personal Finance Dashboard
 
 Reason
 
-Primary purpose is financial tracking and analysis.
+เน้นการวิเคราะห์ภาพรวมการเงินและการบันทึกที่รวดเร็ว เพื่อให้ผู้ใช้เข้าใจสถานะการเงินของตนเอง
 
 ---
 
@@ -18,13 +18,23 @@ Primary purpose is financial tracking and analysis.
 
 Decision
 
-Mobile First
-
-Desktop Optimized
+Mobile First & Desktop Optimized
 
 Reason
 
-Most transaction entry occurs on mobile devices, but analytics benefits from larger screens.
+การบันทึกรายการมักเกิดขึ้นบนมือถือ แต่การดูรายงานเชิงลึกจะได้ประสบการณ์ที่ดีกว่าบนหน้าจอขนาดใหญ่
+
+---
+
+### Storage Strategy
+
+Decision
+
+Online-First (Cloud Persistence) with Guest LocalStorage
+
+Reason
+
+เพื่อความง่ายในการพัฒนาและลดความซับซ้อนในการจัดการข้อมูล โดยใช้ LocalStorage สำหรับ Guest และยึดฐานข้อมูลบน Server เป็นหลักสำหรับผู้ใช้ที่ลงทะเบียนแล้ว
 
 ---
 
@@ -32,23 +42,11 @@ Most transaction entry occurs on mobile devices, but analytics benefits from lar
 
 Decision
 
-Guest First
+Guest First (LocalStorage) -> Login Required for Cloud Persistence
 
 Reason
 
-Reduce friction and encourage immediate usage.
-
----
-
-### Synchronization
-
-Decision
-
-Sync Later
-
-Reason
-
-Account creation should not block usage.
+ลดแรงต้านในการเริ่มใช้งาน (Frictionless Onboarding) ให้ผู้ใช้ลองเล่นระบบได้เต็มที่โดยใช้ LocalStorage และผลักดันให้ Login เมื่อต้องการความปลอดภัยและการเข้าถึงข้อมูลจากหลายอุปกรณ์ (Cloud Persistence)
 
 ---
 
@@ -68,7 +66,7 @@ Desktop
 
 Reason
 
-Optimized experience across device sizes.
+เพื่อให้เหมาะสมกับพื้นที่หน้าจอและพฤติกรรมการใช้งานในแต่ละอุปกรณ์
 
 ---
 
@@ -76,11 +74,11 @@ Optimized experience across device sizes.
 
 Decision
 
-Everything is a Transaction
+Everything is a Transaction (Event Sourcing Style)
 
 Reason
 
-Provides consistent accounting logic and enables future analytics.
+เพื่อให้สามารถคำนวณยอดเงินย้อนหลังและทำ Analytics ได้อย่างแม่นยำ รวมถึงรองรับฟีเจอร์ Transfer และ Adjustment ได้อย่างสมบูรณ์
 
 ---
 
@@ -88,16 +86,11 @@ Provides consistent accounting logic and enables future analytics.
 
 Decision
 
-Next.js
-Tailwind
-shadcn/ui
-Zustand
-Dexie
-TanStack Query
+Next.js, Tailwind, shadcn/ui, Zustand, TanStack Query
 
 Reason
 
-Modern full-stack TypeScript ecosystem.
+เป็น Stack ที่ทันสมัย มีประสิทธิภาพสูง และเหมาะสมกับการสร้าง Web Application ที่มีความซับซ้อนปานกลาง
 
 ---
 
@@ -105,10 +98,8 @@ Modern full-stack TypeScript ecosystem.
 
 Decision
 
-NestJS
-Prisma
-PostgreSQL
+NestJS, Prisma, PostgreSQL
 
 Reason
 
-Scalable architecture with strong TypeScript support.
+เน้นความมั่นคงของระบบ (Type Safety) และความสะดวกในการจัดการฐานข้อมูลผ่าน ORM ที่มีประสิทธิภาพ
