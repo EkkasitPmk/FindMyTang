@@ -60,10 +60,7 @@ export class TransactionController {
 
   @Post("income")
   @UseGuards(JwtAuthGuard)
-  async createIncome(
-    @CurrentUser() user: User,
-    @Body() dto: CreateIncomeDto,
-  ) {
+  async createIncome(@CurrentUser() user: User, @Body() dto: CreateIncomeDto) {
     return toResponse(
       await this.transactionService.create(user.id, {
         ...dto,

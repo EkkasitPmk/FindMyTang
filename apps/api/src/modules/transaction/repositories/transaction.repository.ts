@@ -36,15 +36,7 @@ export class TransactionRepository {
     userId: string,
     query: TransactionQueryDto = {},
   ): Promise<{ items: Transaction[]; total: number }> {
-    const {
-      page = 1,
-      limit = 20,
-      type,
-      assetId,
-      categoryId,
-      from,
-      to,
-    } = query;
+    const { page = 1, limit = 20, type, assetId, categoryId, from, to } = query;
     const skip = (page - 1) * limit;
 
     const where: Prisma.TransactionWhereInput = {

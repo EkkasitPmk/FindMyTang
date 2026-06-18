@@ -42,7 +42,9 @@ export class TransactionService {
 
       if (dto.type === TransactionType.TRANSFER) {
         if (!dto.toAssetId) {
-          throw new BadRequestException("Target asset is required for transfer");
+          throw new BadRequestException(
+            "Target asset is required for transfer",
+          );
         }
         const toAsset = await this.assetRepository.findById(dto.toAssetId);
         if (!toAsset) throw new NotFoundException("Target asset not found");
@@ -90,7 +92,9 @@ export class TransactionService {
       } else {
         // INCOME or EXPENSE
         if (!dto.categoryId) {
-          throw new BadRequestException("Category is required for income/expense");
+          throw new BadRequestException(
+            "Category is required for income/expense",
+          );
         }
         const category = await this.categoryRepository.findById(dto.categoryId);
         if (!category) throw new NotFoundException("Category not found");
@@ -100,7 +104,10 @@ export class TransactionService {
         if (dto.type === TransactionType.INCOME && category.type !== "INCOME") {
           throw new BadRequestException("Category must be of type INCOME");
         }
-        if (dto.type === TransactionType.EXPENSE && category.type !== "EXPENSE") {
+        if (
+          dto.type === TransactionType.EXPENSE &&
+          category.type !== "EXPENSE"
+        ) {
           throw new BadRequestException("Category must be of type EXPENSE");
         }
 
@@ -116,7 +123,8 @@ export class TransactionService {
           },
         });
 
-        const increment = dto.type === TransactionType.INCOME ? dto.amount : -dto.amount;
+        const increment =
+          dto.type === TransactionType.INCOME ? dto.amount : -dto.amount;
         await tx.asset.update({
           where: { id: dto.assetId },
           data: { balance: { increment } },
