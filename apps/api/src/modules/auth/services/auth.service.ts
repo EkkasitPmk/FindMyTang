@@ -119,7 +119,7 @@ export class AuthService {
       },
       categories: {
         create: DEFAULT_CATEGORIES.map((cat) => ({
-          name: `${cat.icon} ${cat.name}`,
+          name: cat.name,
           type: cat.type,
           color: cat.color,
           icon: cat.icon,
