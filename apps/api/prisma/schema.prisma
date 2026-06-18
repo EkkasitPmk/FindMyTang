@@ -1,8 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -29,34 +27,43 @@ model User {
 }
 
 model Profile {
-  id        String   @id @default(uuid())
-  userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  firstName String?
-  lastName  String?
-  avatarUrl String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  displayName String?
+  avatarUrl   String?
+  currency    String   @default("THB")
+  language    String   @default("th")
+  timezone    String   @default("Asia/Bangkok")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 enum AssetType {
   CASH
   BANK
   E_WALLET
-  CREDIT_CARD
+  INVESTMENT
+  CRYPTO
+  OTHER
 }
 
 model Asset {
-  id           String        @id @default(uuid())
-  name         String
-  userId       String
-  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type         AssetType
-  balance      Decimal       @default(0)
-  currency     String        @default("THB")
-  transactions Transaction[]
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  id                   String        @id @default(uuid())
+  name                 String
+  userId               String
+  user                 User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type                 AssetType
+  balance              Decimal       @default(0)
+  currency             String        @default("THB")
+  color                String?
+  icon                 String?
+  isArchived           Boolean       @default(false)
+  transactions         Transaction[] @relation("AssetToTransaction")
+  transferTransactions Transaction[] @relation("ToAssetToTransaction")
+  deletedAt            DateTime?
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
 }
 
 enum CategoryType {
@@ -72,7 +79,9 @@ model Category {
   icon         String?
   userId       String
   user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isSystem     Boolean       @default(false)
   transactions Transaction[]
+  deletedAt    DateTime?
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 }
@@ -81,6 +90,7 @@ enum TransactionType {
   INCOME
   EXPENSE
   TRANSFER
+  ADJUSTMENT
 }
 
 model Transaction {
@@ -92,12 +102,19 @@ model Transaction {
   userId       String
   user         User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
   assetId      String
-  asset        Asset                   @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  asset        Asset                   @relation("AssetToTransaction", fields: [assetId], references: [id], onDelete: Cascade)
+  toAssetId    String?
+  toAsset      Asset?                  @relation("ToAssetToTransaction", fields: [toAssetId], references: [id], onDelete: SetNull)
   categoryId   String?
   category     Category?               @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   attachments  TransactionAttachment[]
+  deletedAt    DateTime?
   createdAt    DateTime                @default(now())
   updatedAt    DateTime                @updatedAt
+
+  @@index([userId])
+  @@index([assetId])
+  @@index([date])
 }
 
 model TransactionAttachment {
