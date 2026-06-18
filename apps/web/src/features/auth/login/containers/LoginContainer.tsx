@@ -7,10 +7,12 @@ import { toast } from "react-toastify";
 import { useLoginMutation } from "../hooks/login.hook";
 import { loginSchema, LoginFormValues } from "../schemas/login.schema";
 import LoginForm from "../components/LoginForm";
+import { useGuestStore } from "@/shared/lib/store/guest-store";
 
 export default function LoginContainer() {
   const router = useRouter();
   const [globalError, setGlobalError] = useState<string | null>(null);
+  const setGuestMode = useGuestStore((state) => state.setGuestMode);
 
   const {
     register,
@@ -27,6 +29,7 @@ export default function LoginContainer() {
 
   const { mutate: loginUser, isPending } = useLoginMutation({
     onSuccess: () => {
+      setGuestMode(false);
       toast.success("Login successful! Redirecting...");
       router.push("/home");
     },
@@ -73,10 +76,12 @@ export default function LoginContainer() {
   };
 
   const handleGoogleLogin = () => {
+    setGuestMode(false);
     router.push("/home");
   };
 
   const handleGuestLogin = () => {
+    setGuestMode(true);
     router.push("/home");
   };
 
