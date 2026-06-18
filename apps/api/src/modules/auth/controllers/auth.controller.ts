@@ -14,10 +14,11 @@ import { ConfigService } from "@nestjs/config";
 import { AuthService } from "../services/auth.service";
 import { RegisterDto } from "../dto/register.dto";
 import { LoginDto } from "../dto/login.dto";
+import { SyncGuestDto } from "../dto/sync-guest.dto";
 import { JwtAuthGuard } from "../guards/jwt-auth.guard";
 import { JwtRefreshGuard } from "../guards/jwt-refresh.guard";
 import { CurrentUser } from "../decorators/current-user.decorator";
-import { User, Profile } from "@prisma/client";
+import type { User, Profile } from "@prisma/client";
 
 type CookieSameSite = "lax" | "strict" | "none";
 
@@ -70,6 +71,16 @@ export class AuthController {
     });
 
     return { user };
+  }
+
+  @Post("sync-guest")
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
+  async syncGuest(
+    @CurrentUser() user: User,
+    @Body() syncDto: SyncGuestDto,
+  ): Promise<{ success: boolean }> {
+    return this.authService.syncGuest(user.id, syncDto);
   }
 
   @Post("refresh")

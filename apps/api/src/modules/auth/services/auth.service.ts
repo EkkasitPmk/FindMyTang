@@ -1,4 +1,4 @@
-import { CategoryType } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import {
   BadRequestException,
   ConflictException,
@@ -15,6 +15,8 @@ import { JwtPayload } from "../interfaces/jwt-payload.interface";
 import * as bcrypt from "bcrypt";
 import * as crypto from "node:crypto";
 import { DEFAULT_CATEGORIES } from "../../../common/constants/default-categories";
+import { PrismaService } from "../../../prisma/prisma.service";
+import { SyncGuestDto } from "../dto/sync-guest.dto";
 
 @Injectable()
 export class AuthService {
@@ -23,6 +25,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly sessionRepository: SessionRepository,
     private readonly configService: ConfigService,
+    private readonly prisma: PrismaService,
   ) {}
 
   async login(loginDto: LoginDto) {
@@ -126,6 +129,85 @@ export class AuthService {
     });
 
     return user;
+  }
+
+  async syncGuest(
+    userId: string,
+    syncDto: SyncGuestDto,
+  ): Promise<{ success: boolean }> {
+    const { assets, categories, transactions } = syncDto;
+
+    return await this.prisma.$transaction(async (tx) => {
+      const categoryMap = new Map<string, string>();
+      const assetMap = new Map<string, string>();
+
+      // 1. Sync Categories
+      for (const cat of categories) {
+        const createdCat = await tx.category.create({
+          data: {
+            name: cat.name,
+            type: cat.type,
+            color: cat.color,
+            icon: cat.icon,
+            userId,
+          },
+        });
+        categoryMap.set(cat.localId, createdCat.id);
+      }
+
+      // 2. Sync Assets
+      for (const asset of assets) {
+        const createdAsset = await tx.asset.create({
+          data: {
+            name: asset.name,
+            type: asset.type,
+            balance: new Prisma.Decimal(asset.balance || 0),
+            currency: asset.currency || "THB",
+            color: asset.color,
+            icon: asset.icon,
+            userId,
+          },
+        });
+        assetMap.set(asset.localId, createdAsset.id);
+      }
+
+      // 3. Sync Transactions
+      for (const txData of transactions) {
+        const assetId = assetMap.get(txData.localAssetId);
+        if (!assetId) continue;
+
+        const toAssetId = txData.localToAssetId
+          ? assetMap.get(txData.localToAssetId)
+          : undefined;
+        const categoryId = txData.localCategoryId
+          ? categoryMap.get(txData.localCategoryId)
+          : undefined;
+
+        await tx.transaction.create({
+          data: {
+            type: txData.type,
+            amount: new Prisma.Decimal(txData.amount),
+            note: txData.note,
+            date: new Date(txData.date),
+            userId,
+            assetId,
+            toAssetId,
+            categoryId,
+          },
+        });
+      }
+
+      // 4. Create Sync Log
+      await tx.syncLog.create({
+        data: {
+          userId,
+          guestId: "GUEST_SYNC", // Placeholder or from client
+          status: "SUCCESS",
+        },
+      });
+
+      return { success: true };
+    });
   }
 
   async refresh(refreshToken: string): Promise<{
