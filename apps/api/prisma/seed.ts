@@ -1,7 +1,13 @@
+import "dotenv/config";
 import { PrismaClient, CategoryType } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
 import { DEFAULT_CATEGORIES } from "../src/common/constants/default-categories";
 
-const prisma = new PrismaClient();
+const connectionString = process.env.DATABASE_URL;
+const pool = new Pool({ connectionString });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
   console.log("🌱 Seeding system data...");
@@ -18,7 +24,6 @@ async function main() {
       profile: {
         create: {
           displayName: "System",
-          currency: "THB",
           language: "th",
         },
       },
