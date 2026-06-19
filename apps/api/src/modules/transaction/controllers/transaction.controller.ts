@@ -37,7 +37,6 @@ function toResponse(tx: any) {
           name: tx.asset.name,
           type: tx.asset.type,
           balance: Number(tx.asset.balance),
-          currency: tx.asset.currency,
         }
       : undefined,
     category: tx.category

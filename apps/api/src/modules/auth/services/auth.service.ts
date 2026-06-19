@@ -162,7 +162,6 @@ export class AuthService {
             name: asset.name,
             type: asset.type,
             balance: new Prisma.Decimal(asset.balance || 0),
-            currency: asset.currency || "THB",
             color: asset.color,
             icon: asset.icon,
             userId,

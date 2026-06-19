@@ -13,7 +13,6 @@ import { CreateExpenseDto } from "../dto/create-expense.dto";
 import { CreateIncomeDto } from "../dto/create-income.dto";
 import { UpdateTransactionDto } from "../dto/update-transaction.dto";
 import { Transaction, TransactionType } from "@prisma/client";
-import { Decimal } from "@prisma/client/runtime/library";
 
 import { TransactionQueryDto } from "../dto/transaction-query.dto";
 

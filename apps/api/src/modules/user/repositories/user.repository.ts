@@ -10,7 +10,6 @@ export interface CreateUserData {
     create: {
       displayName?: string;
       avatarUrl?: string;
-      currency?: string;
       language?: string;
       timezone?: string;
     };
@@ -33,7 +32,6 @@ export interface UpdateUserData {
     update: {
       displayName?: string;
       avatarUrl?: string;
-      currency?: string;
       language?: string;
       timezone?: string;
     };

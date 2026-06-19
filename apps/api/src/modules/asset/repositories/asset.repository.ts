@@ -6,7 +6,6 @@ export interface CreateAssetData {
   name: string;
   type: AssetType;
   balance?: number;
-  currency?: string;
   color?: string;
   icon?: string;
 }
@@ -22,7 +21,6 @@ export class AssetRepository {
         name: data.name,
         type: data.type,
         balance: data.balance,
-        currency: data.currency,
         color: data.color,
         icon: data.icon,
         userId,

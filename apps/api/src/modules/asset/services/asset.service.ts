@@ -26,7 +26,6 @@ export class AssetService {
       name: trimmedName,
       type: dto.type,
       balance: dto.balance,
-      currency: dto.currency,
       color: dto.color,
       icon: dto.icon,
     });
@@ -66,7 +65,6 @@ export class AssetService {
       name: dto.name,
       type: dto.type,
       balance: dto.balance,
-      currency: dto.currency,
       color: dto.color,
       icon: dto.icon,
       isArchived: dto.isArchived,

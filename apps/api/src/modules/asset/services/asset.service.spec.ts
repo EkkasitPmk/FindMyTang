@@ -46,7 +46,6 @@ describe("AssetService", () => {
         name: "  Savings Account  ",
         type: AssetType.BANK,
         balance: 1000,
-        currency: "THB",
       };
 
       const expectedResult = {
@@ -54,7 +53,6 @@ describe("AssetService", () => {
         name: "Savings Account",
         type: AssetType.BANK,
         balance: 1000,
-        currency: "THB",
         userId: "user-123",
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -69,7 +67,6 @@ describe("AssetService", () => {
         name: "Savings Account",
         type: AssetType.BANK,
         balance: 1000,
-        currency: "THB",
       });
     });
 
@@ -94,7 +91,6 @@ describe("AssetService", () => {
           name: "Cash",
           type: AssetType.CASH,
           balance: 1000,
-          currency: "THB",
           userId: "user-123",
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -117,7 +113,6 @@ describe("AssetService", () => {
         name: "Old Name",
         type: AssetType.BANK,
         balance: 1000,
-        currency: "THB",
         userId: "user-123",
       } as any;
 

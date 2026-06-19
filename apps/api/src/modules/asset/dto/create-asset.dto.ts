@@ -39,16 +39,6 @@ export class CreateAssetDto {
   @IsOptional()
   balance?: number;
 
-  @ApiProperty({
-    description: "Currency of the asset",
-    example: "THB",
-    required: false,
-    default: "THB",
-  })
-  @IsString()
-  @IsNotEmpty()
-  @IsOptional()
-  currency?: string;
 
   @ApiProperty({
     description: "Hex color code for the asset",
