@@ -39,7 +39,6 @@ export const useCreateAssetMutation = (options?: {
           name: data.name,
           type: data.type,
           balance: data.balance ?? 0,
-          currency: data.currency ?? "THB",
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };

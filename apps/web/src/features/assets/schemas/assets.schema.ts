@@ -20,11 +20,14 @@ export const createAssetSchema = z.object({
       },
       { message: "Balance must be a number" },
     )
-    .optional(),
-  currency: z
-    .string()
-    .min(1, { message: "Currency is required" })
-    .max(10, { message: "Currency must not exceed 10 characters" })
+    .refine(
+      (val) => {
+        if (val === "" || val === null || val === undefined) return true;
+        const num = Number(val);
+        return num >= 1;
+      },
+      { message: "Balance must be greater than or equal to 1" },
+    )
     .optional(),
 });
 

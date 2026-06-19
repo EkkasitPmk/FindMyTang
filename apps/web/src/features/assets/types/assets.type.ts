@@ -1,15 +1,17 @@
 export enum AssetType {
   CASH = "CASH",
   BANK = "BANK",
-  E_WALLET = "E_WALLET",
-  CREDIT_CARD = "CREDIT_CARD",
+  E_WALLET = "E-WALLET",
+  CREDIT_CARD = "CREDIT CARD",
+  INVESTMENT = "INVESTMENT",
+  CRYPTO = "CRYPTO",
+  OTHER = "OTHER",
 }
 
 export interface CreateAssetRequest {
   name: string;
   type: AssetType;
   balance?: number;
-  currency?: string;
 }
 
 export interface CreateAssetResponse {
@@ -17,7 +19,6 @@ export interface CreateAssetResponse {
   name: string;
   type: AssetType;
   balance: number;
-  currency: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -27,7 +28,6 @@ export interface Asset {
   name: string;
   type: AssetType;
   balance: number;
-  currency: string;
   createdAt: string;
   updatedAt: string;
 }

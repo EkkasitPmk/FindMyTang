@@ -10,97 +10,114 @@ import {
 import { useCreateAssetMutation } from "../hooks/assets.hook";
 import { AssetType } from "../types/assets.type";
 import AssetForm from "../components/AssetForm";
+import {
+  ArrowRight,
+  ChevronRight,
+  HandCoins,
+  Landmark,
+  Link2,
+  TrendingUp,
+  Wallet,
+} from "lucide-react";
 
 export default function AssetsContainer() {
-  const [globalError, setGlobalError] = useState<string | null>(null);
-
-  const {
-    register,
-    handleSubmit,
-    setError,
-    reset,
-    formState: { errors },
-  } = useForm<CreateAssetFormValues>({
-    resolver: zodResolver(createAssetSchema),
-    defaultValues: {
-      name: "",
-      type: AssetType.CASH,
-      balance: 0,
-      currency: "THB",
-    },
-  });
-
-  const { mutate: createAsset, isPending } = useCreateAssetMutation({
-    onSuccess: (data) => {
-      toast.success(`Asset "${data.name}" created successfully!`);
-      reset();
-    },
-    onError: (error) => {
-      const message = error.response?.data?.message;
-      let errorList: string[] = [];
-      if (Array.isArray(message)) {
-        errorList = message;
-      } else if (message) {
-        errorList = [message];
-      }
-
-      if (errorList.length === 0) {
-        setGlobalError(
-          "Failed to create asset. Please check validation rules.",
-        );
-        return;
-      }
-
-      let hasGlobalError = false;
-      errorList.forEach((msg) => {
-        const lowerMsg = msg.toLowerCase();
-        if (lowerMsg.includes("name")) {
-          setError("name", { type: "server", message: msg });
-        } else if (lowerMsg.includes("type")) {
-          setError("type", { type: "server", message: msg });
-        } else if (lowerMsg.includes("balance")) {
-          setError("balance", { type: "server", message: msg });
-        } else if (lowerMsg.includes("currency")) {
-          setError("currency", { type: "server", message: msg });
-        } else {
-          setGlobalError(msg);
-          hasGlobalError = true;
-        }
-      });
-
-      if (!hasGlobalError) {
-        setGlobalError(null);
-      }
-    },
-  });
-
-  const onSubmit = (values: CreateAssetFormValues) => {
-    setGlobalError(null);
-    const balanceNum =
-      values.balance === "" ||
-      values.balance === null ||
-      values.balance === undefined
-        ? undefined
-        : Number(values.balance);
-
-    createAsset({
-      name: values.name,
-      type: values.type,
-      balance: balanceNum,
-      currency: values.currency,
-    });
-  };
-
   return (
-    <div className="min-h-screen py-10 px-4 bg-surface flex items-center justify-center">
-      <AssetForm
-        register={register}
-        handleSubmit={handleSubmit}
-        onSubmit={onSubmit}
-        errors={errors}
-        isPending={isPending}
-        globalError={globalError}
-      />
-    </div>
+    <>
+      <div className="space-y-4">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-lg font-medium">Assets</span>
+          {/* ปุ่มนี้ยังคงคิดอยู่ว่ามีดีไหม?? หรือใส่เป็นการสลับสับเปลี่ยน layout ใหม่ แบบ list หรือ grid *ห้ามเอาออกหรือลบทิ้ง*/}
+          {/* <div className="flex items-center gap-1">
+            <span className="text-sm text-primary">View all assets</span>
+            <ArrowRight size={16} className="text-primary" />
+          </div> */}
+          {/* ปุ่มนี้ยังคงคิดอยู่ว่ามีดีไหม?? หรือใส่เป็นการสลับสับเปลี่ยน layout ใหม่ แบบ list หรือ grid *ห้ามเอาออกหรือลบทิ้ง*/}
+        </div>
+
+        {/* UI แบบนี้ข้อมูล */}
+        <div className="space-y-1">
+          <div className="flex items-center justify-between bg-white p-3 rounded-sm">
+            <div className="flex items-center gap-2">
+              <span className="bg-gray-100 p-2 rounded-full">
+                <Landmark className="text-gray-600" size={18} />
+              </span>
+              <span className="text-base font-medium">SCB</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <span className="font-medium text-base">฿ 42,075</span>
+              <ChevronRight size={18} className="text-gray-400" />
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between bg-white p-3 rounded-sm">
+            <div className="flex items-center gap-2">
+              <span className="bg-gray-100 p-2 rounded-full">
+                <Wallet className="text-gray-600" size={18} />
+              </span>
+              <span className="text-base font-medium">KBank</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <span className="font-medium text-base">฿ 15,425</span>
+              <ChevronRight size={18} className="text-gray-400" />
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between bg-white p-3 rounded-sm">
+            <div className="flex items-center gap-2">
+              <span className="bg-gray-100 p-2 rounded-full">
+                <TrendingUp className="text-gray-600" size={18} />
+              </span>
+              <span className="text-base font-medium">Stocks</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <span className="font-medium text-base">฿ 31,000</span>
+              <ChevronRight size={18} className="text-gray-400" />
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between bg-white p-3 rounded-sm">
+            <div className="flex items-center gap-2">
+              <span className="bg-gray-100 p-2 rounded-full">
+                <HandCoins className="text-gray-600" size={18} />
+              </span>
+              <span className="text-base font-medium">Cash</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <span className="font-medium text-base">฿ 5,000</span>
+              <ChevronRight size={18} className="text-gray-400" />
+            </div>
+          </div>
+        </div>
+
+        <div className="flex gap-4">
+          <div className="flex flex-col grow bg-surface-variant/50 px-4 py-3 rounded-md border border-outline-variant/30">
+            <span className="text-sm font-medium">Income</span>
+            <span className="text-base font-bold">฿ 45,000</span>
+          </div>
+          <div className="flex flex-col grow bg-surface-variant/50 px-4 py-3 rounded-md border border-outline-variant/30">
+            <span className="text-sm font-medium">Expanse</span>
+            <span className="text-base font-bold">฿ 12,000</span>
+          </div>
+        </div>
+        {/* UI แบบนี้ข้อมูล */}
+
+        {/* UI แบบไม่มีข้อมูล */}
+        <div className="bg-white flex flex-col items-center gap-3 py-8 rounded-md border-2 border-gray-200 border-dashed">
+          <div className="flex items-center">
+            <span className="bg-gray-100 p-4 rounded-full">
+              <Landmark className="text-gray-600" size={24} />
+            </span>
+          </div>
+          <span className="text-base font-normal text-gray-600">
+            No assets linked yet
+          </span>
+          <div className="flex items-center gap-2 text-primary font-medium">
+            <Link2 size={18} />
+            <span>Add Asset</span>
+          </div>
+        </div>
+        {/* UI แบบไม่มีข้อมูล */}
+      </div>
+    </>
   );
 }
