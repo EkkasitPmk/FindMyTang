@@ -18,7 +18,7 @@
 
 ### User & Profile
 - **User**: เอนทิตีหลักสำหรับการยืนยันตัวตน (Email, Password)
-- **Profile**: ข้อมูลส่วนตัว (DisplayName, Avatar, Preferred Currency, Language)
+- **Profile**: ข้อมูลส่วนตัว (DisplayName, Avatar, Language)
 
 ### Asset (สินทรัพย์)
 - เป็น Root สำหรับการติดตามยอดเงิน

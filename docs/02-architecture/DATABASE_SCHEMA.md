@@ -19,7 +19,6 @@
 - `userId`: UUID (FK -> User.id)
 - `displayName`: String
 - `avatarUrl`: String (Optional)
-- `currency`: String (Default: 'THB')
 - `language`: String (Default: 'th')
 - `timezone`: String (Default: 'Asia/Bangkok')
 

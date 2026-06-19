@@ -98,7 +98,7 @@ User Profile & Settings
 
 Features
 
-- Profile Management (Name, Currency, Language)
+- Profile Management (Name, Language)
 - Custom Category Management
 - System Preferences & Security
 

@@ -32,7 +32,7 @@
 - ดึงข้อมูลผู้ใช้ปัจจุบันและโปรไฟล์
 
 ### PATCH `/me/profile`
-- แก้ไขข้อมูลโปรไฟล์ (DisplayName, Currency, Language, Timezone)
+- แก้ไขข้อมูลโปรไฟล์ (DisplayName, Language, Timezone)
 
 ---
 
