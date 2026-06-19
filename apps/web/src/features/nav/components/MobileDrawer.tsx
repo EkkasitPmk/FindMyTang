@@ -88,7 +88,7 @@ export default function MobileDrawer({
                   }`}
                 >
                   <Icon className="w-4 h-4" strokeWidth={isActive ? 2 : 1.5} />
-                  {item.label}
+                  {item.label === "More" ? "Settings" : item.label}
                 </Link>
               );
             })}

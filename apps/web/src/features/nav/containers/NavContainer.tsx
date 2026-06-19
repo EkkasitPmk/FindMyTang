@@ -79,11 +79,13 @@ export default function NavContainer() {
       />
 
       {/* Mobile Bottom Navigation Bar */}
-      <MobileBottomNav
-        pathname={pathname}
-        mobileMenuOpen={mobileMenuOpen}
-        onMenuOpen={() => setMobileMenuOpen(true)}
-      />
+      {pathname !== "/account" && pathname !== "/assets/new" && (
+        <MobileBottomNav
+          pathname={pathname}
+          mobileMenuOpen={mobileMenuOpen}
+          onMenuOpen={() => setMobileMenuOpen(true)}
+        />
+      )}
 
       {/* Logout Confirmation Modal */}
       <LogoutConfirmModal

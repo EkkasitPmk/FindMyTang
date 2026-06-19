@@ -35,7 +35,9 @@ export default function IncomeForm({
   return (
     <div className="w-full max-w-md mx-auto p-6 bg-surface-container rounded-2xl shadow-xl border border-outline/10 animate-subtle-pop">
       <div className="mb-6">
-        <h2 className="text-xl font-bold text-on-surface mb-2">Record Income</h2>
+        <h2 className="text-xl font-bold text-on-surface mb-2">
+          Record Income
+        </h2>
         <p className="text-sm text-on-surface-variant">
           Record a new income and your asset balance will update automatically.
         </p>

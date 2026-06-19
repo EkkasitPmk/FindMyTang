@@ -22,7 +22,6 @@ interface MoreContainerProps {
 export default function MoreContainer({
   onClose,
 }: Readonly<MoreContainerProps>) {
-  const [currency, setCurrency] = useState("THB");
   const [language, setLanguage] = useState("English");
 
   const handleExportData = () => {
@@ -90,34 +89,6 @@ export default function MoreContainer({
           Preferences
         </h5>
         <div className="bg-surface-container-lowest border border-outline-variant/60 rounded-md divide-y divide-outline-variant/50">
-          {/* Currency selection */}
-          <div className="flex justify-between items-center p-3">
-            <div className="flex items-center gap-2.5">
-              <Globe
-                className="w-4 h-4 text-on-surface-variant"
-                strokeWidth={1.5}
-              />
-              <span className="text-xs font-semibold text-on-surface">
-                Base Currency
-              </span>
-            </div>
-            <div className="flex gap-1">
-              {["THB", "USD"].map((curr) => (
-                <button
-                  key={curr}
-                  onClick={() => setCurrency(curr)}
-                  className={`py-1 px-2.5 rounded-md text-[10px] font-bold transition-all active-press ${
-                    currency === curr
-                      ? "bg-on-surface text-surface-container-lowest"
-                      : "bg-surface-container-low text-on-surface-variant hover:text-on-surface"
-                  }`}
-                >
-                  {curr}
-                </button>
-              ))}
-            </div>
-          </div>
-
           {/* Language Selection */}
           <div className="flex justify-between items-center p-3">
             <div className="flex items-center gap-2.5">

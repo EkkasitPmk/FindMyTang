@@ -27,7 +27,6 @@ export interface TransactionResponse {
     name: string;
     type: string;
     balance: number;
-    currency: string;
   };
   category?: {
     id: string;

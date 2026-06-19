@@ -48,10 +48,22 @@ export default function TransactionsContainer() {
 
     const now = new Date();
     if (dateRange === "THIS_MONTH") {
-      params.from = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-      params.to = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString();
+      params.from = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        1,
+      ).toISOString();
+      params.to = new Date(
+        now.getFullYear(),
+        now.getMonth() + 1,
+        0,
+      ).toISOString();
     } else if (dateRange === "LAST_MONTH") {
-      params.from = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
+      params.from = new Date(
+        now.getFullYear(),
+        now.getMonth() - 1,
+        1,
+      ).toISOString();
       params.to = new Date(now.getFullYear(), now.getMonth(), 0).toISOString();
     } else if (dateRange === "THIS_YEAR") {
       params.from = new Date(now.getFullYear(), 0, 1).toISOString();
