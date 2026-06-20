@@ -1,27 +1,25 @@
 # PocketNote Documentation
 
-ยินดีต้อนรับสู่เอกสารประกอบของโปรเจกต์ PocketNote เอกสารเหล่านี้ถูกจัดแบ่งออกเป็นหมวดหมู่ต่างๆ เพื่อให้ง่ายต่อการค้นหาและทำความเข้าใจ
+ยินดีต้อนรับสู่เอกสารหลักของโปรเจกต์ PocketNote เอกสารทั้งหมดได้รับการจัดระเบียบใหม่ตามแนวทาง **Ponytail Mode (Minimalism & Consolidated Docs)** เพื่อให้อ่านง่าย กระชับ และไม่เกิดข้อมูลซ้ำซ้อนหรือขัดแย้งกัน
 
-## 📁 โครงสร้างโฟลเดอร์
+---
 
-### [01-product](./01-product/) - ข้อมูลด้านผลิตภัณฑ์และการออกแบบ
-- [PRD.md](./01-product/PRD.md) - Product Requirements Document
-- [PRODUCT_VISION.md](./01-product/PRODUCT_VISION.md) - วิสัยทัศน์และเป้าหมายของผลิตภัณฑ์
-- [BUSINESS_RULES.md](./01-product/BUSINESS_RULES.md) - กฎทางธุรกิจและตรรกะของระบบ
-- [DESIGN.md](./01-product/DESIGN.md) - รายละเอียดด้านการออกแบบ UI/UX
-- [ROADMAP.md](./01-product/ROADMAP.md) - แผนการพัฒนาในอนาคต
-- [FEATURE_STATUS.md](./01-product/FEATURE_STATUS.md) - สถานะปัจจุบันของฟีเจอร์ต่างๆ
-- [DECISIONS.md](./01-product/DECISIONS.md) - บันทึกการตัดสินใจที่สำคัญ (ADRs)
+## 📁 ไฟล์เอกสารหลักทั้ง 3 ไฟล์ (Three Pillars)
 
-### [02-architecture](./02-architecture/) - สถาปัตยกรรมและโครงสร้างระบบ
-- [ARCHITECTURE.md](./02-architecture/ARCHITECTURE.md) - ภาพรวมสถาปัตยกรรมของระบบ
-- [API_SPEC.md](./02-architecture/API_SPEC.md) - รายละเอียดข้อกำหนดของ API
-- [DATABASE_SCHEMA.md](./02-architecture/DATABASE_SCHEMA.md) - โครงสร้างฐานข้อมูล
-- [DOMAIN_MODEL.md](./02-architecture/DOMAIN_MODEL.md) - โมเดลทางธุรกิจ (Domain Model)
-- [SECURITY.md](./02-architecture/SECURITY.md) - มาตรการความปลอดภัย
+### 1. 📘 [PRODUCT.md](./PRODUCT.md) - สเปกและตรรกะระบบ
+*   **วิสัยทัศน์ผลิตภัณฑ์ (Product Vision & User Persona)**
+*   **หลักการออกแบบ UI/UX (Design Aesthetics & Layout/Typography)**
+*   **ขอบเขตการทำงานของระบบ (MVP Features)**
+*   **กฎเกณฑ์ทางธุรกิจทางการเงิน (Financial Business Rules)**
 
-### [03-engineering](./03-engineering/) - มาตรฐานการพัฒนาและวิศวกรรม
-- [CODING_STANDARD.md](./03-engineering/CODING_STANDARD.md) - มาตรฐานการเขียนโค้ดและแนวทางปฏิบัติ
+### 2. 📙 [ARCHITECTURE.md](./ARCHITECTURE.md) - สถาปัตยกรรม ฐานข้อมูล และ API
+*   **สถาปัตยกรรมโครงสร้างระบบ (High-level Architecture Flow)**
+*   **โครงสร้างโมเดลฐานข้อมูล (Database Schema Specifications)**
+*   **ระบบการซิงค์ข้อมูล (Guest LocalStorage to Cloud Database Sync Flow)**
+*   **ข้อกำหนดของ API Endpoints (API Specification v1)**
+*   **มาตรฐานการเขียนโค้ด (Coding & Architectural Standards)**
 
-### [04-reference](./04-reference/) - ข้อมูลอ้างอิงอื่นๆ
-- (ยังไม่มีข้อมูล)
+### 3. 📗 [STATUS.md](./STATUS.md) - แผนงานและสถานะการพัฒนา
+*   **แผนการพัฒนาในแต่ละขั้นตอน (Project Roadmap Sprints)**
+*   **ประวัติงานที่ทำเสร็จแล้ว (Completed Items)**
+*   **สิ่งที่ต้องดำเนินงานเป็นลำดับถัดไป (Next Actions / Pending Tasks)**
