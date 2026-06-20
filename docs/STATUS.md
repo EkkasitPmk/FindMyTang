@@ -65,27 +65,25 @@
 #### 💾 งานด้านระบบหลังบ้านและฐานข้อมูล (Backend & DB)
 *   **Prisma 7 Upgrade**: อัปเกรดจาก v6 เป็น v7 ใช้ Driver Adapter `@prisma/adapter-pg` ในการเชื่อมต่อฐานข้อมูลเรียบร้อยแล้ว
 *   **System Seed Data**: สร้าง Script สำหรับการ Seed หมวดหมู่เริ่มต้น (เช่น อาหาร, เดินทาง ฯลฯ) ในระบบฐานข้อมูล
+*   **Database Schema & API Rework (v2)**:
+    *   แก้ไข Prisma Schema ยุบตาราง Profile เข้า User, ลบตาราง Session/SyncLog/TransactionAttachment เรียบร้อยแล้ว
+    *   ปรับปรุง API ใน Module ต่างๆ (Auth, User, Asset, Category, Transaction) และลบ Session Module ออกอย่างสมบูรณ์ตามข้อตกลง
 
 #### 💻 งานด้านหน้าบ้าน (Frontend - apps/web)
 *   **Guest Mode Core Store**: พัฒนา Zustand Store (`useGuestStore`) พร้อม LocalStorage Persistence สำเร็จ
 *   **Zustand Store Persist & Helper**: พัฒนา `useIsGuest` helper hook เพื่อป้องกันปัญหา Hydration
 *   **Clean Up**: ลบการตั้งค่าและฟังก์ชันระบบ Currency (สกุลเงิน) ออกทั้งหมดจากตัวแอป (ตามข้อตกลงในการลดยากของระบบ)
 *   **Navigation & Layout Fixes**: แยก UI `LogoutConfirmModal` ออกจาก Logic (Presentation/Container Split) และปรับหน้าเมนูนำทางด้านล่างบนมือถือด้วย Grid 20% เท่ากัน
+*   **Frontend Types & Hooks Rework (v2)**:
+    *   ปรับปรุง Types ของ User (`UserProfile`), `Asset`, `Category` และ `Transaction` (เพิ่ม `toAssetId`, `toAsset`, `isSystem`, `color`, `deletedAt`) ให้ตรงตาม Database Schema v2 ของหลังบ้าน
+    *   พัฒนา `sync-guest.hook.ts` สำหรับดึงและ Map ข้อมูลจาก Guest store เพื่อส่งซิงค์ไปยัง API `/auth/sync-guest` (Merge Flow) และแก้ไข Types ตอบกลับให้สอดคล้องกัน
+*   **CSS Classes Cleanup**: ตรวจสอบและลบ className/CSS classes ที่ไม่มีการใช้งานหรือไม่ได้ประกาศไว้ใน `globals.css` ออกจากทุกๆ Element ใน Frontend components เรียบร้อยแล้ว (เช่น คลาสตัวหนังสือและสีแบบ Material Design 3 แบบเก่า ตลอดจน spacing classes ที่ถูกลบออกไป)
+*   **LoginForm & RegisterForm Spacing Improvements**: ออกแบบและปรับปรุงระยะห่าง (Spacing) และ Layout ของ LoginForm และ RegisterForm ให้สวยงามในรูปแบบ Card ที่มีความโค้งมนและมีมิติที่พรีเมียมมากขึ้น ปรับระยะห่างระหว่าง Element ด้วยมาตรฐาน Tailwind CSS Utility classes เรียบร้อยแล้ว
 
 ---
 
 ### 2. สิ่งที่ต้อง Rework และอยู่ระหว่างดำเนินการ (Rework & In Progress)
-
-#### 💾 Rework งานหลังบ้านตาม Schema ใหม่ (Backend Rework)
-*   [ ] **แก้ไข Prisma Schema (`schema.prisma`)**: ยุบตาราง Profile เข้ากับ User, ลบตาราง Session, ลบตาราง SyncLog, ลบตาราง TransactionAttachment และอัปเดตฟิลด์ของ Asset (`color` เท่านั้น), Category, และ Transaction (`attachmentUrl` และการลบสัมพันธ์ attachments)
-*   [ ] **แก้ไข Auth Module**: เอาการตรวจสอบ/สร้าง Guest Row ในฐานข้อมูลออก (โหมด Guest ใน DB จะไม่มีอีกต่อไป)
-*   [ ] **แก้ไข User & Profile API**: สร้าง endpoint `PATCH /users/profile` และปรับปรุง logic การสร้าง user ให้มี display name และข้อมูลอื่นครบในตารางเดียว
-*   [ ] **แก้ไข API Sync Guest**: ปรับปรุง endpoint `POST /auth/sync-guest` ให้รองรับ Merge Flow (แบบ A) เข้ากับข้อมูลที่มีอยู่เดิม และจัดเก็บผลลัพธ์การซิงค์ไว้ในฟิลด์ของ User ตรงๆ
-*   [ ] **แก้ไข Asset, Category, Transaction API**: อัปเดตตามฟิลด์ใหม่ (ลบ `icon` ใน Asset, เพิ่ม `attachmentUrl` ใน Transaction) และเปลี่ยนระบบลบเป็นการ Soft Delete (`deletedAt`) ที่สมบูรณ์
-
-#### 💻 Rework งานหน้าบ้านตามการเปลี่ยนแปลง (Frontend Rework)
-*   [ ] **อัปเดต Types, Services และ Hooks**: แก้ไขข้อมูล Interface ของ User, Asset, Category, Transaction ให้ตรงกับโครงสร้างใหม่ฝั่งหลังบ้าน
-*   [ ] **ปรับปรุง Guest Sync Hook**: แก้ไขการเรียกใช้งาน API `POST /auth/sync-guest` ให้สอดรับกับผลลัพธ์ Merge Flow
+*   *ขณะนี้ขั้นตอน Rework และปรับเปลี่ยนโครงสร้างพื้นฐาน v2 ในระดับ Backend และ Frontend Types/Hooks หลักเสร็จสมบูรณ์แล้ว อยู่ในระหว่างเตรียมพัฒนาฟีเจอร์ระดับ UI และ Flow เชื่อมต่อ*
 
 ---
 
