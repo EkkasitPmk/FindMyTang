@@ -21,12 +21,8 @@ async function main() {
     create: {
       email: systemEmail,
       isGuest: false,
-      profile: {
-        create: {
-          displayName: "System",
-          language: "th",
-        },
-      },
+      displayName: "System",
+      language: "th",
     },
   });
 

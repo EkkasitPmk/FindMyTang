@@ -64,4 +64,13 @@ export class CreateTransactionDto {
   @IsString()
   @IsOptional()
   categoryId?: string;
+
+  @ApiProperty({
+    description: "URL of the attached file",
+    required: false,
+    example: "https://example.com/uploads/receipt.jpg",
+  })
+  @IsString()
+  @IsOptional()
+  attachmentUrl?: string;
 }

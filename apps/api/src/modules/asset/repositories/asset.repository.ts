@@ -7,7 +7,6 @@ export interface CreateAssetData {
   type: AssetType;
   balance?: number;
   color?: string;
-  icon?: string;
 }
 
 @Injectable()
@@ -22,7 +21,6 @@ export class AssetRepository {
         type: data.type,
         balance: data.balance,
         color: data.color,
-        icon: data.icon,
         userId,
       },
     });

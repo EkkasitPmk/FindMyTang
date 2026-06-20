@@ -59,6 +59,7 @@ export class TransactionService {
             userId,
             assetId: dto.assetId,
             toAssetId: dto.toAssetId,
+            attachmentUrl: dto.attachmentUrl,
           },
         });
 
@@ -80,6 +81,7 @@ export class TransactionService {
             date: new Date(dto.date),
             userId,
             assetId: dto.assetId,
+            attachmentUrl: dto.attachmentUrl,
           },
         });
 
@@ -119,6 +121,7 @@ export class TransactionService {
             userId,
             assetId: dto.assetId,
             categoryId: dto.categoryId,
+            attachmentUrl: dto.attachmentUrl,
           },
         });
 

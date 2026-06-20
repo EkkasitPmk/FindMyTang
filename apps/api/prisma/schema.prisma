@@ -10,31 +10,22 @@ datasource db {
 }
 
 model User {
-  id          String        @id @default(uuid())
-  email       String?       @unique
-  password    String?
-  isGuest     Boolean       @default(false)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id             String        @id @default(uuid())
+  email          String?       @unique
+  password       String?
+  isGuest        Boolean       @default(false)
+  displayName    String?
+  avatarUrl      String?
+  language       String        @default("th")
+  timezone       String        @default("Asia/Bangkok")
+  lastSyncedAt   DateTime?
+  lastSyncStatus String?       // "SUCCESS" | "FAILED"
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 
-  profile     Profile?
-  sessions    Session[]
-  assets      Asset[]
-  categories  Category[]
-  transactions Transaction[]
-  syncLogs    SyncLog[]
-}
-
-model Profile {
-  id          String   @id @default(uuid())
-  userId      String   @unique
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  displayName String?
-  avatarUrl   String?
-  language    String   @default("th")
-  timezone    String   @default("Asia/Bangkok")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  assets         Asset[]
+  categories     Category[]
+  transactions   Transaction[]
 }
 
 enum AssetType {
@@ -54,7 +45,6 @@ model Asset {
   type                 AssetType
   balance              Decimal       @default(0)
   color                String?
-  icon                 String?
   isArchived           Boolean       @default(false)
   transactions         Transaction[] @relation("AssetToTransaction")
   transferTransactions Transaction[] @relation("ToAssetToTransaction")
@@ -91,52 +81,25 @@ enum TransactionType {
 }
 
 model Transaction {
-  id           String                  @id @default(uuid())
-  type         TransactionType
-  amount       Decimal
-  note         String?
-  date         DateTime
-  userId       String
-  user         User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  assetId      String
-  asset        Asset                   @relation("AssetToTransaction", fields: [assetId], references: [id], onDelete: Cascade)
-  toAssetId    String?
-  toAsset      Asset?                  @relation("ToAssetToTransaction", fields: [toAssetId], references: [id], onDelete: SetNull)
-  categoryId   String?
-  category     Category?               @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  attachments  TransactionAttachment[]
-  deletedAt    DateTime?
-  createdAt    DateTime                @default(now())
-  updatedAt    DateTime                @updatedAt
+  id            String          @id @default(uuid())
+  type          TransactionType
+  amount        Decimal
+  note          String?
+  date          DateTime
+  userId        String
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assetId       String
+  asset         Asset           @relation("AssetToTransaction", fields: [assetId], references: [id], onDelete: Cascade)
+  toAssetId     String?
+  toAsset       Asset?          @relation("ToAssetToTransaction", fields: [toAssetId], references: [id], onDelete: SetNull)
+  categoryId    String?
+  category      Category?       @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  attachmentUrl String?
+  deletedAt     DateTime?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
 
   @@index([userId])
   @@index([assetId])
   @@index([date])
-}
-
-model TransactionAttachment {
-  id            String      @id @default(uuid())
-  transactionId String
-  transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
-  fileUrl       String
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-}
-
-model Session {
-  id        String   @id @default(uuid())
-  token     String   @unique
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  expiresAt DateTime
-  createdAt DateTime @default(now())
-}
-
-model SyncLog {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  guestId   String
-  status    String   // "PENDING" | "SUCCESS" | "FAILED"
-  createdAt DateTime @default(now())
 }

@@ -49,12 +49,4 @@ export class CreateAssetDto {
   @IsOptional()
   color?: string;
 
-  @ApiProperty({
-    description: "Icon name for the asset",
-    example: "bank",
-    required: false,
-  })
-  @IsString()
-  @IsOptional()
-  icon?: string;
 }

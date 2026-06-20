@@ -27,7 +27,6 @@ export class AssetService {
       type: dto.type,
       balance: dto.balance,
       color: dto.color,
-      icon: dto.icon,
     });
   }
 
@@ -66,7 +65,6 @@ export class AssetService {
       type: dto.type,
       balance: dto.balance,
       color: dto.color,
-      icon: dto.icon,
       isArchived: dto.isArchived,
     });
   }

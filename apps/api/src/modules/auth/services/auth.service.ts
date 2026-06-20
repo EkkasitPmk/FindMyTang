@@ -6,7 +6,6 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 import { UserRepository } from "../../user/repositories/user.repository";
-import { SessionRepository } from "../../session/repositories/session.repository";
 import { ConfigService } from "@nestjs/config";
 import { RegisterDto } from "../dto/register.dto";
 import { LoginDto } from "../dto/login.dto";
@@ -23,7 +22,6 @@ export class AuthService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly jwtService: JwtService,
-    private readonly sessionRepository: SessionRepository,
     private readonly configService: ConfigService,
     private readonly prisma: PrismaService,
   ) {}
@@ -62,30 +60,13 @@ export class AuthService {
       },
     );
 
-    // Hash refresh token for DB session using SHA-256 to avoid bcrypt's 72-character limit
-    const hashedRefreshToken = crypto
-      .createHash("sha256")
-      .update(refreshToken)
-      .digest("hex");
-
-    // Create session in DB
-    const expiresAt = new Date();
-    // ponytail: hardcoded 7 days offset matching '7d' expiration limit.
-    expiresAt.setDate(expiresAt.getDate() + 7);
-
-    await this.sessionRepository.create({
-      token: hashedRefreshToken,
-      userId: user.id,
-      expiresAt,
-    });
-
     return {
       accessToken,
       refreshToken,
       user: {
         id: user.id,
         email: user.email,
-        displayName: user.profile?.displayName ?? "User",
+        displayName: user.displayName ?? "User",
       },
     };
   }
@@ -112,11 +93,7 @@ export class AuthService {
     const user = await this.userRepository.create({
       email,
       password: hashedPassword,
-      profile: {
-        create: {
-          displayName,
-        },
-      },
+      displayName,
       categories: {
         create: DEFAULT_CATEGORIES.map((cat) => ({
           name: cat.name,
@@ -163,7 +140,6 @@ export class AuthService {
             type: asset.type,
             balance: new Prisma.Decimal(asset.balance || 0),
             color: asset.color,
-            icon: asset.icon,
             userId,
           },
         });
@@ -196,12 +172,12 @@ export class AuthService {
         });
       }
 
-      // 4. Create Sync Log
-      await tx.syncLog.create({
+      // 4. Update Sync Status on User model directly
+      await tx.user.update({
+        where: { id: userId },
         data: {
-          userId,
-          guestId: "GUEST_SYNC", // Placeholder or from client
-          status: "SUCCESS",
+          lastSyncedAt: new Date(),
+          lastSyncStatus: "SUCCESS",
         },
       });
 
@@ -218,7 +194,7 @@ export class AuthService {
       displayName: string;
     };
   }> {
-    // 1. Verify token signature
+    // 1. Verify token signature and expiry
     const refreshSecret = this.configService.get<string>("jwt.refreshSecret");
     let payload: JwtPayload;
     try {
@@ -231,25 +207,7 @@ export class AuthService {
 
     const userId = payload.sub;
 
-    // 2. Find session by hashed token
-    const hashedRefreshToken = crypto
-      .createHash("sha256")
-      .update(refreshToken)
-      .digest("hex");
-
-    const session =
-      await this.sessionRepository.findByToken(hashedRefreshToken);
-    if (session?.userId !== userId) {
-      throw new UnauthorizedException("Invalid or expired session");
-    }
-
-    // Check expiry
-    if (session.expiresAt < new Date()) {
-      await this.sessionRepository.delete(session.id).catch(() => {});
-      throw new UnauthorizedException("Invalid or expired session");
-    }
-
-    // 3. Generate new Access Token and Refresh Token (rotation)
+    // 2. Generate new Access Token and Refresh Token (rotation)
     const newPayload: JwtPayload = {
       sub: userId,
       email: payload.email,
@@ -266,23 +224,7 @@ export class AuthService {
       },
     );
 
-    // Hash the new refresh token using SHA-256 to avoid bcrypt's 72-character limit
-    const newHashedRefreshToken = crypto
-      .createHash("sha256")
-      .update(newRefreshToken)
-      .digest("hex");
-
-    // Update session in DB
-    const expiresAt = new Date();
-    // ponytail: hardcoded 7 days offset matching '7d' expiration limit.
-    expiresAt.setDate(expiresAt.getDate() + 7);
-
-    await this.sessionRepository.update(session.id, {
-      token: newHashedRefreshToken,
-      expiresAt,
-    });
-
-    // Also get user object
+    // 3. Get user object
     const user = await this.userRepository.findById(userId);
     if (!user) {
       throw new UnauthorizedException("User not found");
@@ -294,22 +236,13 @@ export class AuthService {
       user: {
         id: user.id,
         email: user.email,
-        displayName: user.profile?.displayName ?? "User",
+        displayName: user.displayName ?? "User",
       },
     };
   }
 
   async logout(refreshToken?: string): Promise<void> {
-    if (!refreshToken) return;
-    const hashedRefreshToken = crypto
-      .createHash("sha256")
-      .update(refreshToken)
-      .digest("hex");
-
-    const session =
-      await this.sessionRepository.findByToken(hashedRefreshToken);
-    if (session) {
-      await this.sessionRepository.delete(session.id);
-    }
+    // ponytail: stateless session invalidation is handled by client clearing cookies.
+    return;
   }
 }

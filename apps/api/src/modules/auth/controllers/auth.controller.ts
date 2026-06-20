@@ -18,7 +18,7 @@ import { SyncGuestDto } from "../dto/sync-guest.dto";
 import { JwtAuthGuard } from "../guards/jwt-auth.guard";
 import { JwtRefreshGuard } from "../guards/jwt-refresh.guard";
 import { CurrentUser } from "../decorators/current-user.decorator";
-import type { User, Profile } from "@prisma/client";
+import type { User } from "@prisma/client";
 
 type CookieSameSite = "lax" | "strict" | "none";
 
@@ -35,7 +35,7 @@ export class AuthController {
     return {
       id: user.id,
       email: user.email,
-      displayName: user.profile?.displayName ?? registerDto.displayName,
+      displayName: user.displayName ?? registerDto.displayName,
       createdAt: user.createdAt,
     };
   }
@@ -91,7 +91,7 @@ export class AuthController {
     @Response({ passthrough: true }) res: express.Response,
   ) {
     const userPayload = req.user as {
-      user: User & { profile: Profile | null };
+      user: User;
       refreshToken: string;
     };
     const { refreshToken } = userPayload;
@@ -129,11 +129,16 @@ export class AuthController {
 
   @Get("me")
   @UseGuards(JwtAuthGuard)
-  getMe(@CurrentUser() user: User & { profile: Profile | null }) {
+  getMe(@CurrentUser() user: User) {
     return {
       id: user.id,
       email: user.email,
-      displayName: user.profile?.displayName ?? "User",
+      displayName: user.displayName ?? "User",
+      avatarUrl: user.avatarUrl,
+      language: user.language,
+      timezone: user.timezone,
+      lastSyncedAt: user.lastSyncedAt,
+      lastSyncStatus: user.lastSyncStatus,
     };
   }
 

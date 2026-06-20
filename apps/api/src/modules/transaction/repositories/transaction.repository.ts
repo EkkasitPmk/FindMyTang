@@ -11,6 +11,7 @@ export interface CreateTransactionData {
   assetId: string;
   toAssetId?: string;
   categoryId?: string;
+  attachmentUrl?: string;
 }
 
 @Injectable()
