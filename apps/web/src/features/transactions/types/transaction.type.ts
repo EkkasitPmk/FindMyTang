@@ -4,6 +4,7 @@ export interface CreateExpenseRequest {
   amount: number;
   note?: string;
   transactionDate: string;
+  attachmentUrl?: string;
 }
 
 export interface CreateIncomeRequest {
@@ -12,22 +13,33 @@ export interface CreateIncomeRequest {
   amount: number;
   note?: string;
   transactionDate: string;
+  attachmentUrl?: string;
 }
+
+export type TransactionType = "INCOME" | "EXPENSE" | "TRANSFER" | "ADJUSTMENT";
 
 export interface TransactionResponse {
   id: string;
-  type: "INCOME" | "EXPENSE" | "TRANSFER";
+  type: TransactionType;
   amount: number;
   note?: string;
   transactionDate: string;
   assetId: string;
+  toAssetId?: string | null;
   categoryId?: string;
+  attachmentUrl?: string | null;
   asset?: {
     id: string;
     name: string;
     type: string;
     balance: number;
   };
+  toAsset?: {
+    id: string;
+    name: string;
+    type: string;
+    balance: number;
+  } | null;
   category?: {
     id: string;
     name: string;

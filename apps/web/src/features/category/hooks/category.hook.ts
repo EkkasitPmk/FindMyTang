@@ -37,6 +37,7 @@ export const useCreateCategoryMutation = (options?: {
           color: data.color,
           icon: data.icon,
           userId: "guest",
+          isSystem: false,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };

@@ -7,6 +7,8 @@ export interface Category {
   color?: string;
   icon?: string;
   userId: string;
+  isSystem: boolean;
+  deletedAt?: string | null;
   createdAt: string;
   updatedAt: string;
 }
