@@ -214,10 +214,10 @@ export default function TransactionsContainer() {
     <div className="min-h-screen bg-background pb-24">
       <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-md px-4 py-6 border-b border-outline-variant">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <h1 className="font-headline-lg text-on-surface">Transactions</h1>
+          <h1 className="">Transactions</h1>
           <button
             onClick={() => setIsFormOpen(!isFormOpen)}
-            className="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg active-press"
+            className="w-10 h-10 rounded-full bg-primary flex items-center justify-center shadow-lg active-press"
           >
             {isFormOpen ? <X size={24} /> : <Plus size={24} />}
           </button>
@@ -227,8 +227,8 @@ export default function TransactionsContainer() {
       <main className="max-w-2xl mx-auto pt-6">
         {isFormOpen && (
           <div className="px-4 mb-8 animate-subtle-pop">
-            <div className="bg-surface-container-low p-6 rounded-2xl border border-outline-variant shadow-sm">
-              <div className="flex bg-surface-container-high rounded-xl p-1 mb-6">
+            <div className="p-6 rounded-2xl border border-outline-variant shadow-sm">
+              <div className="flex rounded-xl p-1 mb-6">
                 <button
                   onClick={() => setActiveTab("EXPENSE")}
                   className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${
@@ -243,7 +243,7 @@ export default function TransactionsContainer() {
                   onClick={() => setActiveTab("INCOME")}
                   className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${
                     activeTab === "INCOME"
-                      ? "bg-surface text-secondary shadow-sm"
+                      ? "bg-surface shadow-sm"
                       : "text-on-surface-variant hover:text-on-surface"
                   }`}
                 >

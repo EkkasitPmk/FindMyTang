@@ -65,7 +65,7 @@ export default function HomeContainer() {
 
   if (error) {
     return (
-      <div className="p-6 text-red-500">
+      <div className="p-6 text-expense">
         Failed to load assets: {error.message || "Unknown error"}
       </div>
     );
@@ -106,7 +106,7 @@ export default function HomeContainer() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-4">
+    <div className="space-y-4">
       <FinancialSnapshotContainer />
 
       <AssetsContainer />

@@ -90,11 +90,11 @@ export default function AssetsContainer() {
         </div>
 
         <div className="flex gap-4">
-          <div className="flex flex-col grow bg-surface-variant/50 px-4 py-3 rounded-md border border-outline-variant/30">
+          <div className="flex flex-col grow px-4 py-3 rounded-md border border-outline-variant/30">
             <span className="text-sm font-medium">Income</span>
             <span className="text-base font-bold">฿ 45,000</span>
           </div>
-          <div className="flex flex-col grow bg-surface-variant/50 px-4 py-3 rounded-md border border-outline-variant/30">
+          <div className="flex flex-col grow px-4 py-3 rounded-md border border-outline-variant/30">
             <span className="text-sm font-medium">Expanse</span>
             <span className="text-base font-bold">฿ 12,000</span>
           </div>

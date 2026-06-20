@@ -23,7 +23,7 @@ export default function Pagination({
       >
         <ChevronLeft size={24} />
       </button>
-      <span className="font-title-md text-on-surface">
+      <span className="">
         {page} / {totalPages}
       </span>
       <button

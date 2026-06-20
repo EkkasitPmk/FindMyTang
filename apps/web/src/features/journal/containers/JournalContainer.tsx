@@ -78,25 +78,25 @@ export default function JournalContainer() {
   ];
 
   return (
-    <div className="space-y-stack-gap-lg animate-in fade-in duration-300">
+    <div className="animate-in fade-in duration-300">
       {/* Page Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="font-headline-lg text-on-surface">
+          <h1 className="">
             Transaction Journal
           </h1>
-          <p className="font-body-sm text-on-surface-variant mt-1">
+          <p className="text-on-surface-variant mt-1">
             History of your earnings, expenditures, and transfers
           </p>
         </div>
-        <button className="flex items-center gap-2 py-2.5 px-4 rounded-full bg-primary-container text-on-primary hover:bg-primary transition-all text-xs font-semibold shadow-sm active-press">
+        <button className="flex items-center gap-2 py-2.5 px-4 rounded-full bg-primary-container hover:bg-primary transition-all text-xs font-semibold shadow-sm active-press">
           <Plus className="w-4 h-4" strokeWidth={2} />
           Add Transaction
         </button>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-surface-container-lowest border border-outline-variant/60 p-4 rounded-md">
+      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between border border-outline-variant/60 p-4 rounded-md">
         <div className="relative w-full sm:max-w-xs">
           <Search className="absolute left-3.5 top-3 w-4 h-4 text-on-surface-variant/80" strokeWidth={1.5} />
           <input
@@ -104,7 +104,7 @@ export default function JournalContainer() {
             placeholder="Search transactions..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant/60 focus:border-primary-container rounded-md text-xs sm:text-sm text-on-surface outline-none transition-all"
+            className="w-full pl-10 pr-4 py-2 border border-outline-variant/60 focus:border-primary-container rounded-md text-xs sm:text-sm outline-none transition-all"
           />
         </div>
 
@@ -118,15 +118,15 @@ export default function JournalContainer() {
                 onClick={() => setActiveFilter(filter)}
                 className={`py-1.5 px-3.5 rounded-md text-xs font-semibold uppercase tracking-wider transition-all shrink-0 active-press ${
                   isActive
-                    ? "bg-on-surface text-surface-container-lowest"
-                    : "bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container"
+                    ? ""
+                    : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container"
                 }`}
               >
                 {filter}
               </button>
             );
           })}
-          <button className="p-1.5 rounded-md bg-surface-container-low border border-outline-variant/60 text-on-surface-variant hover:text-on-surface hover:bg-surface-container active-press">
+          <button className="p-1.5 rounded-md border border-outline-variant/60 text-on-surface-variant hover:text-on-surface hover:bg-surface-container active-press">
             <Filter className="w-4 h-4" strokeWidth={1.5} />
           </button>
         </div>
@@ -153,10 +153,10 @@ export default function JournalContainer() {
               <div className="flex justify-between items-center px-2">
                 <div className="flex items-center gap-2 text-on-surface-variant">
                   <Calendar className="w-3.5 h-3.5" strokeWidth={1.5} />
-                  <span className="font-label-caps tracking-normal font-semibold">{day.date}</span>
+                  <span className="tracking-normal font-semibold">{day.date}</span>
                 </div>
                 <span
-                  className={`font-body-sm font-semibold ${day.summary > 0 ? "text-emerald-600" : "text-on-surface-variant"} tnum`}
+                  className={`font-semibold ${day.summary > 0 ? "text-emerald-600" : "text-on-surface-variant"} tnum`}
                 >
                   {day.summary > 0 ? "+" : ""}
                   {day.summary.toLocaleString()} ฿
@@ -168,7 +168,7 @@ export default function JournalContainer() {
                 {filteredTxs.map((tx) => (
                   <div
                     key={tx.id}
-                    className="flex justify-between items-center p-4 rounded-md border border-outline-variant/60 bg-surface-container-lowest hover:bg-surface-container-low/20 transition-all duration-200 group"
+                    className="flex justify-between items-center p-4 rounded-md border border-outline-variant/60 hover:bg-surface-container-low/20 transition-all duration-200 group"
                   >
                     <div className="flex items-center gap-4">
                       {/* Icon */}
@@ -176,18 +176,18 @@ export default function JournalContainer() {
                         className={`p-2.5 rounded-md border ${
                           tx.type === "INCOME"
                             ? "bg-emerald-500/8 border-emerald-500/10 text-emerald-600"
-                            : "bg-error-container/8 border-error-container/10 text-error"
+                            : "text-error"
                         }`}
                       >
                         <ArrowRightLeft className="w-4 h-4" strokeWidth={1.5} />
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <p className="font-body-sm font-bold text-on-surface">
+                          <p className="font-bold">
                             {tx.desc}
                           </p>
                           {tx.hasAttachment && (
-                            <span className="px-1.5 py-0.5 rounded-sm bg-surface-container-low text-[9px] text-on-surface-variant font-medium flex items-center gap-0.5 border border-outline-variant/40">
+                            <span className="px-1.5 py-0.5 rounded-sm text-[9px] text-on-surface-variant font-medium flex items-center gap-0.5 border border-outline-variant/40">
                               <FileText className="w-2.5 h-2.5" strokeWidth={1.5} />
                               Receipt
                             </span>
@@ -204,7 +204,7 @@ export default function JournalContainer() {
                       <div className="flex items-center gap-1.5">
                         <span className={`w-1.5 h-1.5 rounded-full ${tx.type === "INCOME" ? "bg-emerald-500" : "bg-error"}`} />
                         <p
-                          className={`font-numeric-data text-sm font-bold ${tx.type === "INCOME" ? "text-emerald-600" : "text-error"} tnum`}
+                          className={`text-sm font-bold ${tx.type === "INCOME" ? "text-emerald-600" : "text-error"} tnum`}
                         >
                           {tx.type === "INCOME" ? "+" : ""}
                           {tx.amount.toLocaleString()} ฿

@@ -33,9 +33,9 @@ export default function ExpenseForm({
   const expenseCategories = categories.filter((c) => c.type === "EXPENSE");
 
   return (
-    <div className="w-full max-w-md mx-auto p-6 bg-surface-container rounded-2xl shadow-xl border border-outline/10 animate-subtle-pop">
+    <div className="w-full max-w-md mx-auto p-6 rounded-2xl shadow-xl border border-outline/10 animate-subtle-pop">
       <div className="mb-6">
-        <h2 className="text-xl font-bold text-on-surface mb-2">
+        <h2 className="text-xl font-bold mb-2">
           Record Expense
         </h2>
         <p className="text-sm text-on-surface-variant">
@@ -44,7 +44,7 @@ export default function ExpenseForm({
       </div>
 
       {globalError && (
-        <div className="mb-4 p-3 bg-error-container text-on-error-container rounded-lg text-sm">
+        <div className="mb-4 p-3 text-on-error-container rounded-lg text-sm">
           {globalError}
         </div>
       )}
@@ -60,7 +60,7 @@ export default function ExpenseForm({
           </label>
           <select
             id="assetId"
-            className="w-full h-12 px-4 bg-surface-container-low border border-outline/10 rounded-lg text-on-surface focus:border-primary/35 outline-none transition-all cursor-pointer"
+            className="w-full h-12 px-4 border border-outline/10 rounded-lg focus:border-primary/35 outline-none transition-all cursor-pointer"
             {...register("assetId")}
           >
             <option value="">Select an asset</option>
@@ -87,7 +87,7 @@ export default function ExpenseForm({
           </label>
           <select
             id="categoryId"
-            className="w-full h-12 px-4 bg-surface-container-low border border-outline/10 rounded-lg text-on-surface focus:border-primary/35 outline-none transition-all cursor-pointer"
+            className="w-full h-12 px-4 border border-outline/10 rounded-lg focus:border-primary/35 outline-none transition-all cursor-pointer"
             {...register("categoryId")}
           >
             <option value="">Select a category</option>
@@ -119,7 +119,7 @@ export default function ExpenseForm({
             step="any"
             min="0.01"
             placeholder="0.00"
-            className="w-full h-12 px-4 bg-surface-container-low border border-outline/10 rounded-lg text-on-surface focus:border-primary/35 outline-none transition-all"
+            className="w-full h-12 px-4 border border-outline/10 rounded-lg focus:border-primary/35 outline-none transition-all"
             {...register("amount", { valueAsNumber: true })}
           />
           {errors.amount && (
@@ -141,7 +141,7 @@ export default function ExpenseForm({
             id="note"
             type="text"
             placeholder="e.g. Lunch, Coffee"
-            className="w-full h-12 px-4 bg-surface-container-low border border-outline/10 rounded-lg text-on-surface focus:border-primary/35 outline-none transition-all"
+            className="w-full h-12 px-4 border border-outline/10 rounded-lg focus:border-primary/35 outline-none transition-all"
             {...register("note")}
           />
           {errors.note && (
@@ -162,7 +162,7 @@ export default function ExpenseForm({
           <input
             id="transactionDate"
             type="datetime-local"
-            className="w-full h-12 px-4 bg-surface-container-low border border-outline/10 rounded-lg text-on-surface focus:border-primary/35 outline-none transition-all"
+            className="w-full h-12 px-4 border border-outline/10 rounded-lg focus:border-primary/35 outline-none transition-all"
             {...register("transactionDate")}
           />
           {errors.transactionDate && (
@@ -176,7 +176,7 @@ export default function ExpenseForm({
         <button
           type="submit"
           disabled={isPending}
-          className="w-full h-12 mt-4 bg-tertiary text-on-tertiary font-semibold rounded-lg flex items-center justify-center hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer"
+          className="w-full h-12 mt-4 font-semibold rounded-lg flex items-center justify-center hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer"
         >
           {isPending ? "Saving..." : "Save Expense"}
         </button>

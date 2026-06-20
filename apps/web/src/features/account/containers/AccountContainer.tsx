@@ -12,7 +12,7 @@ export default function AccountContainer() {
       <TopAppBarMobile href="/home" title="Account" />
 
       <div className="flex flex-col items-center justify-center gap-1 my-4">
-        <div className="w-14 h-14 bg-surface-variant rounded-full flex items-center justify-center">
+        <div className="w-14 h-14 rounded-full flex items-center justify-center">
           <span className="material-symbols-outlined text-on-surface-variant">
             <UserRound size={28} />
           </span>

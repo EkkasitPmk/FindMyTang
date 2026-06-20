@@ -28,17 +28,17 @@ export default function TransactionList({ transactions }: TransactionListProps) 
         return (
           <div
             key={tx.id}
-            className="bg-surface-container-low p-4 rounded-xl border border-outline-variant flex items-center justify-between hover:bg-surface-container transition-colors active-press ambient-shadow"
+            className="p-4 rounded-xl border border-outline-variant flex items-center justify-between hover:bg-surface-container transition-colors active-press ambient-shadow"
           >
             <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-surface-container-highest rounded-full flex items-center justify-center text-2xl shadow-sm">
+              <div className="w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-sm">
                 {categoryIcon}
               </div>
               <div className="flex flex-col">
-                <span className="font-title-md text-on-surface">
+                <span className="">
                   {categoryName}
                 </span>
-                <div className="flex items-center space-x-2 text-on-surface-variant font-body-sm">
+                <div className="flex items-center space-x-2 text-on-surface-variant">
                   <span>{assetName}</span>
                   <span className="text-[10px] opacity-30">•</span>
                   <span>{formattedDate}</span>

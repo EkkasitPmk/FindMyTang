@@ -20,18 +20,18 @@ export default function DesktopSidebar({
     if (isLoading) {
       return (
         <div className="space-y-1.5 animate-pulse">
-          <div className="h-3 w-20 bg-surface-container-high rounded" />
-          <div className="h-2.5 w-28 bg-surface-container-high rounded" />
+          <div className="h-3 w-20 bg-surface-secondary rounded" />
+          <div className="h-2.5 w-28 bg-surface-secondary rounded" />
         </div>
       );
     }
     if (user) {
       return (
         <>
-          <p className="text-xs font-semibold text-on-surface truncate">
+          <p className="text-xs font-semibold text-primary-text truncate">
             {user.displayName}
           </p>
-          <p className="text-[10px] text-on-surface-variant/80 truncate">
+          <p className="text-[10px] text-secondary-text/80 truncate">
             {user.email}
           </p>
         </>
@@ -39,8 +39,8 @@ export default function DesktopSidebar({
     }
     return (
       <>
-        <p className="text-xs font-semibold text-on-surface truncate">Guest</p>
-        <p className="text-[10px] text-on-surface-variant/80 truncate">
+        <p className="text-xs font-semibold text-primary-text truncate">Guest</p>
+        <p className="text-[10px] text-secondary-text/80 truncate">
           guest@pocketnote.me
         </p>
       </>
@@ -48,14 +48,14 @@ export default function DesktopSidebar({
   })();
 
   return (
-    <aside className="hidden md:flex flex-col w-64 border-r border-outline-variant/65 bg-surface-container-lowest sticky top-0 h-screen p-6 justify-between shrink-0">
+    <aside className="hidden md:flex flex-col w-64 border-r border-border bg-surface sticky top-0 h-screen p-6 justify-between shrink-0">
       <div className="space-y-8">
         {/* Brand Title */}
         <div className="flex items-center gap-3 px-2">
-          <div className="w-8 h-8 rounded-lg bg-primary-container flex items-center justify-center shadow-sm">
-            <Wallet className="w-4 h-4 text-on-primary" strokeWidth={1.5} />
+          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shadow-sm">
+            <Wallet className="w-4 h-4 text-white" strokeWidth={1.5} />
           </div>
-          <span className="text-lg font-bold tracking-tight text-on-surface">
+          <span className="text-lg font-bold tracking-tight text-primary-text">
             PocketNote
           </span>
         </div>
@@ -71,12 +71,12 @@ export default function DesktopSidebar({
                 href={item.href}
                 className={`flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium transition-all duration-200 active-press ${
                   isActive
-                    ? "bg-primary-container/8 text-primary border border-primary-container/10"
-                    : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low border border-transparent"
+                    ? "bg-primary-light/50 text-primary border border-primary-light"
+                    : "text-secondary-text hover:text-primary-text hover:bg-surface-secondary border border-transparent"
                 }`}
               >
                 <Icon
-                  className={`w-4 h-4 transition-transform ${isActive ? "text-primary" : "text-on-surface-variant"}`}
+                  className={`w-4 h-4 transition-transform ${isActive ? "text-primary" : "text-secondary-text"}`}
                   strokeWidth={isActive ? 2 : 1.5}
                 />
                 {item.label}
@@ -87,11 +87,11 @@ export default function DesktopSidebar({
       </div>
 
       {/* User profile & Action */}
-      <div className="space-y-4 pt-6 border-t border-outline-variant/65">
+      <div className="space-y-4 pt-6 border-t border-border">
         <div className="flex items-center gap-3 px-2">
-          <div className="w-10 h-10 rounded-md bg-surface-container-low border border-outline-variant/50 flex items-center justify-center overflow-hidden">
+          <div className="w-10 h-10 rounded-md bg-surface-secondary border border-border flex items-center justify-center overflow-hidden">
             <User
-              className="w-5 h-5 text-on-surface-variant"
+              className="w-5 h-5 text-secondary-text"
               strokeWidth={1.5}
             />
           </div>
@@ -103,15 +103,15 @@ export default function DesktopSidebar({
           (user ? (
             <button
               onClick={onLogout}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium text-on-surface-variant hover:text-error hover:bg-error-container/10 transition-all duration-200 border border-transparent active-press cursor-pointer"
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium text-secondary-text hover:text-expense hover:bg-expense-light/50 transition-all duration-200 border border-transparent active-press cursor-pointer"
             >
-              <LogOut className="w-4 h-4 text-error" strokeWidth={1.5} />
-              <span className="text-error">Log Out</span>
+              <LogOut className="w-4 h-4 text-expense" strokeWidth={1.5} />
+              <span className="text-expense">Log Out</span>
             </button>
           ) : (
             <Link
               href="/login"
-              className="flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium text-on-surface-variant hover:text-primary hover:bg-primary-container/10 transition-all duration-200 border border-transparent active-press"
+              className="flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium text-secondary-text hover:text-primary hover:bg-primary-light/50 transition-all duration-200 border border-transparent active-press"
             >
               <LogIn className="w-4 h-4" strokeWidth={1.5} />
               Sync & Backup

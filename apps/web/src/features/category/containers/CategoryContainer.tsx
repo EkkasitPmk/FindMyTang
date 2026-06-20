@@ -218,7 +218,7 @@ export default function CategoryContainer() {
 
     if (error) {
       return (
-        <div className="p-4 bg-error-container text-on-error-container rounded-lg text-sm">
+        <div className="p-4 text-on-error-container rounded-lg text-sm">
           Error loading categories: {error.message || "Unknown error"}
         </div>
       );
@@ -238,7 +238,7 @@ export default function CategoryContainer() {
           const typeColor =
             category.type === "INCOME"
               ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
-              : "bg-error-container/8 text-error border-error-container/15";
+              : "text-error";
 
           // Safely render color dot or background if valid hex or string
           const hasColor = !!category.color;
@@ -249,7 +249,7 @@ export default function CategoryContainer() {
           return (
             <div
               key={category.id}
-              className="flex items-center justify-between p-4 rounded-xl border border-outline-variant/65 bg-surface-container-lowest hover:bg-surface-container-low/20 transition-all duration-200"
+              className="flex items-center justify-between p-4 rounded-xl border border-outline-variant/65 hover:bg-surface-container-low/20 transition-all duration-200"
             >
               <div className="flex items-center gap-3 justify-between w-full">
                 <div className="flex items-center gap-3">
@@ -267,7 +267,7 @@ export default function CategoryContainer() {
                       : category.name.substring(0, 2).toUpperCase()}
                   </div>
                   <div>
-                    <h4 className="font-semibold text-sm text-on-surface leading-tight">
+                    <h4 className="font-semibold text-sm leading-tight">
                       {category.name}
                     </h4>
                     <p className="text-xs text-on-surface-variant/80 mt-1 capitalize font-medium">
@@ -326,7 +326,7 @@ export default function CategoryContainer() {
       {/* Categories List View */}
       <div className="lg:col-span-2 space-y-6">
         <div>
-          <h2 className="text-xl font-bold text-on-surface">Categories List</h2>
+          <h2 className="text-xl font-bold">Categories List</h2>
           <p className="text-sm text-on-surface-variant mt-1">
             Browse and manage your custom income/expense categories.
           </p>

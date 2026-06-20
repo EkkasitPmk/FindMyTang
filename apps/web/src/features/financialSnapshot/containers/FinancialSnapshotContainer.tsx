@@ -5,7 +5,7 @@ export default function FinancialSnapshotContainer() {
     <>
       {/* UI แบบนี้ข้อมูล */}
       <div className="flex flex-col px-3 py-4 bg-white rounded-md border border-gray-300 gap-2">
-        <span className="text-xs font-medium text-on-secondary-container uppercase tracking-widest">
+        <span className="text-xs font-medium uppercase tracking-widest">
           FINANCIAL SNAPSHOT
         </span>
         <span className="text-3xl font-bold">฿ 93,000</span>
@@ -19,7 +19,7 @@ export default function FinancialSnapshotContainer() {
 
       {/* empty state UI */}
       {/* <div className="flex flex-col px-3 py-4 bg-white rounded-md border border-gray-300 gap-2">
-        <span className="text-xs font-medium text-on-secondary-container uppercase tracking-widest">
+        <span className="text-xs font-medium uppercase tracking-widest">
           FINANCIAL SNAPSHOT
         </span>
         <span className="text-3xl font-bold">฿ 0</span>

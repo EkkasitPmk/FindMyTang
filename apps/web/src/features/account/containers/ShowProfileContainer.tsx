@@ -17,17 +17,17 @@ export default function ShowProfileContainer() {
       <div className="flex items-center gap-2">
         <Link
           href="/account"
-          className="w-10 h-10 bg-surface-variant rounded-full flex items-center justify-center"
+          className="w-10 h-10 rounded-full flex items-center justify-center"
         >
           <span className="material-symbols-outlined text-on-surface-variant">
             <UserRound />
           </span>
         </Link>
         <div className="flex flex-col">
-          <h1 className="text-base text-on-background font-medium leading-tight">
+          <h1 className="text-base font-medium leading-tight">
             Good Morning ☀️
           </h1>
-          <p className="font-body-sm text-body-sm text-on-secondary-container">
+          <p className="text-body-sm">
             13 June 2026
           </p>
         </div>

@@ -33,9 +33,9 @@ export default function AssetForm({
   handleSelect,
 }: Readonly<AssetFormProps>) {
   return (
-    <div className="p-4">
+    <div className="p-4 min-h-[80vh]">
       <div className="mb-6">
-        <h2 className="text-xl font-bold text-on-surface mb-2">
+        <h2 className="text-xl font-bold mb-2">
           Create New Asset
         </h2>
         <p className="text-sm text-on-surface-variant">
@@ -56,7 +56,7 @@ export default function AssetForm({
             id="name"
             type="text"
             placeholder="e.g. Cash, Main Bank Account"
-            className="w-full h-12 px-4 bg-surface-container-low border border-outline/10 rounded-md text-on-surface focus:border-primary/35 outline-none transition-all"
+            className="w-full h-12 px-4 border border-outline/10 rounded-md focus:border-primary/35 outline-none transition-all"
             {...register("name")}
           />
           {errors.name && (
@@ -77,7 +77,7 @@ export default function AssetForm({
           <button
             type="button"
             onClick={() => setIsOpen(!isOpen)}
-            className="w-full h-12 px-4 text-left bg-surface-container-low border border-outline/10 rounded-md text-on-surface focus:border-primary/35 outline-none transition-all cursor-pointer"
+            className="w-full h-12 px-4 text-left border border-outline/10 rounded-md focus:border-primary/35 outline-none transition-all cursor-pointer"
             {...register("type")}
           >
             <span>{selected}</span>
@@ -104,7 +104,7 @@ export default function AssetForm({
                     type="button"
                     className={cn(
                       "w-full px-4 py-2 text-sm flex items-center justify-between hover:bg-indigo-500 hover:text-white cursor-pointer text-left",
-                      selected === type && "bg-surface-container-low",
+                      selected === type && "",
                     )}
                     onClick={() => handleSelect(type)}
                   >
@@ -136,7 +136,7 @@ export default function AssetForm({
             type="number"
             step="any"
             placeholder="0.00"
-            className="w-full h-12 px-4 bg-surface-container-low border border-outline/10 rounded-md text-on-surface focus:border-primary/35 outline-none transition-all"
+            className="w-full h-12 px-4 border border-outline/10 rounded-md focus:border-primary/35 outline-none transition-all"
             {...register("balance")}
           />
           {errors.balance && (

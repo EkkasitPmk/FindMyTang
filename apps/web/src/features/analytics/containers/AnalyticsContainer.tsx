@@ -46,20 +46,20 @@ export default function AnalyticsContainer() {
   ];
 
   return (
-    <div className="space-y-stack-gap-lg animate-in fade-in duration-300">
+    <div className="animate-in fade-in duration-300">
       {/* Page Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="font-headline-lg text-on-surface">
+          <h1 className="">
             Financial Analytics
           </h1>
-          <p className="font-body-sm text-on-surface-variant mt-1">
+          <p className="text-on-surface-variant mt-1">
             Visual breakdown of your expenses and savings patterns
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Calendar className="w-4 h-4 text-on-surface-variant/80" strokeWidth={1.5} />
-          <select className="bg-surface-container-lowest border border-outline-variant/65 rounded-md font-body-sm text-on-surface-variant py-2 px-3 focus:outline-none focus:border-primary-container">
+          <select className="border border-outline-variant/65 rounded-md text-on-surface-variant py-2 px-3 focus:outline-none focus:border-primary-container">
             <option>June 2026</option>
             <option>May 2026</option>
             <option>All-time</option>
@@ -70,9 +70,9 @@ export default function AnalyticsContainer() {
       {/* Main Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
         {/* SVG Donut Chart for Expense Breakdown */}
-        <div className="lg:col-span-2 bg-surface-container-lowest border border-outline-variant/60 rounded-md p-6 flex flex-col justify-between items-center text-center">
+        <div className="lg:col-span-2 border border-outline-variant/60 rounded-md p-6 flex flex-col justify-between items-center text-center">
           <div className="w-full flex justify-between items-center mb-6">
-            <h3 className="font-title-md text-on-surface">Structure</h3>
+            <h3 className="">Structure</h3>
             <PieChart className="w-4 h-4 text-on-surface-variant/80" strokeWidth={1.5} />
           </div>
 
@@ -132,10 +132,10 @@ export default function AnalyticsContainer() {
               />
             </svg>
             <div className="absolute flex flex-col items-center justify-center">
-              <span className="font-label-caps text-on-surface-variant/80">
+              <span className="text-on-surface-variant/80">
                 Total
               </span>
-              <span className="font-numeric-data text-xl font-bold text-on-surface tnum">฿10,000</span>
+              <span className="text-xl font-bold tnum">฿10,000</span>
             </div>
           </div>
 
@@ -145,29 +145,29 @@ export default function AnalyticsContainer() {
               <span className="text-[10px] font-semibold text-on-surface-variant/80 mt-1">
                 Housing
               </span>
-              <span className="text-xs font-bold text-on-surface mt-0.5">65%</span>
+              <span className="text-xs font-bold mt-0.5">65%</span>
             </div>
             <div className="flex flex-col items-center">
               <span className="w-2.5 h-2.5 rounded-full bg-primary-container" />
               <span className="text-[10px] font-semibold text-on-surface-variant/80 mt-1">
                 Transport
               </span>
-              <span className="text-xs font-bold text-on-surface mt-0.5">18.5%</span>
+              <span className="text-xs font-bold mt-0.5">18.5%</span>
             </div>
             <div className="flex flex-col items-center">
               <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
               <span className="text-[10px] font-semibold text-on-surface-variant/80 mt-1">
                 Food
               </span>
-              <span className="text-xs font-bold text-on-surface mt-0.5">14%</span>
+              <span className="text-xs font-bold mt-0.5">14%</span>
             </div>
           </div>
         </div>
 
         {/* Categories Progress Breakdown */}
-        <div className="lg:col-span-3 bg-surface-container-lowest border border-outline-variant/60 rounded-md p-6 flex flex-col justify-between">
+        <div className="lg:col-span-3 border border-outline-variant/60 rounded-md p-6 flex flex-col justify-between">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="font-title-md text-on-surface">Top Categories</h3>
+            <h3 className="">Top Categories</h3>
             <span className="text-xs text-on-surface-variant/80 font-semibold">
               Sorted by amount
             </span>
@@ -182,11 +182,11 @@ export default function AnalyticsContainer() {
                   <div className="flex justify-between items-center text-xs">
                     <div className="flex items-center gap-2">
                       <Icon className="w-4 h-4 text-on-surface-variant/80" strokeWidth={1.5} />
-                      <span className="font-bold text-on-surface">
+                      <span className="font-bold">
                         {cat.name}
                       </span>
                     </div>
-                    <div className="font-semibold text-on-surface">
+                    <div className="font-semibold">
                       <span className="tnum">
                         ฿{cat.amount.toLocaleString()}
                       </span>
@@ -196,7 +196,7 @@ export default function AnalyticsContainer() {
                     </div>
                   </div>
                   {/* Progress Line */}
-                  <div className="w-full h-1.5 rounded-full bg-surface-container-low overflow-hidden">
+                  <div className="w-full h-1.5 rounded-full overflow-hidden">
                     <div
                       className={`h-full ${cat.color} rounded-full transition-all duration-500`}
                       style={{ width: `${cat.percentage}%` }}
@@ -210,8 +210,8 @@ export default function AnalyticsContainer() {
       </div>
 
       {/* Monthly comparison bars using CSS Grid */}
-      <div className="bg-surface-container-lowest border border-outline-variant/60 rounded-md p-6">
-        <h3 className="font-title-md text-on-surface mb-6">
+      <div className="border border-outline-variant/60 rounded-md p-6">
+        <h3 className="mb-6">
           Income vs Expenses
         </h3>
 
@@ -262,7 +262,7 @@ export default function AnalyticsContainer() {
                 title="Expense: 8.6k"
               />
             </div>
-            <span className="text-[10px] font-bold text-on-surface uppercase tracking-wider">
+            <span className="text-[10px] font-bold uppercase tracking-wider">
               June
             </span>
           </div>

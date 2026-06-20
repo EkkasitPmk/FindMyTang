@@ -27,9 +27,9 @@ export default function CategoryForm({
   onCancel,
 }: Readonly<CategoryFormProps>) {
   return (
-    <div className="w-full max-w-md mx-auto p-6 bg-surface-container rounded-2xl shadow-xl border border-outline/10 animate-in fade-in duration-300">
+    <div className="w-full max-w-md mx-auto p-6 rounded-2xl shadow-xl border border-outline/10 animate-in fade-in duration-300">
       <div className="mb-6">
-        <h2 className="text-xl font-bold text-on-surface mb-2">
+        <h2 className="text-xl font-bold mb-2">
           {isEditing ? "Edit Category" : "Create New Category"}
         </h2>
         <p className="text-sm text-on-surface-variant">
@@ -40,7 +40,7 @@ export default function CategoryForm({
       </div>
 
       {globalError && (
-        <div className="mb-4 p-3 bg-error-container text-on-error-container rounded-lg text-sm">
+        <div className="mb-4 p-3 text-on-error-container rounded-lg text-sm">
           {globalError}
         </div>
       )}
@@ -58,7 +58,7 @@ export default function CategoryForm({
             id="name"
             type="text"
             placeholder="e.g. Food & Drinks, Salary, Shopping"
-            className="w-full h-12 px-4 bg-surface-container-low border border-outline/10 rounded-lg text-on-surface focus:border-primary/35 outline-none transition-all"
+            className="w-full h-12 px-4 border border-outline/10 rounded-lg focus:border-primary/35 outline-none transition-all"
             {...register("name")}
           />
           {errors.name && (
@@ -78,7 +78,7 @@ export default function CategoryForm({
           </label>
           <select
             id="type"
-            className="w-full h-12 px-4 bg-surface-container-low border border-outline/10 rounded-lg text-on-surface focus:border-primary/35 outline-none transition-all cursor-pointer"
+            className="w-full h-12 px-4 border border-outline/10 rounded-lg focus:border-primary/35 outline-none transition-all cursor-pointer"
             {...register("type")}
           >
             <option value="EXPENSE">Expense</option>
@@ -103,7 +103,7 @@ export default function CategoryForm({
             id="color"
             type="text"
             placeholder="e.g. #FF5733, #33FF57"
-            className="w-full h-12 px-4 bg-surface-container-low border border-outline/10 rounded-lg text-on-surface focus:border-primary/35 outline-none transition-all"
+            className="w-full h-12 px-4 border border-outline/10 rounded-lg focus:border-primary/35 outline-none transition-all"
             {...register("color")}
           />
           {errors.color && (
@@ -125,7 +125,7 @@ export default function CategoryForm({
             id="icon"
             type="text"
             placeholder="e.g. food-icon, salary-icon"
-            className="w-full h-12 px-4 bg-surface-container-low border border-outline/10 rounded-lg text-on-surface focus:border-primary/35 outline-none transition-all"
+            className="w-full h-12 px-4 border border-outline/10 rounded-lg focus:border-primary/35 outline-none transition-all"
             {...register("icon")}
           />
           {errors.icon && (
@@ -153,7 +153,7 @@ export default function CategoryForm({
             <button
               type="button"
               onClick={onCancel}
-              className="w-full h-12 bg-surface-container-high text-on-surface font-semibold rounded-lg flex items-center justify-center hover:opacity-90 active:scale-[0.98] transition-all cursor-pointer border border-outline/10"
+              className="w-full h-12 font-semibold rounded-lg flex items-center justify-center hover:opacity-90 active:scale-[0.98] transition-all cursor-pointer border border-outline/10"
             >
               Cancel
             </button>
