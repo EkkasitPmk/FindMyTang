@@ -1,9 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { create } from "zustand";
 import {
   createCategoryApi,
   getCategoriesApi,
   updateCategory,
   deleteCategory,
+  reorderCategoriesApi,
 } from "../services/category.service";
 import { Category, CreateCategoryRequest } from "../types/category.type";
 import { AxiosError } from "axios";
@@ -141,3 +143,63 @@ export const useDeleteCategoryMutation = (options?: {
     },
   });
 };
+
+export const useReorderCategoriesMutation = (options?: {
+  onSuccess?: (data: { success: boolean }) => void;
+  onError?: (error: AxiosError<ApiErrorResponse>) => void;
+}) => {
+  const queryClient = useQueryClient();
+  const isGuest = useGuestStore((state) => state.isGuest);
+
+  return useMutation<
+    { success: boolean },
+    AxiosError<ApiErrorResponse>,
+    string[]
+  >({
+    mutationFn: async (ids) => {
+      if (isGuest) {
+        // ponytail: Mock category reordering inside the guest store.
+        const state = useGuestStore.getState();
+        const categoryMap = new Map(state.categories.map((c) => [c.id, c]));
+        const reorderedCats: Category[] = [];
+        ids.forEach((id) => {
+          const cat = categoryMap.get(id);
+          if (cat) {
+            reorderedCats.push(cat);
+          }
+        });
+        state.categories.forEach((cat) => {
+          if (!ids.includes(cat.id)) {
+            reorderedCats.push(cat);
+          }
+        });
+        reorderedCats.forEach((cat, idx) => {
+          cat.displayOrder = idx + 1;
+        });
+        useGuestStore.setState({ categories: reorderedCats });
+        return { success: true };
+      }
+      return reorderCategoriesApi(ids);
+    },
+    ...options,
+    onSuccess: (data) => {
+      if (!isGuest) {
+        void queryClient.invalidateQueries({ queryKey: ["categories"] });
+      }
+      options?.onSuccess?.(data);
+    },
+  });
+};
+
+interface CategoryUIStore {
+  isEditingList: boolean;
+  toggleEditingList: () => void;
+  setEditingList: (value: boolean) => void;
+}
+
+export const useCategoryUIStore = create<CategoryUIStore>((set) => ({
+  isEditingList: false,
+  toggleEditingList: () =>
+    set((state) => ({ isEditingList: !state.isEditingList })),
+  setEditingList: (value) => set({ isEditingList: value }),
+}));

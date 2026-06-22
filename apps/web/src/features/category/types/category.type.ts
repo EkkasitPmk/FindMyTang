@@ -8,6 +8,7 @@ export interface Category {
   icon?: string;
   userId: string;
   isSystem: boolean;
+  displayOrder?: number;
   deletedAt?: string | null;
   createdAt: string;
   updatedAt: string;
@@ -18,4 +19,5 @@ export interface CreateCategoryRequest {
   type: CategoryType;
   color?: string;
   icon?: string;
+  displayOrder?: number;
 }

@@ -29,3 +29,14 @@ export const deleteCategory = async (id: string): Promise<Category> => {
   const response = await http.delete<Category>(`/categories/${id}`);
   return response.data;
 };
+
+export const reorderCategoriesApi = async (
+  ids: string[],
+): Promise<{ success: boolean }> => {
+  // ponytail: Category reorder api call.
+  const response = await http.patch<{ success: boolean }>(
+    "/categories/reorder",
+    { ids },
+  );
+  return response.data;
+};

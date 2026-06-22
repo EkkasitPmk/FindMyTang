@@ -1,85 +1,224 @@
 "use client";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
+import { useForm, useWatch } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   createCategorySchema,
   CreateCategoryFormValues,
 } from "../schemas/category.schema";
+import { PREMIUM_COLORS } from "../configs/category.config";
 import {
   useCreateCategoryMutation,
   useUpdateCategoryMutation,
   useCategories,
   useDeleteCategoryMutation,
+  useCategoryUIStore,
+  useReorderCategoriesMutation,
+  ApiErrorResponse,
 } from "../hooks/category.hook";
 import { Category } from "../types/category.type";
-import CategoryForm from "../components/CategoryForm";
+import { CircleX } from "lucide-react";
+import ConfirmModal from "@/shared/components/custom/ConfirmModal";
+import CUCategoryModal from "../components/CUCategoryModal";
+import CategoryGrid from "../components/CategoryGrid";
+import { AxiosError } from "axios";
 
 export default function CategoryContainer() {
-  const [globalError, setGlobalError] = useState<string | null>(null);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-
-  const { data: categories, isLoading, error } = useCategories();
+  const [activeTab, setActiveTab] = useState<"EXPENSE" | "INCOME">("EXPENSE");
+  const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(
+    null,
+  );
+  const [isCUModalOpen, setIsCUModalOpen] = useState(false);
 
   const {
     register,
     handleSubmit,
-    setError,
+    setValue,
+    control,
     reset,
+    setError,
     formState: { errors },
   } = useForm<CreateCategoryFormValues>({
     resolver: zodResolver(createCategorySchema),
     defaultValues: {
       name: "",
       type: "EXPENSE",
-      color: "",
-      icon: "",
+      color: PREMIUM_COLORS[0],
+      icon: "food",
     },
   });
+  const [customColor, setCustomColor] = useState<string>("#e11d48");
+  const [prevIsOpen, setPrevIsOpen] = useState(false);
+  const [prevCategory, setPrevCategory] = useState<Category | null>(null);
+
+  // Sync state with editing category when opened or edited category changes (Render Phase Sync)
+  if (isCUModalOpen !== prevIsOpen || editingCategory !== prevCategory) {
+    setPrevIsOpen(isCUModalOpen);
+    setPrevCategory(editingCategory);
+    if (isCUModalOpen) {
+      if (
+        editingCategory?.color &&
+        !PREMIUM_COLORS.includes(editingCategory.color)
+      ) {
+        setCustomColor(editingCategory.color);
+      } else {
+        setCustomColor("#e11d48");
+      }
+    }
+  }
+  const transactionType = useWatch({ control, name: "type" }) || "EXPENSE";
+  const selectedColor =
+    useWatch({ control, name: "color" }) || PREMIUM_COLORS[0];
+  const selectedIconName = useWatch({ control, name: "icon" }) || "food";
+
+  useEffect(() => {
+    if (isCUModalOpen) {
+      if (editingCategory) {
+        const normalizedIcon = editingCategory.icon || "food";
+
+        reset({
+          name: editingCategory.name,
+          type: editingCategory.type,
+          color: editingCategory.color || PREMIUM_COLORS[0],
+          icon: normalizedIcon,
+        });
+      } else {
+        reset({
+          name: "",
+          type: "EXPENSE",
+          color: PREMIUM_COLORS[0],
+          icon: "food",
+        });
+      }
+    }
+  }, [editingCategory, isCUModalOpen, reset]);
+
+  const isEditingList = useCategoryUIStore((state) => state.isEditingList);
+  const setEditingList = useCategoryUIStore((state) => state.setEditingList);
+
+  useEffect(() => {
+    return () => {
+      setEditingList(false);
+    };
+  }, [setEditingList]);
+
+  const { data: categories } = useCategories();
+
+  const [localCategories, setLocalCategories] = useState<Category[]>([]);
+  const [prevCategories, setPrevCategories] = useState<Category[] | undefined>(
+    undefined,
+  );
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+
+  if (categories !== prevCategories) {
+    setPrevCategories(categories);
+    if (categories) {
+      const sorted = [...categories].sort((a, b) => {
+        const orderA = a.displayOrder ?? 0;
+        const orderB = b.displayOrder ?? 0;
+        if (orderA !== orderB) {
+          return orderA - orderB;
+        }
+        return (
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        );
+      });
+      setLocalCategories(sorted);
+    } else {
+      setLocalCategories([]);
+    }
+  }
+
+  const { mutate: reorderCategories } = useReorderCategoriesMutation({
+    onError: () => {
+      toast.error("Failed to update category order.");
+    },
+  });
+
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === index) return;
+
+    const currentTabCategories = localCategories.filter(
+      (c) => c.type === activeTab,
+    );
+    const updatedTabCategories = [...currentTabCategories];
+    const [draggedItem] = updatedTabCategories.splice(draggedIndex, 1);
+    updatedTabCategories.splice(index, 0, draggedItem);
+
+    const otherTabCategories = localCategories.filter(
+      (c) => c.type !== activeTab,
+    );
+    setLocalCategories([...updatedTabCategories, ...otherTabCategories]);
+    setDraggedIndex(index);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+    const currentTabCategories = localCategories.filter(
+      (c) => c.type === activeTab,
+    );
+    const ids = currentTabCategories.map((c) => c.id);
+    reorderCategories(ids);
+  };
+
+  const handleTouchStart = (index: number) => {
+    setDraggedIndex(index);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (draggedIndex === null) return;
+    const touch = e.touches[0];
+    if (!touch) return;
+
+    const elementUnderTouch = document.elementFromPoint(
+      touch.clientX,
+      touch.clientY,
+    );
+    if (!elementUnderTouch) return;
+
+    const itemElement = elementUnderTouch.closest(
+      "[data-index]",
+    ) as HTMLElement | null;
+    if (!itemElement) return;
+
+    const targetIndexAttr = itemElement.dataset.index;
+    if (targetIndexAttr === undefined) return;
+
+    const targetIndex = Number.parseInt(targetIndexAttr, 10);
+    if (Number.isNaN(targetIndex) || draggedIndex === targetIndex) return;
+
+    const currentTabCategories = localCategories.filter(
+      (c) => c.type === activeTab,
+    );
+    const updatedTabCategories = [...currentTabCategories];
+    const [draggedItem] = updatedTabCategories.splice(draggedIndex, 1);
+    updatedTabCategories.splice(targetIndex, 0, draggedItem);
+
+    const otherTabCategories = localCategories.filter(
+      (c) => c.type !== activeTab,
+    );
+    setLocalCategories([...updatedTabCategories, ...otherTabCategories]);
+    setDraggedIndex(targetIndex);
+  };
+
+  const handleTouchEnd = () => {
+    if (draggedIndex === null) return;
+    handleDragEnd();
+  };
 
   const { mutate: createCategory, isPending: isCreating } =
     useCreateCategoryMutation({
       onSuccess: (data) => {
         toast.success(`Category "${data.name}" created successfully!`);
-        reset();
-      },
-      onError: (err) => {
-        const message = err.response?.data?.message;
-        let errorList: string[] = [];
-        if (Array.isArray(message)) {
-          errorList = message;
-        } else if (message) {
-          errorList = [message];
-        }
-
-        if (errorList.length === 0) {
-          setGlobalError(
-            "Failed to create category. Please check your inputs.",
-          );
-          return;
-        }
-
-        let hasGlobalError = false;
-        errorList.forEach((msg) => {
-          const lowerMsg = msg.toLowerCase();
-          if (lowerMsg.includes("name")) {
-            setError("name", { type: "server", message: msg });
-          } else if (lowerMsg.includes("type")) {
-            setError("type", { type: "server", message: msg });
-          } else if (lowerMsg.includes("color")) {
-            setError("color", { type: "server", message: msg });
-          } else if (lowerMsg.includes("icon")) {
-            setError("icon", { type: "server", message: msg });
-          } else {
-            setGlobalError(msg);
-            hasGlobalError = true;
-          }
-        });
-
-        if (!hasGlobalError) {
-          setGlobalError(null);
-        }
+        setIsCUModalOpen(false);
       },
     });
 
@@ -88,14 +227,41 @@ export default function CategoryContainer() {
       onSuccess: (data) => {
         toast.success(`Category "${data.name}" updated successfully!`);
         setEditingCategory(null);
-        reset({
-          name: "",
-          type: "EXPENSE",
-          color: "",
-          icon: "",
-        });
+        setIsCUModalOpen(false);
       },
-      onError: (err) => {
+    });
+
+  const { mutate: deleteCategory } = useDeleteCategoryMutation({
+    onSuccess: (data) => {
+      toast.success(`Category "${data.name}" deleted successfully!`);
+      if (editingCategory?.id === data.id) {
+        cancelEdit();
+      }
+    },
+    onError: (err) => {
+      const message = err.response?.data?.message;
+      const errorMsg = Array.isArray(message)
+        ? message[0]
+        : message || "Failed to delete category.";
+      toast.error(errorMsg);
+    },
+  });
+
+  const handleDelete = (category: Category) => {
+    // ponytail: Sets category state to open custom ConfirmModal.
+    setCategoryToDelete(category);
+  };
+
+  const handleConfirmDelete = () => {
+    if (categoryToDelete) {
+      deleteCategory(categoryToDelete.id);
+      setCategoryToDelete(null);
+    }
+  };
+
+  const onSubmit = (values: CreateCategoryFormValues) => {
+    const mutationOptions = {
+      onError: (err: AxiosError<ApiErrorResponse>) => {
         const message = err.response?.data?.message;
         let errorList: string[] = [];
         if (Array.isArray(message)) {
@@ -105,13 +271,10 @@ export default function CategoryContainer() {
         }
 
         if (errorList.length === 0) {
-          setGlobalError(
-            "Failed to update category. Please check your inputs.",
-          );
+          toast.error("Failed to save category. Please check your inputs.");
           return;
         }
 
-        let hasGlobalError = false;
         errorList.forEach((msg) => {
           const lowerMsg = msg.toLowerCase();
           if (lowerMsg.includes("name")) {
@@ -123,217 +286,135 @@ export default function CategoryContainer() {
           } else if (lowerMsg.includes("icon")) {
             setError("icon", { type: "server", message: msg });
           } else {
-            setGlobalError(msg);
-            hasGlobalError = true;
+            toast.error(msg);
           }
         });
-
-        if (!hasGlobalError) {
-          setGlobalError(null);
-        }
       },
-    });
+    };
 
-  const { mutate: deleteCategory, isPending: isDeleting } =
-    useDeleteCategoryMutation({
-      onSuccess: (data) => {
-        toast.success(`Category "${data.name}" deleted successfully!`);
-        if (editingCategory?.id === data.id) {
-          cancelEdit();
-        }
-      },
-      onError: (err) => {
-        const message = err.response?.data?.message;
-        const errorMsg = Array.isArray(message)
-          ? message[0]
-          : message || "Failed to delete category.";
-        toast.error(errorMsg);
-      },
-    });
-
-  const isPending = isCreating || isUpdating || isDeleting;
-
-  const handleDelete = (category: Category) => {
-    // ponytail: Uses native confirm dialog to minimize code complexity.
-    const confirmed = globalThis.confirm(
-      `Are you sure you want to delete category "${category.name}"?`,
-    );
-    if (confirmed) {
-      deleteCategory(category.id);
-    }
-  };
-
-  const onSubmit = (values: CreateCategoryFormValues) => {
-    setGlobalError(null);
     if (editingCategory) {
-      updateCategory({
-        id: editingCategory.id,
-        data: {
+      updateCategory(
+        {
+          id: editingCategory.id,
+          data: {
+            name: values.name.trim(),
+            type: values.type,
+            color: values.color?.trim() || undefined,
+            icon: values.icon?.trim() || undefined,
+          },
+        },
+        mutationOptions,
+      );
+    } else {
+      createCategory(
+        {
           name: values.name.trim(),
           type: values.type,
           color: values.color?.trim() || undefined,
           icon: values.icon?.trim() || undefined,
         },
-      });
-    } else {
-      createCategory({
-        name: values.name.trim(),
-        type: values.type,
-        color: values.color?.trim() || undefined,
-        icon: values.icon?.trim() || undefined,
-      });
+        mutationOptions,
+      );
     }
   };
 
   const startEdit = (category: Category) => {
-    setGlobalError(null);
     setEditingCategory(category);
-    reset({
-      name: category.name,
-      type: category.type,
-      color: category.color || "",
-      icon: category.icon || "",
-    });
   };
 
   const cancelEdit = () => {
-    setGlobalError(null);
     setEditingCategory(null);
-    reset({
-      name: "",
-      type: "EXPENSE",
-      color: "",
-      icon: "",
-    });
   };
 
-  const renderCategoriesList = () => {
-    if (isLoading) {
-      return (
-        <div className="py-6 text-on-surface-variant animate-pulse">
-          Loading categories...
-        </div>
-      );
-    }
-
-    if (error) {
-      return (
-        <div className="p-4 text-on-error-container rounded-lg text-sm">
-          Error loading categories: {error.message || "Unknown error"}
-        </div>
-      );
-    }
-
-    if (!categories || categories.length === 0) {
-      return (
-        <div className="p-8 border border-dashed border-outline-variant/60 rounded-xl text-center text-on-surface-variant">
-          No custom categories created yet. Use the form to add one!
-        </div>
-      );
-    }
-
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {categories.map((category) => {
-          const typeColor =
-            category.type === "INCOME"
-              ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
-              : "text-error";
-
-          // Safely render color dot or background if valid hex or string
-          const hasColor = !!category.color;
-          const colorStyle = hasColor
-            ? { backgroundColor: category.color }
-            : {};
-
-          return (
-            <div
-              key={category.id}
-              className="flex items-center justify-between p-4 rounded-xl border border-outline-variant/65 hover:bg-surface-container-low/20 transition-all duration-200"
-            >
-              <div className="flex items-center gap-3 justify-between w-full">
-                <div className="flex items-center gap-3">
-                  {/* Color chip representation */}
-                  <div
-                    style={colorStyle}
-                    className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-semibold ${
-                      hasColor
-                        ? "text-white"
-                        : "bg-primary-container/8 text-primary"
-                    }`}
-                  >
-                    {category.icon
-                      ? category.icon.substring(0, 2).toUpperCase()
-                      : category.name.substring(0, 2).toUpperCase()}
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-sm leading-tight">
-                      {category.name}
-                    </h4>
-                    <p className="text-xs text-on-surface-variant/80 mt-1 capitalize font-medium">
-                      Type: {category.type === "INCOME" ? "Income" : "Expense"}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`px-2.5 py-1 rounded-full text-[10px] font-bold border ${typeColor}`}
-                  >
-                    {category.type}
-                  </span>
-                  <button
-                    onClick={() => startEdit(category)}
-                    disabled={isPending}
-                    className="px-2 py-1 text-on-surface-variant hover:text-primary hover:bg-primary/8 rounded-lg transition-all text-xs font-medium flex items-center gap-1 cursor-pointer border border-outline/10 disabled:opacity-50 disabled:cursor-not-allowed"
-                    title="Edit Category"
-                  >
-                    ✏️ Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(category)}
-                    disabled={isPending}
-                    className="px-2 py-1 text-on-surface-variant hover:text-error hover:bg-error/8 rounded-lg transition-all text-xs font-medium flex items-center gap-1 cursor-pointer border border-outline/10 disabled:opacity-50 disabled:cursor-not-allowed"
-                    title="Delete Category"
-                  >
-                    🗑 Delete
-                  </button>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    );
-  };
+  const filteredCategories =
+    localCategories.filter((category) => category.type === activeTab) || [];
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-      {/* Category Creation / Edit Form */}
-      <div className="lg:col-span-1">
-        <CategoryForm
-          register={register}
-          handleSubmit={handleSubmit}
-          onSubmit={onSubmit}
-          errors={errors}
-          isPending={isPending}
-          globalError={globalError}
-          isEditing={!!editingCategory}
-          onCancel={cancelEdit}
-        />
+    <div className="space-y-2">
+      <div className="my-2">
+        <h2 className="text-xl font-bold">Category Management</h2>
+        <p className="text-sm">Organize your financial flows with precision.</p>
       </div>
 
-      {/* Categories List View */}
-      <div className="lg:col-span-2 space-y-6">
-        <div>
-          <h2 className="text-xl font-bold">Categories List</h2>
-          <p className="text-sm text-on-surface-variant mt-1">
-            Browse and manage your custom income/expense categories.
-          </p>
-        </div>
-
-        {renderCategoriesList()}
+      {/* Select Option Tab */}
+      <div className="flex border-b border-outline/10 mb-1 cursor-pointer">
+        <button
+          type="button"
+          onClick={() => setActiveTab("EXPENSE")}
+          className={`grow text-center py-2 text-base font-medium border-b-2 ${
+            activeTab === "EXPENSE"
+              ? "border-primary text-primary"
+              : "border-transparent text-on-surface-variant hover:text-on-surface"
+          }`}
+        >
+          Expenses
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab("INCOME")}
+          className={`grow text-center py-2 text-base font-medium border-b-2 ${
+            activeTab === "INCOME"
+              ? "border-primary text-primary"
+              : "border-transparent text-on-surface-variant hover:text-on-surface"
+          }`}
+        >
+          Income
+        </button>
       </div>
+      {/* Select Option Tab */}
+
+      {/* Categories Grid */}
+      <CategoryGrid
+        categories={filteredCategories}
+        isEditingList={isEditingList}
+        draggedIndex={draggedIndex}
+        onNewCategoryClick={() => {
+          setEditingCategory(null);
+          setIsCUModalOpen(true);
+        }}
+        onCategoryClick={(category) => {
+          startEdit(category);
+          setIsCUModalOpen(true);
+        }}
+        onDeleteClick={handleDelete}
+        onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
+        onDragEnd={handleDragEnd}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      />
+
+      <CUCategoryModal
+        isOpen={isCUModalOpen}
+        onClose={() => {
+          setIsCUModalOpen(false);
+          setEditingCategory(null);
+        }}
+        category={editingCategory}
+        onSubmit={onSubmit}
+        isPending={isCreating || isUpdating}
+        register={register}
+        handleSubmit={handleSubmit}
+        setValue={setValue}
+        errors={errors}
+        customColor={customColor}
+        setCustomColor={setCustomColor}
+        transactionType={transactionType}
+        selectedColor={selectedColor}
+        selectedIconName={selectedIconName}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={categoryToDelete !== null}
+        onClose={() => setCategoryToDelete(null)}
+        onConfirm={handleConfirmDelete}
+        icon={CircleX}
+        title="Delete Category?"
+        des={`Are you sure you want to delete category "${categoryToDelete?.name}"?`}
+        confirmLabel="Delete"
+      />
     </div>
   );
 }

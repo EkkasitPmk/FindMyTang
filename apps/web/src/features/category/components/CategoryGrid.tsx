@@ -1,0 +1,133 @@
+import { Category } from "../types/category.type";
+import { CircleX, Grip, Plus } from "lucide-react";
+import { getCategoryIcon } from "@/shared/lib/configs/category-icons.config";
+
+interface CategoryGridProps {
+  categories: Category[];
+  isEditingList: boolean;
+  draggedIndex: number | null;
+  onNewCategoryClick: () => void;
+  onCategoryClick: (category: Category) => void;
+  onDeleteClick: (category: Category) => void;
+  onDragStart: (e: React.DragEvent, index: number) => void;
+  onDragOver: (e: React.DragEvent, index: number) => void;
+  onDragEnd: () => void;
+  onTouchStart: (index: number) => void;
+  onTouchMove: (e: React.TouchEvent) => void;
+  onTouchEnd: () => void;
+}
+
+export default function CategoryGrid({
+  categories,
+  isEditingList,
+  draggedIndex,
+  onNewCategoryClick,
+  onCategoryClick,
+  onDeleteClick,
+  onDragStart,
+  onDragOver,
+  onDragEnd,
+  onTouchStart,
+  onTouchMove,
+  onTouchEnd,
+}: Readonly<CategoryGridProps>) {
+  return (
+    <div className="grid grid-cols-3 gap-2 overflow-auto max-h-[70vh]">
+      {/* New Category */}
+      <button
+        type="button"
+        onClick={onNewCategoryClick}
+        className="flex flex-col items-center justify-center gap-3 border border-border border-dashed p-4 rounded-lg cursor-pointer hover:bg-surface-variant/10 transition-colors"
+      >
+        <span className="bg-gray-200 p-2 rounded-lg text-gray-600">
+          <Plus size={16} />
+        </span>
+        <span className="text-xs font-medium truncate">New Category</span>
+      </button>
+      {/* New Category */}
+
+      {categories.map((category, index) => {
+        const IconComponent = getCategoryIcon(category.icon, category.type);
+        const isDraggable = isEditingList && !category.isSystem;
+
+        return (
+          <div
+            key={category.id}
+            className={`relative select-none transition-all
+              ${draggedIndex === index ? "opacity-40" : ""}
+            `}
+          >
+            <button
+              type="button"
+              data-index={index}
+              tabIndex={isEditingList ? -1 : 0}
+              onClick={() => {
+                if (isEditingList) return;
+                onCategoryClick(category);
+              }}
+              draggable={isDraggable}
+              onDragStart={(e) => onDragStart(e, index)}
+              onDragOver={(e) => onDragOver(e, index)}
+              onDragEnd={onDragEnd}
+              onTouchStart={() => {
+                if (isDraggable) onTouchStart(index);
+              }}
+              onTouchMove={onTouchMove}
+              onTouchEnd={onTouchEnd}
+              style={{
+                touchAction: isDraggable ? "none" : "auto",
+              }}
+              className={`w-full flex flex-col items-center justify-center gap-3 border border-border p-4 rounded-lg transition-all
+                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2
+                ${
+                  isDraggable
+                    ? "cursor-grab active:cursor-grabbing hover:border-primary/50"
+                    : "cursor-pointer hover:bg-surface-variant/10"
+                }
+                ${draggedIndex === index ? "border-dashed border-primary" : ""}
+              `}
+            >
+              <span
+                className="p-2 rounded-lg"
+                style={{
+                  backgroundColor: category.color
+                    ? `${category.color}15`
+                    : "rgba(var(--accent), 0.1)",
+                  color: category.color || "inherit",
+                }}
+              >
+                <IconComponent size={16} />
+              </span>
+              <span className="text-xs font-medium truncate w-full text-center">
+                {category.name}
+              </span>
+            </button>
+
+            {!category.isSystem && isEditingList && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDeleteClick(category);
+                }}
+                className="absolute top-1 right-1 text-error transition-colors"
+              >
+                <CircleX size={16} />
+              </button>
+            )}
+
+            {!category.isSystem && isEditingList && (
+              <button
+                className="absolute bottom-1 right-1 cursor-grab"
+                type="button"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Grip size={14} />
+              </button>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
