@@ -103,6 +103,9 @@
 *   **Category Modal Key Index Fix**: แก้ไขไฟล์ [CUCategoryModal.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/category/components/CUCategoryModal.tsx) โดยเลิกใช้ Array Index เป็น `key` สำหรับการแมปรายการเฉดสี (PREMIUM_COLORS) และเปลี่ยนมาใช้ค่าสี (`color`) ซึ่งมีความเฉพาะตัวและเป็นเอกลักษณ์แทนตามคำร้องขอ เพื่อป้องกันการเรนเดอร์ซ้ำโดยไม่จำเป็นและรักษามาตรฐานของ React
 *   **Category Icons Alignment between Types**: ปรับปรุงการทำงานของระบบแมปไอคอนหมวดหมู่ให้มีลักษณะการแมปเป็นอันหนึ่งอันเดียวกัน (Identical Mapping) สำหรับทั้ง 2 ประเภทธุรกรรม (INCOME และ EXPENSE) โดยยกเลิกการแบ่ง logic ไอคอนเฉพาะประเภทใน `getCategoryIcon` เพื่อให้ไอคอนที่ชื่อเดียวกันแสดงหน้าตาเหมือนกันและจัดเรียงเหมือนกันเป๊ะในหน้าต่างเลือกและทุกส่วนของระบบ พร้อมกับเพิ่มไอคอน `HandCoins` เข้าไปในระบบ Selectable Icons เพื่อรักษาฟีเจอร์การเลือกไอคอนรูปมือถือเหรียญ
 *   **Category UI Representation Separation (AGENTS.md Compliance)**: ทำการแยกส่วนแสดงผลกริดหมวดหมู่ (Categories Grid) และฟังก์ชัน Drag & Drop UI จาก [CategoryContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/category/containers/CategoryContainer.tsx) ไปสร้างเป็นไฟล์เฉพาะ [CategoryGrid.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/category/components/CategoryGrid.tsx) เพื่อให้ตรงกับมาตรฐานสถาปัตยกรรมแบบ Presentation Component ของ `AGENTS.md` ทำให้ตัว Container ทำหน้าที่เพียงการเชื่อมต่อ hooks และจัดการ Logic เท่านั้น
+*   **i18n Localization Engine & Store**: พัฒนาระบบแปลภาษาและเก็บสถานะภาษาปัจจุบันด้วย Zustand [i18n-store.ts](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/lib/i18n/i18n-store.ts) พร้อมระบบ persist ลงใน LocalStorage
+*   **Translations Dictionary**: จัดทำพจนานุกรมสองภาษา (ไทย/อังกฤษ) [translations.ts](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/lib/i18n/translations.ts) สำหรับข้อความและปุ่มหลักๆ ในระบบ
+*   **Preferences & Navigation i18n Integration**: เชื่อมต่อฟังก์ชันสลับภาษาจริงที่ปุ่มสลับภาษาใน PREFERENCES หน้า `/more` [MoreContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/more/containers/MoreContainer.tsx) และเมนูนำทางหลักทั้งหมดของแอปพลิเคชัน ([DesktopSidebar.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/nav/components/DesktopSidebar.tsx), [MobileBottomNav.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/nav/components/MobileBottomNav.tsx), [MobileDrawer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/nav/components/MobileDrawer.tsx)) ทำให้แอปพลิเคชันสลับภาษาแบบ Reactive ได้ทันทีโดยไม่ต้องลง Dependency ภายนอกเพิ่มเติม
 
 ---
 
@@ -114,6 +117,6 @@
 ### 3. งานที่จะต้องทำเป็นลำดับถัดไป (Next Actions)
 
 *   [x] **พัฒนา UI การจัดการหมวดหมู่เพิ่มเติม (Category CRUD - Form & Actions)**: ทำฟอร์มสำหรับเพิ่ม/แก้ไขหมวดหมู่ส่วนตัว พร้อมเชื่อมโยง Action การลบและการบันทึกข้อมูลให้สมบูรณ์ (Sprint 1)
-*   [ ] **พัฒนาหน้าแก้ไขโปรไฟล์ (Profile UI)**: ทำหน้าจอแก้ไขข้อมูลชื่อ, ภาษา และโซนเวลาของผู้ใช้ (Sprint 2)
+*   [ ] **พัฒนาหน้าแก้ไขโปรไฟล์ (Profile UI)**: ทำหน้าจอแก้ไขข้อมูลชื่อผู้ใช้ และตัวเลือกสลับภาษา/โซนเวลาจริง (Sprint 2)
 *   [ ] **พัฒนา UI ระบบกลไกซิงค์ข้อมูล (Guest Sync UI)**: สร้าง Popup ยืนยันการ Merge ข้อมูล และวิดเจ็ตแสดงผลสถานะการซิงค์พร้อมปุ่ม Sync ซ้ำ (Sprint 2)
 *   [ ] **พัฒนาและเชื่อมต่อธุรกรรมขั้นสูง (Transfer & Adjustment UI/API)**: เชื่อมต่อหน้าจอประวัติธุรกรรมแบบสมบูรณ์และหน้าสำหรับการโอนเงิน/ปรับปรุงยอดบัญชี (Sprint 2)
