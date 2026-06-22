@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Wallet, User, LogIn, LogOut } from "lucide-react";
 import { navItems } from "../configs/navigation.config";
 import { UserProfile } from "@/features/nav/types/auth.type";
+import { useTranslation } from "@/shared/lib/i18n/useTranslation";
 
 interface DesktopSidebarProps {
   pathname: string;
@@ -16,6 +17,8 @@ export default function DesktopSidebar({
   isLoading,
   onLogout,
 }: Readonly<DesktopSidebarProps>) {
+  const { t } = useTranslation();
+
   const userProfileContent = (() => {
     if (isLoading) {
       return (
@@ -39,7 +42,9 @@ export default function DesktopSidebar({
     }
     return (
       <>
-        <p className="text-xs font-semibold text-primary-text truncate">Guest</p>
+        <p className="text-xs font-semibold text-primary-text truncate">
+          John Doe
+        </p>
         <p className="text-[10px] text-secondary-text/80 truncate">
           guest@pocketnote.me
         </p>
@@ -65,6 +70,8 @@ export default function DesktopSidebar({
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname.startsWith(item.href);
+            const displayLabel = item.translationKey ? t(item.translationKey as any) : item.label;
+
             return (
               <Link
                 key={item.href}
@@ -79,7 +86,7 @@ export default function DesktopSidebar({
                   className={`w-4 h-4 transition-transform ${isActive ? "text-primary" : "text-secondary-text"}`}
                   strokeWidth={isActive ? 2 : 1.5}
                 />
-                {item.label}
+                {displayLabel}
               </Link>
             );
           })}
@@ -90,12 +97,9 @@ export default function DesktopSidebar({
       <div className="space-y-4 pt-6 border-t border-border">
         <div className="flex items-center gap-3 px-2">
           <div className="w-10 h-10 rounded-md bg-surface-secondary border border-border flex items-center justify-center overflow-hidden">
-            <User
-              className="w-5 h-5 text-secondary-text"
-              strokeWidth={1.5}
-            />
+            <User className="w-5 h-5 text-secondary-text" strokeWidth={1.5} />
           </div>
-          <div className="overflow-hidden min-h-[36px] flex flex-col justify-center">
+          <div className="overflow-hidden min-h-9 flex flex-col justify-center">
             {userProfileContent}
           </div>
         </div>
@@ -114,10 +118,11 @@ export default function DesktopSidebar({
               className="flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium text-secondary-text hover:text-primary hover:bg-primary-light/50 transition-all duration-200 border border-transparent active-press"
             >
               <LogIn className="w-4 h-4" strokeWidth={1.5} />
-              Sync & Backup
+              {t("connectBtn")}
             </Link>
           ))}
       </div>
     </aside>
   );
 }
+

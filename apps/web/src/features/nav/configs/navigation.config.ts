@@ -8,9 +8,24 @@ import {
 import { NavItem } from "../types/navigation.type";
 
 export const navItems: NavItem[] = [
-  { href: "/home", label: "Dashboard", icon: Home },
-  { href: "/journal", label: "Journal", icon: BookOpen },
-  { href: "/transaction", label: "Transactions", icon: Plus },
-  { href: "/analytics", label: "Analytics", icon: BarChart3 },
-  { href: "/more", label: "More", icon: More },
+  { href: "/home", label: "Dashboard", translationKey: "navHome", icon: Home },
+  {
+    href: "/journal",
+    label: "Journal",
+    translationKey: "navJournal",
+    icon: BookOpen,
+  },
+  {
+    href: "/transaction",
+    label: "Transactions",
+    translationKey: "navTransactions",
+    icon: Plus,
+  },
+  {
+    href: "/analytics",
+    label: "Analytics",
+    translationKey: "navAnalytics",
+    icon: BarChart3,
+  },
+  { href: "/more", label: "More", translationKey: "navMore", icon: More },
 ];

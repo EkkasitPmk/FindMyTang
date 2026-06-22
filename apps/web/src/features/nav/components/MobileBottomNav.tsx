@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { navItems } from "../configs/navigation.config";
+import { useTranslation } from "@/shared/lib/i18n/useTranslation";
 
 interface MobileBottomNavProps {
   pathname: string;
@@ -12,11 +13,14 @@ export default function MobileBottomNav({
   mobileMenuOpen,
   onMenuOpen,
 }: Readonly<MobileBottomNavProps>) {
+  const { t } = useTranslation();
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-surface/90 backdrop-blur-md border-t border-border grid grid-cols-5 items-center py-2 px-4 shadow-sm">
       {navItems.map((item) => {
         const Icon = item.icon;
         const isActive = pathname.startsWith(item.href);
+        const displayLabel = item.translationKey ? t(item.translationKey as any) : item.label;
 
         if (item.href === "/more") {
           const isMoreActive = pathname.startsWith("/more") || mobileMenuOpen;
@@ -36,7 +40,7 @@ export default function MobileBottomNav({
                   strokeWidth={isMoreActive ? 2 : 1.5}
                 />
               </div>
-              {item.label}
+              {displayLabel}
             </button>
           );
         }
@@ -57,10 +61,11 @@ export default function MobileBottomNav({
                 strokeWidth={isActive ? 2 : 1.5}
               />
             </div>
-            {item.label.split(" ")[0]} {/* Shorten for mobile layout */}
+            {displayLabel}
           </Link>
         );
       })}
     </nav>
   );
 }
+

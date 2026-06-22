@@ -1,5 +1,4 @@
 "use client";
-import { useState } from "react";
 import Link from "next/link";
 import {
   User,
@@ -14,6 +13,9 @@ import {
   Tag,
   Wallet,
 } from "lucide-react";
+import { useTranslation } from "@/shared/lib/i18n/useTranslation";
+import { useMeQuery } from "@/features/nav/hooks/auth.hook";
+import { useIsGuest } from "@/shared/lib/store/guest-store";
 
 interface MoreContainerProps {
   onClose?: () => void;
@@ -22,98 +24,106 @@ interface MoreContainerProps {
 export default function MoreContainer({
   onClose,
 }: Readonly<MoreContainerProps>) {
-  const [language, setLanguage] = useState("English");
+  const { t, currentLanguage, changeLanguage } = useTranslation();
+  const isGuest = useIsGuest();
+  const { data: user } = useMeQuery({ enabled: !isGuest });
 
   const handleExportData = () => {
-    alert(
-      "Exporting your local financial records to pocketnote_backup.json...",
-    );
+    alert(t("exportAlert"));
   };
 
   const handleResetData = () => {
-    if (
-      confirm(
-        "Are you sure you want to reset all local data? This action cannot be undone.",
-      )
-    ) {
-      alert("Local data cleared.");
+    if (confirm(t("resetConfirm"))) {
+      alert(t("resetAlert"));
     }
   };
 
+  // Determine user information to display
+  const userDisplayName = !isGuest && user?.displayName ? user.displayName : "John Doe";
+  const userEmail = !isGuest && user?.email ? user.email : "guest@pocketnote.me";
+
   return (
     <div className="space-y-6 animate-in fade-in duration-300 max-w-lg mx-auto">
-      {/* Profile Header (For mobile/desktop settings representation) */}
+      {/* Profile Header */}
       <div className="bg-surface-secondary border border-border/60 rounded-md p-4 flex items-center gap-4">
         <div className="w-12 h-12 rounded-md bg-primary-light/50 border border-primary-light flex items-center justify-center">
           <User className="w-6 h-6 text-primary" strokeWidth={1.5} />
         </div>
         <div>
           <h4 className="text-sm font-bold text-primary-text">
-            John Doe
+            {userDisplayName}
           </h4>
           <p className="text-xs text-secondary-text/80">
-            guest@pocketnote.me (Guest Mode)
+            {userEmail} {isGuest ? `(${t("guestUser")})` : ""}
           </p>
         </div>
       </div>
 
       {/* Sync & Backup Main CTA */}
-      <div className="bg-surface border border-border/60 rounded-md p-4 space-y-3">
-        <div className="flex gap-3">
-          <div className="p-2 rounded-md bg-primary-light/50 text-primary self-start">
-            <Shield className="w-4 h-4" strokeWidth={1.5} />
+      {isGuest && (
+        <div className="bg-surface border border-border/60 rounded-md p-4 space-y-3">
+          <div className="flex gap-3">
+            <div className="p-2 rounded-md bg-primary-light/50 text-primary self-start">
+              <Shield className="w-4 h-4" strokeWidth={1.5} />
+            </div>
+            <div>
+              <h5 className="text-xs font-bold text-primary-text">
+                {t("syncTitle")}
+              </h5>
+              <p className="text-[10px] text-secondary-text/85 mt-0.5">
+                {t("syncDesc")}
+              </p>
+            </div>
           </div>
-          <div>
-            <h5 className="text-xs font-bold text-primary-text">
-              Cloud Backup & Sync
-            </h5>
-            <p className="text-[10px] text-secondary-text/85 mt-0.5">
-              Connect an account to backup your transactions and sync across
-              multiple devices.
-            </p>
-          </div>
+          <Link
+            href="/login"
+            onClick={onClose}
+            className="w-full py-2 px-3 rounded-md bg-primary hover:bg-primary-hover text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors active-press shadow-sm"
+          >
+            <Lock className="w-3.5 h-3.5" strokeWidth={2} />
+            {t("connectBtn")}
+          </Link>
         </div>
-        <Link
-          href="/login"
-          onClick={onClose}
-          className="w-full py-2 px-3 rounded-md bg-primary hover:bg-primary-hover text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors active-press shadow-sm"
-        >
-          <Lock className="w-3.5 h-3.5" strokeWidth={2} />
-          Connect & Sync Account
-        </Link>
-      </div>
+      )}
 
       {/* Preferences Section */}
       <div className="space-y-2">
         <h5 className="text-[11px] font-semibold text-secondary-text/85 uppercase tracking-wider px-1">
-          Preferences
+          {t("preferences")}
         </h5>
         <div className="bg-surface border border-border/60 rounded-md divide-y divide-border">
           {/* Language Selection */}
           <div className="flex justify-between items-center p-3">
             <div className="flex items-center gap-2.5">
-              <Settings
+              <Globe
                 className="w-4 h-4 text-secondary-text"
                 strokeWidth={1.5}
               />
               <span className="text-xs font-semibold text-primary-text">
-                Language
+                {t("language")}
               </span>
             </div>
             <div className="flex gap-1">
-              {["English", "ไทย"].map((lang) => (
-                <button
-                  key={lang}
-                  onClick={() => setLanguage(lang)}
-                  className={`py-1 px-2.5 rounded-md text-[10px] font-bold transition-all active-press ${
-                    language === lang
-                      ? "bg-primary-text text-surface"
-                      : "bg-surface-secondary text-secondary-text hover:text-primary-text"
-                  }`}
-                >
-                  {lang}
-                </button>
-              ))}
+              <button
+                onClick={() => changeLanguage("en")}
+                className={`py-1 px-2.5 rounded-md text-[10px] font-bold transition-all active-press cursor-pointer ${
+                  currentLanguage === "en"
+                    ? "bg-primary-text text-surface"
+                    : "bg-surface-secondary text-secondary-text hover:text-primary-text"
+                }`}
+              >
+                English
+              </button>
+              <button
+                onClick={() => changeLanguage("th")}
+                className={`py-1 px-2.5 rounded-md text-[10px] font-bold transition-all active-press cursor-pointer ${
+                  currentLanguage === "th"
+                    ? "bg-primary-text text-surface"
+                    : "bg-surface-secondary text-secondary-text hover:text-primary-text"
+                }`}
+              >
+                ไทย
+              </button>
             </div>
           </div>
         </div>
@@ -122,7 +132,7 @@ export default function MoreContainer({
       {/* Management Section */}
       <div className="space-y-2">
         <h5 className="text-[11px] font-semibold text-secondary-text/85 uppercase tracking-wider px-1">
-          Management
+          {t("management")}
         </h5>
         <div className="bg-surface border border-border/60 rounded-md divide-y divide-border">
           <Link
@@ -136,7 +146,7 @@ export default function MoreContainer({
                 strokeWidth={1.5}
               />
               <span className="text-xs font-semibold text-primary-text">
-                Manage Categories
+                {t("manageCategories")}
               </span>
             </div>
             <ChevronRight
@@ -155,7 +165,7 @@ export default function MoreContainer({
                 strokeWidth={1.5}
               />
               <span className="text-xs font-semibold text-primary-text">
-                Manage Assets
+                {t("manageAssets")}
               </span>
             </div>
             <ChevronRight
@@ -169,7 +179,7 @@ export default function MoreContainer({
       {/* Data Management Section */}
       <div className="space-y-2">
         <h5 className="text-[11px] font-semibold text-secondary-text/85 uppercase tracking-wider px-1">
-          Data Management
+          {t("dataManagement")}
         </h5>
         <div className="bg-surface border border-border/60 rounded-md divide-y divide-border">
           <button
@@ -182,7 +192,7 @@ export default function MoreContainer({
                 strokeWidth={1.5}
               />
               <span className="text-xs font-semibold text-primary-text">
-                Export Data (JSON)
+                {t("exportData")}
               </span>
             </div>
             <ChevronRight
@@ -198,7 +208,7 @@ export default function MoreContainer({
             <div className="flex items-center gap-2.5 text-secondary-text group-hover:text-expense">
               <Trash2 className="w-4 h-4" strokeWidth={1.5} />
               <span className="text-xs font-semibold text-primary-text group-hover:text-expense">
-                Reset Local Data
+                {t("resetData")}
               </span>
             </div>
             <ChevronRight
@@ -222,3 +232,4 @@ export default function MoreContainer({
     </div>
   );
 }
+
