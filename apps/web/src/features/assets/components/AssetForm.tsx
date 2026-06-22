@@ -33,11 +33,9 @@ export default function AssetForm({
   handleSelect,
 }: Readonly<AssetFormProps>) {
   return (
-    <div className="p-4 min-h-[80vh]">
-      <div className="mb-6">
-        <h2 className="text-xl font-bold mb-2">
-          Create New Asset
-        </h2>
+    <div className="min-h-[80vh]">
+      <div className="my-2">
+        <h2 className="text-xl font-bold">Create New Asset</h2>
         <p className="text-sm text-on-surface-variant">
           Add a new financial account or wallet to track your balance.
         </p>

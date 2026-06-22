@@ -93,7 +93,6 @@ export default function IncomeForm({
             <option value="">Select a category</option>
             {incomeCategories.map((cat) => (
               <option key={cat.id} value={cat.id}>
-                {cat.icon ? `${cat.icon} ` : ""}
                 {cat.name}
               </option>
             ))}

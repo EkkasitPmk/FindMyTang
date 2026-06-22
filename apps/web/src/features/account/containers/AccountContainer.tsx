@@ -1,5 +1,4 @@
 "use client";
-import TopAppBarMobile from "@/shared/components/custom/TopAppBarMobile";
 import { cn } from "@/shared/utils";
 import { Check, Pencil, UserRound } from "lucide-react";
 import { useState } from "react";
@@ -9,8 +8,6 @@ export default function AccountContainer() {
 
   return (
     <>
-      <TopAppBarMobile href="/home" title="Account" />
-
       <div className="flex flex-col items-center justify-center gap-1 my-4">
         <div className="w-14 h-14 rounded-full flex items-center justify-center">
           <span className="material-symbols-outlined text-on-surface-variant">

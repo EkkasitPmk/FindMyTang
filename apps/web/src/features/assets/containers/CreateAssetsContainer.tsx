@@ -101,21 +101,17 @@ export default function CreateAssetsContainer() {
   };
 
   return (
-    <>
-      <TopAppBarMobile href="/home" title="New Assets" />
-
-      <AssetForm
-        register={register}
-        handleSubmit={handleSubmit}
-        onSubmit={onSubmit}
-        errors={errors}
-        isPending={isPending}
-        selected={selected}
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-        assetTypeList={assetTypeList}
-        handleSelect={handleSelect}
-      />
-    </>
+    <AssetForm
+      register={register}
+      handleSubmit={handleSubmit}
+      onSubmit={onSubmit}
+      errors={errors}
+      isPending={isPending}
+      selected={selected}
+      isOpen={isOpen}
+      setIsOpen={setIsOpen}
+      assetTypeList={assetTypeList}
+      handleSelect={handleSelect}
+    />
   );
 }

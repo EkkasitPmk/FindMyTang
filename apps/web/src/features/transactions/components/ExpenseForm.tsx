@@ -93,7 +93,6 @@ export default function ExpenseForm({
             <option value="">Select a category</option>
             {expenseCategories.map((cat) => (
               <option key={cat.id} value={cat.id}>
-                {cat.icon ? `${cat.icon} ` : ""}
                 {cat.name}
               </option>
             ))}

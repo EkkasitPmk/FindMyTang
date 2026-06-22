@@ -1,5 +1,6 @@
 import React from "react";
 import { TransactionResponse } from "../types/transaction.type";
+import { getCategoryIcon } from "@/shared/lib/configs/category-icons.config";
 
 interface TransactionListProps {
   transactions: TransactionResponse[];
@@ -21,7 +22,8 @@ export default function TransactionList({ transactions }: TransactionListProps) 
         });
 
         const isExpense = tx.type === "EXPENSE";
-        const categoryIcon = tx.category?.icon || "💰";
+        const IconComponent = getCategoryIcon(tx.category?.icon, tx.type);
+        const categoryColor = tx.category?.color || "#64748b";
         const categoryName = tx.category?.name || "Uncategorized";
         const assetName = tx.asset?.name || "Unknown Asset";
 
@@ -31,8 +33,14 @@ export default function TransactionList({ transactions }: TransactionListProps) 
             className="p-4 rounded-xl border border-outline-variant flex items-center justify-between hover:bg-surface-container transition-colors active-press ambient-shadow"
           >
             <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-sm">
-                {categoryIcon}
+              <div
+                className="w-12 h-12 rounded-full flex items-center justify-center shadow-sm"
+                style={{
+                  backgroundColor: `${categoryColor}15`,
+                  color: categoryColor,
+                }}
+              >
+                <IconComponent size={20} />
               </div>
               <div className="flex flex-col">
                 <span className="">

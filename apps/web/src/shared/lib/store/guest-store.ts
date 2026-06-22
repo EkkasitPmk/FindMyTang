@@ -97,7 +97,8 @@ export function useIsGuest() {
   const isGuest = useGuestStore((state) => state.isGuest);
 
   useEffect(() => {
-    setMounted(true);
+    const id = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(id);
   }, []);
 
   return mounted ? isGuest : true;
