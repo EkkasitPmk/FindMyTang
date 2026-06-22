@@ -16,7 +16,7 @@ model User {
   isGuest        Boolean       @default(false)
   displayName    String?
   avatarUrl      String?
-  language       String        @default("th")
+  language       String        @default("en")
   timezone       String        @default("Asia/Bangkok")
   lastSyncedAt   DateTime?
   lastSyncStatus String?       // "SUCCESS" | "FAILED"
