@@ -2,12 +2,13 @@
 import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { LogOut } from "lucide-react";
 import { useMeQuery, useLogoutMutation } from "../hooks/auth.hook";
 import { useGuestStore } from "@/shared/lib/store/guest-store";
 import DesktopSidebar from "../components/DesktopSidebar";
 import MobileBottomNav from "../components/MobileBottomNav";
 import MobileDrawer from "../components/MobileDrawer";
-import LogoutConfirmModal from "../components/LogoutConfirmModal";
+import ConfirmModal from "@/shared/components/custom/ConfirmModal";
 
 export default function NavContainer() {
   const pathname = usePathname();
@@ -79,7 +80,10 @@ export default function NavContainer() {
       />
 
       {/* Mobile Bottom Navigation Bar */}
-      {pathname !== "/account" && pathname !== "/assets/new" && (
+      {(pathname === "/home" ||
+        pathname === "/journal" ||
+        pathname === "/analytics" ||
+        pathname === "/transaction") && (
         <MobileBottomNav
           pathname={pathname}
           mobileMenuOpen={mobileMenuOpen}
@@ -88,10 +92,13 @@ export default function NavContainer() {
       )}
 
       {/* Logout Confirmation Modal */}
-      <LogoutConfirmModal
+      <ConfirmModal
         isOpen={logoutConfirmOpen}
         onClose={() => setLogoutConfirmOpen(false)}
         onConfirm={handleLogout}
+        icon={LogOut}
+        title="Log Out?"
+        des="Are you sure you want to log out of your account?"
       />
     </>
   );
