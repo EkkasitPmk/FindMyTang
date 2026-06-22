@@ -36,6 +36,8 @@ export class CategoryController {
       type: category.type,
       color: category.color,
       icon: category.icon,
+      isSystem: category.isSystem,
+      displayOrder: category.displayOrder,
     };
   }
 
@@ -50,7 +52,20 @@ export class CategoryController {
       type: category.type,
       color: category.color,
       icon: category.icon,
+      isSystem: category.isSystem,
+      displayOrder: category.displayOrder,
     }));
+  }
+
+  @Patch("reorder")
+  @UseGuards(JwtAuthGuard)
+  async reorder(
+    @CurrentUser() user: User,
+    @Body("ids") ids: string[],
+  ) {
+    // ponytail: Reorder categories endpoint.
+    await this.categoryService.reorder(user.id, ids);
+    return { success: true };
   }
 
   @Patch(":id")
@@ -72,6 +87,8 @@ export class CategoryController {
       type: category.type,
       color: category.color,
       icon: category.icon,
+      isSystem: category.isSystem,
+      displayOrder: category.displayOrder,
     };
   }
 
@@ -86,6 +103,8 @@ export class CategoryController {
       type: category.type,
       color: category.color,
       icon: category.icon,
+      isSystem: category.isSystem,
+      displayOrder: category.displayOrder,
     };
   }
 }

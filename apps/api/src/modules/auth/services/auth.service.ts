@@ -101,6 +101,7 @@ export class AuthService {
           color: cat.color,
           icon: cat.icon,
           isSystem: false,
+          displayOrder: cat.displayOrder,
         })),
       },
     });
@@ -126,6 +127,7 @@ export class AuthService {
             type: cat.type,
             color: cat.color,
             icon: cat.icon,
+            displayOrder: cat.displayOrder ?? 0,
             userId,
           },
         });

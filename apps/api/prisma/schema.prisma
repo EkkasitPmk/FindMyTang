@@ -67,6 +67,7 @@ model Category {
   userId       String
   user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   isSystem     Boolean       @default(false)
+  displayOrder Int           @default(0)
   transactions Transaction[]
   deletedAt    DateTime?
   createdAt    DateTime      @default(now())

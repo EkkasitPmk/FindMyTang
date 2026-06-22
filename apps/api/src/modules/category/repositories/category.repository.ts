@@ -8,6 +8,7 @@ export interface CreateCategoryData {
   color?: string;
   icon?: string;
   isSystem?: boolean;
+  displayOrder?: number;
 }
 
 @Injectable()
@@ -23,6 +24,7 @@ export class CategoryRepository {
         color: data.color,
         icon: data.icon,
         isSystem: data.isSystem ?? false,
+        displayOrder: data.displayOrder ?? 0,
         userId,
       },
     });
@@ -36,10 +38,13 @@ export class CategoryRepository {
   }
 
   async findAll(userId: string): Promise<Category[]> {
-    // ponytail: Fetches all categories belonging to the user that are not soft-deleted, sorted by createdAt ASC.
+    // ponytail: Fetches all categories belonging to the user that are not soft-deleted, sorted by displayOrder ASC, then createdAt ASC.
     return this.prisma.category.findMany({
       where: { userId, deletedAt: null },
-      orderBy: { createdAt: "asc" },
+      orderBy: [
+        { displayOrder: "asc" },
+        { createdAt: "asc" },
+      ],
     });
   }
 
@@ -73,5 +78,17 @@ export class CategoryRepository {
       where: { id },
       data: { deletedAt: new Date() },
     });
+  }
+
+  async reorder(userId: string, ids: string[]): Promise<void> {
+    // ponytail: Bulk update displayOrder for categories in a transaction.
+    await this.prisma.$transaction(
+      ids.map((id, index) =>
+        this.prisma.category.updateMany({
+          where: { id, userId },
+          data: { displayOrder: index + 1 },
+        }),
+      ),
+    );
   }
 }

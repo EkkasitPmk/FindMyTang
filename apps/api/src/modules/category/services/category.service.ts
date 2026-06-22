@@ -76,4 +76,9 @@ export class CategoryService {
 
     return this.categoryRepository.delete(id, userId);
   }
+
+  async reorder(userId: string, ids: string[]): Promise<void> {
+    // ponytail: Triggers bulk update for category ordering in the repository.
+    await this.categoryRepository.reorder(userId, ids);
+  }
 }

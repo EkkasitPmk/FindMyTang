@@ -1,6 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import {
   IsEnum,
+  IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -45,4 +46,13 @@ export class CreateCategoryDto {
   @IsString()
   @IsOptional()
   icon?: string;
+
+  @ApiProperty({
+    description: "Display order of the category",
+    example: 1,
+    required: false,
+  })
+  @IsInt()
+  @IsOptional()
+  displayOrder?: number;
 }

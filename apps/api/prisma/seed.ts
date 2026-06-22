@@ -51,6 +51,7 @@ async function main() {
           icon: cat.icon,
           userId: systemUser.id,
           isSystem: true,
+          displayOrder: cat.displayOrder,
         },
       });
       createdCount++;
