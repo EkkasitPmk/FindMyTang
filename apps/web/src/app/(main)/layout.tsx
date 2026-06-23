@@ -6,13 +6,7 @@ import { cn } from "@/shared/utils";
 import { usePathname, useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import { useCategoryUIStore } from "@/features/category/hooks/category.hook";
-
-const TITLE_MAP: Record<string, string> = {
-  "/categories": "Category",
-  "/assets/new": "New Assets",
-  "/settings/account": "Account",
-  "/settings": "Settings",
-};
+import { useTranslation } from "@/shared/lib/i18n/useTranslation";
 
 export default function MainLayout({
   children,
@@ -23,10 +17,19 @@ export default function MainLayout({
   const toggleEditingList = useCategoryUIStore(
     (state) => state.toggleEditingList,
   );
+  const { t } = useTranslation();
 
   const isMainTab = ["/home", "/journal", "/analytics"].includes(pathname);
   const shouldShowTopAppBar = !isMainTab && pathname !== "/transaction";
-  const mobileTitle = TITLE_MAP[pathname] || "";
+
+  const getMobileTitle = (path: string) => {
+    if (path === "/categories") return t("manageCategories");
+    if (path === "/assets/new") return t("newAssets");
+    if (path === "/settings/account") return t("account");
+    if (path === "/settings") return t("navSettings");
+    return "";
+  };
+  const mobileTitle = getMobileTitle(pathname);
 
   const renderRightAction = () => {
     if (pathname === "/categories") {
@@ -36,7 +39,7 @@ export default function MainLayout({
           onClick={toggleEditingList}
           className="text-sm mr-4 text-primary hover:text-primary-dark font-medium transition-colors cursor-pointer"
         >
-          {isEditingList ? "Done" : "Edit"}
+          {isEditingList ? t("done") : t("edit")}
         </button>
       );
     }

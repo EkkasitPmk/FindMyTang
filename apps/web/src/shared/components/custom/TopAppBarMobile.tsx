@@ -18,8 +18,8 @@ export default function TopAppBarMobile({
     <div
       className={cn(
         "flex items-center relative border-b border-gray-200 pb-2",
-        title === "Category" && "justify-between",
-        title === "Settings" && "justify-end",
+        !showBackButton && rightAction && "justify-end",
+        showBackButton && rightAction && "justify-between",
       )}
     >
       {showBackButton && onBack && (
