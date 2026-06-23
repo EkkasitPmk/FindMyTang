@@ -331,7 +331,7 @@ export default function CategoryContainer() {
 
   return (
     <div className="space-y-2">
-      <div className="my-2">
+      <div className="mb-2">
         <h2 className="text-xl font-bold">Category Management</h2>
         <p className="text-sm">Organize your financial flows with precision.</p>
       </div>

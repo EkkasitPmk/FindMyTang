@@ -11,6 +11,8 @@ import RegisterForm from "../components/RegisterForm";
 export default function RegisterContainer() {
   const router = useRouter();
   const [globalError, setGlobalError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const {
     register,
@@ -97,6 +99,10 @@ export default function RegisterContainer() {
       errors={errors}
       isPending={isPending}
       globalError={globalError}
+      showPassword={showPassword}
+      showConfirmPassword={showConfirmPassword}
+      onToggleShowPassword={() => setShowPassword(!showPassword)}
+      onToggleShowConfirmPassword={() => setShowConfirmPassword(!showConfirmPassword)}
     />
   );
 }

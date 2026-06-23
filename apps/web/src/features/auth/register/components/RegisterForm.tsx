@@ -6,7 +6,6 @@ import {
   UseFormHandleSubmit,
 } from "react-hook-form";
 import { RegisterFormValues } from "../schemas/register.schema";
-import { useState } from "react";
 
 interface RegisterFormProps {
   register: UseFormRegister<RegisterFormValues>;
@@ -15,6 +14,10 @@ interface RegisterFormProps {
   errors: FieldErrors<RegisterFormValues>;
   isPending: boolean;
   globalError: string | null;
+  showPassword: boolean;
+  showConfirmPassword: boolean;
+  onToggleShowPassword: () => void;
+  onToggleShowConfirmPassword: () => void;
 }
 
 export default function RegisterForm({
@@ -24,9 +27,11 @@ export default function RegisterForm({
   errors,
   isPending,
   globalError,
+  showPassword,
+  showConfirmPassword,
+  onToggleShowPassword,
+  onToggleShowConfirmPassword,
 }: Readonly<RegisterFormProps>) {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   return (
     <div className="min-h-screen flex flex-col justify-center bg-background py-8 px-4 sm:px-6 lg:px-8">
@@ -92,7 +97,7 @@ export default function RegisterForm({
               />
               <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)}
+                onClick={onToggleShowPassword}
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-secondary-text hover:text-primary transition-colors outline-none cursor-pointer"
               >
                 {showPassword ? (
@@ -120,7 +125,7 @@ export default function RegisterForm({
               />
               <button
                 type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                onClick={onToggleShowConfirmPassword}
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-secondary-text hover:text-primary transition-colors outline-none cursor-pointer"
               >
                 {showConfirmPassword ? (

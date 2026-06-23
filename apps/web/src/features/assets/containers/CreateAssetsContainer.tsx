@@ -10,7 +10,6 @@ import {
 import { useCreateAssetMutation } from "../hooks/assets.hook";
 import { AssetType } from "../types/assets.type";
 import AssetForm from "../components/AssetForm";
-import TopAppBarMobile from "@/shared/components/custom/TopAppBarMobile";
 
 export default function CreateAssetsContainer() {
   const [globalError, setGlobalError] = useState<string | null>(null);

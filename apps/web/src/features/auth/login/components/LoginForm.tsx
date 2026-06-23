@@ -1,4 +1,3 @@
-import { useState } from "react";
 import Link from "next/link";
 import { Landmark, Eye, EyeOff, User } from "lucide-react";
 import {
@@ -17,6 +16,8 @@ interface LoginFormProps {
   globalError: string | null;
   onGoogleLogin: () => void;
   onGuestLogin: () => void;
+  showPassword: boolean;
+  onToggleShowPassword: () => void;
 }
 
 export default function LoginForm({
@@ -28,8 +29,9 @@ export default function LoginForm({
   globalError,
   onGoogleLogin,
   onGuestLogin,
+  showPassword,
+  onToggleShowPassword,
 }: Readonly<LoginFormProps>) {
-  const [showPassword, setShowPassword] = useState(false);
 
   return (
     <div className="min-h-screen flex flex-col justify-center bg-background py-8 px-4 sm:px-6 lg:px-8">
@@ -96,7 +98,7 @@ export default function LoginForm({
               <button
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-secondary-text hover:text-primary transition-colors cursor-pointer flex items-center justify-center"
                 type="button"
-                onClick={() => setShowPassword(!showPassword)}
+                onClick={onToggleShowPassword}
               >
                 {showPassword ? (
                   <EyeOff className="w-5 h-5" />

@@ -12,6 +12,7 @@ import { useGuestStore } from "@/shared/lib/store/guest-store";
 export default function LoginContainer() {
   const router = useRouter();
   const [globalError, setGlobalError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   const setGuestMode = useGuestStore((state) => state.setGuestMode);
 
   const {
@@ -95,6 +96,8 @@ export default function LoginContainer() {
       globalError={globalError}
       onGoogleLogin={handleGoogleLogin}
       onGuestLogin={handleGuestLogin}
+      showPassword={showPassword}
+      onToggleShowPassword={() => setShowPassword(!showPassword)}
     />
   );
 }

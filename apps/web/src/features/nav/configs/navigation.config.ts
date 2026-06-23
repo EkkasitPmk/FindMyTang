@@ -2,7 +2,7 @@ import {
   Home,
   BookOpen,
   BarChart3,
-  MoreHorizontal as More,
+  Settings,
   Plus,
 } from "lucide-react";
 import { NavItem } from "../types/navigation.type";
@@ -27,5 +27,5 @@ export const navItems: NavItem[] = [
     translationKey: "navAnalytics",
     icon: BarChart3,
   },
-  { href: "/more", label: "More", translationKey: "navMore", icon: More },
+  { href: "/settings", label: "Settings", translationKey: "navSettings", icon: Settings },
 ];

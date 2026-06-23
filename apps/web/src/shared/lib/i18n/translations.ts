@@ -6,6 +6,7 @@ export const translations = {
     navTransactions: "บันทึก",
     navAnalytics: "วิเคราะห์",
     navMore: "อื่นๆ",
+    navSettings: "ตั้งค่า",
 
     // More page
     preferences: "การตั้งค่า",
@@ -57,6 +58,7 @@ export const translations = {
     navTransactions: "Transactions",
     navAnalytics: "Analytics",
     navMore: "More",
+    navSettings: "Settings",
 
     // More page
     preferences: "Preferences",
