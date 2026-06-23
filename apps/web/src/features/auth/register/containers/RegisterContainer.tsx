@@ -10,7 +10,6 @@ import RegisterForm from "../components/RegisterForm";
 
 export default function RegisterContainer() {
   const router = useRouter();
-  const [globalError, setGlobalError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -47,11 +46,9 @@ export default function RegisterContainer() {
       }
 
       if (errorList.length === 0) {
-        setGlobalError("Registration failed. Please try again.");
+        toast.error("Registration failed. Please try again.");
         return;
       }
-
-      let hasGlobalError = false;
 
       errorList.forEach((msg) => {
         const lowerMsg = msg.toLowerCase();
@@ -70,19 +67,13 @@ export default function RegisterContainer() {
         } else if (lowerMsg.includes("password")) {
           setError("password", { type: "server", message: msg });
         } else {
-          setGlobalError(msg);
-          hasGlobalError = true;
+          toast.error(msg);
         }
       });
-
-      if (!hasGlobalError) {
-        setGlobalError(null);
-      }
     },
   });
 
   const onSubmit = (values: RegisterFormValues) => {
-    setGlobalError(null);
     registerUser({
       email: values.email,
       password: values.password,
@@ -98,7 +89,6 @@ export default function RegisterContainer() {
       onSubmit={onSubmit}
       errors={errors}
       isPending={isPending}
-      globalError={globalError}
       showPassword={showPassword}
       showConfirmPassword={showConfirmPassword}
       onToggleShowPassword={() => setShowPassword(!showPassword)}

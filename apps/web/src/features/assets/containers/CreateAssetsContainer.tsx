@@ -12,8 +12,6 @@ import { AssetType } from "../types/assets.type";
 import AssetForm from "../components/AssetForm";
 
 export default function CreateAssetsContainer() {
-  const [globalError, setGlobalError] = useState<string | null>(null);
-
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState<string>(AssetType.CASH);
 
@@ -56,13 +54,12 @@ export default function CreateAssetsContainer() {
       }
 
       if (errorList.length === 0) {
-        setGlobalError(
+        toast.error(
           "Failed to create asset. Please check validation rules.",
         );
         return;
       }
 
-      let hasGlobalError = false;
       errorList.forEach((msg) => {
         const lowerMsg = msg.toLowerCase();
         if (lowerMsg.includes("name")) {
@@ -72,19 +69,13 @@ export default function CreateAssetsContainer() {
         } else if (lowerMsg.includes("balance")) {
           setError("balance", { type: "server", message: msg });
         } else {
-          setGlobalError(msg);
-          hasGlobalError = true;
+          toast.error(msg);
         }
       });
-
-      if (!hasGlobalError) {
-        setGlobalError(null);
-      }
     },
   });
 
   const onSubmit = (values: CreateAssetFormValues) => {
-    setGlobalError(null);
     const balanceNum =
       values.balance === "" ||
       values.balance === null ||

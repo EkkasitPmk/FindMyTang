@@ -11,7 +11,6 @@ import { useGuestStore } from "@/shared/lib/store/guest-store";
 
 export default function LoginContainer() {
   const router = useRouter();
-  const [globalError, setGlobalError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const setGuestMode = useGuestStore((state) => state.setGuestMode);
 
@@ -44,11 +43,9 @@ export default function LoginContainer() {
       }
 
       if (errorList.length === 0) {
-        setGlobalError("Login failed. Please check your credentials.");
+        toast.error("Login failed. Please check your credentials.");
         return;
       }
-
-      let hasGlobalError = false;
 
       errorList.forEach((msg) => {
         const lowerMsg = msg.toLowerCase();
@@ -57,19 +54,13 @@ export default function LoginContainer() {
         } else if (lowerMsg.includes("password")) {
           setError("password", { type: "server", message: msg });
         } else {
-          setGlobalError(msg);
-          hasGlobalError = true;
+          toast.error(msg);
         }
       });
-
-      if (!hasGlobalError) {
-        setGlobalError(null);
-      }
     },
   });
 
   const onSubmit = (values: LoginFormValues) => {
-    setGlobalError(null);
     loginUser({
       email: values.email,
       password: values.password,
@@ -93,7 +84,6 @@ export default function LoginContainer() {
       onSubmit={onSubmit}
       errors={errors}
       isPending={isPending}
-      globalError={globalError}
       onGoogleLogin={handleGoogleLogin}
       onGuestLogin={handleGuestLogin}
       showPassword={showPassword}

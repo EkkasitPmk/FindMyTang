@@ -31,7 +31,6 @@ type TransactionType = "EXPENSE" | "INCOME";
 export default function TransactionsContainer() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<TransactionType>("EXPENSE");
-  const [globalError, setGlobalError] = useState<string | null>(null);
 
   // Filters State
   const [page, setPage] = useState(1);
@@ -124,7 +123,6 @@ export default function TransactionsContainer() {
     };
     expenseForm.reset(defaults);
     incomeForm.reset(defaults);
-    setGlobalError(null);
   };
 
   const { mutate: createExpense, isPending: isExpensePending } =
@@ -161,11 +159,10 @@ export default function TransactionsContainer() {
     }
 
     if (errorList.length === 0) {
-      setGlobalError("Failed to save transaction. Please try again.");
+      toast.error("Failed to save transaction. Please try again.");
       return;
     }
 
-    let hasGlobalError = false;
     errorList.forEach((msg) => {
       const lower = msg.toLowerCase();
       if (lower.includes("asset")) {
@@ -175,16 +172,12 @@ export default function TransactionsContainer() {
       } else if (lower.includes("amount") || lower.includes("balance")) {
         setError("amount", { type: "server", message: msg });
       } else {
-        setGlobalError(msg);
-        hasGlobalError = true;
+        toast.error(msg);
       }
     });
-
-    if (!hasGlobalError) setGlobalError(null);
   };
 
   const onExpenseSubmit = (values: CreateExpenseFormValues) => {
-    setGlobalError(null);
     createExpense({
       assetId: values.assetId,
       categoryId: values.categoryId,
@@ -195,7 +188,6 @@ export default function TransactionsContainer() {
   };
 
   const onIncomeSubmit = (values: CreateIncomeFormValues) => {
-    setGlobalError(null);
     createIncome({
       assetId: values.assetId,
       categoryId: values.categoryId,
@@ -258,7 +250,6 @@ export default function TransactionsContainer() {
                   onSubmit={onExpenseSubmit}
                   errors={expenseForm.formState.errors}
                   isPending={isExpensePending}
-                  globalError={globalError}
                   assets={assets}
                   categories={categories}
                 />
@@ -269,7 +260,6 @@ export default function TransactionsContainer() {
                   onSubmit={onIncomeSubmit}
                   errors={incomeForm.formState.errors}
                   isPending={isIncomePending}
-                  globalError={globalError}
                   assets={assets}
                   categories={categories}
                 />

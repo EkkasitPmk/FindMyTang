@@ -13,7 +13,6 @@ interface LoginFormProps {
   onSubmit: (values: LoginFormValues) => void;
   errors: FieldErrors<LoginFormValues>;
   isPending: boolean;
-  globalError: string | null;
   onGoogleLogin: () => void;
   onGuestLogin: () => void;
   showPassword: boolean;
@@ -26,7 +25,6 @@ export default function LoginForm({
   onSubmit,
   errors,
   isPending,
-  globalError,
   onGoogleLogin,
   onGuestLogin,
   showPassword,
@@ -58,13 +56,6 @@ export default function LoginForm({
             Log in to your Financial Command Center
           </p>
         </div>
-
-        {/* Global Error Banner */}
-        {globalError && (
-          <div className="p-3 bg-expense-light text-expense border border-expense/20 rounded-lg text-sm">
-            {globalError}
-          </div>
-        )}
 
         {/* Login Form */}
         <form

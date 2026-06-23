@@ -13,7 +13,6 @@ interface RegisterFormProps {
   onSubmit: (values: RegisterFormValues) => void;
   errors: FieldErrors<RegisterFormValues>;
   isPending: boolean;
-  globalError: string | null;
   showPassword: boolean;
   showConfirmPassword: boolean;
   onToggleShowPassword: () => void;
@@ -26,7 +25,6 @@ export default function RegisterForm({
   onSubmit,
   errors,
   isPending,
-  globalError,
   showPassword,
   showConfirmPassword,
   onToggleShowPassword,
@@ -46,13 +44,6 @@ export default function RegisterForm({
             Start tracking your financial journey
           </p>
         </div>
-
-        {/* Global Error Banner */}
-        {globalError && (
-          <div className="p-3 bg-expense-light text-expense border border-expense/20 rounded-lg text-sm">
-            {globalError}
-          </div>
-        )}
 
         {/* Form Section */}
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>

@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { PrismaClient, CategoryType } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 import { DEFAULT_CATEGORIES } from "../src/common/constants/default-categories";
@@ -60,7 +60,9 @@ async function main() {
     }
   }
 
-  console.log(`✅ Seeding completed. Created: ${createdCount}, Skipped: ${skippedCount}`);
+  console.log(
+    `✅ Seeding completed. Created: ${createdCount}, Skipped: ${skippedCount}`,
+  );
 }
 
 main()

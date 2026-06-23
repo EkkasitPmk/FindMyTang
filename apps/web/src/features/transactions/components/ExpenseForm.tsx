@@ -13,7 +13,6 @@ interface ExpenseFormProps {
   onSubmit: (values: CreateExpenseFormValues) => void;
   errors: FieldErrors<CreateExpenseFormValues>;
   isPending: boolean;
-  globalError: string | null;
   assets: Asset[];
   categories: Category[];
 }
@@ -24,7 +23,6 @@ export default function ExpenseForm({
   onSubmit,
   errors,
   isPending,
-  globalError,
   assets,
   categories,
 }: Readonly<ExpenseFormProps>) {
@@ -41,12 +39,6 @@ export default function ExpenseForm({
           Record a new expense and your asset balance will update automatically.
         </p>
       </div>
-
-      {globalError && (
-        <div className="mb-4 p-3 text-on-error-container rounded-lg text-sm">
-          {globalError}
-        </div>
-      )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* Asset */}
