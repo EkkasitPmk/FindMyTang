@@ -209,21 +209,21 @@ Bottom Navigation
 Desktop
 เปลี่ยนเป็น
 ┌──────────────┐
-│ Home         │
-│ Activity     │
-│ Insights     │
-│ Accounts     │
-│ Budget       │
-│ Goals        │
-│ Tax          │
-│ Settings     │
+│ Home │
+│ Activity │
+│ Insights │
+│ Accounts │
+│ Budget │
+│ Goals │
+│ Tax │
+│ Settings │
 └──────────────┘
 Sidebar ซ้าย
 
 เหมือน
-    •	Notion
-    •	Linear
-    •	Slack
+• Notion
+• Linear
+• Slack
 
 สิ่งที่ผมอยากทำต่อ
 ก่อนวาด Wireframe
@@ -341,14 +341,14 @@ Mobile
 
 Desktop
 ┌─────────────────┐
-│ Home            │
-│ Activity        │
-│ Insights        │
-│ Accounts        │
-│ Budget          │
-│ Goals           │
-│ Tax             │
-│ Settings        │
+│ Home │
+│ Activity │
+│ Insights │
+│ Accounts │
+│ Budget │
+│ Goals │
+│ Tax │
+│ Settings │
 └─────────────────┘
 Sidebar ซ้าย
 
@@ -366,12 +366,12 @@ More
 
 ตัวอย่าง
 More
- ├─ Accounts
- ├─ Budget
- ├─ Goals
- ├─ Tax
- ├─ Categories
- └─ Settings
+├─ Accounts
+├─ Budget
+├─ Goals
+├─ Tax
+├─ Categories
+└─ Settings
 
 สิ่งที่ผมอยากเปลี่ยนจาก Money Note เดิม
 เดิม
@@ -407,10 +407,10 @@ Home Dashboard
 Sprint 0
 
 Design System
-+
-Home Dashboard Wireframe
-โดยเราจะคุยละเอียดถึง
-เปิดแอปมา
+
+- Home Dashboard Wireframe
+  โดยเราจะคุยละเอียดถึง
+  เปิดแอปมา
 
 Card แรกคืออะไร
 Card ที่สองคืออะไร
@@ -421,7 +421,7 @@ Mobile Layout
 Desktop Layout
 ก่อนแตะเรื่องสี UI, shadcn/ui หรือโค้ดแม้แต่บรรทัดเดียวครับ
 เพราะ Home Dashboard จะเป็นตัวกำหนดทิศทางของ Product ทั้งตัวเลย.
- ก่อนจะไปกันต่อ **ฉันอยากให้ข้อมูลที่ต้องการเพิ่มเติมที่ ฉันยังคงต้องการบันทึกแต่ละรายการรับจ่ายอะไรลงไปด้วยในแต่ละวันนะ เช่น ซื้อ ก บันทึก ได้รับมา บันทึก ซื้อ 2 บันทึกแบบนี้อยู่  ดีมากครับที่บอกจุดนี้ เพราะมันทำให้ Product ชัดขึ้นอีก
+ ก่อนจะไปกันต่อ \*\*ฉันอยากให้ข้อมูลที่ต้องการเพิ่มเติมที่ ฉันยังคงต้องการบันทึกแต่ละรายการรับจ่ายอะไรลงไปด้วยในแต่ละวันนะ เช่น ซื้อ ก บันทึก ได้รับมา บันทึก ซื้อ 2 บันทึกแบบนี้อยู่  ดีมากครับที่บอกจุดนี้ เพราะมันทำให้ Product ชัดขึ้นอีก
 ผมคิดว่าตอนแรกมีความเสี่ยงที่เราจะออกแบบไปทาง
 Dashboard First
 จนลืมไปว่า
@@ -437,9 +437,9 @@ Financial Dashboard
 
 มันคือ
 Personal Finance Journal
-+
-Financial Dashboard
-สองอย่างรวมกัน
+
+- Financial Dashboard
+  สองอย่างรวมกัน
 
 พฤติกรรมจริงของคุณ
 ผมลองจำลองจากที่คุณเล่ามา
@@ -506,15 +506,14 @@ Tax
 จากเดิม
 Home
 Activity
-+
-Insights
-More
-เป็น
-Home
-Journal
-+
-Insights
-More
+
+- Insights
+  More
+  เป็น
+  Home
+  Journal
+- Insights
+  More
 
 ทำไมใช้คำว่า Journal
 เพราะ
@@ -638,9 +637,9 @@ Optional
 ไม่ใช่ Required
 
 UI อาจเป็น
-จำนวนเงิน *
+จำนวนเงิน \*
 
-หมวดหมู่ *
+หมวดหมู่ \*
 
 โน้ต (ไม่บังคับ)
 
@@ -729,8 +728,8 @@ UX ที่ผมมองคือ
 Quick Capture
 
 เหมือน
-    •	จดโน้ต
-    •	จดรายจ่าย
+• จดโน้ต
+• จดรายจ่าย
 ไม่ใช่
 กรอกฟอร์ม
 
@@ -827,7 +826,7 @@ TrueMoney
 คริปโต
 ด้วย?
 เพราะคำตอบนี้จะกำหนดเลยว่า Home Dashboard จะเป็นแค่ "ยอดเงินคงเหลือ" หรือ "Net Worth Dashboard" ครับ.
- ว้าว รวมหมดไปเลย ทั้งเช่นSCB,KBank,เงินสด,TrueMoney,หุ้นหรือสามารถเพิ่มได้ อะไรพวกนี้เพราะมันกระจายกัน **ฉันยังสนใจพวก feature report ดูว่าเดือน/ปีนั้นรับจ่าบรายการอะไรรวมไปเท่าไหร่ กดเข้าไปเช่น food 5500 ใน food 5500 นั้นแต่ละรายการบันทึกอะไรในแต่ละวันในเดือนนั้นอะไรแบบนี้  โอเค ตอนนี้ผมเริ่มเห็น Product ตัวจริงแล้วครับ
+ ว้าว รวมหมดไปเลย ทั้งเช่นSCB,KBank,เงินสด,TrueMoney,หุ้นหรือสามารถเพิ่มได้ อะไรพวกนี้เพราะมันกระจายกัน \*\*ฉันยังสนใจพวก feature report ดูว่าเดือน/ปีนั้นรับจ่าบรายการอะไรรวมไปเท่าไหร่ กดเข้าไปเช่น food 5500 ใน food 5500 นั้นแต่ละรายการบันทึกอะไรในแต่ละวันในเดือนนั้นอะไรแบบนี้  โอเค ตอนนี้ผมเริ่มเห็น Product ตัวจริงแล้วครับ
 และผมคิดว่าเราเจอจุดที่สำคัญมาก
 
 สิ่งที่ Product นี้ "ไม่ใช่"
@@ -851,11 +850,11 @@ Personal Finance Dashboard
 Current Net Worth
 ตอนนี้ฉันมีทรัพย์สินทั้งหมดเท่าไหร่
 เช่น
-SCB           25,000
-KBank         15,000
-Cash           2,000
-TrueMoney      1,500
-Stocks        50,000
+SCB 25,000
+KBank 15,000
+Cash 2,000
+TrueMoney 1,500
+Stocks 50,000
 
 Total
 
@@ -990,11 +989,11 @@ Card ที่สอง
 Card ที่สาม
 Assets
 
-SCB        25,000
-KBank      15,000
-Stocks     50,000
-Cash        2,000
-TrueMoney   1,500
+SCB 25,000
+KBank 15,000
+Stocks 50,000
+Cash 2,000
+TrueMoney 1,500
 
 Card ที่สี่
 Recent Activity
@@ -1022,6 +1021,7 @@ Information Architecture
 
 และจากข้อมูลล่าสุด
 ผมคิดว่า Feature สำคัญของ Product เรียงลำดับใหม่เป็น
+
 1. Journal (บันทึกรายการ)
 
 2. Assets (ทรัพย์สินทั้งหมด)
@@ -1035,8 +1035,8 @@ Information Architecture
 6. Goals
 
 7. Tax
-เพราะถ้าไม่มี Journal ก็ไม่มีข้อมูลให้วิเคราะห์ และถ้าไม่มี Assets ก็จะตอบคำถามหลักของคุณไม่ได้ว่า
-"ตอนนี้ฉันมีเงินทั้งหมดเท่าไหร่"
+   เพราะถ้าไม่มี Journal ก็ไม่มีข้อมูลให้วิเคราะห์ และถ้าไม่มี Assets ก็จะตอบคำถามหลักของคุณไม่ได้ว่า
+   "ตอนนี้ฉันมีเงินทั้งหมดเท่าไหร่"
 
 ดังนั้นสิ่งที่ผมอยากทำต่อในรอบถัดไปคือ
 ออกแบบ Home Dashboard แบบละเอียดจริง ๆ (Mobile First)
@@ -1063,6 +1063,7 @@ Frontend
 Home Dashboard v1
 เป้าหมาย
 เปิด App มาแล้วตอบได้ทันที
+
 1. ฉันมีเงินทั้งหมดเท่าไหร่
 
 2. เงินอยู่ที่ไหน
@@ -1070,47 +1071,47 @@ Home Dashboard v1
 3. เดือนนี้ใช้ไปเท่าไหร่
 
 4. รายการล่าสุดคืออะไร
-ภายใน 3 วินาที
+   ภายใน 3 วินาที
 
 Mobile Layout
 ผมจินตนาการแบบนี้
 ┌──────────────────┐
-│ ☀️ Good Morning  │
-│ June 2026        │
+│ ☀️ Good Morning │
+│ June 2026 │
 └──────────────────┘
 
 ┌──────────────────┐
-│ Total Assets     │
-│ ฿ 93,500         │
+│ Total Assets │
+│ ฿ 93,500 │
 └──────────────────┘
 
 ┌────────┬─────────┐
-│Income  │Expense  │
-│45,000  │12,000   │
+│Income │Expense │
+│45,000 │12,000 │
 └────────┴─────────┘
 
 ┌──────────────────┐
-│ Net Cash Flow    │
-│ +33,000          │
+│ Net Cash Flow │
+│ +33,000 │
 └──────────────────┘
 
 ┌──────────────────┐
-│ My Assets        │
+│ My Assets │
 └──────────────────┘
 
-🏦 SCB       25,000
-🏦 KBank     15,000
-💵 Cash       2,000
-💳 TrueMoney  1,500
+🏦 SCB 25,000
+🏦 KBank 15,000
+💵 Cash 2,000
+💳 TrueMoney 1,500
 
 [View All]
 
 ┌──────────────────┐
-│ Recent Activity  │
+│ Recent Activity │
 └──────────────────┘
 
-🍜 Food       -50
-☕ Coffee     -65
+🍜 Food -50
+☕ Coffee -65
 💰 Salary +35000
 
 [View More]
@@ -1207,7 +1208,8 @@ Journal
 Floating Action Button
 Mobile
 มุมขวาล่าง
-+
+
+-
 
 กดแล้ว
 Bottom Sheet
@@ -1224,15 +1226,15 @@ Desktop ผมไม่อยากให้เหมือน Mobile ขยา�
 
 อยากให้เป็น
 ┌──────────────┬─────────────────┐
-│ Sidebar      │ Home            │
-│              │                 │
-│ Home         │ Total Assets    │
-│ Journal      │                 │
-│ Analytics    │ Income Expense  │
-│ Assets       │                 │
-│ Goals        │ Assets List     │
-│ Tax          │                 │
-│ Settings     │ Recent Activity │
+│ Sidebar │ Home │
+│ │ │
+│ Home │ Total Assets │
+│ Journal │ │
+│ Analytics │ Income Expense │
+│ Assets │ │
+│ Goals │ Assets List │
+│ Tax │ │
+│ Settings │ Recent Activity │
 └──────────────┴─────────────────┘
 
 สิ่งที่ผมยังไม่มั่นใจ
@@ -1678,9 +1680,9 @@ Assets
 
 และ Home Dashboard คือการรวม
 Journal
-+
-Assets
-เข้าด้วยกัน
+
+- Assets
+  เข้าด้วยกัน
 
 สิ่งที่ผมอยากออกแบบต่อ
 ผมคิดว่าหน้าที่สำคัญที่สุดรองจาก Home คือ
@@ -1790,11 +1792,11 @@ Tag
 Location
 
 ผมอยากให้เหลือ
-Amount *
+Amount \*
 
-Category *
+Category \*
 
-Asset *
+Asset \*
 แค่นี้
 
 แล้วมี
@@ -1947,7 +1949,7 @@ Navigation อาจจะต้องเปลี่ยนเป็น
 📊 Analytics
 แทน
 และนี่เป็นการตัดสินใจ UX ใหญ่ที่สุดที่เราควรคุยกันต่อก่อนเริ่ม Wireframe ครับ.
- ถ้าใช้ nav เป็นแบบนี้ 
+ ถ้าใช้ nav เป็นแบบนี้
 🏠 Home
 💰 Assets
 ➕
@@ -2205,8 +2207,8 @@ Calendar View
 พอกด Calendar
 จะเป็นสิ่งที่คุณใช้อยู่ปัจจุบัน
 ┌────┬────┬────┬────┐
-│ 1  │ 2  │ 3  │ 4  │
-│+500│-120│-50 │+0  │
+│ 1 │ 2 │ 3 │ 4 │
+│+500│-120│-50 │+0 │
 └────┴────┴────┴────┘
 แต่ละวันแสดง
 รายรับรวม
@@ -2264,6 +2266,7 @@ Journal
 Analytics
 แล้ว
 แต่จริง ๆ Flow ของผู้ใช้จะเป็น
+
 1. เพิ่มรายการ
 
 2. กลับมาดู Journal
@@ -2335,10 +2338,10 @@ Sync
 
 และผมคิดว่าเราเริ่มมีโครงสร้าง Product ที่แข็งแรงพอแล้ว
 สิ่งที่ผมอยากทำต่อจริง ๆ คือ ออกแบบ Home Dashboard แบบละเอียดระดับ Wireframe เพราะตอนนี้เรารู้แล้วว่า
-    •	Home = ภาพรวมการเงิน
-    •	Journal = ศูนย์กลางการบันทึก
-    •	Analytics = วิเคราะห์ข้อมูล
-    •	Assets อยู่ใน Home และ Settings
+• Home = ภาพรวมการเงิน
+• Journal = ศูนย์กลางการบันทึก
+• Analytics = วิเคราะห์ข้อมูล
+• Assets อยู่ใน Home และ Settings
 ซึ่งเพียงพอที่จะเริ่มกำหนด Layout จริงของหน้าจอ Mobile และ Desktop ได้แล้วครับ.
  โอเค ต่อไปได้เลย   เยี่ยมครับ
 ตอนนี้ผมคิดว่าเราผ่านช่วง Product Discovery ไปประมาณ 70% แล้ว
@@ -2380,45 +2383,45 @@ Q4
 
 Home Mobile Wireframe v1
 ┌────────────────────┐
-│ Good Morning ☀️    │
-│ June 2026          │
+│ Good Morning ☀️ │
+│ June 2026 │
 └────────────────────┘
 
 ┌────────────────────┐
-│ Total Assets       │
-│                    │
-│ ฿ 93,500           │
-│                    │
-│ +5.2% This Month   │
+│ Total Assets │
+│ │
+│ ฿ 93,500 │
+│ │
+│ +5.2% This Month │
 └────────────────────┘
 
 ┌─────────┬──────────┐
-│ Income  │ Expense  │
-│ 45,000  │ 12,000   │
+│ Income │ Expense │
+│ 45,000 │ 12,000 │
 └─────────┴──────────┘
 
 ┌────────────────────┐
-│ Net Cash Flow      │
-│ +33,000            │
+│ Net Cash Flow │
+│ +33,000 │
 └────────────────────┘
 
 ┌────────────────────┐
-│ Assets             │
+│ Assets │
 └────────────────────┘
 
-🏦 SCB       25,000
-🏦 KBank     15,000
-💵 Cash       2,000
-💳 TrueMoney  1,500
+🏦 SCB 25,000
+🏦 KBank 15,000
+💵 Cash 2,000
+💳 TrueMoney 1,500
 
 [ View All ]
 
 ┌────────────────────┐
-│ Recent Activity    │
+│ Recent Activity │
 └────────────────────┘
 
-🍜 Food       -50
-☕ Coffee     -65
+🍜 Food -50
+☕ Coffee -65
 💰 Salary +35000
 
 [ View More ]
@@ -2461,9 +2464,9 @@ This Month
 ตัวอย่าง
 ┌────────────────────┐
 │ Financial Snapshot │
-│                    │
-│ ฿ 93,500           │
-│                    │
+│ │
+│ ฿ 93,500 │
+│ │
 │ +33,000 This Month │
 └────────────────────┘
 
@@ -2474,18 +2477,18 @@ This Month
 
 แต่
 93,500
-+
-เดือนนี้เพิ่มขึ้น 33,000
-มีความหมาย
+
+- เดือนนี้เพิ่มขึ้น 33,000
+  มีความหมาย
 
 Card ถัดมา
 สิ่งที่ผมคิดว่าสำคัญกว่า Income/Expense
 คือ
 Assets Distribution
-SCB         25%
-KBank       15%
-Stocks      55%
-Cash         5%
+SCB 25%
+KBank 15%
+Stocks 55%
+Cash 5%
 
 เพราะคุณกระจายเงินหลายที่
 
@@ -2587,14 +2590,13 @@ Personal
 เวลาเปิดแอป
 ควรรู้สึกเหมือน
 Apple Wallet
-+
-Notion
-+
-Linear
-ไม่ใช่
-ธนาคาร
-และไม่ใช่
-แอปจดบัญชีแม่บ้าน
+
+- Notion
+- Linear
+  ไม่ใช่
+  ธนาคาร
+  และไม่ใช่
+  แอปจดบัญชีแม่บ้าน
 
 สิ่งที่ผมไม่อยากให้มี
 Dashboard แบบนี้
@@ -2609,10 +2611,7 @@ Dashboard แบบนี้
 🟣 อื่นๆ
 สีเต็มจอ
 
-เพราะ
-    1.	ดูรก
-    2.	ข้อมูลเยอะ
-    3.	ใช้ไป 6 เดือนแล้วเบื่อ
+เพราะ 1. ดูรก 2. ข้อมูลเยอะ 3. ใช้ไป 6 เดือนแล้วเบื่อ
 
 Visual Direction
 ผมอยากให้ใช้
@@ -2756,9 +2755,9 @@ Design Reference
 ถ้าจะเอา Reference จริง ๆ
 ผมอยากให้ Mood & Tone อยู่ระหว่าง
 Notion
-    •	
+•
 Linear
-    •	
+•
 Apple Wallet
 
 ถ้าผมเป็น Product Designer
@@ -2780,11 +2779,11 @@ Assets
 นี่จะทำให้ Product ไม่กลายเป็น Dashboard ที่มีข้อมูลเต็มไปหมดแต่ไม่ตอบอะไรเลย
 
 และผมคิดว่าตอนนี้เราเริ่มมี
-    •	Product Vision
-    •	Navigation
-    •	Information Architecture
-    •	UX Direction
-    •	Visual Direction
+• Product Vision
+• Navigation
+• Information Architecture
+• UX Direction
+• Visual Direction
 ครบแล้ว
 สิ่งที่ผมอยากทำต่อจริง ๆ คือ
 วาด Wireframe Mobile ของ Home แบบละเอียดระดับ Component Layout
@@ -2843,10 +2842,10 @@ Hero Card
 ใหญ่สุดในหน้า
 ┌───────────────────┐
 │ Financial Snapshot│
-│                   │
-│ ฿ 93,500          │
-│                   │
-│ +33,000 เดือนนี้  │
+│ │
+│ ฿ 93,500 │
+│ │
+│ +33,000 เดือนนี้ │
 └───────────────────┘
 
 สิ่งที่แสดง
@@ -2865,13 +2864,13 @@ Section 3 — Asset Distribution
 Assets
 
 แสดง Top 4
-🏦 SCB       25,000
+🏦 SCB 25,000
 
-🏦 KBank     15,000
+🏦 KBank 15,000
 
-📈 Stocks    50,000
+📈 Stocks 50,000
 
-💵 Cash       2,000
+💵 Cash 2,000
 
 ด้านล่าง
 View All Assets →
@@ -3073,7 +3072,7 @@ Default
 Expense
 
 Expense Form
-Amount *
+Amount \*
 
 Keyboard Number เปิดทันที
 
@@ -3081,7 +3080,7 @@ Keyboard Number เปิดทันที
 120
 
 ต่อมา
-Category *
+Category \*
 
 เป็น Grid
 เช่น
@@ -3100,7 +3099,7 @@ Category *
 กด 1 ทีจบ
 
 ต่อมา
-Asset *
+Asset \*
 
 แต่
 เลือก Asset ล่าสุดไว้ให้แล้ว
@@ -3298,11 +3297,7 @@ Adjustment
 ไม่ใช่ Transaction ปกติ
 
 ถ้าผมเป็น PO ตอนนี้
-Sprint ถัดไปที่ผมจะทำคือ
-    1.	Wireframe Home
-    2.	Wireframe Add Transaction
-    3.	Wireframe Journal
-    4.	Wireframe Analytics
+Sprint ถัดไปที่ผมจะทำคือ 1. Wireframe Home 2. Wireframe Add Transaction 3. Wireframe Journal 4. Wireframe Analytics
 เรียงตามลำดับนี้
 เพราะนี่คือ Flow จริงของผู้ใช้
 Add
@@ -3427,9 +3422,9 @@ Calendar View
 อันนี้ต่อยอดจากของที่คุณมีอยู่แล้ว
 
 Month View
-1   +500
-2   -120
-3   -50
+1 +500
+2 -120
+3 -50
 
 แต่ผมอยากเพิ่ม
 Heatmap Feeling
@@ -3478,9 +3473,9 @@ Journal Desktop
 
 ผมอยากให้เป็น
 ┌──────────┬──────────────┐
-│ Calendar │ Timeline     │
-│           │              │
-│ Month     │ Transactions │
+│ Calendar │ Timeline │
+│ │ │
+│ Month │ Transactions │
 └──────────┴──────────────┘
 
 สอง Pane
@@ -3747,12 +3742,12 @@ Desktop ไม่ควรเหมือน Mobile
 
 ผมอยากให้เป็น
 ┌──────────────────────────┐
-│ Overview Cards           │
+│ Overview Cards │
 └──────────────────────────┘
 
 ┌──────────┬───────────────┐
-│ Category │ Detail        │
-│ List     │ Breakdown     │
+│ Category │ Detail │
+│ List │ Breakdown │
 └──────────┴───────────────┘
 
 ตัวอย่าง
@@ -3845,34 +3840,35 @@ Data Model
 Product v1 ที่เราตกลงกันแล้ว
 ก่อนออกแบบ Database ผมจะล็อก Scope ก่อน
 User ทำอะไรได้บ้าง
+
 1. จัดการ Assets
-SCB
-KBank
-Cash
-TrueMoney
-Stocks
-Crypto
+   SCB
+   KBank
+   Cash
+   TrueMoney
+   Stocks
+   Crypto
 
 2. บันทึกรายการ
-Expense
-Income
-Transfer
+   Expense
+   Income
+   Transfer
 
 3. ดู Journal
-Timeline
+   Timeline
 
 Calendar
 
 4. ดู Analytics
-Expense Breakdown
+   Expense Breakdown
 
 Income Breakdown
 
 Asset Breakdown
 
 5. Sync Account
-Login
-Register
+   Login
+   Register
 
 จากตรงนี้
 ผมเริ่มเห็น Core Entities
@@ -4177,7 +4173,7 @@ AssetSnapshot
 สิ่งที่ผมอยากทำต่อจากนี้คือ
 วาด ER Diagram + Prisma Schema v2 จาก Product Design ที่เราสรุปกันทั้งหมด
 เพื่อเช็กว่าฐานข้อมูลที่คุณมีอยู่ตอนนี้ (User, Category, Transaction) ควรปรับอะไรบ้างให้รองรับระบบ Assets และ Transfer อย่างถูกต้องตั้งแต่แรก โดยไม่ต้องรื้อใหญ่ทีหลังครับ.
-  โอเคได้เลย **ฐานข้อมูลที่มีใช้อยู่ตอนนี้ไม่ต้องพูดถึงแล้ว เราจะเริ่มใหม่กันหมด ตอนนี้เริ่มใหม่ไปแล้ว เกิด product ที่กำลังทำอยู่  ดีมากครับ
+  โอเคได้เลย \*\*ฐานข้อมูลที่มีใช้อยู่ตอนนี้ไม่ต้องพูดถึงแล้ว เราจะเริ่มใหม่กันหมด ตอนนี้เริ่มใหม่ไปแล้ว เกิด product ที่กำลังทำอยู่  ดีมากครับ
 จริง ๆ ผมว่าการตัดสินใจ
 "ลืมฐานข้อมูลเดิมไปก่อน"
 เป็นการตัดสินใจที่ถูกต้อง
@@ -4390,20 +4386,20 @@ Cash
 
 ER Diagram (Business Level)
 User
- │
- ├── Assets
- │
- ├── Categories
- │
- └── Transactions
+│
+├── Assets
+│
+├── Categories
+│
+└── Transactions
 
 Transaction
- │
- ├── Category (optional)
- │
- ├── Asset (required)
- │
- └── To Asset (transfer only)
+│
+├── Category (optional)
+│
+├── Asset (required)
+│
+└── To Asset (transfer only)
 
 สิ่งที่ผมยังไม่อยากใส่
 ตอนนี้
@@ -4453,11 +4449,11 @@ Analytics จะดีขึ้นมาก
 Architecture Vision
 ตอนนี้ผมมอง Product เป็น
 Assets
-     ▲
-     │
+▲
+│
 Transactions
-     │
-     ▼
+│
+▼
 Analytics
 
 Assets คือ
@@ -4490,9 +4486,9 @@ First Time User
 ↓
 เห็น Dashboard แรก
 เพราะ User Flow จะช่วยให้เรารู้ว่า
-    •	ต้องมีหน้าจออะไรบ้าง
-    •	หน้าไหนต้องทำก่อน
-    •	MVP จริง ๆ ควรตัดอะไรออก
+• ต้องมีหน้าจออะไรบ้าง
+• หน้าไหนต้องทำก่อน
+• MVP จริง ๆ ควรตัดอะไรออก
 ก่อนที่เราจะเริ่มออกแบบ Database และ API ครับ.
   โอเคได้เลย ดีครับ ผมว่าตอนนี้เรากำลังทำสิ่งที่ Product Team จริง ๆ ทำกัน
 คือ
@@ -4593,19 +4589,19 @@ Flow 2 — Daily Usage
 Home
 ↓
 กด
-+
-↓
-Expense
-↓
-Amount
-↓
-Category
-↓
-Asset
-↓
-Save
-↓
-กลับ Home
+
+- ↓
+  Expense
+  ↓
+  Amount
+  ↓
+  Category
+  ↓
+  Asset
+  ↓
+  Save
+  ↓
+  กลับ Home
 
 จบ
 
@@ -4818,7 +4814,7 @@ Feature Specification (PRD)
 ได้แล้ว
 คือแปลงสิ่งที่เราคุยทั้งหมดให้กลายเป็นรายการ Feature แบบ Product Manager ใช้ส่งต่อให้ Designer และ Developer ทำงานต่อได้จริง ๆ
 นี่จะเป็นเอกสารระดับที่สามารถแตกเป็น Sprint และ Task ได้เลยครับ.
-  โอเคก่อนจะไปต่อ **ให้ข้อมูลเพิ่มเติมคือ ระบบนี้ต้องรองรับการ sync ได้ ดังนั้นเข้ามาสามารถเล่นระบบได้เลยหรือเป็น guest นั้นเอง เก็บข้อมูลไว้บน localstorage ถ้า login ระบบจะ sync เก็บข้อมูลจาก localstorage เข้า database ให้ได้   ข้อมูลนี้สำคัญมากครับ และจริง ๆ มันเปลี่ยน Product Design ไปพอสมควรเลย
+  โอเคก่อนจะไปต่อ \*\*ให้ข้อมูลเพิ่มเติมคือ ระบบนี้ต้องรองรับการ sync ได้ ดังนั้นเข้ามาสามารถเล่นระบบได้เลยหรือเป็น guest นั้นเอง เก็บข้อมูลไว้บน localstorage ถ้า login ระบบจะ sync เก็บข้อมูลจาก localstorage เข้า database ให้ได้   ข้อมูลนี้สำคัญมากครับ และจริง ๆ มันเปลี่ยน Product Design ไปพอสมควรเลย
 ผมชอบแนวคิดนี้มาก เพราะตรงกับพฤติกรรมผู้ใช้จริง
 หลายคนจะไม่อยาก
 สมัครสมาชิก
@@ -4901,9 +4897,9 @@ Architecture
 Browser
 
 └── IndexedDB
-     ├── assets
-     ├── categories
-     └── transactions
+├── assets
+├── categories
+└── transactions
 
 ทำงาน Offline ได้ด้วย
 
@@ -4995,11 +4991,11 @@ Sync ได้ครั้งเดียว
 สิ่งที่เปลี่ยนใน Navigation
 เดิม
 More
- └── Login
+└── Login
 
 ผมเสนอ
 More
- └── Sync & Account
+└── Sync & Account
 
 Guest จะเห็น
 ☁️ Sync your data
@@ -5010,15 +5006,16 @@ Create account to keep your data safe
 
 สิ่งที่ผมชอบมาก
 แนวคิดนี้ทำให้ Product มี 3 จุดเด่น
+
 1. ใช้งานได้ทันที
-ไม่ต้องสมัคร
+   ไม่ต้องสมัคร
 
 2. Offline First
-ต่อให้ไม่มีเน็ต
-ก็ยังบันทึกได้
+   ต่อให้ไม่มีเน็ต
+   ก็ยังบันทึกได้
 
 3. Cloud Sync
-Login เมื่อพร้อม
+   Login เมื่อพร้อม
 
 ซึ่งจริง ๆ แล้วใกล้เคียงกับแนวคิดของแอปจดบันทึกยุคใหม่หลายตัว เช่น Obsidian หรือ Joplin ที่ให้ผู้ใช้เริ่มใช้งานก่อน แล้วค่อยเชื่อมบัญชีภายหลัง
 
@@ -5150,13 +5147,6 @@ Minimal + Modern
 Mood Board
 ผมให้อารมณ์ประมาณ
 
-
-
-
-
-
-
-
 UI Principles
 Principle 1
 ตัวเลขสำคัญกว่ากราฟ
@@ -5265,8 +5255,7 @@ Screen Inventory
 Screen Inventory v1
 นี่คือรายการหน้าจอทั้งหมดที่ผมคิดว่า MVP ควรมี
 
-Public
-01. Welcome
+Public 01. Welcome
 Guest เข้าได้เลย
 Welcome
 
@@ -5276,24 +5265,24 @@ Understand your finances.
 [ Get Started ]
 [ Sign In ]
 
-02. Login
-Email
-Password
+2.  Login
+    Email
+    Password
 
 Login
 
-03. Register
-Email
-Password
-Confirm Password
+3.  Register
+    Email
+    Password
+    Confirm Password
 
 Register
 
 Main App
 
-04. Home
-ตอบคำถาม
-ตอนนี้ฉันมีเงินเท่าไหร่
+4.  Home
+    ตอบคำถาม
+    ตอนนี้ฉันมีเงินเท่าไหร่
 
 Sections
 Financial Snapshot
@@ -5306,9 +5295,9 @@ Monthly Summary
 
 Insights
 
-05. Add Transaction
-Bottom Sheet
-หรือ Full Screen
+5.  Add Transaction
+    Bottom Sheet
+    หรือ Full Screen
 
 Mode
 Expense
@@ -5317,8 +5306,8 @@ Income
 
 Transfer
 
-06. Journal Timeline
-Default Journal
+6.  Journal Timeline
+    Default Journal
 
 Today
 
@@ -5331,8 +5320,8 @@ Salary +35000
 พร้อม Search
 พร้อม Filter
 
-07. Journal Calendar
-Calendar View
+7.  Journal Calendar
+    Calendar View
 
 แต่ละวัน
 +500
@@ -5344,9 +5333,9 @@ Calendar View
 
 Analytics
 
-08. Analytics Overview
-ตอบคำถาม
-เดือนนี้เป็นยังไง
+8.  Analytics Overview
+    ตอบคำถาม
+    เดือนนี้เป็นยังไง
 
 Income
 
@@ -5356,8 +5345,8 @@ Net
 
 Top Categories
 
-09. Expense Analytics
-Food
+9.  Expense Analytics
+    Food
 
 5500
 
@@ -5366,14 +5355,14 @@ Food
 เห็นรายการทั้งหมด
 
 10. Income Analytics
-Salary
+    Salary
 
 35000
 
 กดดูรายการทั้งหมด
 
 11. Asset Analytics
-SCB
+    SCB
 
 KBank
 
@@ -5386,7 +5375,7 @@ Distribution
 Asset Management
 
 12. Assets List
-SCB
+    SCB
 
 25000
 
@@ -5395,8 +5384,8 @@ KBank
 15000
 
 13. Asset Detail
-ตัวอย่าง
-SCB
+    ตัวอย่าง
+    SCB
 
 แสดง
 Current Balance
@@ -5406,14 +5395,14 @@ Recent Transactions
 Adjust Balance
 
 14. Create Asset
-Asset Name
+    Asset Name
 
 Type
 
 Initial Balance
 
 15. Edit Asset
-แก้ไข Asset
+    แก้ไข Asset
 
 Category Management
 
@@ -5444,8 +5433,8 @@ Color
 Settings
 
 19. Account & Sync
-Guest
-Sync Your Data
+    Guest
+    Sync Your Data
 
 Logged In
 Email
@@ -5511,12 +5500,12 @@ src
 
 ├── features
 
-│   ├── home
-│   ├── journal
-│   ├── analytics
-│   ├── assets
-│   ├── categories
-│   └── auth
+│ ├── home
+│ ├── journal
+│ ├── analytics
+│ ├── assets
+│ ├── categories
+│ └── auth
 
 ซึ่งตรงกับ Feature-based Architecture ที่คุณใช้อยู่แล้ว
 
@@ -5530,18 +5519,18 @@ Design System
 แอปนี้ดูแล้วรู้สึกยังไง?
 
 ตัวอย่าง
-    •	ดูจริงจังแบบธนาคาร?
-    •	ดูมินิมอลแบบ Apple?
-    •	ดูอบอุ่นเหมือนสมุดบันทึก?
-    •	ดู Modern SaaS แบบ Linear?
-    •	ดู Personal Dashboard แบบ Notion?
+• ดูจริงจังแบบธนาคาร?
+• ดูมินิมอลแบบ Apple?
+• ดูอบอุ่นเหมือนสมุดบันทึก?
+• ดู Modern SaaS แบบ Linear?
+• ดู Personal Dashboard แบบ Notion?
 ซึ่งคำตอบนี้จะส่งผลกับ
-    •	Typography
-    •	Color System
-    •	Spacing
-    •	Card Design
-    •	Navigation
-    •	Animation
+• Typography
+• Color System
+• Spacing
+• Card Design
+• Navigation
+• Animation
 ทั้งหมด
 และผมคิดว่าควรล็อกสิ่งนี้ก่อนเริ่มวาด Wireframe ระดับละเอียดครับ.
   ได้เลย  ดีครับ เพราะนี่เป็นจุดที่หลายโปรเจกต์พลาด
@@ -5779,8 +5768,8 @@ Cyan
 Home
 
 ┌───────────────┐
-│ Total Assets  │
-│ ฿93,500       │
+│ Total Assets │
+│ ฿93,500 │
 └───────────────┘
 
 ┌────┐ ┌────┐
@@ -5975,11 +5964,11 @@ Summary Card
 
 ตัวอย่าง
 ┌───────────────┐
-│ Total Assets  │
-│               │
-│ ฿93,500       │
-│               │
-│ +8.2%         │
+│ Total Assets │
+│ │
+│ ฿93,500 │
+│ │
+│ +8.2% │
 └───────────────┘
 
 Properties
@@ -6088,7 +6077,7 @@ Mobile First
 
 Desktop
 ┌─────┬─────────────────┐
-│ Nav │ Content         │
+│ Nav │ Content │
 └─────┴─────────────────┘
 
 Sidebar
@@ -6161,41 +6150,42 @@ Project: Personal Finance Dashboard
 Product Vision
 ช่วยให้ผู้ใช้เข้าใจสถานะการเงินของตัวเองได้ง่ายที่สุด
 โดยสามารถ
-    •	บันทึกรายรับ
-    •	บันทึกรายจ่าย
-    •	ติดตามทรัพย์สิน
-    •	วิเคราะห์พฤติกรรมการใช้เงิน
+• บันทึกรายรับ
+• บันทึกรายจ่าย
+• ติดตามทรัพย์สิน
+• วิเคราะห์พฤติกรรมการใช้เงิน
 ผ่าน UI ที่เรียบง่ายและใช้งานได้ทุกวัน
 
 Product Principles
+
 1. Guest First
-เปิดเว็บ
-↓
-ใช้งานได้เลย
-↓
-ไม่บังคับสมัครสมาชิก
+   เปิดเว็บ
+   ↓
+   ใช้งานได้เลย
+   ↓
+   ไม่บังคับสมัครสมาชิก
 
 2. Offline First
-ไม่มีอินเทอร์เน็ต
-↓
-ยังบันทึกข้อมูลได้
-↓
-ข้อมูลเก็บใน Browser
+   ไม่มีอินเทอร์เน็ต
+   ↓
+   ยังบันทึกข้อมูลได้
+   ↓
+   ข้อมูลเก็บใน Browser
 
 3. Sync Later
-พร้อมเมื่อไหร่ค่อยสมัครสมาชิก
-↓
-Sync ข้อมูลขึ้น Cloud
+   พร้อมเมื่อไหร่ค่อยสมัครสมาชิก
+   ↓
+   Sync ข้อมูลขึ้น Cloud
 
 4. Fast Entry
-บันทึกรายการให้เสร็จภายใน
-3-5 วินาที
+   บันทึกรายการให้เสร็จภายใน
+   3-5 วินาที
 
 5. Insight Over Charts
-เน้น
-เข้าใจ
-มากกว่า
-กราฟสวย
+   เน้น
+   เข้าใจ
+   มากกว่า
+   กราฟสวย
 
 Target User
 เวอร์ชันแรก
@@ -6217,13 +6207,13 @@ Home
 ตอนนี้ฉันมีเงินเท่าไหร่
 
 Features
-    •	Total Assets
-    •	Monthly Income
-    •	Monthly Expense
-    •	Net Flow
-    •	Asset Overview
-    •	Recent Transactions
-    •	Insights
+• Total Assets
+• Monthly Income
+• Monthly Expense
+• Net Flow
+• Asset Overview
+• Recent Transactions
+• Insights
 
 Module 2
 Journal
@@ -6238,10 +6228,10 @@ Calendar
 รายการตามวัน
 
 Features
-    •	Search
-    •	Filter
-    •	Edit
-    •	Delete
+• Search
+• Filter
+• Edit
+• Delete
 
 Module 3
 Transaction Entry
@@ -6284,10 +6274,10 @@ Income
 Assets
 
 Features
-    •	Category Breakdown
-    •	Asset Breakdown
-    •	Monthly Trends
-    •	Insights
+• Category Breakdown
+• Asset Breakdown
+• Monthly Trends
+• Insights
 
 Module 5
 Assets
@@ -6306,10 +6296,10 @@ Crypto
 Other
 
 Features
-    •	Create
-    •	Edit
-    •	Archive
-    •	Adjust Balance
+• Create
+• Edit
+• Archive
+• Adjust Balance
 
 Module 6
 Categories
@@ -6327,10 +6317,10 @@ Salary
 Bonus
 
 Features
-    •	Create
-    •	Edit
-    •	Delete
-    •	Reorder
+• Create
+• Edit
+• Delete
+• Reorder
 
 Module 7
 Account & Sync
@@ -6416,22 +6406,22 @@ Success Criteria
 Roadmap
 Phase 1
 Foundation
-    •	Auth
-    •	Assets
-    •	Categories
-    •	Transactions
+• Auth
+• Assets
+• Categories
+• Transactions
 
 Phase 2
 Experience
-    •	Journal
-    •	Analytics
-    •	Sync
+• Journal
+• Analytics
+• Sync
 
 Phase 3
 Polish
-    •	Insights
-    •	Export
-    •	Settings
+• Insights
+• Export
+• Settings
 
 สิ่งที่ผมอยากทำต่อจากนี้
 ก่อนแตะ NestJS หรือ Next.js
@@ -6447,11 +6437,11 @@ Guest First
 Offline First
 Sync Later
 ซึ่งจะมีผลกับ
-    •	Database
-    •	IndexedDB
-    •	Sync Engine
-    •	API Design
-    •	Authentication
+• Database
+• IndexedDB
+• Sync Engine
+• API Design
+• Authentication
 ทั้งหมด
 และถ้าเราออกแบบ Architecture ถูกตั้งแต่ตอนนี้ เราจะไม่ต้องรื้อระบบครั้งใหญ่ตอนทำจริงครับ.
   โอเคต่อไปได้
@@ -6480,25 +6470,25 @@ Browser
 
 High Level Architecture
 ┌───────────────┐
-│   Next.js     │
+│ Next.js │
 └───────┬───────┘
-        │
-        ▼
+│
+▼
 ┌───────────────┐
-│   IndexedDB   │
+│ IndexedDB │
 └───────┬───────┘
-        │
-        ▼
-     Sync
-        │
-        ▼
+│
+▼
+Sync
+│
+▼
 ┌───────────────┐
-│    NestJS     │
+│ NestJS │
 └───────┬───────┘
-        │
-        ▼
+│
+▼
 ┌───────────────┐
-│ PostgreSQL    │
+│ PostgreSQL │
 └───────────────┘
 
 หลักการสำคัญ
@@ -6588,8 +6578,8 @@ Backend
 Backend
 เป็น
 Cloud Backup
-+
-Multi Device Sync
+
+- Multi Device Sync
 
 ต่างจากระบบ CRUD ปกติ
 มาก
@@ -6775,13 +6765,13 @@ Everything is a Transaction
 Domain Design
 ไม่ใช่ Database Design
 แต่เป็นการออกแบบว่า
-    •	Asset มีหน้าที่อะไร
-    •	Transaction มีกฎอะไร
-    •	Transfer ทำงานยังไง
-    •	Adjustment ส่งผลยังไง
-    •	Analytics ควรคำนวณจากอะไร
+• Asset มีหน้าที่อะไร
+• Transaction มีกฎอะไร
+• Transfer ทำงานยังไง
+• Adjustment ส่งผลยังไง
+• Analytics ควรคำนวณจากอะไร
 ซึ่งจะกลายเป็น Business Logic ของระบบทั้งหมด และเป็นสิ่งที่ Fullstack Developer ต้องเข้าใจมากกว่าแค่เขียน CRUD ครับ.
-  โอเคต่อได้เลย **บอกได้เลยนะว่าฉันควรเริ่ม dev เฟส/sprint/ver1 แรกตอนไหน เช่นมาถึงตรงนี้แล้วคุณต้องทำ feature นี้เสร็จแล้วอะไรแบบนีี้   ผมจะตอบในฐานะ Product Owner + Tech Lead เลยนะ
+  โอเคต่อได้เลย \*\*บอกได้เลยนะว่าฉันควรเริ่ม dev เฟส/sprint/ver1 แรกตอนไหน เช่นมาถึงตรงนี้แล้วคุณต้องทำ feature นี้เสร็จแล้วอะไรแบบนีี้   ผมจะตอบในฐานะ Product Owner + Tech Lead เลยนะ
 ตอนนี้
 ยังไม่ควรเริ่มเขียนทั้งหมด
 แต่
@@ -7065,15 +7055,15 @@ Product นี้มีเป้าหมายคือ
 Sprint 0
 พร้อมกัน 2 งาน
 Frontend
-    •	Setup Project
-    •	Setup Design System
-    •	Setup Navigation
+• Setup Project
+• Setup Design System
+• Setup Navigation
 
 Backend
-    •	Setup NestJS
-    •	Setup Prisma
-    •	Setup PostgreSQL
-    •	สร้าง Module เปล่า
+• Setup NestJS
+• Setup Prisma
+• Setup PostgreSQL
+• สร้าง Module เปล่า
 
 แล้วพอเสร็จ
 เราจะเข้าสู่
@@ -7081,76 +7071,77 @@ Sprint 1
 ทันที
 คือ
 Add Transaction
-+
-Transaction Timeline
-ซึ่งจะเป็น Feature แรกของ Product ที่ผู้ใช้ใช้งานได้จริง และเป็นจุดที่เริ่มเห็น Noteme (หรือชื่อใหม่ที่เราจะตั้ง) กลายเป็นแอปจริง ๆ แล้ว ไม่ใช่แค่โปรเจกต์ฝึก NestJS ครับ.
-  *ก่อนจะไป setup project ทั้ง front, back ฉันอยากให้คุณสรุป ver1 ให้ฉันหน่อยว่าทำอะไรบ้าง *ชื่อ web app นี้เป็น PocketNoteMe ดีไหม  ผมขอสรุป Version 1 (MVP) ก่อน แล้วค่อยคุยเรื่องชื่อครับ
-Version 1 (MVP)
-เป้าหมายของ V1 ไม่ใช่ "แอปการเงินที่ครบทุกอย่าง"
-แต่คือ
-ผู้ใช้สามารถเริ่มบันทึกการเงินของตัวเองได้ทันที
-และเห็นภาพรวมการเงินของตัวเองได้
+
+- Transaction Timeline
+  ซึ่งจะเป็น Feature แรกของ Product ที่ผู้ใช้ใช้งานได้จริง และเป็นจุดที่เริ่มเห็น Noteme (หรือชื่อใหม่ที่เราจะตั้ง) กลายเป็นแอปจริง ๆ แล้ว ไม่ใช่แค่โปรเจกต์ฝึก NestJS ครับ.
+    *ก่อนจะไป setup project ทั้ง front, back ฉันอยากให้คุณสรุป ver1 ให้ฉันหน่อยว่าทำอะไรบ้าง *ชื่อ web app นี้เป็น PocketNoteMe ดีไหม  ผมขอสรุป Version 1 (MVP) ก่อน แล้วค่อยคุยเรื่องชื่อครับ
+  Version 1 (MVP)
+  เป้าหมายของ V1 ไม่ใช่ "แอปการเงินที่ครบทุกอย่าง"
+  แต่คือ
+  ผู้ใช้สามารถเริ่มบันทึกการเงินของตัวเองได้ทันที
+  และเห็นภาพรวมการเงินของตัวเองได้
 
 Core Concept
 Guest First
 Offline First
 Sync Later
 ผู้ใช้สามารถ
-    •	เข้าเว็บ
-    •	สร้าง Asset
-    •	บันทึกรายรับรายจ่าย
-    •	ดูสรุปข้อมูล
+• เข้าเว็บ
+• สร้าง Asset
+• บันทึกรายรับรายจ่าย
+• ดูสรุปข้อมูล
 ได้โดยไม่ต้องสมัครสมาชิก
 ข้อมูลเก็บใน IndexedDB
 เมื่อ Login ค่อย Sync ขึ้น Cloud
 
 V1 Features
+
 1. Assets
-จัดการแหล่งเก็บเงิน
-ตัวอย่าง
-SCB
-KBank
-Cash
-TrueMoney
-Stocks
-Crypto
-รองรับ
-    •	Create Asset
-    •	Edit Asset
-    •	Archive Asset
-    •	Adjust Balance
+   จัดการแหล่งเก็บเงิน
+   ตัวอย่าง
+   SCB
+   KBank
+   Cash
+   TrueMoney
+   Stocks
+   Crypto
+   รองรับ
+   • Create Asset
+   • Edit Asset
+   • Archive Asset
+   • Adjust Balance
 
 2. Categories
-ตัวอย่าง
-Expense
-Food
-Drink
-Transport
-Shopping
-Medical
-Income
-Salary
-Bonus
-Freelance
-Investment
-รองรับ
-    •	Create
-    •	Edit
-    •	Delete
-    •	Reorder
+   ตัวอย่าง
+   Expense
+   Food
+   Drink
+   Transport
+   Shopping
+   Medical
+   Income
+   Salary
+   Bonus
+   Freelance
+   Investment
+   รองรับ
+   • Create
+   • Edit
+   • Delete
+   • Reorder
 
 3. Transactions
-หัวใจของระบบ
-รองรับ
-Expense
-Food 50
-Income
-Salary 35,000
-Transfer
-SCB → KBank
-10,000
-Adjustment
-Cash +200
+   หัวใจของระบบ
+   รองรับ
+   Expense
+   Food 50
+   Income
+   Salary 35,000
+   Transfer
+   SCB → KBank
+   10,000
+   Adjustment
+   Cash +200
 
 Field หลัก
 Amount
@@ -7161,8 +7152,8 @@ Optional
 Note
 
 4. Journal
-Timeline View
-Today
+   Timeline View
+   Today
 
 Food -50
 Coffee -65
@@ -7176,35 +7167,35 @@ Calendar View
 กดวันเพื่อดูรายการ
 
 5. Home Dashboard
-ตอบคำถาม
-ตอนนี้ฉันมีเงินเท่าไหร่
-แสดง
-    •	Total Assets
-    •	Income This Month
-    •	Expense This Month
-    •	Net Flow
-    •	Recent Transactions
+   ตอบคำถาม
+   ตอนนี้ฉันมีเงินเท่าไหร่
+   แสดง
+   • Total Assets
+   • Income This Month
+   • Expense This Month
+   • Net Flow
+   • Recent Transactions
 
 6. Analytics
-ตอบคำถาม
-เงินไปไหน
-เงินมาจากไหน
-แสดง
-    •	Expense by Category
-    •	Income by Category
-    •	Asset Distribution
-    •	Monthly Summary
-และสามารถ Drill Down ได้
-ตัวอย่าง
-Food 5,500
-กดเข้าไปดูรายการทั้งหมดได้
+   ตอบคำถาม
+   เงินไปไหน
+   เงินมาจากไหน
+   แสดง
+   • Expense by Category
+   • Income by Category
+   • Asset Distribution
+   • Monthly Summary
+   และสามารถ Drill Down ได้
+   ตัวอย่าง
+   Food 5,500
+   กดเข้าไปดูรายการทั้งหมดได้
 
 7. Account & Sync
-Guest
-↓
-Register/Login
-↓
-Sync Local Data → Cloud
+   Guest
+   ↓
+   Register/Login
+   ↓
+   Sync Local Data → Cloud
 
 สิ่งที่ไม่มีใน V1
 ตัดออกทั้งหมด
@@ -7247,22 +7238,17 @@ FinNote
 NotePocket
 
 แต่ถ้าถามผมจาก Product ที่เรากำลังสร้าง
-Top 5 ที่ผมชอบตอนนี้คือ
-    1.	PocketNote
-    2.	Finote
-    3.	Folio
-    4.	Vault
-    5.	Moniq
+Top 5 ที่ผมชอบตอนนี้คือ 1. PocketNote 2. Finote 3. Folio 4. Vault 5. Moniq
 
 ถ้าจะให้เลือกจากมุม Product/Brand จริง ๆ ตอนนี้
 PocketNote
 ดูแข็งแรงกว่า
 PocketNoteMe
 เพราะ
-    •	สั้นกว่า
-    •	จำง่ายกว่า
-    •	พูดง่ายกว่า
-    •	ดูเป็นชื่อ Product มากกว่า
+• สั้นกว่า
+• จำง่ายกว่า
+• พูดง่ายกว่า
+• ดูเป็นชื่อ Product มากกว่า
 ตัวอย่าง
 "I added it to PocketNote."
 "Check PocketNote."
@@ -7315,11 +7301,11 @@ Goal
 Layout
 Mobile
 ┌─────────────────┐
-│ Header          │
+│ Header │
 ├─────────────────┤
-│ Total Assets    │
+│ Total Assets │
 ├─────────────────┤
-│ Month Summary   │
+│ Month Summary │
 ├─────────────────┤
 │ Assets Overview │
 ├─────────────────┤
@@ -7441,6 +7427,7 @@ Add Transaction Screen
 นี่คือหน้าที่สำคัญที่สุดของทั้ง Product
 
 ถ้าผมจัดลำดับความสำคัญ
+
 1. Add Transaction
 2. Journal
 3. Home
@@ -7495,19 +7482,19 @@ Mobile
 ┌─────────────────┐
 │ Add Transaction │
 ├─────────────────┤
-│ Type            │
+│ Type │
 ├─────────────────┤
-│ Amount          │
+│ Amount │
 ├─────────────────┤
-│ Category        │
+│ Category │
 ├─────────────────┤
-│ Asset           │
+│ Asset │
 ├─────────────────┤
-│ Date            │
+│ Date │
 ├─────────────────┤
-│ Note            │
+│ Note │
 ├─────────────────┤
-│ Save            │
+│ Save │
 └─────────────────┘
 
 Section 1
@@ -7905,12 +7892,12 @@ Sync Local → Cloud
 pocketnote/
 
 ├── apps/
-│   ├── web/
-│   └── api/
+│ ├── web/
+│ └── api/
 │
 ├── packages/
-│   ├── shared-types/
-│   └── eslint-config/
+│ ├── shared-types/
+│ └── eslint-config/
 │
 └── docs/
 
@@ -7918,10 +7905,10 @@ pocketnote/
 เพราะคุณกำลังจะเป็น Fullstack
 และมี
 Next.js
-+
-NestJS
-อยู่แล้ว
-Monorepo จะจัดการง่ายกว่าในระยะยาว
+
+- NestJS
+  อยู่แล้ว
+  Monorepo จะจัดการง่ายกว่าในระยะยาว
 
 แต่ก่อนเริ่มเขียนโค้ด
 ผมมีเรื่องหนึ่งที่อยากให้ตัดสินใจก่อน
@@ -7950,12 +7937,12 @@ Mobile First
   โอเค งั้นเราล็อกเลย
 UX Architecture v1
 Mobile First
-+
-Desktop Optimized
-ไม่ใช่
-Mobile Only
-และไม่ใช่
-Desktop First
+
+- Desktop Optimized
+  ไม่ใช่
+  Mobile Only
+  และไม่ใช่
+  Desktop First
 
 Mobile
 ใช้ Bottom Navigation
@@ -7974,15 +7961,15 @@ Tablet
 Desktop
 เปลี่ยนเป็น Sidebar
 ┌─────────────┬─────────────────────┐
-│ PocketNote │                     │
-│             │                     │
-│ Home        │                     │
-│ Journal     │      Content        │
-│ Analytics   │                     │
-│ Assets      │                     │
-│ Categories  │                     │
-│ Settings    │                     │
-│             │                     │
+│ PocketNote │ │
+│ │ │
+│ Home │ │
+│ Journal │ Content │
+│ Analytics │ │
+│ Assets │ │
+│ Categories │ │
+│ Settings │ │
+│ │ │
 └─────────────┴─────────────────────┘
 
 สิ่งที่ผมอยากล็อกเพิ่ม
@@ -8025,9 +8012,9 @@ Asset Detail
 ตัวอย่าง
 SCB
 เข้าไปดู
-    •	Balance
-    •	Transaction History
-    •	Adjustment
+• Balance
+• Transaction History
+• Adjustment
 
 Categories
 /categories
@@ -8075,12 +8062,12 @@ Account
 เหลือแค่อีก 2 เรื่อง
 
 1. Domain Design
-อันนี้สำคัญมาก
-เราจะออกแบบ
-Asset
-Category
-Transaction
-ให้สมบูรณ์
+   อันนี้สำคัญมาก
+   เราจะออกแบบ
+   Asset
+   Category
+   Transaction
+   ให้สมบูรณ์
 
 เช่น
 Transaction
@@ -8096,12 +8083,12 @@ Dexie Schema
 ทั้งหมด
 
 2. Design Foundation
-ล็อก
-Typography
-Spacing
-Colors
-Layout
-Components
+   ล็อก
+   Typography
+   Spacing
+   Colors
+   Layout
+   Components
 
 อันนี้จะทำให้ตอนเข้า Figma หรือเริ่มทำ shadcn/ui
 ไม่ต้องคิดใหม่ทุกหน้า
@@ -8122,20 +8109,20 @@ Frontend เปลี่ยน
 ดังนั้นขั้นต่อไปที่ผมแนะนำคือ
 Domain Design Workshop
 เราจะมานั่งออกแบบจริง ๆ ว่า
-    •	Asset คืออะไร
-    •	Transaction คืออะไร
-    •	Transfer ทำงานยังไง
-    •	Adjustment ทำงานยังไง
-    •	Category คืออะไร
-    •	Analytics คำนวณจากอะไร
+• Asset คืออะไร
+• Transaction คืออะไร
+• Transfer ทำงานยังไง
+• Adjustment ทำงานยังไง
+• Category คืออะไร
+• Analytics คำนวณจากอะไร
 แล้วสุดท้ายจะได้
 Entity Relationship Diagram (ERD)
-+
-Prisma Schema v1
-ซึ่งเป็นจุดที่ผมจะบอกได้เลยว่า
-"โอเค เริ่ม Sprint 0 และลงมือ Dev ได้แล้ว"
-โดยไม่ต้องกลัวรื้อระบบภายหลังครับ.
-  คุณให้ฉันเริ่ม Sprint 0 ได้เลยใช่ไหม หรือยังไงก่อน
+
+- Prisma Schema v1
+  ซึ่งเป็นจุดที่ผมจะบอกได้เลยว่า
+  "โอเค เริ่ม Sprint 0 และลงมือ Dev ได้แล้ว"
+  โดยไม่ต้องกลัวรื้อระบบภายหลังครับ.
+    คุณให้ฉันเริ่ม Sprint 0 ได้เลยใช่ไหม หรือยังไงก่อน
 
   ใช่ครับ
 คุณสามารถเริ่ม Sprint 0 ได้เลย
@@ -8160,10 +8147,10 @@ Architecture Direction
 สิ่งที่ยังไม่ชัดคือ
 Domain Model
 เช่น
-    •	Asset field อะไรบ้าง
-    •	Transaction field อะไรบ้าง
-    •	Transfer เก็บแบบไหน
-    •	Analytics คำนวณยังไง
+• Asset field อะไรบ้าง
+• Transaction field อะไรบ้าง
+• Transfer เก็บแบบไหน
+• Analytics คำนวณยังไง
 
 ซึ่งสิ่งเหล่านี้จะมีผลกับ
 Database
@@ -8268,7 +8255,7 @@ GET /health
 
 ตอบ
 {
-  "status": "ok"
+"status": "ok"
 }
 
 สิ่งที่ห้ามทำใน Sprint 0
@@ -8312,7 +8299,7 @@ Domain Design Workshop
 พร้อมกับ Sprint 0 ไปคู่กัน
 เพราะ Domain Design สามารถคิดและปรับได้ในระหว่าง Setup Project โดยยังไม่ทำให้เกิดการรื้อระบบครับ.
  ขอฉันทำ setup Sprint 0 ก่อนเดี๋ยวฉันบอกว่าเสร็จแล้ว แล้วมาบอกว่า "ไป Domain Design Workshop
-พร้อมกับ Sprint 0 ไปคู่กัน ได้เลย" 
+พร้อมกับ Sprint 0 ไปคู่กัน ได้เลย"
 แต่ตอนนี้ คุณเขียน PRD.md
 ARCHITECTURE.md
 ROADMAP.md
@@ -8343,11 +8330,11 @@ Version: 1.0 Draft
 Product Vision
 PocketNote is a personal finance dashboard designed to help users understand their financial situation through simple daily transaction tracking, asset management, and financial insights.
 The product focuses on:
-    •	Fast transaction entry
-    •	Clear financial overview
-    •	Offline-first experience
-    •	Guest-first onboarding
-    •	Simple and modern user experience
+• Fast transaction entry
+• Clear financial overview
+• Offline-first experience
+• Guest-first onboarding
+• Simple and modern user experience
 
 Product Principles
 Guest First
@@ -8363,88 +8350,88 @@ The application should prioritize clarity over complexity.
 
 Target Audience
 Individual users who want to:
-    •	Track expenses
-    •	Track income
-    •	Manage personal assets
-    •	Understand spending habits
+• Track expenses
+• Track income
+• Manage personal assets
+• Understand spending habits
 
 MVP Features
 Assets
-    •	Create asset
-    •	Edit asset
-    •	Archive asset
-    •	Adjust balance
+• Create asset
+• Edit asset
+• Archive asset
+• Adjust balance
 Supported asset types:
-    •	Cash
-    •	Bank Account
-    •	E-Wallet
-    •	Investment
-    •	Crypto
-    •	Other
+• Cash
+• Bank Account
+• E-Wallet
+• Investment
+• Crypto
+• Other
 Categories
 Expense Categories
-    •	Food
-    •	Drink
-    •	Transport
-    •	Shopping
-    •	Medical
-    •	Other
+• Food
+• Drink
+• Transport
+• Shopping
+• Medical
+• Other
 Income Categories
-    •	Salary
-    •	Bonus
-    •	Freelance
-    •	Investment
-    •	Other
+• Salary
+• Bonus
+• Freelance
+• Investment
+• Other
 Transactions
 Transaction Types
-    •	Expense
-    •	Income
-    •	Transfer
-    •	Adjustment
+• Expense
+• Income
+• Transfer
+• Adjustment
 Required Fields
-    •	Amount
-    •	Asset
-    •	Category
-    •	Date
+• Amount
+• Asset
+• Category
+• Date
 Optional Fields
-    •	Note
+• Note
 Journal
 Views
-    •	Timeline
-    •	Calendar
+• Timeline
+• Calendar
 Features
-    •	Search
-    •	Filter
-    •	Edit
-    •	Delete
+• Search
+• Filter
+• Edit
+• Delete
 Home Dashboard
 Displays:
-    •	Total Assets
-    •	Monthly Income
-    •	Monthly Expense
-    •	Net Flow
-    •	Recent Transactions
+• Total Assets
+• Monthly Income
+• Monthly Expense
+• Net Flow
+• Recent Transactions
 Analytics
 Displays:
-    •	Expense Breakdown
-    •	Income Breakdown
-    •	Asset Distribution
-    •	Monthly Summary
+• Expense Breakdown
+• Income Breakdown
+• Asset Distribution
+• Monthly Summary
 Account & Sync
-    •	Guest Mode
-    •	Register
-    •	Login
-    •	Local to Cloud Sync
+• Guest Mode
+• Register
+• Login
+• Local to Cloud Sync
 
 Out of Scope (V1)
-    •	Budget Planning
-    •	Financial Goals
-    •	OCR Receipt
-    •	Bank Integration
-    •	AI Assistant
-    •	Recurring Transactions
-    •	Multi User Support
-    •	Tax Planning
+• Budget Planning
+• Financial Goals
+• OCR Receipt
+• Bank Integration
+• AI Assistant
+• Recurring Transactions
+• Multi User Support
+• Tax Planning
 
 ARCHITECTURE.md
 PocketNote Architecture
@@ -8453,33 +8440,33 @@ Offline First Web Application
 
 Frontend Stack
 Framework
-    •	Next.js
-    •	TypeScript
+• Next.js
+• TypeScript
 UI
-    •	Tailwind CSS
-    •	shadcn/ui
+• Tailwind CSS
+• shadcn/ui
 State Management
-    •	Zustand
+• Zustand
 Data Fetching
-    •	TanStack Query
+• TanStack Query
 Local Storage
-    •	Dexie
-    •	IndexedDB
+• Dexie
+• IndexedDB
 Validation
-    •	React Hook Form
-    •	Zod
+• React Hook Form
+• Zod
 
 Backend Stack
 Framework
-    •	NestJS
+• NestJS
 Database
-    •	PostgreSQL
+• PostgreSQL
 ORM
-    •	Prisma
+• Prisma
 Authentication
-    •	JWT
+• JWT
 Password Hashing
-    •	bcrypt
+• bcrypt
 
 High Level Flow
 User
@@ -8506,109 +8493,109 @@ Financial data should be derived from transactions.
 Asset balances should be calculated from transaction history whenever possible.
 
 Initial Backend Modules
-    •	auth
-    •	users
-    •	assets
-    •	categories
-    •	transactions
-    •	analytics
-    •	sync
+• auth
+• users
+• assets
+• categories
+• transactions
+• analytics
+• sync
 
 Future Expansion
-    •	PWA Support
-    •	Push Notifications
-    •	Multi Device Sync
-    •	Data Export
-    •	AI Insights
+• PWA Support
+• Push Notifications
+• Multi Device Sync
+• Data Export
+• AI Insights
 
 ROADMAP.md
 PocketNote Roadmap
 Sprint 0
 Project Foundation
 Frontend
-    •	Next.js Setup
-    •	Tailwind Setup
-    •	shadcn Setup
-    •	Zustand Setup
-    •	Dexie Setup
-    •	Layout Setup
-    •	Navigation Setup
+• Next.js Setup
+• Tailwind Setup
+• shadcn Setup
+• Zustand Setup
+• Dexie Setup
+• Layout Setup
+• Navigation Setup
 Backend
-    •	NestJS Setup
-    •	PostgreSQL Setup
-    •	Prisma Setup
-    •	Health Check Endpoint
-    •	Module Scaffolding
+• NestJS Setup
+• PostgreSQL Setup
+• Prisma Setup
+• Health Check Endpoint
+• Module Scaffolding
 Goal
 Project is ready for feature development.
 
 Sprint 1
 Transaction Foundation
 Features
-    •	Add Expense
-    •	Add Income
-    •	Add Transfer
-    •	Transaction Timeline
-    •	Dexie Persistence
+• Add Expense
+• Add Income
+• Add Transfer
+• Transaction Timeline
+• Dexie Persistence
 Goal
 User can record transactions locally.
 
 Sprint 2
 Assets
 Features
-    •	Asset CRUD
-    •	Asset Balance
-    •	Asset Overview
+• Asset CRUD
+• Asset Balance
+• Asset Overview
 Goal
 User can manage financial accounts.
 
 Sprint 3
 Categories
 Features
-    •	Category CRUD
-    •	Category Selection
-    •	Category Management
+• Category CRUD
+• Category Selection
+• Category Management
 Goal
 Transactions can be categorized.
 
 Sprint 4
 Journal
 Features
-    •	Timeline View
-    •	Calendar View
-    •	Search
-    •	Filter
+• Timeline View
+• Calendar View
+• Search
+• Filter
 Goal
 User can explore transaction history.
 
 Sprint 5
 Home Dashboard
 Features
-    •	Total Assets
-    •	Income Summary
-    •	Expense Summary
-    •	Net Flow
-    •	Recent Activity
+• Total Assets
+• Income Summary
+• Expense Summary
+• Net Flow
+• Recent Activity
 Goal
 User can understand current financial status.
 
 Sprint 6
 Analytics
 Features
-    •	Expense Analysis
-    •	Income Analysis
-    •	Asset Analysis
-    •	Monthly Reports
+• Expense Analysis
+• Income Analysis
+• Asset Analysis
+• Monthly Reports
 Goal
 User can understand financial behavior.
 
 Sprint 7
 Authentication & Sync
 Features
-    •	Register
-    •	Login
-    •	JWT Authentication
-    •	Local to Cloud Sync
+• Register
+• Login
+• JWT Authentication
+• Local to Cloud Sync
 Goal
 User can backup and sync data.
 
@@ -8648,13 +8635,13 @@ Account creation should not block usage.
 
 Navigation
 Mobile
-    •	Home
-    •	Journal
-    •	Add
-    •	Analytics
-    •	More
+• Home
+• Journal
+• Add
+• Analytics
+• More
 Desktop
-    •	Sidebar Navigation
+• Sidebar Navigation
 Reason
 Optimized experience across device sizes.
 
@@ -8680,12 +8667,12 @@ Scalable architecture with strong TypeScript support.
 และตอนที่คุณกลับมาบอกว่า
 Sprint 0 เสร็จแล้ว
 ผมจะพาคุณเข้า Domain Design Workshop ซึ่งเป็นจุดที่เราจะออกแบบ
-    •	Asset
-    •	Category
-    •	Transaction
-    •	Transfer
-    •	Adjustment
-    •	Analytics Rules
+• Asset
+• Category
+• Transaction
+• Transfer
+• Adjustment
+• Analytics Rules
 จนออกมาเป็น
 ERD
 Prisma Schema v1
@@ -8701,6 +8688,7 @@ NestJS Module Design
 Domain Design Workshop
 เราจะทำเหมือนทีม Product จริง
 ลำดับจะเป็น
+
 1. Ubiquitous Language
 2. Business Rules
 3. Domain Entities
@@ -8710,8 +8698,8 @@ Domain Design Workshop
 7. Dexie Schema
 8. API Design
 9. Sprint 1
-ห้ามข้ามขั้น
-เพราะถ้าข้ามไป Prisma ก่อน แล้ว Business Rule เปลี่ยน คุณจะต้องรื้อทั้งระบบ
+   ห้ามข้ามขั้น
+   เพราะถ้าข้ามไป Prisma ก่อน แล้ว Business Rule เปลี่ยน คุณจะต้องรื้อทั้งระบบ
 
 Step 1 : Ubiquitous Language
 นี่คือศัพท์กลางของทั้งทีม
@@ -8723,21 +8711,21 @@ User
 Asset
 แหล่งเก็บเงิน
 เช่น
-    •	Cash
-    •	SCB
-    •	KBank
-    •	TrueMoney
-    •	หุ้น
-    •	Crypto
+• Cash
+• SCB
+• KBank
+• TrueMoney
+• หุ้น
+• Crypto
 Asset ไม่ใช่ Transaction
 
 Transaction
 เหตุการณ์ทางการเงิน
 เช่น
-    •	ซื้อข้าว
-    •	ได้เงินเดือน
-    •	โอนเงิน
-    •	ปรับยอด
+• ซื้อข้าว
+• ได้เงินเดือน
+• โอนเงิน
+• ปรับยอด
 ทุกอย่างคือ Transaction
 
 Category
@@ -8788,10 +8776,10 @@ Asset สามารถ Archive ได้
 
 Rule 3
 Transaction ต้องมี
-    •	Amount
-    •	Asset
-    •	Date
-    •	Type
+• Amount
+• Asset
+• Date
+• Type
 เสมอ
 
 Rule 4
@@ -8936,11 +8924,11 @@ Tag
 Attachment
 Tag (ใหม่)
 ใช้สำหรับการจัดกลุ่มแบบยืดหยุ่น เช่น
-    •	#trip
-    •	#vacation
-    •	#birthday
-    •	#work
-    •	#family
+• #trip
+• #vacation
+• #birthday
+• #work
+• #family
 ตัวอย่าง
 Food 350
 
@@ -8952,8 +8940,8 @@ Tags
 
 Attachment (ใหม่ แต่ Optional)
 อนาคตสามารถแนบ
-    •	รูปใบเสร็จ
-    •	รูปสินค้า
+• รูปใบเสร็จ
+• รูปสินค้า
 ได้
 V1 ยังไม่ต้องทำ UI
 แต่เราเผื่อ Domain ไว้เลย
@@ -8980,18 +8968,18 @@ Desktop Optimized
 คือ
 Entity Specification (Domain Spec)
 เราจะเขียนทีละ Entity เช่น
-    •	Asset มี field อะไรบ้าง
-    •	Field ไหน required
-    •	Validation เป็นยังไง
-    •	Business Rules ของแต่ละ field
-    •	ความสัมพันธ์กับ Entity อื่น
+• Asset มี field อะไรบ้าง
+• Field ไหน required
+• Validation เป็นยังไง
+• Business Rules ของแต่ละ field
+• ความสัมพันธ์กับ Entity อื่น
 เมื่อ Entity Spec เสร็จแล้ว คุณจะสามารถสร้าง
-    •	Prisma Schema
-    •	Dexie Schema
-    •	TypeScript Types
-    •	Zod Schema
-    •	DTO ของ NestJS
-    •	API Contract
+• Prisma Schema
+• Dexie Schema
+• TypeScript Types
+• Zod Schema
+• DTO ของ NestJS
+• API Contract
 ได้จากแหล่งข้อมูลเดียว (Single Source of Truth)
 และผมคิดว่านี่เป็นวิธีทำงานที่เหมาะกับโปรเจกต์นี้ที่สุด เพราะจะช่วยให้ทั้ง Frontend และ Backend ใช้ภาษาเดียวกันตลอดการพัฒนาครับ.
   โอเคต่อไปเป็นอะไร
@@ -9004,19 +8992,19 @@ Entity Specification (Domain Spec)
 ✅ Architecture
 ✅ Roadmap
 ✅ Domain Workshop
-        ↓
-🚀 Entity Specification  ← ตอนนี้
-        ↓
+↓
+🚀 Entity Specification ← ตอนนี้
+↓
 Relationship Diagram
-        ↓
+↓
 ERD
-        ↓
+↓
 Prisma Schema
-        ↓
+↓
 Dexie Schema
-        ↓
+↓
 API Contract
-        ↓
+↓
 Sprint 1 Development
 ซึ่ง Entity Specification คือเอกสารที่ผมอยากให้ละเอียดที่สุด เพราะหลังจากนี้ทุกอย่างจะถูก generate จากมันได้
 
@@ -9058,14 +9046,14 @@ Binance
 
 Responsibilities
 Asset มีหน้าที่
-    •	เก็บข้อมูลบัญชี
-    •	คำนวณยอดเงินปัจจุบัน
-    •	เชื่อมกับ Transaction
-    •	สามารถ Archive ได้
+• เก็บข้อมูลบัญชี
+• คำนวณยอดเงินปัจจุบัน
+• เชื่อมกับ Transaction
+• สามารถ Archive ได้
 Asset ไม่มีหน้าที่
-    •	เก็บประวัติการใช้เงิน
-    •	วิเคราะห์ข้อมูล
-    •	เก็บหมวดหมู่
+• เก็บประวัติการใช้เงิน
+• วิเคราะห์ข้อมูล
+• เก็บหมวดหมู่
 
 Fields
 id
@@ -9215,13 +9203,13 @@ Adjustment
 แต่ไม่ใช่ Income
 
 Validation
-Field	Validation
-name	Required
-type	Enum
-currency	ISO Currency
-color	Hex
-icon	String
-note	≤1000 chars
+Field Validation
+name Required
+type Enum
+currency ISO Currency
+color Hex
+icon String
+note ≤1000 chars
 API
 GET /assets
 
@@ -9258,30 +9246,25 @@ updatedAt
 
 Tests ที่ควรมี
 Unit
-    •	Create Asset
-    •	Rename Asset
-    •	Archive Asset
-    •	Validate Name
-    •	Duplicate Name
-    •	Balance Calculation
+• Create Asset
+• Rename Asset
+• Archive Asset
+• Validate Name
+• Duplicate Name
+• Balance Calculation
 
 📌 เมื่อ Asset เสร็จ
-เราจะทำอีก 5 Entity ตามลำดับนี้
-    1.	Transaction ⭐ (สำคัญที่สุดและใหญ่ที่สุด)
-    2.	Category
-    3.	Tag
-    4.	Attachment
-    5.	User
+เราจะทำอีก 5 Entity ตามลำดับนี้ 1. Transaction ⭐ (สำคัญที่สุดและใหญ่ที่สุด) 2. Category 3. Tag 4. Attachment 5. User
 
 🎯 เป้าหมายของช่วงนี้
 เมื่อทั้ง 6 Entity Spec เสร็จ คุณจะสามารถสร้างได้อย่างมั่นใจโดยแทบไม่ต้องย้อนกลับมาแก้โครงสร้าง:
-    •	Prisma Schema
-    •	NestJS DTO
-    •	Zod Schema
-    •	Dexie Schema
-    •	TypeScript Types
-    •	API Contract
-    •	Database ERD
+• Prisma Schema
+• NestJS DTO
+• Zod Schema
+• Dexie Schema
+• TypeScript Types
+• API Contract
+• Database ERD
 ซึ่งจะทำให้ Sprint 1 เป็นการลงมือพัฒนา Feature ได้ทันที โดยไม่เสียเวลาปรับ Domain ระหว่างทาง
 ผมมองว่า Transaction Specification จะเป็นเอกสารที่ใช้เวลามากที่สุด เพราะมันเป็นหัวใจของ PocketNoteMe ทั้งระบบ และหลังจากทำตัวนี้เสร็จ การออกแบบส่วนที่เหลือจะเร็วขึ้นมากครับ
   ได้เลย โอเคต่อไป
@@ -9294,12 +9277,12 @@ Unit
 ผมถือว่าเอกสารนี้คือ สำคัญที่สุดของ PocketNoteMe
 เพราะประมาณ 80% ของ Business Logic ทั้งระบบอยู่ที่นี่
 ถ้าออกแบบ Transaction ดี
-    •	Analytics จะง่าย
-    •	Dashboard จะง่าย
-    •	Sync จะง่าย
-    •	Export จะง่าย
-    •	Undo จะง่าย
-    •	Offline จะง่าย
+• Analytics จะง่าย
+• Dashboard จะง่าย
+• Sync จะง่าย
+• Export จะง่าย
+• Undo จะง่าย
+• Offline จะง่าย
 ถ้าออกแบบไม่ดี…
 สุดท้ายจะต้องรื้อทั้งระบบ
 
@@ -9322,10 +9305,10 @@ TransactionType
 TransactionType
 V1
 enum TransactionType {
-  EXPENSE,
-  INCOME,
-  TRANSFER,
-  ADJUSTMENT,
+EXPENSE,
+INCOME,
+TRANSFER,
+ADJUSTMENT,
 }
 สังเกตว่า
 Transfer
@@ -9336,14 +9319,14 @@ Adjustment
 
 Transaction Lifecycle
 Draft (อนาคต)
-      │
-      ▼
+│
+▼
 Created
-      │
-      ▼
+│
+▼
 Updated
-      │
-      ▼
+│
+▼
 Deleted (Soft Delete)
 V1
 ใช้แค่
@@ -9356,11 +9339,11 @@ Transaction คือ
 "Financial Event"
 ทุกเหตุการณ์ทางการเงิน
 เช่น
-    •	ซื้อกาแฟ
-    •	เติมน้ำมัน
-    •	เงินเดือนเข้า
-    •	โอนเงิน
-    •	ปรับยอด
+• ซื้อกาแฟ
+• เติมน้ำมัน
+• เงินเดือนเข้า
+• โอนเงิน
+• ปรับยอด
 ทั้งหมดคือ Transaction
 
 Fields
@@ -9402,6 +9385,7 @@ amount
 Decimal
 ห้ามติดลบ
 Validation
+
 > 0
 
 type
@@ -9544,21 +9528,21 @@ Future Date
 บันทึกค่าเช่าล่วงหน้า
 
 Validation
-Field	Rule
-amount	>0
-assetId	Required
-type	Enum
-transactionDate	Required
-note	≤1000
-category	Optional สำหรับ Adjustment
+Field Rule
+amount >0
+assetId Required
+type Enum
+transactionDate Required
+note ≤1000
+category Optional สำหรับ Adjustment
 API
 GET /transactions
 Filter
-    •	month
-    •	year
-    •	asset
-    •	category
-    •	tag
+• month
+• year
+• asset
+• category
+• tag
 
 POST /transactions
 
@@ -9608,50 +9592,50 @@ Tag
 
 Unit Test
 ควรมี
-    •	Create Expense
-    •	Create Income
-    •	Create Transfer
-    •	Create Adjustment
-    •	Edit Transaction
-    •	Delete Transaction
-    •	Validation Amount
-    •	Transfer Balance
-    •	Transactionย้อนหลัง
-    •	Future Transaction
+• Create Expense
+• Create Income
+• Create Transfer
+• Create Adjustment
+• Edit Transaction
+• Delete Transaction
+• Validation Amount
+• Transfer Balance
+• Transactionย้อนหลัง
+• Future Transaction
 
 สิ่งที่ผมอยาก "ปรับ" จากเดิม (สำคัญ)
 หลังจากวิเคราะห์ Domain ทั้งหมด ผมมีข้อเสนอแนะที่จะทำให้ PocketNoteMe แข็งแรงขึ้นตั้งแต่ V1
 เพิ่ม TransactionStatus
 แม้ V1 จะใช้แค่ค่าเดียว (POSTED) แต่การเผื่อโครงสร้างไว้จะช่วยรองรับฟีเจอร์ในอนาคต เช่น
 enum TransactionStatus {
-  POSTED,
-  PENDING,   // รายการที่ยังไม่เกิดจริง
-  VOID,      // ยกเลิก
+POSTED,
+PENDING, // รายการที่ยังไม่เกิดจริง
+VOID, // ยกเลิก
 }
 ตัวอย่างการใช้งานใน V2
-    •	ค่าเช่าที่จะตัดสิ้นเดือน → PENDING
-    •	รายการที่ยกเลิก → VOID
+• ค่าเช่าที่จะตัดสิ้นเดือน → PENDING
+• รายการที่ยกเลิก → VOID
 โดยไม่ต้องเปลี่ยนโครงสร้างฐานข้อมูล
 
 เพิ่ม source
 ระบุว่ารายการนี้มาจากไหน
 enum TransactionSource {
-  MANUAL,
-  IMPORT,
-  SYNC,
+MANUAL,
+IMPORT,
+SYNC,
 }
 มีประโยชน์มากเมื่อเพิ่ม
-    •	Import CSV
-    •	Sync หลายอุปกรณ์
-    •	AI Import จากใบเสร็จ
+• Import CSV
+• Sync หลายอุปกรณ์
+• AI Import จากใบเสร็จ
 
 🎯 จุดที่ผมอยาก "ล็อก" ก่อนเริ่ม Sprint 1
 หลังจาก Transaction Spec เสร็จแล้ว ผมอยากให้เราหยุดการเพิ่ม Feature ใหม่ชั่วคราว และเข้าสู่ช่วง Design Freeze โดยล็อกสิ่งต่อไปนี้
-    •	✅ Domain Model
-    •	✅ Business Rules
-    •	✅ Entity Specification
-    •	✅ API Contract
-    •	✅ Database Schema
+• ✅ Domain Model
+• ✅ Business Rules
+• ✅ Entity Specification
+• ✅ API Contract
+• ✅ Database Schema
 เหตุผลคือ เมื่อเริ่ม Sprint 1 เราควรโฟกัสกับ การพัฒนา Feature ไม่ใช่กลับมาเปลี่ยนโครงสร้างข้อมูลอีก
 
 📍Roadmap หลังจากนี้
@@ -9664,17 +9648,17 @@ enum TransactionSource {
 ⬜ User
 จากนั้นจะเข้าสู่
 Entity Spec เสร็จ
-      ↓
+↓
 Relationship Diagram
-      ↓
+↓
 ERD
-      ↓
+↓
 Prisma Schema
-      ↓
+↓
 Dexie Schema
-      ↓
+↓
 API Contract
-      ↓
+↓
 🔥 Sprint 1 (เริ่มเขียนโค้ดจริง)
 อีกประมาณ 5–6 เอกสาร เราจะพร้อมเริ่มพัฒนา PocketNoteMe V1 อย่างเป็นระบบ และหลังจากนั้นการทำงานจะเปลี่ยนจาก "ออกแบบ" ไปเป็น "ส่งมอบ Feature" อย่างเต็มตัวครับ
  โอเค  เยี่ยมครับ
@@ -9700,10 +9684,10 @@ Salary
 Purpose
 ใช้จัดหมวดหมู่ Transaction
 เพื่อ
-    •	Analytics
-    •	Dashboard
-    •	Filter
-    •	Report
+• Analytics
+• Dashboard
+• Filter
+• Report
 Category ไม่มีผลต่อยอดเงิน
 
 Fields
@@ -9733,8 +9717,8 @@ Unique per User
 type
 สำคัญมาก
 enum CategoryType {
-    EXPENSE,
-    INCOME
+EXPENSE,
+INCOME
 }
 เพราะ
 Salary
@@ -9837,11 +9821,11 @@ Rule 5
 ได้
 
 Validation
-Field	Rule
-name	Required
-type	Enum
-color	Hex
-icon	String
+Field Rule
+name Required
+type Enum
+color Hex
+icon String
 API
 GET /categories
 
@@ -9916,9 +9900,9 @@ User Categories
 ├── Coffee
 └── Dog
 ข้อดีคือ
-    •	ผู้ใช้เริ่มใช้งานได้ทันที ไม่ต้องสร้าง Category เองทั้งหมด
-    •	ยังสามารถสร้างหมวดหมู่เฉพาะตัวได้
-    •	รองรับการรีเซ็ตหรืออัปเดต System Category ในอนาคต
+• ผู้ใช้เริ่มใช้งานได้ทันที ไม่ต้องสร้าง Category เองทั้งหมด
+• ยังสามารถสร้างหมวดหมู่เฉพาะตัวได้
+• รองรับการรีเซ็ตหรืออัปเดต System Category ในอนาคต
 เราอาจเพิ่มฟิลด์
 isSystem: boolean
 เพื่อแยก Category ของระบบกับของผู้ใช้
@@ -9942,14 +9926,14 @@ isSystem: boolean
 📌 จุดที่อยากปรับเพื่อให้ Domain แข็งแรงขึ้น
 ผมขอเสนอให้เรากำหนด V1 Scope Freeze สำหรับ Domain ดังนี้
 Core Domain (แก้ยาก)
-    •	Asset
-    •	Transaction
-    •	Category
+• Asset
+• Transaction
+• Category
 ทั้งสามตัวนี้เมื่อเริ่ม Sprint 1 แล้ว จะหลีกเลี่ยงการเปลี่ยนโครงสร้าง ยกเว้นพบข้อผิดพลาดจริง
 Supporting Domain (ยืดหยุ่น)
-    •	Tag
-    •	Attachment
-    •	User
+• Tag
+• Attachment
+• User
 หากระหว่างพัฒนาพบว่าไม่จำเป็นสำหรับ V1 ก็สามารถเลื่อนเป็น V1.1 ได้โดยไม่กระทบ Core Domain
 
 แผนถัดไป
@@ -9995,11 +9979,11 @@ Purpose
 Tag ใช้จัดกลุ่ม Transaction แบบยืดหยุ่น
 ไม่จำกัดจำนวน
 ใช้สำหรับ
-    •	Search
-    •	Filter
-    •	Analytics
-    •	Export
-    •	Report
+• Search
+• Filter
+• Analytics
+• Export
+• Report
 
 Fields
 id
@@ -10022,11 +10006,11 @@ vacation
 
 tax
 Validation
-    •	Required
-    •	Trim
-    •	Lowercase (แนะนำ)
-    •	1–30 ตัวอักษร
-    •	Unique ต่อ User
+• Required
+• Trim
+• Lowercase (แนะนำ)
+• 1–30 ตัวอักษร
+• Unique ต่อ User
 💡 ผมแนะนำให้เก็บเป็น lowercase เช่น trip แล้วค่อยแสดงผลเป็น Trip ใน UI เพื่อหลีกเลี่ยงปัญหา Trip กับ trip เป็นคนละ Tag
 
 color
@@ -10057,12 +10041,12 @@ Tag
 TransactionTag
 เป็น Join Table
 Transaction
-      ▲
-      │
-      │
+▲
+│
+│
 TransactionTag
-      │
-      ▼
+│
+▼
 Tag
 
 Business Rules
@@ -10115,12 +10099,12 @@ userId
 name
 
 Unit Test
-    •	Create Tag
-    •	Rename Tag
-    •	Duplicate Tag
-    •	Delete Tag
-    •	Assign Tag
-    •	Remove Tag
+• Create Tag
+• Rename Tag
+• Duplicate Tag
+• Delete Tag
+• Assign Tag
+• Remove Tag
 
 สิ่งที่ผมอยาก "ปรับ" จากเดิม
 แทนที่จะให้ผู้ใช้พิมพ์ Tag ทุกครั้ง
@@ -10138,9 +10122,9 @@ Autocomplete
 เหมือน Gmail
 หรือ Notion
 ทำให้
-    •	ไม่เกิด Tag ซ้ำ
-    •	ใช้งานเร็ว
-    •	UX ดีมาก
+• ไม่เกิด Tag ซ้ำ
+• ใช้งานเร็ว
+• UX ดีมาก
 
 อีกเรื่องที่อยากล็อก
 Tag ≠ Category
@@ -10169,22 +10153,22 @@ User ⬜
 📌 ตรงนี้ผมมีข้อเสนอสำหรับ V1
 หลังจากออกแบบมาถึงจุดนี้ ผมเห็นว่าเราสามารถแบ่ง Feature ได้เป็น 3 ระดับ
 Must Have (Sprint 1)
-    •	Asset
-    •	Transaction
-    •	Category
+• Asset
+• Transaction
+• Category
 Should Have (Sprint 2)
-    •	Tag
-    •	Search
-    •	Filter
+• Tag
+• Search
+• Filter
 Nice to Have (Sprint 3)
-    •	Attachment
-    •	Analytics ขั้นสูง
-    •	Export
+• Attachment
+• Analytics ขั้นสูง
+• Export
 ทำไมถึงแบ่งแบบนี้?
 เพราะถึงแม้ Tag จะออกแบบไว้ใน Domain ตั้งแต่แรก แต่ UI ของ Tag สามารถเลื่อนออกไปได้ โดยไม่กระทบฐานข้อมูลหรือ API
 นั่นหมายความว่า
-    •	Prisma Schema มี Tag และ TransactionTag ตั้งแต่วันแรก
-    •	แต่ใน Sprint 1 เราอาจยังไม่ต้องแสดงช่อง Tag ในหน้าสร้าง Transaction
+• Prisma Schema มี Tag และ TransactionTag ตั้งแต่วันแรก
+• แต่ใน Sprint 1 เราอาจยังไม่ต้องแสดงช่อง Tag ในหน้าสร้าง Transaction
 นี่คือแนวคิด Design for the Future, Build for Today
 
 หลังจาก Tag
@@ -10193,19 +10177,20 @@ Nice to Have (Sprint 3)
 ➡️ User (สำคัญ แต่ไม่ซับซ้อน)
 จากนั้นเราจะเข้าสู่
 Entity Specification ✅
-        ↓
+↓
 Relationship Diagram
-        ↓
+↓
 ERD
-        ↓
+↓
 Prisma Schema
-        ↓
+↓
 Dexie Schema
-        ↓
+↓
 API Contract
-        ↓
+↓
 🔥 Sprint 1
 และตรงช่วง Relationship Diagram + ERD ผมจะเริ่มสอนแนวคิดการออกแบบฐานข้อมูลแบบ Senior Backend Engineer ไปพร้อมกับการออกแบบ PocketNoteMe ครับ
+
  
 ได้เลย ต่อไป
 
@@ -10227,23 +10212,23 @@ Attachment Specification
 Purpose
 Attachment คือไฟล์ที่แนบกับ Transaction
 ตัวอย่าง
-    •	รูปใบเสร็จ
-    •	รูปสินค้า
-    •	PDF ใบกำกับภาษี
-    •	รูปสลิป
+• รูปใบเสร็จ
+• รูปสินค้า
+• PDF ใบกำกับภาษี
+• รูปสลิป
 V1
 ยังไม่ทำ UI
 แต่ Domain ควรรองรับ
 
 Responsibilities
 Attachment มีหน้าที่
-    •	เก็บ Metadata ของไฟล์
-    •	เชื่อมกับ Transaction
-    •	ไม่เกี่ยวกับ Business Logic
+• เก็บ Metadata ของไฟล์
+• เชื่อมกับ Transaction
+• ไม่เกี่ยวกับ Business Logic
 Attachment ไม่มีหน้าที่
-    •	วิเคราะห์ข้อมูล
-    •	คำนวณยอดเงิน
-    •	Sync Transaction
+• วิเคราะห์ข้อมูล
+• คำนวณยอดเงิน
+• Sync Transaction
 
 Fields
 id
@@ -10352,17 +10337,17 @@ loading
 error
 
 Validation
-Field	Rule
-fileName	Required
-mimeType	Required
-fileSize	≤10MB
-transactionId	Required
+Field Rule
+fileName Required
+mimeType Required
+fileSize ≤10MB
+transactionId Required
 Tests
-    •	Upload Image
-    •	Upload PDF
-    •	Delete Attachment
-    •	Invalid File Type
-    •	Max Size
+• Upload Image
+• Upload PDF
+• Delete Attachment
+• Invalid File Type
+• Max Size
 
 สิ่งที่ผมอยาก "เปลี่ยน" จากแผนเดิม
 ผมไม่อยากให้ Attachment รู้ว่าไฟล์อยู่ที่ไหนจริง ๆ
@@ -10373,9 +10358,9 @@ storageKey
 เช่น
 receipts/abc123.jpg
 ข้อดี
-    •	เปลี่ยน Storage ได้
-    •	เปลี่ยนจาก Local → S3 → Cloudflare R2 ได้
-    •	Backend ควบคุมสิทธิ์การเข้าถึงได้
+• เปลี่ยน Storage ได้
+• เปลี่ยนจาก Local → S3 → Cloudflare R2 ได้
+• Backend ควบคุมสิทธิ์การเข้าถึงได้
 
 Attachment ใน V1
 ผมเสนอให้แบ่งเป็น 2 ระดับ
@@ -10415,37 +10400,37 @@ User
 PocketNoteMe มีแนวคิด Offline First
 ดังนั้นผู้ใช้มี 2 สถานะ
 Guest User
-        │
-        ▼
+│
+▼
 Registered User
 ไม่ใช่คนละระบบ
 แต่เป็น User เดียวที่มีสถานะต่างกัน
 ผมแนะนำให้ใช้แนวคิดนี้
 enum UserMode {
-  GUEST,
-  REGISTERED,
+GUEST,
+REGISTERED,
 }
 ข้อดีคือ
-    •	Guest ใช้งานได้ทันที
-    •	สมัครทีหลังแล้ว Sync ได้
-    •	ไม่ต้องย้ายข้อมูลหรือแปลงโครงสร้างฐานข้อมูล
+• Guest ใช้งานได้ทันที
+• สมัครทีหลังแล้ว Sync ได้
+• ไม่ต้องย้ายข้อมูลหรือแปลงโครงสร้างฐานข้อมูล
 
 📍หลังจาก User เสร็จ
 เราจะเข้าสู่ช่วงที่สำคัญมาก และถือเป็น "สะพาน" ระหว่างการออกแบบกับการพัฒนา
 ✅ Entity Specification (เสร็จ)
-        ↓
+↓
 🔷 Relationship Diagram
-        ↓
+↓
 🔷 ERD
-        ↓
+↓
 🔷 Prisma Schema
-        ↓
+↓
 🔷 Dexie Schema
-        ↓
+↓
 🔷 API Contract
-        ↓
+↓
 🧊 Design Freeze
-        ↓
+↓
 🚀 Sprint 1 (เริ่มเขียนโค้ดจริง)
 ผมคิดว่าช่วง Relationship Diagram → Prisma Schema จะเป็นช่วงที่คุณจะได้เห็นว่า การออกแบบที่เราทำมาตลอดสามารถเปลี่ยนเป็นโค้ดจริงได้อย่างเป็นระบบ และแทบไม่ต้องเดาอะไรเลยครับ
   โอเค
@@ -10470,11 +10455,11 @@ User คือเจ้าของข้อมูลทั้งหมด
 เป็น Root Aggregate ของระบบ
 ทุก Entity จะอ้างอิง User
 User
- ├── Assets
- ├── Categories
- ├── Transactions
- ├── Tags
- └── Attachments
+├── Assets
+├── Categories
+├── Transactions
+├── Tags
+└── Attachments
 
 Fields
 id
@@ -10483,8 +10468,8 @@ Primary Key
 
 mode
 enum UserMode {
-  GUEST,
-  REGISTERED
+GUEST,
+REGISTERED
 }
 
 email
@@ -10603,11 +10588,11 @@ POST /auth/register
 POST /auth/logout
 
 Validation
-Field	Rule
-email	Email
-displayName	≤50
-currency	ISO Currency
-locale	Locale
+Field Rule
+email Email
+displayName ≤50
+currency ISO Currency
+locale Locale
 Frontend Store
 user
 
@@ -10618,11 +10603,11 @@ loading
 error
 
 Unit Test
-    •	Guest User
-    •	Register
-    •	Login
-    •	Logout
-    •	Update Profile
+• Guest User
+• Register
+• Login
+• Logout
+• Update Profile
 
 สิ่งที่ผมอยาก "เปลี่ยน" จากแผนเดิม
 แยก User กับ Authentication
@@ -10649,22 +10634,22 @@ AuthIdentity
 เช่น
 User
 เก็บ
-    •	displayName
-    •	currency
-    •	locale
+• displayName
+• currency
+• locale
 ส่วน
 AuthIdentity
 เก็บ
-    •	email
-    •	passwordHash
-    •	provider
-    •	lastLogin
-    •	refreshTokenVersion
+• email
+• passwordHash
+• provider
+• lastLogin
+• refreshTokenVersion
 ข้อดี
-    •	เปลี่ยนระบบ Login ได้ง่าย
-    •	รองรับ Google Login / Apple Login
-    •	Domain สะอาด
-    •	User ไม่ผูกกับ Authentication
+• เปลี่ยนระบบ Login ได้ง่าย
+• รองรับ Google Login / Apple Login
+• Domain สะอาด
+• User ไม่ผูกกับ Authentication
 
 🎉 ตอนนี้ Entity Specification เสร็จครบแล้ว
 ████████████████████
@@ -10690,25 +10675,25 @@ Prisma
 ซึ่งใช้ได้
 แต่ถ้าเราต้องการให้ PocketNoteMe ดูเป็นโปรเจกต์ระดับมืออาชีพสำหรับ Portfolio ผมแนะนำให้เพิ่มอีกหนึ่งขั้น
 Entity Specification
-        ↓
+↓
 ✅ Data Dictionary
-        ↓
+↓
 Relationship Diagram
-        ↓
+↓
 ERD
-        ↓
+↓
 Prisma Schema
 ทำไมต้องมี Data Dictionary?
 Data Dictionary จะเป็น "พจนานุกรมของระบบ" ที่ระบุรายละเอียดของทุก Field เช่น
-Entity	Field	Type	Required	Description
-Transaction	amount	Decimal	✅	จำนวนเงิน ต้องมากกว่า 0
-Transaction	transactionDate	Date	✅	วันที่เกิดรายการ
-Asset	name	String	✅	ชื่อบัญชี/กระเป๋าเงิน
-Category	type	Enum	✅	ใช้ได้กับ Expense หรือ Income
+Entity Field Type Required Description
+Transaction amount Decimal ✅ จำนวนเงิน ต้องมากกว่า 0
+Transaction transactionDate Date ✅ วันที่เกิดรายการ
+Asset name String ✅ ชื่อบัญชี/กระเป๋าเงิน
+Category type Enum ✅ ใช้ได้กับ Expense หรือ Income
 ข้อดีคือ
-    •	เป็น Single Source of Truth
-    •	ใช้อ้างอิงเวลาทำ Prisma, DTO, Zod และ API
-    •	ถ้าจะเพิ่ม Feature ใหม่ในอนาคต ทุกคนดูเอกสารเดียวกัน
+• เป็น Single Source of Truth
+• ใช้อ้างอิงเวลาทำ Prisma, DTO, Zod และ API
+• ถ้าจะเพิ่ม Feature ใหม่ในอนาคต ทุกคนดูเอกสารเดียวกัน
 
 🎯 นี่คือ Roadmap ที่ผมแนะนำก่อนเริ่ม Sprint 1
 ✅ Sprint 0
@@ -10724,63 +10709,63 @@ Category	type	Enum	✅	ใช้ได้กับ Expense หรือ Income
 ✅ Entity Specification
 
 🔜 Data Dictionary
-        ↓
+↓
 🔜 Relationship Diagram
-        ↓
+↓
 🔜 ERD
-        ↓
+↓
 🔜 Prisma Schema
-        ↓
+↓
 🔜 Dexie Schema
-        ↓
+↓
 🔜 API Contract
-        ↓
+↓
 🔜 Design Freeze
-        ↓
+↓
 🚀 Sprint 1 Development
 และนี่คือจุดที่ผมอยากปรับจากแผนเดิม
 ผมไม่อยากรีบไป Prisma Schema ทันที
 แต่ผมอยากให้เราทำ Data Dictionary + Relationship Diagram ก่อน เพราะสองอย่างนี้จะทำให้ตอนเขียน Prisma ใช้เวลาไม่นาน และลดโอกาสที่ต้องย้อนกลับมาแก้ไขโครงสร้างฐานข้อมูล
 สำหรับโปรเจกต์ Portfolio ที่ตั้งใจทำให้มีคุณภาพสูง ผมคิดว่านี่เป็นการลงทุนเวลาที่คุ้มค่ามากครับ
- ได้เลย ต่อไปได้*สำหรับ user ฉันอยากได้ profile เป็น optional ด้วย เผื่อเอามาใส่รูป  เห็นด้วยครับ และผมคิดว่าเป็นการปรับที่ดี
+ ได้เลย ต่อไปได้\*สำหรับ user ฉันอยากได้ profile เป็น optional ด้วย เผื่อเอามาใส่รูป  เห็นด้วยครับ และผมคิดว่าเป็นการปรับที่ดี
 แต่ผมอยากขอปรับนิดหนึ่งในแบบที่ทีม Backend นิยมทำครับ
 แทนที่จะเก็บทุกอย่างไว้ใน User
 User
- ├── displayName
- ├── email
- ├── avatar
- ├── bio
- ├── birthday
- ├── phone
- └── ...
+├── displayName
+├── email
+├── avatar
+├── bio
+├── birthday
+├── phone
+└── ...
 ผมแนะนำให้แยกเป็น
 User
- ├── id
- ├── mode
- ├── createdAt
- └── updatedAt
+├── id
+├── mode
+├── createdAt
+└── updatedAt
 
         │
         │ 1:1
         ▼
 
 UserProfile
- ├── displayName
- ├── avatarUrl
- ├── bio
- ├── currency
- ├── locale
- ├── timezone
- └── ...
+├── displayName
+├── avatarUrl
+├── bio
+├── currency
+├── locale
+├── timezone
+└── ...
 ทำไมถึงแยก?
 เพราะ User กับ Profile มีหน้าที่ต่างกัน
 User
 คือ Identity ของระบบ
 User
- ├── id
- ├── mode
- ├── status
- └── timestamps
+├── id
+├── mode
+├── status
+└── timestamps
 แทบไม่เปลี่ยนเลย
 
 UserProfile
@@ -10803,30 +10788,30 @@ timezone
 ถ้าอนาคตมี Login Google
 ก็จะเป็นแบบนี้
 User
-    │
-    ├──────────────┐
-    ▼              ▼
-UserProfile   AuthIdentity
+│
+├──────────────┐
+▼ ▼
+UserProfile AuthIdentity
 ซึ่งสะอาดกว่าเยอะ
 
 ผมเสนอ Domain ใหม่
 User
- ├── id
- ├── mode
- ├── status
- ├── createdAt
- └── updatedAt
+├── id
+├── mode
+├── status
+├── createdAt
+└── updatedAt
 
 UserProfile
- ├── userId
- ├── displayName
- ├── avatarUrl (Optional)
- ├── bio (Optional)
- ├── currency
- ├── locale
- ├── timezone
- ├── createdAt
- └── updatedAt
+├── userId
+├── displayName
+├── avatarUrl (Optional)
+├── bio (Optional)
+├── currency
+├── locale
+├── timezone
+├── createdAt
+└── updatedAt
 
 Avatar
 ผมไม่อยากใช้ชื่อ
@@ -10836,34 +10821,34 @@ avatarUrl
 หรือ
 avatarStorageKey
 เพราะในอนาคต
-    •	Local
-    •	Cloudflare R2
-    •	AWS S3
+• Local
+• Cloudflare R2
+• AWS S3
 เปลี่ยนได้
 
 ถ้าเป็น Guest
 {
-  "displayName": "Guest",
-  "avatarUrl": null,
-  "bio": null,
-  "currency": "THB",
-  "locale": "th-TH",
-  "timezone": "Asia/Bangkok"
+"displayName": "Guest",
+"avatarUrl": null,
+"bio": null,
+"currency": "THB",
+"locale": "th-TH",
+"timezone": "Asia/Bangkok"
 }
 
 Relationship ใหม่
 User
-  │1
-  │
-  ▼
+│1
+│
+▼
 UserProfile
 และ
 User
- ├──── Assets
- ├──── Transactions
- ├──── Categories
- ├──── Tags
- └──── Attachments
+├──── Assets
+├──── Transactions
+├──── Categories
+├──── Tags
+└──── Attachments
 
 แล้ว Entity จะกลายเป็น
 Core Domain
@@ -10887,26 +10872,26 @@ Infrastructure
 ตอนนี้เรามี Domain ครบแล้ว
 ผมอยากเริ่มทำ Data Dictionary ซึ่งเป็นเอกสารอ้างอิงหลักของทั้งระบบ
 โครงสร้างจะเป็นประมาณนี้
-Entity	Field	Type	Required	Default	Description
-User	id	UUID	✅	-	Primary Key
-UserProfile	avatarUrl	String	❌	null	URL หรือ Storage Key ของรูปโปรไฟล์
-Asset	name	String	✅	-	ชื่อบัญชี/กระเป๋าเงิน
-Transaction	amount	Decimal	✅	-	จำนวนเงิน ต้องมากกว่า 0
-Category	type	Enum	✅	-	EXPENSE หรือ INCOME
+Entity Field Type Required Default Description
+User id UUID ✅ - Primary Key
+UserProfile avatarUrl String ❌ null URL หรือ Storage Key ของรูปโปรไฟล์
+Asset name String ✅ - ชื่อบัญชี/กระเป๋าเงิน
+Transaction amount Decimal ✅ - จำนวนเงิน ต้องมากกว่า 0
+Category type Enum ✅ - EXPENSE หรือ INCOME
 แต่...ผมมีข้อเสนอที่คิดว่าจะยกระดับโปรเจกต์ได้อีก
 ผมอยากเพิ่มเอกสารอีก 1 ไฟล์ ก่อน Data Dictionary คือ
 docs/domain/
 
 DOMAIN_MODEL.md
 ไฟล์นี้จะอธิบายภาพรวมของ Domain ทั้งหมด เช่น
-    •	Domain Vision
-    •	Ubiquitous Language
-    •	Aggregates
-    •	Entities
-    •	Value Objects
-    •	Domain Events
-    •	Business Rules
-    •	Bounded Contexts
+• Domain Vision
+• Ubiquitous Language
+• Aggregates
+• Entities
+• Value Objects
+• Domain Events
+• Business Rules
+• Bounded Contexts
 เหตุผลคือ เมื่อถึงเวลาสมัครงาน คนที่เปิดโปรเจกต์จะเห็นทันทีว่า
 "เจ้าของโปรเจกต์คนนี้ไม่ได้แค่เขียนโค้ด แต่เข้าใจการออกแบบระบบด้วย"
 
@@ -10924,41 +10909,42 @@ DOMAIN_MODEL.md
 ✅ Entity Specification
 
 🔜 DOMAIN_MODEL.md ⭐ (ใหม่)
-        ↓
+↓
 🔜 Data Dictionary
-        ↓
+↓
 🔜 Relationship Diagram
-        ↓
+↓
 🔜 ERD
-        ↓
+↓
 🔜 Prisma Schema
-        ↓
+↓
 🔜 Dexie Schema
-        ↓
+↓
 🔜 API Contract
-        ↓
+↓
 🧊 Design Freeze
-        ↓
+↓
 🚀 Sprint 1
 ผมแนะนำให้เพิ่ม DOMAIN_MODEL.md ครับ เพราะมันจะเป็นเอกสารระดับ Architecture ที่เชื่อมทุกอย่างเข้าด้วยกัน และทำให้ PocketNoteMe ดูเป็นโปรเจกต์ที่มีการออกแบบอย่างเป็นระบบ ไม่ใช่แค่มีฐานข้อมูลกับโค้ดเท่านั้นครับ
   โอเคฉันจะไปเพิ่ม DOMAIN_MODEL.md แต่อยากให้คุณเขียนให้ฉันหน่อย ก่อนไปลำดับต่อไป  ดีมาก ตอนนี้เริ่มเห็นภาพของโปรเจกต์แล้ว
 จากที่เราทำมาทั้งหมด ตอนนี้เรามี
-    •	✅ PRD.md
-    •	✅ ROADMAP.md
-    •	✅ ARCHITECTURE.md
-    •	✅ DECISIONS.md
+• ✅ PRD.md
+• ✅ ROADMAP.md
+• ✅ ARCHITECTURE.md
+• ✅ DECISIONS.md
 เอกสารตัวต่อไปที่สำคัญที่สุด คือ
 DOMAIN_MODEL.md
 อันนี้จะเป็น "หัวใจของ Backend"
 เพราะหลังจากนี้
-    •	Database Design
-    •	Prisma Schema
-    •	API Design
-    •	Permission
-    •	Service Layer
+• Database Design
+• Prisma Schema
+• API Design
+• Permission
+• Service Layer
 ทั้งหมดจะอิงจากไฟล์นี้
 
 DOMAIN_MODEL.md
+
 # Domain Model
 
 Version: 0.1
@@ -10977,49 +10963,49 @@ Database tables (Prisma) will be generated from this model later.
 
 # Ubiquitous Language
 
-| Term | Meaning |
-|-------|---------|
-| User | Person who owns accounts and records |
-| Profile | Optional personal information of a user |
-| Account | Money container |
-| Category | Income / Expense classification |
-| Transaction | Income / Expense record |
-| Budget | Spending limit |
-| Goal | Saving target |
-| Recurring Transaction | Auto-created transaction |
-| Attachment | Receipt / Image |
-| Tag | Flexible labels |
-| Currency | Money unit |
+| Term                  | Meaning                                 |
+| --------------------- | --------------------------------------- |
+| User                  | Person who owns accounts and records    |
+| Profile               | Optional personal information of a user |
+| Account               | Money container                         |
+| Category              | Income / Expense classification         |
+| Transaction           | Income / Expense record                 |
+| Budget                | Spending limit                          |
+| Goal                  | Saving target                           |
+| Recurring Transaction | Auto-created transaction                |
+| Attachment            | Receipt / Image                         |
+| Tag                   | Flexible labels                         |
+| Currency              | Money unit                              |
 
 ---
 
 # Aggregate
 
 User
- └── Profile (optional)
+└── Profile (optional)
 
 User
- ├── Accounts
- ├── Categories
- ├── Transactions
- ├── Budgets
- ├── Goals
- └── Tags
+├── Accounts
+├── Categories
+├── Transactions
+├── Budgets
+├── Goals
+└── Tags
 
 Account
- └── Transactions
+└── Transactions
 
 Category
- └── Transactions
+└── Transactions
 
 Transaction
- └── Attachments
+└── Attachments
 
 Goal
- └── Contributions (future)
-
+└── Contributions (future)
 
 User
+
 ## User
 
 Represents authentication identity.
@@ -11040,6 +11026,7 @@ Rules
 
 Profile (Optional)
 นี่คือสิ่งที่คุณขอไว้
+
 ## Profile
 
 Optional profile information.
@@ -11064,18 +11051,19 @@ Rules
 - One user has only one profile.
 - Avatar is optional.
 - Default values are generated during onboarding.
-เหตุผลที่แยกออกจาก User
-User
-    Authentication
+  เหตุผลที่แยกออกจาก User
+  User
+  Authentication
 
 Profile
-    Presentation
+Presentation
 Authentication ไม่ควรเก็บรูป
 Authentication ไม่ควรเก็บชื่อเล่น
 Authentication ไม่ควรเก็บ locale
 มันคือคนละ Responsibility
 
 Account
+
 ## Account
 
 Represents a wallet or bank account.
@@ -11103,6 +11091,7 @@ Rules
 - Archived accounts cannot receive new transactions.
 
 Category
+
 ## Category
 
 Represents transaction classification.
@@ -11127,6 +11116,7 @@ Rules
 - Default categories cannot be deleted.
 
 Transaction
+
 ## Transaction
 
 Represents income or expense.
@@ -11146,13 +11136,13 @@ Fields
 Relationship
 
 User
-    └── Transactions
+└── Transactions
 
 Account
-    └── Transactions
+└── Transactions
 
 Category
-    └── Transactions
+└── Transactions
 
 Rules
 
@@ -11161,6 +11151,7 @@ Rules
 - One transaction belongs to one category.
 
 Attachment
+
 ## Attachment
 
 Receipt or image attached to transaction.
@@ -11175,10 +11166,11 @@ Fields
 Relationship
 
 Transaction (1)
-      |
-      +---- (N) Attachments
+|
++---- (N) Attachments
 
 Budget
+
 ## Budget
 
 Monthly spending limit.
@@ -11197,6 +11189,7 @@ Rules
 - One category can have one budget per month.
 
 Goal
+
 ## Goal
 
 Saving target.
@@ -11216,6 +11209,7 @@ Rules
 - currentAmount <= targetAmount
 
 Tag
+
 ## Tag
 
 Flexible labels.
@@ -11230,10 +11224,11 @@ Fields
 Relationship
 
 Transaction (N)
-        |
-       Tag (N)
+|
+Tag (N)
 
 Currency
+
 ## Currency
 
 Supported currencies.
@@ -11250,28 +11245,28 @@ Rules
 
 Relationships
 User
- │
- ├── Profile (0..1)
- │
- ├── Account (1..N)
- │       │
- │       └── Transaction (1..N)
- │
- ├── Category (1..N)
- │       │
- │       └── Transaction
- │
- ├── Budget (1..N)
- │
- ├── Goal (1..N)
- │
- └── Tag (1..N)
+│
+├── Profile (0..1)
+│
+├── Account (1..N)
+│ │
+│ └── Transaction (1..N)
+│
+├── Category (1..N)
+│ │
+│ └── Transaction
+│
+├── Budget (1..N)
+│
+├── Goal (1..N)
+│
+└── Tag (1..N)
 
 Transaction
-    │
-    ├── Attachment (0..N)
-    │
-    └── Tag (0..N)
+│
+├── Attachment (0..N)
+│
+└── Tag (0..N)
 
 Future Features
 Planned Domain
@@ -11288,6 +11283,7 @@ Planned Domain
 - AI Spending Analysis
 
 Domain Constraints
+
 - Every resource belongs to exactly one User.
 - No cross-user access.
 - Transaction amount is always positive.
@@ -11340,10 +11336,10 @@ Profile (optional)
 ├── currency
 └── preferences (future)
 ข้อดีคือ:
-    •	Authentication แยกจากข้อมูลการแสดงผล
-    •	รองรับการเพิ่มรูปโปรไฟล์ (avatarUrl) ได้ง่าย
-    •	เพิ่ม preferences, theme, language, notification settings ในอนาคตได้โดยไม่กระทบโมเดลผู้ใช้หลัก
-    •	สอดคล้องกับแนวคิด Separation of Concerns และ Domain-Driven Design
+• Authentication แยกจากข้อมูลการแสดงผล
+• รองรับการเพิ่มรูปโปรไฟล์ (avatarUrl) ได้ง่าย
+• เพิ่ม preferences, theme, language, notification settings ในอนาคตได้โดยไม่กระทบโมเดลผู้ใช้หลัก
+• สอดคล้องกับแนวคิด Separation of Concerns และ Domain-Driven Design
 
 🚀 ลำดับถัดไป
 ตอนนี้เอกสารระดับ Domain ถือว่าแน่นแล้ว ขั้นต่อไปคือเปลี่ยน Domain ให้เป็นโครงสร้างข้อมูลจริง:
@@ -11365,17 +11361,17 @@ Phase ต่อไป : Data Design
 ก่อนจะเขียน Prisma เราจะทำ Database Design ก่อน
 ผมแนะนำลำดับนี้
 Database Design Workshop
-        │
-        ▼
+│
+▼
 DATABASE_SCHEMA.md
-        │
-        ▼
+│
+▼
 ERD
-        │
-        ▼
+│
+▼
 Prisma Schema
-        │
-        ▼
+│
+▼
 Seed Data
 
 Database Design Workshop
@@ -11484,21 +11480,21 @@ transaction_tags
 จากนั้นเราจะสร้าง ER Diagram
 เช่น
 User
- │
- ├──── Profile
- │
- ├──── Account
- │        │
- │        └──── Transaction
- │                 │
- │                 ├──── Attachment
- │                 └──── TransactionTag
- │                          │
- │                          └──── Tag
- │
- ├──── Budget
- │
- └──── Goal
+│
+├──── Profile
+│
+├──── Account
+│ │
+│ └──── Transaction
+│ │
+│ ├──── Attachment
+│ └──── TransactionTag
+│ │
+│ └──── Tag
+│
+├──── Budget
+│
+└──── Goal
 
 แล้วค่อยเขียน Prisma
 เช่น
@@ -11547,27 +11543,27 @@ docs/
 
 API_SPEC.md
 ไว้กำหนด API Contract ตั้งแต่ต้น เช่น
-    •	Endpoint
-    •	Request
-    •	Response
-    •	Error
-    •	Validation
-    •	Status Code
+• Endpoint
+• Request
+• Response
+• Error
+• Validation
+• Status Code
 และ
 docs/
 
 CODING_STANDARD.md
 ไว้กำหนดมาตรฐานการเขียนโค้ด เช่น
-    •	Naming Convention
-    •	Folder Convention
-    •	TypeScript Rules
-    •	React Rules
-    •	NestJS Rules
-    •	Prisma Rules
-    •	Git Commit Convention
-    •	Import Order
-    •	Error Handling
-    •	Logging
+• Naming Convention
+• Folder Convention
+• TypeScript Rules
+• React Rules
+• NestJS Rules
+• Prisma Rules
+• Git Commit Convention
+• Import Order
+• Error Handling
+• Logging
 สองไฟล์นี้จะช่วยให้โปรเจกต์ขยายได้ง่ายและรักษาคุณภาพโค้ดได้ดี โดยเฉพาะเมื่อมีผู้ร่วมพัฒนาในอนาคต
 
 Roadmap ถัดไป
@@ -11578,10 +11574,10 @@ Roadmap ถัดไป
 ✅ Domain Model
 
 🔜 Database Design Workshop
-    ├── DATABASE_SCHEMA.md
-    ├── ER Diagram
-    ├── Prisma Schema
-    └── Seed Strategy
+├── DATABASE_SCHEMA.md
+├── ER Diagram
+├── Prisma Schema
+└── Seed Strategy
 
 ⬇
 
@@ -11604,27 +11600,27 @@ Frontend
 สำหรับโปรเจกต์ MoneyNote Clone ผมจะออกแบบให้เหมือนทีม Software Engineer ใช้กันจริง โดยเอกสารสองไฟล์นี้จะไม่ใช่แค่ลิสต์ API แต่เป็น "มาตรฐานของโปรเจกต์"
 
 1. API_SPEC.md
-API Specification
-Version: 0.1
+   API Specification
+   Version: 0.1
 
 Purpose
 Define API contracts between Frontend and Backend.
 This document focuses on:
-    •	Endpoint naming
-    •	Request format
-    •	Response format
-    •	Validation
-    •	Error handling
-    •	Authentication
-    •	Versioning
+• Endpoint naming
+• Request format
+• Response format
+• Validation
+• Error handling
+• Authentication
+• Versioning
 
 API Principles
-    •	RESTful API
-    •	JSON only
-    •	UTF-8 encoding
-    •	Stateless
-    •	JWT Authentication
-    •	HTTPS only
+• RESTful API
+• JSON only
+• UTF-8 encoding
+• Stateless
+• JWT Authentication
+• HTTPS only
 
 Base URL
 Development
@@ -11638,12 +11634,12 @@ Future
 /api/v2
 
 HTTP Methods
-Method	Usage
-GET	Read
-POST	Create
-PATCH	Partial Update
-PUT	Replace
-DELETE	Remove
+Method Usage
+GET Read
+POST Create
+PATCH Partial Update
+PUT Replace
+DELETE Remove
 Authentication
 Protected endpoints require
 Authorization: Bearer <JWT_TOKEN>
@@ -11652,34 +11648,34 @@ Response Format
 Every response follows the same structure.
 Success
 {
-  "success": true,
-  "message": "Transaction created successfully.",
-  "data": {}
+"success": true,
+"message": "Transaction created successfully.",
+"data": {}
 }
 Error
 {
-  "success": false,
-  "message": "Validation failed.",
-  "errors": [
-    {
-      "field": "amount",
-      "message": "Amount must be greater than zero."
-    }
-  ]
+"success": false,
+"message": "Validation failed.",
+"errors": [
+{
+"field": "amount",
+"message": "Amount must be greater than zero."
+}
+]
 }
 
 HTTP Status Codes
-Code	Meaning
-200	OK
-201	Created
-204	No Content
-400	Bad Request
-401	Unauthorized
-403	Forbidden
-404	Not Found
-409	Conflict
-422	Validation Error
-500	Internal Server Error
+Code Meaning
+200 OK
+201 Created
+204 No Content
+400 Bad Request
+401 Unauthorized
+403 Forbidden
+404 Not Found
+409 Conflict
+422 Validation Error
+500 Internal Server Error
 Resource Naming
 Plural nouns only.
 /users
@@ -11708,13 +11704,13 @@ Request
 ?page=1&limit=20
 Response
 {
-  "data": [],
-  "pagination": {
-    "page": 1,
-    "limit": 20,
-    "total": 150,
-    "totalPages": 8
-  }
+"data": [],
+"pagination": {
+"page": 1,
+"limit": 20,
+"total": 150,
+"totalPages": 8
+}
 }
 
 Sorting
@@ -11729,10 +11725,10 @@ Filtering
 ?to=
 
 Validation Rules
-    •	Validate every request
-    •	Reject unknown fields
-    •	Never trust client input
-    •	Return field-level validation errors
+• Validate every request
+• Reject unknown fields
+• Never trust client input
+• Return field-level validation errors
 
 Authentication Endpoints
 POST /auth/register
@@ -11789,7 +11785,7 @@ Multipart Form Data
 POST /uploads
 Returns
 {
-  "url": "https://..."
+"url": "https://..."
 }
 
 Error Codes
@@ -11802,27 +11798,27 @@ CONFLICT_RESOURCE
 UNKNOWN_ERROR
 
 Future APIs
-    •	Reports
-    •	Dashboard
-    •	OCR Receipt
-    •	AI Insights
-    •	Shared Wallet
-    •	Notifications
-    •	Exchange Rate
+• Reports
+• Dashboard
+• OCR Receipt
+• AI Insights
+• Shared Wallet
+• Notifications
+• Exchange Rate
 
 2. CODING_STANDARD.md
-Coding Standard
-Version: 0.1
+   Coding Standard
+   Version: 0.1
 
 Goal
 Maintain a consistent, readable, and scalable codebase.
 
 General Principles
-    •	Readability over cleverness.
-    •	Keep functions small.
-    •	Single Responsibility Principle.
-    •	Prefer composition over inheritance.
-    •	Avoid premature optimization.
+• Readability over cleverness.
+• Keep functions small.
+• Single Responsibility Principle.
+• Prefer composition over inheritance.
+• Avoid premature optimization.
 
 Naming Convention
 Variables
@@ -11895,65 +11891,65 @@ config/
 database/
 
 TypeScript Rules
-    •	Strict mode enabled
-    •	Avoid any
-    •	Prefer unknown
-    •	Prefer interfaces for object contracts
-    •	Prefer enums only when necessary
-    •	Explicit return types for public functions
+• Strict mode enabled
+• Avoid any
+• Prefer unknown
+• Prefer interfaces for object contracts
+• Prefer enums only when necessary
+• Explicit return types for public functions
 
 React Rules
-    •	Functional Components only
-    •	Server Components by default
-    •	Client Components only when required
-    •	Hooks start with use
-    •	Avoid prop drilling
-    •	Prefer composition
-    •	Memoize only when necessary
+• Functional Components only
+• Server Components by default
+• Client Components only when required
+• Hooks start with use
+• Avoid prop drilling
+• Prefer composition
+• Memoize only when necessary
 
 Next.js Rules
-    •	App Router
-    •	Feature-based architecture
-    •	Route Groups for pages
-    •	Server Actions only when appropriate
-    •	Keep page.tsx minimal
+• App Router
+• Feature-based architecture
+• Route Groups for pages
+• Server Actions only when appropriate
+• Keep page.tsx minimal
 
 NestJS Rules
-    •	Modular architecture
-    •	One controller per module
-    •	Business logic in services
-    •	Controllers should stay thin
-    •	DTO validation required
-    •	Dependency Injection everywhere
+• Modular architecture
+• One controller per module
+• Business logic in services
+• Controllers should stay thin
+• DTO validation required
+• Dependency Injection everywhere
 
 Prisma Rules
-    •	UUID/CUID primary keys
-    •	Never expose Prisma directly to frontend
-    •	Use transactions when multiple writes occur
-    •	Avoid raw SQL unless necessary
+• UUID/CUID primary keys
+• Never expose Prisma directly to frontend
+• Use transactions when multiple writes occur
+• Avoid raw SQL unless necessary
 
 API Rules
-    •	RESTful endpoints
-    •	Consistent response format
-    •	Proper status codes
-    •	Validate every request
-    •	JWT authentication
+• RESTful endpoints
+• Consistent response format
+• Proper status codes
+• Validate every request
+• JWT authentication
 
 Error Handling
-    •	Throw domain-specific exceptions
-    •	Never expose stack traces
-    •	Log unexpected errors
-    •	Return user-friendly messages
+• Throw domain-specific exceptions
+• Never expose stack traces
+• Log unexpected errors
+• Return user-friendly messages
 
 Logging
-    •	Structured logging
-    •	Log errors with context
-    •	Avoid logging sensitive information
+• Structured logging
+• Log errors with context
+• Avoid logging sensitive information
 
 Testing
-    •	Unit tests for business logic
-    •	Integration tests for API
-    •	E2E tests for critical user flows
+• Unit tests for business logic
+• Integration tests for API
+• E2E tests for critical user flows
 
 Git Convention
 Branch
@@ -11983,55 +11979,51 @@ chore:
 
 ci:
 
-Import Order
-    1.	Node modules
-    2.	Internal aliases
-    3.	Relative imports
-    4.	Styles
+Import Order 1. Node modules 2. Internal aliases 3. Relative imports 4. Styles
 
 Code Formatting
-    •	ESLint
-    •	Prettier
-    •	Husky
-    •	lint-staged
+• ESLint
+• Prettier
+• Husky
+• lint-staged
 Every commit must pass:
-    •	lint
-    •	type-check
-    •	tests
+• lint
+• type-check
+• tests
 
 Security
-    •	Never trust client input
-    •	Escape user-generated content
-    •	Store passwords using Argon2
-    •	JWT secrets via environment variables
-    •	Never commit secrets
+• Never trust client input
+• Escape user-generated content
+• Store passwords using Argon2
+• JWT secrets via environment variables
+• Never commit secrets
 
 Performance
-    •	Lazy load when possible
-    •	Optimize images
-    •	Minimize unnecessary renders
-    •	Paginate large datasets
-    •	Cache expensive queries
+• Lazy load when possible
+• Optimize images
+• Minimize unnecessary renders
+• Paginate large datasets
+• Cache expensive queries
 
 Documentation
 Every public service should include:
-    •	Purpose
-    •	Parameters
-    •	Return value
-    •	Possible exceptions
+• Purpose
+• Parameters
+• Return value
+• Possible exceptions
 Complex business logic should include explanatory comments.
 
 Definition of Done
 A feature is complete only if:
-    •	Requirements implemented
-    •	Type-safe
-    •	Tested
-    •	Linted
-    •	Formatted
-    •	Documented
-    •	Reviewed
-    •	No TypeScript errors
-    •	No ESLint warnings
+• Requirements implemented
+• Type-safe
+• Tested
+• Linted
+• Formatted
+• Documented
+• Reviewed
+• No TypeScript errors
+• No ESLint warnings
 
 ผมแนะนำเพิ่มอีก 3 ไฟล์ (เพื่อให้ชุดเอกสารครบ)
 หลังจากสองไฟล์นี้แล้ว ผมแนะนำเพิ่มอีกสามไฟล์ ซึ่งจะทำให้ชุดเอกสารของโปรเจกต์สมบูรณ์มากขึ้น:
@@ -12041,11 +12033,11 @@ docs/
 ├── ARCHITECTURE.md
 ├── DECISIONS.md
 ├── DOMAIN_MODEL.md
-├── API_SPEC.md              ✅
-├── CODING_STANDARD.md       ✅
-├── DATABASE_SCHEMA.md       ← ออกแบบตารางและ Constraints
-├── SECURITY.md              ← Authentication, Authorization, Secrets
-└── CONTRIBUTING.md          ← Workflow สำหรับการร่วมพัฒนา
+├── API_SPEC.md ✅
+├── CODING_STANDARD.md ✅
+├── DATABASE_SCHEMA.md ← ออกแบบตารางและ Constraints
+├── SECURITY.md ← Authentication, Authorization, Secrets
+└── CONTRIBUTING.md ← Workflow สำหรับการร่วมพัฒนา
 โดยเฉพาะ DATABASE_SCHEMA.md จะเป็นเอกสารที่เราจะทำต่อจากนี้ และใช้เป็นต้นแบบในการสร้าง Prisma Schema และ Database Migration ได้โดยตรง ทำให้ขั้นตอนการพัฒนาหลังจากนี้เป็นไปอย่างเป็นระบบและแทบไม่ต้องย้อนกลับมาแก้โครงสร้างหลักอีกครับ
   คุณแนะนำมาคุณเขียนมาให้ฉันด้วยฉันจะได้เอาไปใส่ใน project    ได้เลยครับ และผมเห็นด้วยกับแนวทางนี้
 จากที่เราคุยกันมาตั้งแต่ Sprint 0 ผมคิดว่าเราไม่ควรมีแค่ 7-8 ไฟล์ แต่ควรมี Documentation ชุดใหญ่ (Engineering Handbook) เหมือนโปรเจกต์ของบริษัทจริง
@@ -12053,46 +12045,43 @@ docs/
 docs/
 │
 ├── 01-product/
-│   ├── PRD.md
-│   ├── ROADMAP.md
-│   └── DECISIONS.md
+│ ├── PRD.md
+│ ├── ROADMAP.md
+│ └── DECISIONS.md
 │
 ├── 02-architecture/
-│   ├── ARCHITECTURE.md
-│   ├── DOMAIN_MODEL.md
-│   ├── DATABASE_SCHEMA.md
-│   ├── API_SPEC.md
-│   └── SECURITY.md
+│ ├── ARCHITECTURE.md
+│ ├── DOMAIN_MODEL.md
+│ ├── DATABASE_SCHEMA.md
+│ ├── API_SPEC.md
+│ └── SECURITY.md
 │
 ├── 03-engineering/
-│   ├── CODING_STANDARD.md
-│   ├── CONTRIBUTING.md
-│   ├── GIT_WORKFLOW.md
-│   ├── TESTING_STRATEGY.md
-│   └── DEPLOYMENT.md
+│ ├── CODING_STANDARD.md
+│ ├── CONTRIBUTING.md
+│ ├── GIT_WORKFLOW.md
+│ ├── TESTING_STRATEGY.md
+│ └── DEPLOYMENT.md
 │
 └── AGENTS.md
 ชุดนี้เรียกว่า Engineering Documentation ซึ่งใช้กันในบริษัทขนาดกลางถึงใหญ่
 
 แต่ถ้าจะตอบตามคำถามตอนนี้ ผมจะเขียนอีก 3 ไฟล์ที่เหลือ ให้ครบก่อน
-    •	✅ DATABASE_SCHEMA.md
-    •	✅ SECURITY.md
-    •	✅ CONTRIBUTING.md
+• ✅ DATABASE_SCHEMA.md
+• ✅ SECURITY.md
+• ✅ CONTRIBUTING.md
 แล้วหลังจากนั้นค่อยทำ
-    •	Prisma
-    •	ERD
-    •	Database Design
+• Prisma
+• ERD
+• Database Design
 
 ผมขอแนะนำปรับลำดับนิดหนึ่ง
 จริง ๆ แล้ว DATABASE_SCHEMA.md จะมีรายละเอียดเยอะมาก (ประมาณ 300–500 บรรทัด) เพราะจะอธิบายทุก Table, Field, Index, Constraint และความสัมพันธ์ทั้งหมด ถ้าเขียนเต็ม ๆ พร้อมกับ SECURITY.md และ CONTRIBUTING.md ในข้อความเดียว จะยาวเกินกว่าที่ตอบได้ครบถ้วนในครั้งเดียว
-ดังนั้นผมแนะนำแบ่งเป็น 3 รอบเพื่อให้ได้เอกสารคุณภาพสูง:
-    1.	DATABASE_SCHEMA.md (ละเอียดที่สุด)
-    2.	SECURITY.md
-    3.	CONTRIBUTING.md (รวม Git Workflow และการเปิด PR)
+ดังนั้นผมแนะนำแบ่งเป็น 3 รอบเพื่อให้ได้เอกสารคุณภาพสูง: 1. DATABASE_SCHEMA.md (ละเอียดที่สุด) 2. SECURITY.md 3. CONTRIBUTING.md (รวม Git Workflow และการเปิด PR)
 จากนั้นเราจะต่อด้วย
-    •	Prisma Schema
-    •	ER Diagram
-    •	Seed Strategy
+• Prisma Schema
+• ER Diagram
+• Seed Strategy
 ซึ่งทั้งหมดจะสอดคล้องกัน 100%
 ผมตั้งใจเขียนให้เป็นระดับ Production Ready เหมือนเอกสารที่ใช้จริงในทีมพัฒนา ไม่ใช่แค่ตัวอย่างสั้น ๆ ครับ
   ได้เลย
@@ -12109,14 +12098,14 @@ It serves as the source of truth before implementing the Prisma schema and datab
 This document is database-agnostic. The physical implementation (PostgreSQL + Prisma) will follow this specification.
 
 Database Engine
-Item	Value
-Database	PostgreSQL
-ORM	Prisma
-Charset	UTF-8
-Timezone	UTC
-ID Strategy	CUID
-Soft Delete	No (v1)
-Migration	Prisma Migrate
+Item Value
+Database PostgreSQL
+ORM Prisma
+Charset UTF-8
+Timezone UTC
+ID Strategy CUID
+Soft Delete No (v1)
+Migration Prisma Migrate
 Naming Convention
 Tables
 Plural
@@ -12157,23 +12146,23 @@ updated_at
 
 Common Rules
 Every entity
-    •	Has primary key
-    •	Has created_at
-    •	Has updated_at
+• Has primary key
+• Has created_at
+• Has updated_at
 Every business resource belongs to exactly one User.
 Cross-user access is forbidden.
 
 users
 Purpose
 Authentication identity.
-Field	Type	Nullable	Notes
-id	CUID	No	PK
-email	String	No	Unique
-password_hash	String	No	Argon2
-created_at	Timestamp	No	
-updated_at	Timestamp	No	
+Field Type Nullable Notes
+id CUID No PK
+email String No Unique
+password_hash String No Argon2
+created_at Timestamp No
+updated_at Timestamp No
 Indexes
-    •	email UNIQUE
+• email UNIQUE
 Relationships
 User
 
@@ -12193,18 +12182,18 @@ User
 
 profiles
 Optional user profile.
-Field	Type
-id	CUID
-user_id	FK
-display_name	String
-avatar_url	String?
-timezone	String
-locale	String
-currency	String
-created_at	Timestamp
-updated_at	Timestamp
+Field Type
+id CUID
+user_id FK
+display_name String
+avatar_url String?
+timezone String
+locale String
+currency String
+created_at Timestamp
+updated_at Timestamp
 Indexes
-    •	user_id UNIQUE
+• user_id UNIQUE
 Relationship
 User
 
@@ -12212,18 +12201,18 @@ User
 
 accounts
 Represents wallets and bank accounts.
-Field	Type
-id	CUID
-user_id	FK
-name	String
-type	Enum
-balance	Decimal
-currency	String
-color	String
-icon	String
-is_archived	Boolean
-created_at	Timestamp
-updated_at	Timestamp
+Field Type
+id CUID
+user_id FK
+name String
+type Enum
+balance Decimal
+currency String
+color String
+icon String
+is_archived Boolean
+created_at Timestamp
+updated_at Timestamp
 Indexes
 user_id
 
@@ -12231,16 +12220,16 @@ user_id + name
 
 categories
 Income / Expense classification.
-Field	Type
-id	CUID
-user_id	FK
-name	String
-type	Enum
-color	String
-icon	String
-is_default	Boolean
-created_at	Timestamp
-updated_at	Timestamp
+Field Type
+id CUID
+user_id FK
+name String
+type Enum
+color String
+icon String
+is_default Boolean
+created_at Timestamp
+updated_at Timestamp
 Unique
 user_id
 
@@ -12252,18 +12241,18 @@ A user cannot create duplicate category names of the same type.
 
 transactions
 Core financial record.
-Field	Type
-id	CUID
-user_id	FK
-account_id	FK
-category_id	FK
-amount	Decimal(18,2)
-type	Enum
-note	Text
-transaction_date	Timestamp
-status	Enum
-created_at	Timestamp
-updated_at	Timestamp
+Field Type
+id CUID
+user_id FK
+account_id FK
+category_id FK
+amount Decimal(18,2)
+type Enum
+note Text
+transaction_date Timestamp
+status Enum
+created_at Timestamp
+updated_at Timestamp
 Indexes
 user_id
 
@@ -12273,19 +12262,19 @@ category_id
 
 transaction_date
 Rules
-    •	amount > 0
-    •	account must belong to same user
-    •	category must belong to same user
+• amount > 0
+• account must belong to same user
+• category must belong to same user
 
 attachments
 Receipt images.
-Field	Type
-id	CUID
-transaction_id	FK
-url	String
-mime_type	String
-created_at	Timestamp
-updated_at	Timestamp
+Field Type
+id CUID
+transaction_id FK
+url String
+mime_type String
+created_at Timestamp
+updated_at Timestamp
 Relationship
 Transaction
 
@@ -12297,15 +12286,15 @@ N Attachment
 
 budgets
 Monthly budget.
-Field	Type
-id	CUID
-user_id	FK
-category_id	FK
-amount	Decimal
-month	Integer
-year	Integer
-created_at	Timestamp
-updated_at	Timestamp
+Field Type
+id CUID
+user_id FK
+category_id FK
+amount Decimal
+month Integer
+year Integer
+created_at Timestamp
+updated_at Timestamp
 Unique
 user_id
 
@@ -12317,33 +12306,33 @@ year
 
 goals
 Saving goals.
-Field	Type
-id	CUID
-user_id	FK
-name	String
-target_amount	Decimal
-current_amount	Decimal
-deadline	Date
-status	Enum
-created_at	Timestamp
-updated_at	Timestamp
+Field Type
+id CUID
+user_id FK
+name String
+target_amount Decimal
+current_amount Decimal
+deadline Date
+status Enum
+created_at Timestamp
+updated_at Timestamp
 Rules
 current_amount <= target_amount
 
 tags
 Transaction labels.
-Field	Type
-id	CUID
-user_id	FK
-name	String
-color	String
-created_at	Timestamp
-updated_at	Timestamp
+Field Type
+id CUID
+user_id FK
+name String
+color String
+created_at Timestamp
+updated_at Timestamp
 transaction_tags
 Many-to-many bridge.
-Field	Type
-transaction_id	FK
-tag_id	FK
+Field Type
+transaction_id FK
+tag_id FK
 Composite Primary Key
 transaction_id
 
@@ -12381,24 +12370,24 @@ COMPLETED
 CANCELLED
 
 Constraints
-    •	Email must be unique.
-    •	One profile per user.
-    •	Transaction amount must be positive.
-    •	Category type must match transaction type.
-    •	Archived account cannot receive transactions.
-    •	Budget is unique per month.
-    •	Goal current_amount cannot exceed target_amount.
-    •	Tags are unique per user.
+• Email must be unique.
+• One profile per user.
+• Transaction amount must be positive.
+• Category type must match transaction type.
+• Archived account cannot receive transactions.
+• Budget is unique per month.
+• Goal current_amount cannot exceed target_amount.
+• Tags are unique per user.
 
 Cascade Rules
-Parent	Child	Action
-User	Profile	Cascade Delete
-User	Accounts	Cascade Delete
-User	Categories	Restrict Delete
-User	Transactions	Cascade Delete
-Transaction	Attachments	Cascade Delete
-Transaction	Transaction Tags	Cascade Delete
-Tag	Transaction Tags	Cascade Delete
+Parent Child Action
+User Profile Cascade Delete
+User Accounts Cascade Delete
+User Categories Restrict Delete
+User Transactions Cascade Delete
+Transaction Attachments Cascade Delete
+Transaction Transaction Tags Cascade Delete
+Tag Transaction Tags Cascade Delete
 Index Strategy
 Indexes
 users.email
@@ -12430,31 +12419,31 @@ Composite Index
 Seed Data
 Default Categories
 Expense
-    •	Food
-    •	Transport
-    •	Shopping
-    •	Bills
-    •	Entertainment
+• Food
+• Transport
+• Shopping
+• Bills
+• Entertainment
 Income
-    •	Salary
-    •	Bonus
-    •	Investment
+• Salary
+• Bonus
+• Investment
 Default Currency
 THB
 Default Timezone
 Asia/Bangkok
 
 Future Database Changes
-    •	Soft Delete
-    •	Audit Logs
-    •	Multi Currency
-    •	Shared Wallet
-    •	Family Members
-    •	Exchange Rate
-    •	Notifications
-    •	Recurring Transactions
-    •	Investment Portfolio
-    •	AI Spending Analysis
+• Soft Delete
+• Audit Logs
+• Multi Currency
+• Shared Wallet
+• Family Members
+• Exchange Rate
+• Notifications
+• Recurring Transactions
+• Investment Portfolio
+• AI Spending Analysis
 
 ✅ DATABASE_SCHEMA.md เสร็จแล้ว
 ตอนนี้เอกสารของคุณจะเป็นประมาณนี้
@@ -12464,16 +12453,13 @@ docs/
 ├── ARCHITECTURE.md
 ├── DECISIONS.md
 ├── DOMAIN_MODEL.md
-├── DATABASE_SCHEMA.md   ✅
+├── DATABASE_SCHEMA.md ✅
 ├── API_SPEC.md
 └── CODING_STANDARD.md
 และนี่ถือเป็นชุดเอกสารที่แข็งแรงพอที่จะเริ่มสร้าง Prisma Schema ได้เลย
 
 ผมอยากปรับปรุงอีกนิดเพื่อให้เป็นระดับ Production
-จากสิ่งที่เราออกแบบร่วมกัน ผมมีข้อเสนอแนะ 3 อย่างที่ผมอยากใส่ตั้งแต่ต้น (ก่อนเขียน Prisma):
-    1.	UUID v7 แทน CUID (ถ้าต้องการประสิทธิภาพการจัดเรียงของฐานข้อมูลในระยะยาว)
-    2.	ฐานข้อมูลใช้ timestamptz (timestamp with time zone) ทุกฟิลด์วันที่/เวลา เพื่อรองรับผู้ใช้หลาย Timezone
-    3.	เพิ่ม version (Optimistic Locking) ในตารางที่มีโอกาสถูกแก้ไขพร้อมกัน เช่น accounts, goals และ budgets เพื่อป้องกันปัญหา Lost Update ในอนาคต
+จากสิ่งที่เราออกแบบร่วมกัน ผมมีข้อเสนอแนะ 3 อย่างที่ผมอยากใส่ตั้งแต่ต้น (ก่อนเขียน Prisma): 1. UUID v7 แทน CUID (ถ้าต้องการประสิทธิภาพการจัดเรียงของฐานข้อมูลในระยะยาว) 2. ฐานข้อมูลใช้ timestamptz (timestamp with time zone) ทุกฟิลด์วันที่/เวลา เพื่อรองรับผู้ใช้หลาย Timezone 3. เพิ่ม version (Optimistic Locking) ในตารางที่มีโอกาสถูกแก้ไขพร้อมกัน เช่น accounts, goals และ budgets เพื่อป้องกันปัญหา Lost Update ในอนาคต
 ทั้งสามข้อไม่จำเป็นสำหรับเวอร์ชันแรก แต่ถ้าวางตั้งแต่ตอนออกแบบ จะขยายระบบได้ง่ายขึ้นมาก
 ขั้นถัดไป ผมจะเขียน SECURITY.md ให้ ซึ่งจะครอบคลุม Authentication, Authorization, JWT, Refresh Token, Password Hashing, Environment Variables และ Security Best Practices ทั้งโปรเจกต์ครับ
   โอเค  ดีมากครับ 👍
@@ -12485,53 +12471,53 @@ Version: 1.0
 Purpose
 This document defines the security architecture and best practices for the MoneyNote Clone project.
 It covers:
-    •	Authentication
-    •	Authorization
-    •	Password Security
-    •	JWT
-    •	Refresh Token
-    •	File Upload Security
-    •	Environment Variables
-    •	Database Security
-    •	API Security
-    •	Frontend Security
+• Authentication
+• Authorization
+• Password Security
+• JWT
+• Refresh Token
+• File Upload Security
+• Environment Variables
+• Database Security
+• API Security
+• Frontend Security
 
 Security Principles
 The project follows these principles:
-    •	Zero Trust
-    •	Least Privilege
-    •	Defense in Depth
-    •	Secure by Default
-    •	Never Trust Client Input
+• Zero Trust
+• Least Privilege
+• Defense in Depth
+• Secure by Default
+• Never Trust Client Input
 
 Authentication
 Authentication uses JWT.
 Flow
 Register
-    ↓
+↓
 Hash Password
-    ↓
+↓
 Save User
-    ↓
+↓
 Login
-    ↓
+↓
 Verify Password
-    ↓
+↓
 Generate Access Token
-    ↓
+↓
 Generate Refresh Token
 
 Password Policy
 Minimum Requirements
-    •	Minimum 8 characters
-    •	Maximum 128 characters
-    •	Passwords are never stored in plain text
+• Minimum 8 characters
+• Maximum 128 characters
+• Passwords are never stored in plain text
 Hash Algorithm
 Argon2id
 Rules
-    •	Never log passwords
-    •	Never return passwords
-    •	Never expose password hash
+• Never log passwords
+• Never return passwords
+• Never expose password hash
 
 JWT
 Two tokens are used.
@@ -12542,8 +12528,8 @@ Expiration
 15 minutes
 Contains
 {
-  "sub": "userId",
-  "email": "user@example.com"
+"sub": "userId",
+"email": "user@example.com"
 }
 
 Refresh Token
@@ -12552,9 +12538,9 @@ Generate new access token
 Expiration
 30 days
 Rules
-    •	Stored as hashed value in database
-    •	Rotated after refresh
-    •	Revoked on logout
+• Stored as hashed value in database
+• Rotated after refresh
+• Revoked on logout
 
 Authorization
 Model
@@ -12588,41 +12574,41 @@ whitelist
 
 forbidNonWhitelisted
 Rules
-    •	Reject unknown fields
-    •	Reject invalid types
-    •	Reject missing required values
+• Reject unknown fields
+• Reject invalid types
+• Reject missing required values
 
 Input Sanitization
 All user input is sanitized.
 Examples
-    •	Trim whitespace
-    •	Validate email
-    •	Validate URL
-    •	Validate UUID/CUID
-    •	Reject invalid enum values
+• Trim whitespace
+• Validate email
+• Validate URL
+• Validate UUID/CUID
+• Reject invalid enum values
 
 SQL Injection
 Prevented by
-    •	Prisma ORM
-    •	Parameterized queries
+• Prisma ORM
+• Parameterized queries
 Rules
-    •	Never concatenate SQL
-    •	Avoid raw SQL unless necessary
+• Never concatenate SQL
+• Avoid raw SQL unless necessary
 
 XSS Protection
 Frontend
-    •	Escape user-generated content
-    •	Never use dangerouslySetInnerHTML unless absolutely required
+• Escape user-generated content
+• Never use dangerouslySetInnerHTML unless absolutely required
 Backend
-    •	Validate all string inputs
-    •	Sanitize HTML if HTML input is ever supported
+• Validate all string inputs
+• Sanitize HTML if HTML input is ever supported
 
 CSRF
 Authentication uses JWT.
 If Refresh Token is stored in cookies:
-    •	HttpOnly
-    •	Secure
-    •	SameSite=Strict
+• HttpOnly
+• Secure
+• SameSite=Strict
 
 CORS
 Development
@@ -12630,7 +12616,8 @@ localhost only
 Production
 Allow only trusted frontend domains.
 Never use
-*
+
+-
 
 Rate Limiting
 Protect authentication endpoints.
@@ -12645,18 +12632,18 @@ per IP
 
 File Upload Security
 Allowed
-    •	jpg
-    •	jpeg
-    •	png
-    •	webp
-    •	pdf
+• jpg
+• jpeg
+• png
+• webp
+• pdf
 Maximum Size
 5 MB
 Rules
-    •	Validate MIME type
-    •	Validate extension
-    •	Generate random filename
-    •	Store outside public root if possible
+• Validate MIME type
+• Validate extension
+• Generate random filename
+• Store outside public root if possible
 
 Environment Variables
 Never commit
@@ -12676,42 +12663,42 @@ S3_SECRET_KEY
 
 Secrets
 Rules
-    •	Minimum 32 random characters
-    •	Different secrets for Access Token and Refresh Token
-    •	Rotate secrets if compromised
+• Minimum 32 random characters
+• Different secrets for Access Token and Refresh Token
+• Rotate secrets if compromised
 
 Database Security
 Rules
-    •	Least privilege database user
-    •	SSL enabled in production
-    •	Backup regularly
-    •	No direct internet exposure
+• Least privilege database user
+• SSL enabled in production
+• Backup regularly
+• No direct internet exposure
 
 Logging
 Never log
-    •	Password
-    •	JWT
-    •	Refresh Token
-    •	API Keys
-    •	Secrets
+• Password
+• JWT
+• Refresh Token
+• API Keys
+• Secrets
 Allowed
-    •	Request ID
-    •	User ID
-    •	Endpoint
-    •	Status Code
-    •	Execution Time
+• Request ID
+• User ID
+• Endpoint
+• Status Code
+• Execution Time
 
 Error Handling
 Never expose
-    •	Stack trace
-    •	SQL errors
-    •	Prisma errors
-    •	Internal implementation
+• Stack trace
+• SQL errors
+• Prisma errors
+• Internal implementation
 Return generic messages.
 Example
 {
-  "success": false,
-  "message": "Internal Server Error"
+"success": false,
+"message": "Internal Server Error"
 }
 
 HTTPS
@@ -12721,11 +12708,11 @@ HTTP → Redirect to HTTPS
 
 Security Headers
 Recommended
-    •	Content-Security-Policy
-    •	X-Content-Type-Options
-    •	Referrer-Policy
-    •	X-Frame-Options
-    •	Permissions-Policy
+• Content-Security-Policy
+• X-Content-Type-Options
+• Referrer-Policy
+• X-Frame-Options
+• Permissions-Policy
 
 Dependency Security
 Run regularly
@@ -12736,47 +12723,47 @@ Update dependencies frequently.
 
 Authentication Flow
 Register
-    ↓
+↓
 Hash Password
-    ↓
+↓
 Create User
-    ↓
+↓
 Login
-    ↓
+↓
 Access Token
-    ↓
+↓
 Protected API
-    ↓
+↓
 Access Expired
-    ↓
+↓
 Refresh Token
-    ↓
+↓
 New Access Token
 
 Security Checklist
 Before Release
-    •	Password hashing enabled
-    •	JWT secrets configured
-    •	HTTPS enabled
-    •	CORS configured
-    •	Validation enabled
-    •	Rate limiting enabled
-    •	File upload validation enabled
-    •	Environment variables secured
-    •	Logging sanitized
-    •	Database backup configured
+• Password hashing enabled
+• JWT secrets configured
+• HTTPS enabled
+• CORS configured
+• Validation enabled
+• Rate limiting enabled
+• File upload validation enabled
+• Environment variables secured
+• Logging sanitized
+• Database backup configured
 
 Future Enhancements
-    •	Two-Factor Authentication (2FA)
-    •	Email Verification
-    •	Password Reset via Email
-    •	Device Management
-    •	Login History
-    •	Session Management
-    •	Security Audit Log
-    •	IP Whitelist
-    •	OAuth (Google / GitHub)
-    •	WebAuthn / Passkeys
+• Two-Factor Authentication (2FA)
+• Email Verification
+• Password Reset via Email
+• Device Management
+• Login History
+• Session Management
+• Security Audit Log
+• IP Whitelist
+• OAuth (Google / GitHub)
+• WebAuthn / Passkeys
 
 ✅ SECURITY.md เสร็จแล้ว
 ตอนนี้ Documentation ของคุณเริ่มเป็นระดับ Production แล้ว
@@ -12816,140 +12803,139 @@ docs/
 ├── README.md
 │
 ├── 01-product/
-│   ├── PRD.md
-│   ├── ROADMAP.md
-│   └── DECISIONS.md
+│ ├── PRD.md
+│ ├── ROADMAP.md
+│ └── DECISIONS.md
 │
 ├── 02-architecture/
-│   ├── ARCHITECTURE.md
-│   ├── DOMAIN_MODEL.md
-│   ├── DATABASE_SCHEMA.md
-│   ├── API_SPEC.md
-│   └── SECURITY.md
+│ ├── ARCHITECTURE.md
+│ ├── DOMAIN_MODEL.md
+│ ├── DATABASE_SCHEMA.md
+│ ├── API_SPEC.md
+│ └── SECURITY.md
 │
 ├── 03-engineering/
-│   ├── CODING_STANDARD.md
-│   ├── CONTRIBUTING.md
-│   ├── GIT_WORKFLOW.md
-│   ├── BRANCH_STRATEGY.md
-│   ├── TESTING_STRATEGY.md
-│   ├── DEPLOYMENT.md
-│   ├── ENVIRONMENT.md
-│   ├── RELEASE_PROCESS.md
-│   └── TROUBLESHOOTING.md
+│ ├── CODING_STANDARD.md
+│ ├── CONTRIBUTING.md
+│ ├── GIT_WORKFLOW.md
+│ ├── BRANCH_STRATEGY.md
+│ ├── TESTING_STRATEGY.md
+│ ├── DEPLOYMENT.md
+│ ├── ENVIRONMENT.md
+│ ├── RELEASE_PROCESS.md
+│ └── TROUBLESHOOTING.md
 │
 └── 04-reference/
-    ├── GLOSSARY.md
-    ├── ERROR_CODES.md
-    └── CHANGELOG.md
+├── GLOSSARY.md
+├── ERROR_CODES.md
+└── CHANGELOG.md
 
 Folder Overview
 01-product
 สำหรับเอกสารด้าน Business และ Product
-    •	PRD
-    •	Roadmap
-    •	Product Decisions
+• PRD
+• Roadmap
+• Product Decisions
 
 02-architecture
 สำหรับการออกแบบระบบ
-    •	System Architecture
-    •	Domain Model
-    •	Database
-    •	API
-    •	Security
+• System Architecture
+• Domain Model
+• Database
+• API
+• Security
 
 03-engineering
 สำหรับนักพัฒนา
-    •	Coding Style
-    •	Git Workflow
-    •	Testing
-    •	Deploy
-    •	Environment
-    •	Release Process
+• Coding Style
+• Git Workflow
+• Testing
+• Deploy
+• Environment
+• Release Process
 
 04-reference
 เอกสารอ้างอิง
-    •	Error Codes
-    •	Glossary
-    •	Changelog
+• Error Codes
+• Glossary
+• Changelog
 
 Root README
 README.md ควรมีเพียง
-    •	Project Overview
-    •	Features
-    •	Tech Stack
-    •	Quick Start
-    •	Documentation Links
+• Project Overview
+• Features
+• Tech Stack
+• Quick Start
+• Documentation Links
 รายละเอียดทั้งหมดแยกไปอยู่ใน docs
 
 Benefits
-    •	อ่านง่าย
-    •	ขยายโปรเจกต์ได้ง่าย
-    •	รองรับทีมหลายคน
-    •	แยก Product กับ Engineering ชัดเจน
-    •	คล้ายโครงสร้างที่ใช้ในองค์กรจริง
-
+• อ่านง่าย
+• ขยายโปรเจกต์ได้ง่าย
+• รองรับทีมหลายคน
+• แยก Product กับ Engineering ชัดเจน
+• คล้ายโครงสร้างที่ใช้ในองค์กรจริง
 
 ขั้นตอนถัดไป
 ผมแนะนำลำดับการทำงานแบบนี้ ซึ่งจะทำให้โปรเจกต์ไหลลื่นและไม่ต้องย้อนกลับมาแก้เอกสารบ่อย ๆ
 Phase 1 — Documentation (เกือบเสร็จแล้ว)
-    •	✅ PRD
-    •	✅ ROADMAP
-    •	✅ ARCHITECTURE
-    •	✅ DOMAIN_MODEL
-    •	✅ DATABASE_SCHEMA
-    •	✅ API_SPEC
-    •	✅ CODING_STANDARD
-    •	✅ SECURITY
-    •	⏳ CONTRIBUTING
-    •	⏳ GIT_WORKFLOW
-    •	⏳ TESTING_STRATEGY
-    •	⏳ DEPLOYMENT
-    •	⏳ ENVIRONMENT
+• ✅ PRD
+• ✅ ROADMAP
+• ✅ ARCHITECTURE
+• ✅ DOMAIN_MODEL
+• ✅ DATABASE_SCHEMA
+• ✅ API_SPEC
+• ✅ CODING_STANDARD
+• ✅ SECURITY
+• ⏳ CONTRIBUTING
+• ⏳ GIT_WORKFLOW
+• ⏳ TESTING_STRATEGY
+• ⏳ DEPLOYMENT
+• ⏳ ENVIRONMENT
 Phase 2 — Design
-    •	ER Diagram
-    •	Database Design Review
-    •	API Flow Diagram
-    •	Authentication Flow
+• ER Diagram
+• Database Design Review
+• API Flow Diagram
+• Authentication Flow
 Phase 3 — Backend
-    •	NestJS Setup
-    •	Prisma
-    •	Authentication
-    •	User Module
-    •	Category Module
-    •	Wallet Module
-    •	Transaction Module
+• NestJS Setup
+• Prisma
+• Authentication
+• User Module
+• Category Module
+• Wallet Module
+• Transaction Module
 Phase 4 — Frontend
-    •	Next.js App Router
-    •	Feature-based Architecture
-    •	Authentication
-    •	Dashboard
-    •	CRUD ต่าง ๆ
+• Next.js App Router
+• Feature-based Architecture
+• Authentication
+• Dashboard
+• CRUD ต่าง ๆ
 Phase 5 — Testing & Deployment
-    •	Unit Test
-    •	E2E Test
-    •	CI/CD
-    •	Docker
-    •	Production Deployment
+• Unit Test
+• E2E Test
+• CI/CD
+• Docker
+• Production Deployment
 
 ผมอยากเสนออีกก้าวหนึ่งที่คิดว่าจะมีประโยชน์มากสำหรับโปรเจกต์นี้: สร้าง ADR (Architecture Decision Records) แยกออกจาก DECISIONS.md
 แทนที่จะมีไฟล์เดียว เราจะมีโฟลเดอร์ลักษณะนี้
 docs/
 ├── 01-product/
-│   └── ROADMAP.md
+│ └── ROADMAP.md
 │
 ├── 02-architecture/
-│   ├── ARCHITECTURE.md
-│   ├── DOMAIN_MODEL.md
-│   ├── DATABASE_SCHEMA.md
-│   ├── API_SPEC.md
-│   ├── SECURITY.md
-│   └── adr/
-│       ├── 0001-use-prisma.md
-│       ├── 0002-use-jwt-auth.md
-│       ├── 0003-feature-based-frontend.md
-│       ├── 0004-soft-delete.md
-│       └── 0005-cuid-primary-key.md
+│ ├── ARCHITECTURE.md
+│ ├── DOMAIN_MODEL.md
+│ ├── DATABASE_SCHEMA.md
+│ ├── API_SPEC.md
+│ ├── SECURITY.md
+│ └── adr/
+│ ├── 0001-use-prisma.md
+│ ├── 0002-use-jwt-auth.md
+│ ├── 0003-feature-based-frontend.md
+│ ├── 0004-soft-delete.md
+│ └── 0005-cuid-primary-key.md
 ADR เป็นแนวปฏิบัติที่หลายองค์กรใช้เพื่อบันทึกว่า ทำไมถึงตัดสินใจเลือกแนวทางนี้ ไม่ใช่แค่เลือกอะไร ซึ่งจะช่วยให้โปรเจกต์ของคุณดูเป็นมืออาชีพมากขึ้น และยังเป็นจุดเด่นใน Portfolio เวลาสัมภาษณ์งานด้วยครับ
   โอเค
 
@@ -12960,63 +12946,63 @@ Repository Structure
 moneynote-clone/
 │
 ├── apps/
-│   ├── web/                 # Next.js
-│   └── api/                 # NestJS
+│ ├── web/ # Next.js
+│ └── api/ # NestJS
 │
 ├── packages/
-│   ├── types/               # Shared Types
-│   ├── configs/             # Shared Configs
-│   ├── eslint-config/
-│   ├── tsconfig/
-│   └── ui/                  # (Future Shared UI)
+│ ├── types/ # Shared Types
+│ ├── configs/ # Shared Configs
+│ ├── eslint-config/
+│ ├── tsconfig/
+│ └── ui/ # (Future Shared UI)
 │
 ├── prisma/
-│   ├── schema.prisma
-│   ├── migrations/
-│   └── seed.ts
+│ ├── schema.prisma
+│ ├── migrations/
+│ └── seed.ts
 │
 ├── docs/
-│   ├── README.md
-│   │
-│   ├── 01-product/
-│   │   ├── PRD.md
-│   │   ├── ROADMAP.md
-│   │   └── DECISIONS.md
-│   │
-│   ├── 02-architecture/
-│   │   ├── ARCHITECTURE.md
-│   │   ├── DOMAIN_MODEL.md
-│   │   ├── DATABASE_SCHEMA.md
-│   │   ├── API_SPEC.md
-│   │   ├── SECURITY.md
-│   │   └── adr/
-│   │       ├── 0001-use-prisma.md
-│   │       ├── 0002-use-jwt.md
-│   │       ├── 0003-feature-based.md
-│   │       └── ...
-│   │
-│   ├── 03-engineering/
-│   │   ├── CODING_STANDARD.md
-│   │   ├── CONTRIBUTING.md
-│   │   ├── GIT_WORKFLOW.md
-│   │   ├── BRANCH_STRATEGY.md
-│   │   ├── TESTING_STRATEGY.md
-│   │   ├── DEPLOYMENT.md
-│   │   ├── ENVIRONMENT.md
-│   │   ├── RELEASE_PROCESS.md
-│   │   └── TROUBLESHOOTING.md
-│   │
-│   └── 04-reference/
-│       ├── CHANGELOG.md
-│       ├── ERROR_CODES.md
-│       └── GLOSSARY.md
+│ ├── README.md
+│ │
+│ ├── 01-product/
+│ │ ├── PRD.md
+│ │ ├── ROADMAP.md
+│ │ └── DECISIONS.md
+│ │
+│ ├── 02-architecture/
+│ │ ├── ARCHITECTURE.md
+│ │ ├── DOMAIN_MODEL.md
+│ │ ├── DATABASE_SCHEMA.md
+│ │ ├── API_SPEC.md
+│ │ ├── SECURITY.md
+│ │ └── adr/
+│ │ ├── 0001-use-prisma.md
+│ │ ├── 0002-use-jwt.md
+│ │ ├── 0003-feature-based.md
+│ │ └── ...
+│ │
+│ ├── 03-engineering/
+│ │ ├── CODING_STANDARD.md
+│ │ ├── CONTRIBUTING.md
+│ │ ├── GIT_WORKFLOW.md
+│ │ ├── BRANCH_STRATEGY.md
+│ │ ├── TESTING_STRATEGY.md
+│ │ ├── DEPLOYMENT.md
+│ │ ├── ENVIRONMENT.md
+│ │ ├── RELEASE_PROCESS.md
+│ │ └── TROUBLESHOOTING.md
+│ │
+│ └── 04-reference/
+│ ├── CHANGELOG.md
+│ ├── ERROR_CODES.md
+│ └── GLOSSARY.md
 │
 ├── scripts/
 │
 ├── .github/
-│   ├── ISSUE_TEMPLATE/
-│   ├── PULL_REQUEST_TEMPLATE.md
-│   └── workflows/
+│ ├── ISSUE_TEMPLATE/
+│ ├── PULL_REQUEST_TEMPLATE.md
+│ └── workflows/
 │
 ├── .husky/
 │
@@ -13036,14 +13022,14 @@ moneynote-clone/
 Folder Responsibilities
 apps/
 Application source code
-    •	web
-    •	api
+• web
+• api
 
 packages/
 Reusable packages
-    •	UI
-    •	Types
-    •	Configs
+• UI
+• Types
+• Configs
 
 prisma/
 Database schema
@@ -13056,15 +13042,15 @@ Project documentation
 scripts/
 Automation scripts
 Example
-    •	seed-db
-    •	clean
-    •	generate-types
+• seed-db
+• clean
+• generate-types
 
 .github/
 GitHub automation
-    •	CI
-    •	PR Template
-    •	Issue Template
+• CI
+• PR Template
+• Issue Template
 
 .husky/
 Git Hooks
@@ -13074,80 +13060,76 @@ Workspace settings
 
 Repository Goals
 The repository should be:
-    •	Modular
-    •	Scalable
-    •	Self-documented
-    •	Easy to onboard
-    •	Easy to maintain
-    •	Production-ready
-
+• Modular
+• Scalable
+• Self-documented
+• Easy to onboard
+• Easy to maintain
+• Production-ready
 
 จากตรงนี้ Roadmap ของเราจะเป็นแบบนี้
 ✅ Phase 0 — Planning
-    •	PRD
-    •	Roadmap
-    •	Architecture
-    •	Domain Model
-    •	Database Schema
-    •	API Spec
-    •	Coding Standard
-    •	Security
-    •	ADR
-    •	Engineering Docs
+• PRD
+• Roadmap
+• Architecture
+• Domain Model
+• Database Schema
+• API Spec
+• Coding Standard
+• Security
+• ADR
+• Engineering Docs
 
 🚧 Phase 1 — Repository Setup
-    •	Monorepo (pnpm + Turborepo)
-    •	Next.js
-    •	NestJS
-    •	Prisma
-    •	ESLint
-    •	Prettier
-    •	Husky
-    •	lint-staged
-    •	Commitlint
-    •	GitHub Actions
+• Monorepo (pnpm + Turborepo)
+• Next.js
+• NestJS
+• Prisma
+• ESLint
+• Prettier
+• Husky
+• lint-staged
+• Commitlint
+• GitHub Actions
 
 🚧 Phase 2 — Backend Foundation
-    •	Auth
-    •	User
-    •	Category
-    •	Wallet
-    •	Transaction
-    •	Validation
-    •	Exception Filter
-    •	Logger
+• Auth
+• User
+• Category
+• Wallet
+• Transaction
+• Validation
+• Exception Filter
+• Logger
 
 🚧 Phase 3 — Frontend Foundation
-    •	Authentication
-    •	Layout
-    •	Design System
-    •	Feature-based Architecture
-    •	TanStack Query
-    •	React Hook Form
-    •	Zod
+• Authentication
+• Layout
+• Design System
+• Feature-based Architecture
+• TanStack Query
+• React Hook Form
+• Zod
 
 🚧 Phase 4 — Business Features
-    •	Dashboard
-    •	Income / Expense
-    •	Wallet Management
-    •	Categories
-    •	Reports
-    •	Profile (รองรับ profile แบบ optional สำหรับรูปภาพตามที่คุณออกแบบไว้)
+• Dashboard
+• Income / Expense
+• Wallet Management
+• Categories
+• Reports
+• Profile (รองรับ profile แบบ optional สำหรับรูปภาพตามที่คุณออกแบบไว้)
 
 🚧 Phase 5 — Production
-    •	Docker
-    •	CI/CD
-    •	Deployment
-    •	Monitoring
-    •	Performance
-    •	Testing
-    •	Documentation Review
+• Docker
+• CI/CD
+• Deployment
+• Monitoring
+• Performance
+• Testing
+• Documentation Review
 
 สิ่งที่ผมอยากเสนอเพิ่ม (ซึ่งคิดว่าจะคุ้มมาก)
-เมื่อเอกสารทั้งหมดเสร็จแล้ว ผมแนะนำว่า ก่อนเขียนโค้ดจริง เรามาทำอีก 3 อย่างนี้:
-    1.	UI Flow — วาดเส้นทางการใช้งานของผู้ใช้ (Login → Dashboard → Transaction → Report)
-    2.	Sequence Diagram — แสดงการไหลของข้อมูลระหว่าง Frontend, Backend และ Database
-    3.	ER Diagram — แปลง DATABASE_SCHEMA.md ให้เป็นภาพ
+เมื่อเอกสารทั้งหมดเสร็จแล้ว ผมแนะนำว่า ก่อนเขียนโค้ดจริง เรามาทำอีก 3 อย่างนี้: 1. UI Flow — วาดเส้นทางการใช้งานของผู้ใช้ (Login → Dashboard → Transaction → Report) 2. Sequence Diagram — แสดงการไหลของข้อมูลระหว่าง Frontend, Backend และ Database 3. ER Diagram — แปลง DATABASE_SCHEMA.md ให้เป็นภาพ
 สามอย่างนี้จะช่วยให้การเริ่มเขียน Backend และ Frontend แทบไม่ต้องเดาโครงสร้างอีกเลย และยังเพิ่มความน่าเชื่อถือของโปรเจกต์ในฐานะ Portfolio ได้มากครับ
    โอเค
 
@@ -13180,8 +13162,8 @@ System Design
 └── Deployment Diagram
 
 1. C4 Model ⭐⭐⭐⭐⭐
-ภาพรวมระบบ
-User
+   ภาพรวมระบบ
+   User
 
 ↓
 
@@ -13209,8 +13191,8 @@ Monitoring
 อันนี้ไว้ให้คนใหม่เข้ามาอ่านเข้าใจระบบภายใน 2 นาที
 
 2. User Flow ⭐⭐⭐⭐⭐
-เช่น
-Guest
+   เช่น
+   Guest
 
 ↓
 
@@ -13241,7 +13223,7 @@ Database
 Guest First
 
 3. Screen Flow ⭐⭐⭐⭐
-Splash
+   Splash
 
 ↓
 
@@ -13261,8 +13243,8 @@ Dashboard
 Frontend จะง่ายขึ้นมาก
 
 4. Sequence Diagram ⭐⭐⭐⭐⭐
-ตัวอย่าง
-User
+   ตัวอย่าง
+   User
 
 ↓
 
@@ -13297,10 +13279,10 @@ Response
 React Query Update
 
 5. ER Diagram ⭐⭐⭐⭐⭐
-จาก Database Schema
-เปลี่ยนเป็นภาพ
-เชื่อม
-User
+   จาก Database Schema
+   เปลี่ยนเป็นภาพ
+   เชื่อม
+   User
 
 │
 
@@ -13313,7 +13295,7 @@ User
 └── Profile
 
 6. API Flow ⭐⭐⭐⭐
-Dashboard
+   Dashboard
 
 ↓
 
@@ -13333,8 +13315,8 @@ Recent Transactions
 Frontend จะรู้เลยว่าจะเรียก API อะไรบ้าง
 
 7. Authentication Flow ⭐⭐⭐⭐⭐
-อันนี้สำคัญมาก
-Guest
+   อันนี้สำคัญมาก
+   Guest
 
 ↓
 
@@ -13366,8 +13348,8 @@ Continue
 นี่คือเอกลักษณ์ของ PocketNoteMe
 
 8. Sync Flow ⭐⭐⭐⭐⭐⭐
-อันนี้ผมคิดว่าเป็นหัวใจของระบบ
-Guest
+   อันนี้ผมคิดว่าเป็นหัวใจของระบบ
+   Guest
 
 ↓
 
@@ -13411,7 +13393,7 @@ Clear Queue
 ถ้าทำ Flow นี้ดี ระบบจะดูเป็นมืออาชีพมาก
 
 9. State Flow ⭐⭐⭐⭐
-Server
+   Server
 
 ↓
 
@@ -13435,7 +13417,7 @@ Local Storage
 ทำให้รู้ว่า State ไหนอยู่ที่ไหน
 
 10. Deployment Diagram ⭐⭐⭐
-Cloudflare
+    Cloudflare
 
 ↓
 
@@ -13456,36 +13438,36 @@ Cloudinary / S3
 หลังจากทั้งหมดนี้...
 เราจะเริ่มเขียนโค้ดจริง ซึ่งจะเป็น Sprint 1: Foundation โดยมีเป้าหมายดังนี้
 Backend
-    •	NestJS Project Setup
-    •	Prisma Setup
-    •	PostgreSQL Connection
-    •	Authentication Module
-    •	Health Check Endpoint
-    •	Global Validation
-    •	Global Exception Filter
-    •	Logger
-    •	Configuration Module
+• NestJS Project Setup
+• Prisma Setup
+• PostgreSQL Connection
+• Authentication Module
+• Health Check Endpoint
+• Global Validation
+• Global Exception Filter
+• Logger
+• Configuration Module
 Frontend
-    •	Next.js Setup
-    •	Feature-based Structure
-    •	Routing
-    •	Layout
-    •	Design Tokens
-    •	TanStack Query
-    •	Zustand
-    •	React Hook Form
-    •	Zod
-    •	API Client
+• Next.js Setup
+• Feature-based Structure
+• Routing
+• Layout
+• Design Tokens
+• TanStack Query
+• Zustand
+• React Hook Form
+• Zod
+• API Client
 
 คำแนะนำเพิ่มเติม
 จากสิ่งที่เราวางไว้ทั้งหมด ผมคิดว่า PocketNoteMe มีศักยภาพมากกว่าการเป็น "MoneyNote Clone" แล้ว เพราะเราได้เพิ่มแนวคิดที่ชัดเจน เช่น
-    •	Guest-first experience
-    •	Offline-first ผ่าน Local Storage
-    •	Automatic Sync หลัง Login
-    •	Domain-driven Design
-    •	Monorepo
-    •	Production Documentation
-    •	Architecture Decision Records (ADR)
+• Guest-first experience
+• Offline-first ผ่าน Local Storage
+• Automatic Sync หลัง Login
+• Domain-driven Design
+• Monorepo
+• Production Documentation
+• Architecture Decision Records (ADR)
 ทั้งหมดนี้ทำให้โปรเจกต์มีเอกลักษณ์ของตัวเอง และเป็นผลงานที่สามารถอธิบายแนวคิดการออกแบบระบบได้ ไม่ใช่แค่แสดงว่า "ทำ CRUD ได้" เท่านั้น
 ผมแนะนำว่า เราทำเอกสารในส่วน System Design ให้ครบก่อน แล้วค่อยเข้าสู่ Sprint 1 เพื่อเริ่มพัฒนา Backend และ Frontend โดยไม่ต้องย้อนกลับมาแก้โครงสร้างหลักอีกครับ.
    โอเค
@@ -13496,46 +13478,46 @@ Frontend
 
 สถานะปัจจุบัน
 ✅ Product
-    •	PRD
-    •	Roadmap
-    •	Decisions
+• PRD
+• Roadmap
+• Decisions
 
 ✅ Architecture
-    •	Architecture
-    •	Domain Model
-    •	Database Schema
-    •	API Spec
-    •	Security
+• Architecture
+• Domain Model
+• Database Schema
+• API Spec
+• Security
 
 ✅ Engineering
-    •	Coding Standard
-    •	AGENTS
-    •	Repository Structure
+• Coding Standard
+• AGENTS
+• Repository Structure
 
 ✅ Planning
-    •	Sprint
-    •	Milestone
-    •	v1 Scope
+• Sprint
+• Milestone
+• v1 Scope
 
 ✅ Domain
-    •	User
-    •	Wallet
-    •	Transaction
-    •	Category
-    •	Budget
-    •	Profile
-    •	Sync
+• User
+• Wallet
+• Transaction
+• Category
+• Budget
+• Profile
+• Sync
 
 ผมให้คะแนนความพร้อม
-Documentation      ████████████ 100%
+Documentation ████████████ 100%
 
-Architecture       ███████████░ 95%
+Architecture ███████████░ 95%
 
-Domain             ███████████░ 95%
+Domain ███████████░ 95%
 
-Planning           ████████████ 100%
+Planning ████████████ 100%
 
-Development        ░░░░░░░░░░░░ 0%
+Development ░░░░░░░░░░░░ 0%
 พูดง่าย ๆ คือ...
 "ถึงเวลาเริ่มเขียนโค้ดแล้ว"
 
@@ -13546,23 +13528,23 @@ Sprint Goal
 
 Backend
 Day 1
-    •	สร้าง NestJS
-    •	ติดตั้ง Prisma
-    •	PostgreSQL
-    •	Environment
+• สร้าง NestJS
+• ติดตั้ง Prisma
+• PostgreSQL
+• Environment
 
 Day 2
-    •	Config Module
-    •	Logger
-    •	Validation
-    •	Exception Filter
+• Config Module
+• Logger
+• Validation
+• Exception Filter
 
 Day 3
-    •	Health Check
+• Health Check
 GET /health
 Response
 {
-  "status": "ok"
+"status": "ok"
 }
 
 Day 4
@@ -13591,16 +13573,16 @@ Theme
 
 Definition of Done
 Backend
-    •	รันได้
-    •	Prisma เชื่อมต่อได้
-    •	Migration ผ่าน
-    •	Swagger เปิดได้
-    •	Health Check ผ่าน
+• รันได้
+• Prisma เชื่อมต่อได้
+• Migration ผ่าน
+• Swagger เปิดได้
+• Health Check ผ่าน
 Frontend
-    •	รันได้
-    •	Layout พร้อม
-    •	Theme พร้อม
-    •	API Client พร้อม
+• รันได้
+• Layout พร้อม
+• Theme พร้อม
+• API Client พร้อม
 
 หลัง Sprint 1
 จะเข้าสู่
@@ -13651,19 +13633,19 @@ Sprint 3 - Guest Mode
 ├── Sync Preparation
 └── Test
 แนวทางนี้มีข้อดีคือ:
-    •	แต่ละ Sprint จบด้วยฟีเจอร์ที่ใช้งานได้จริง
-    •	ทดสอบ End-to-End ได้เร็ว
-    •	เห็นความคืบหน้าชัดเจน
-    •	ลดปัญหา Backend กับ Frontend พัฒนาไม่สอดคล้องกัน
-    •	เหมาะกับการทำงานคนเดียว เพราะไม่ต้องสร้าง Backend ทั้งหมดก่อนแล้วค่อยเริ่ม Frontend
+• แต่ละ Sprint จบด้วยฟีเจอร์ที่ใช้งานได้จริง
+• ทดสอบ End-to-End ได้เร็ว
+• เห็นความคืบหน้าชัดเจน
+• ลดปัญหา Backend กับ Frontend พัฒนาไม่สอดคล้องกัน
+• เหมาะกับการทำงานคนเดียว เพราะไม่ต้องสร้าง Backend ทั้งหมดก่อนแล้วค่อยเริ่ม Frontend
 
 สิ่งที่ผมจะช่วยคุณต่อจากนี้
 ตั้งแต่ Sprint 1 เป็นต้นไป ผมจะทำหน้าที่เหมือน Tech Lead + Solution Architect + Code Reviewer คือจะช่วยคุณ:
-    •	วางแผนแต่ละ Sprint และแตกงานเป็น Task ย่อย
-    •	ออกแบบ API และ Database ก่อนลงมือเขียน
-    •	Review โค้ดและแนะนำการปรับปรุง
-    •	ช่วยรักษา Coding Standard และ Architecture ที่เราวางไว้
-    •	ตรวจสอบว่าแต่ละ Feature ไม่ทำให้โครงสร้างระบบเสียในระยะยาว
+• วางแผนแต่ละ Sprint และแตกงานเป็น Task ย่อย
+• ออกแบบ API และ Database ก่อนลงมือเขียน
+• Review โค้ดและแนะนำการปรับปรุง
+• ช่วยรักษา Coding Standard และ Architecture ที่เราวางไว้
+• ตรวจสอบว่าแต่ละ Feature ไม่ทำให้โครงสร้างระบบเสียในระยะยาว
 เป้าหมายคือให้ PocketNoteMe เป็นโปรเจกต์ที่ไม่เพียงใช้งานได้ แต่ยังสะท้อนแนวคิดการออกแบบระบบระดับ Production ได้อย่างชัดเจนครับ.
   โอเคต่อไปให้ฉันทำอะไร  ผมคิดว่าจากตรงนี้ หยุดวางแผนได้แล้วครับ 😄
 ถึงเวลาเริ่ม Sprint 1: Foundation อย่างจริงจัง
@@ -13691,12 +13673,12 @@ STEP 1 — Monorepo Setup ⭐⭐⭐⭐⭐
 PocketNoteMe/
 
 apps/
-    api/
-    web/
+api/
+web/
 
 packages/
-    configs/
-    types/
+configs/
+types/
 
 docs/
 
@@ -13704,9 +13686,9 @@ package.json
 pnpm-workspace.yaml
 turbo.json
 Done เมื่อ
-    •	pnpm install
-    •	pnpm dev
-    •	Turborepo ทำงาน
+• pnpm install
+• pnpm dev
+• Turborepo ทำงาน
 
 STEP 2 — Backend ⭐⭐⭐⭐⭐
 ภายใน apps/api
@@ -13869,16 +13851,10 @@ Profile
 แต่...ผมมีคำแนะนำที่สำคัญกว่านั้น ⭐⭐⭐⭐⭐
 จากที่เราคุยกันมาหลายวัน ผมเห็นว่าคุณไม่ได้ต้องการแค่ "ทำโปรเจกต์ให้เสร็จ" แต่ต้องการ สร้างโปรเจกต์ที่สะท้อนวิธีคิดแบบมืออาชีพ และสามารถใช้เป็น Portfolio ได้
 ดังนั้น ตั้งแต่ Sprint 1 เป็นต้นไป ผมแนะนำให้เราเปลี่ยนรูปแบบการทำงานเป็นแบบทีมจริง ดังนี้
-สำหรับทุก Sprint ผมจะช่วยคุณจัดการเป็นลำดับนี้:
-    1.	Sprint Planning – กำหนดเป้าหมายและแตกงานเป็น Task
-    2.	Implementation Guide – บอกลำดับการพัฒนาและเหตุผล
-    3.	Code Review – คุณส่งโค้ดมา ผมรีวิวทั้งคุณภาพและ Architecture
-    4.	Refactoring – ปรับปรุงโค้ดให้สะอาดขึ้นถ้าจำเป็น
-    5.	Sprint Review – ตรวจว่า Definition of Done ครบหรือไม่
-    6.	Sprint Retrospective – สรุปสิ่งที่ทำได้ดีและสิ่งที่ควรปรับปรุงก่อน Sprint ถัดไป
+สำหรับทุก Sprint ผมจะช่วยคุณจัดการเป็นลำดับนี้: 1. Sprint Planning – กำหนดเป้าหมายและแตกงานเป็น Task 2. Implementation Guide – บอกลำดับการพัฒนาและเหตุผล 3. Code Review – คุณส่งโค้ดมา ผมรีวิวทั้งคุณภาพและ Architecture 4. Refactoring – ปรับปรุงโค้ดให้สะอาดขึ้นถ้าจำเป็น 5. Sprint Review – ตรวจว่า Definition of Done ครบหรือไม่ 6. Sprint Retrospective – สรุปสิ่งที่ทำได้ดีและสิ่งที่ควรปรับปรุงก่อน Sprint ถัดไป
 ผมจะทำหน้าที่เหมือน Tech Lead ที่ช่วยให้คุณรักษามาตรฐานของโปรเจกต์ตั้งแต่วันแรกจนถึงการ Deploy จริง
 Sprint 1 เริ่มต้นได้เลย และเมื่อคุณทำแต่ละ Task เสร็จ (เช่น Monorepo, Backend Setup หรือ Prisma Setup) ก็ส่งโค้ดหรือโครงสร้างโปรเจกต์มา ผมจะรีวิวและพาคุณไปยัง Task ถัดไปทีละขั้นครับ 🚀
-   ผมอยากให้คุณพาฉันทำไปเลย เพราะฉันไม่มีทีม ฉันทำคนเดียว เมื่อเราเข้า sprint 1 แล้ว และฉันอยากให้คุณนำ backend ไปด้วย และฉันจะคุม frontend เอง และจะอัพเดทว่าฉันทำถึงไหนแล้ว และต่อไปนี้ทำอะไรต่อไป **อัพเดทตอนนี้ฉันได้ STEP 1 — Monorepo Setup แล้วเรียบร้อย    ผมชอบแนวทางนี้มากครับ และคิดว่าน่าจะเหมาะกับคุณที่สุด
+   ผมอยากให้คุณพาฉันทำไปเลย เพราะฉันไม่มีทีม ฉันทำคนเดียว เมื่อเราเข้า sprint 1 แล้ว และฉันอยากให้คุณนำ backend ไปด้วย และฉันจะคุม frontend เอง และจะอัพเดทว่าฉันทำถึงไหนแล้ว และต่อไปนี้ทำอะไรต่อไป \*\*อัพเดทตอนนี้ฉันได้ STEP 1 — Monorepo Setup แล้วเรียบร้อย    ผมชอบแนวทางนี้มากครับ และคิดว่าน่าจะเหมาะกับคุณที่สุด
 จริง ๆ แล้วจากที่คุยกันมาตั้งแต่เริ่ม ผมเริ่มมองบทบาทของผมแบบนี้อยู่แล้ว
 คุณ = Frontend Engineer + Product Owner
 ผม = Tech Lead + Backend Engineer + Solution Architect + Reviewer
@@ -13909,23 +13885,23 @@ Review
 
 Next Task
 และผมจะรับผิดชอบฝั่ง Backend เป็นหลัก
-    •	ออกแบบ API
-    •	ออกแบบ Database
-    •	เขียน NestJS
-    •	Prisma
-    •	Auth
-    •	Validation
-    •	Security
-    •	Architecture
+• ออกแบบ API
+• ออกแบบ Database
+• เขียน NestJS
+• Prisma
+• Auth
+• Validation
+• Security
+• Architecture
 ส่วนคุณ
-    •	Next.js
-    •	UI
-    •	UX
-    •	Component
-    •	React Query
-    •	Zustand
-    •	React Hook Form
-    •	Feature-based Structure
+• Next.js
+• UI
+• UX
+• Component
+• React Query
+• Zustand
+• React Hook Form
+• Feature-based Structure
 แต่ผมก็จะช่วย Review Frontend ด้วย
 
 กฎที่เราจะใช้
@@ -14055,7 +14031,6 @@ main.ts
 
 app.module.ts
 
-
 ติดตั้ง
 @nestjs/config
 
@@ -14083,19 +14058,19 @@ Task 2.2
 src/
 
 common/
-    config/
-    constants/
-    decorators/
-    dto/
-    exceptions/
-    filters/
-    guards/
-    interceptors/
-    interfaces/
-    logger/
-    pipes/
-    types/
-    utils/
+config/
+constants/
+decorators/
+dto/
+exceptions/
+filters/
+guards/
+interceptors/
+interfaces/
+logger/
+pipes/
+types/
+utils/
 
 modules/
 
@@ -14114,14 +14089,14 @@ Task 2.3
 ตั้งค่า Global
 ใน main.ts
 เราจะมี
-    •	ValidationPipe
-    •	Global Prefix (/api)
-    •	Swagger
-    •	Helmet
-    •	Compression
-    •	Cookie Parser
-    •	CORS
-    •	Versioning (URI เช่น /api/v1/...)
+• ValidationPipe
+• Global Prefix (/api)
+• Swagger
+• Helmet
+• Compression
+• Cookie Parser
+• CORS
+• Versioning (URI เช่น /api/v1/...)
 ผมจะช่วยคุณไล่ทีละตัวเมื่อถึงขั้นลงโค้ด
 
 Task 2.4
@@ -14138,40 +14113,40 @@ Health Module
 GET /api/v1/health
 Response
 {
-  "status": "ok",
-  "version": "1.0.0"
+"status": "ok",
+"version": "1.0.0"
 }
 นี่จะเป็น Endpoint แรกของระบบ
 
 สิ่งที่คุณต้องทำตอนนี้
 Backend
-    •	สร้าง NestJS ใน apps/api
-    •	ติดตั้ง Dependencies พื้นฐาน
-    •	สร้างโครงสร้างโฟลเดอร์ตามที่กำหนด
-    •	ติดตั้ง Prisma
-    •	ตั้งค่า .env
-    •	รันเซิร์ฟเวอร์ให้ได้
+• สร้าง NestJS ใน apps/api
+• ติดตั้ง Dependencies พื้นฐาน
+• สร้างโครงสร้างโฟลเดอร์ตามที่กำหนด
+• ติดตั้ง Prisma
+• ตั้งค่า .env
+• รันเซิร์ฟเวอร์ให้ได้
 ยังไม่ต้องเขียน Business Logic
 
 Frontend
 คุณสามารถค่อย ๆ เตรียมไปพร้อมกันได้ เช่น
-    •	สร้าง apps/web
-    •	ติดตั้ง Next.js
-    •	จัดโครงสร้าง Feature-based
-    •	ตั้งค่า Tailwind, TanStack Query, Zustand, React Hook Form, Zod
+• สร้าง apps/web
+• ติดตั้ง Next.js
+• จัดโครงสร้าง Feature-based
+• ตั้งค่า Tailwind, TanStack Query, Zustand, React Hook Form, Zod
 ยังไม่ต้องเชื่อม API ในช่วงนี้
 
 บทบาทของผมต่อจากนี้
 ผมจะไม่ปล่อยให้คุณคิดเองว่า "ต่อไปทำอะไร"
 ผมจะเป็นคนขับ Sprint ให้ทั้งหมด เช่น
 Sprint 1
-    ├── Task 2.1
-    ├── Review
-    ├── Task 2.2
-    ├── Review
-    ├── Task 2.3
-    ├── Review
-    └── Done
+├── Task 2.1
+├── Review
+├── Task 2.2
+├── Review
+├── Task 2.3
+├── Review
+└── Done
 คุณมีหน้าที่แค่ทำ Task ปัจจุบัน แล้วบอกผมว่า
 "Task 2.1 เสร็จแล้ว"
 หรือส่งโค้ด/โครงสร้างมาให้ผมรีวิว

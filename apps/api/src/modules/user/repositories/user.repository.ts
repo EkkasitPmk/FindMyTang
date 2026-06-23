@@ -38,10 +38,18 @@ export class UserRepository {
     });
   }
 
-  async findByEmail(email: string): Promise<User | null> {
-    return this.prisma.user.findUnique({
-      where: { email },
-    });
+  async findByEmail(email: string | null | undefined): Promise<User | null> {
+    if (typeof email !== "string" || !email) {
+      return null;
+    }
+    try {
+      return await this.prisma.user.findUnique({
+        where: { email },
+      });
+    } catch (error) {
+      console.error("Prisma error in findByEmail for email:", email, error);
+      throw error;
+    }
   }
 
   async create(data: CreateUserData): Promise<User> {
