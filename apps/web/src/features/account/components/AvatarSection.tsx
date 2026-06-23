@@ -2,6 +2,7 @@ import { Check, CircleX, Pencil } from "lucide-react";
 import { cn } from "@/shared/utils";
 import Avatar from "@/shared/components/custom/Avatar";
 import { AVATARS } from "../configs/account.config";
+import { useTranslation } from "@/shared/lib/i18n/useTranslation";
 
 interface AvatarSectionProps {
   user:
@@ -27,6 +28,8 @@ export default function AvatarSection({
   onSelectAvatar,
   onRemoveAvatar,
 }: Readonly<AvatarSectionProps>) {
+  const { t } = useTranslation();
+
   return (
     <div className="relative w-full flex flex-col items-center justify-center gap-4 my-6">
       <div className="relative">
@@ -52,7 +55,7 @@ export default function AvatarSection({
             disabled={isUpdating}
             onClick={onRemoveAvatar}
             className="absolute -top-2 -right-1 z-10 bg-white hover:bg-expense-light/20 text-secondary-text hover:text-expense p-0.5 rounded-full border border-border shadow-xs transition-all hover:scale-110 cursor-pointer flex items-center justify-center"
-            title="Remove Avatar"
+            title={t("removeAvatar")}
           >
             <CircleX size={16} />
           </button>
@@ -71,7 +74,7 @@ export default function AvatarSection({
           />
           <div className="absolute top-full mt-1 w-full max-w-sm bg-white border border-border rounded-lg p-4 z-20 shadow-sm animate-in slide-in-from-top-2 duration-200">
             <p className="text-xs font-semibold text-secondary-text mb-3 uppercase tracking-wider text-center">
-              Select an Avatar
+              {t("selectAvatar")}
             </p>
             <div className="grid grid-cols-3 gap-3 justify-items-center">
               {AVATARS.map((avatar) => {

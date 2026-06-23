@@ -5,6 +5,7 @@ import {
   FieldErrors,
 } from "react-hook-form";
 import { ChangePasswordFormValues } from "../schemas/account.schema";
+import { useTranslation } from "@/shared/lib/i18n/useTranslation";
 
 interface ChangePasswordModalProps {
   isOpen: boolean;
@@ -37,6 +38,8 @@ export default function ChangePasswordModal({
   onToggleShowNew,
   onToggleShowConfirm,
 }: Readonly<ChangePasswordModalProps>) {
+  const { t } = useTranslation();
+
   if (!isOpen) return null;
 
   return (
@@ -55,7 +58,7 @@ export default function ChangePasswordModal({
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
           <span className="text-lg font-medium text-foreground">
-            Change Password
+            {t("changePassword")}
           </span>
           <button
             type="button"
@@ -68,12 +71,12 @@ export default function ChangePasswordModal({
         <div className="px-6 py-4 space-y-4">
           <div className="space-y-1">
             <p className="text-xs text-secondary-text font-semibold uppercase tracking-wider">
-              Current Password
+              {t("currentPasswordLabel")}
             </p>
             <div className="relative flex items-center">
               <input
                 type={showCurrent ? "text" : "password"}
-                placeholder="Enter current password"
+                placeholder={t("placeholderCurrentPassword")}
                 {...register("currentPassword")}
                 disabled={isPending}
                 className="w-full px-3 py-2 pr-10 border border-border rounded-md focus:border-primary/35 focus:ring-2 focus:ring-primary/10 outline-none transition-all text-foreground bg-background"
@@ -83,7 +86,7 @@ export default function ChangePasswordModal({
                 onClick={onToggleShowCurrent}
                 disabled={isPending}
                 className="absolute right-3 p-1 text-secondary-text/60 hover:text-secondary-text rounded-full transition-colors cursor-pointer flex items-center justify-center"
-                title={showCurrent ? "Hide password" : "Show password"}
+                title={showCurrent ? t("hidePassword") : t("showPassword")}
               >
                 {showCurrent ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
@@ -96,12 +99,12 @@ export default function ChangePasswordModal({
           </div>
           <div className="space-y-1">
             <p className="text-xs text-secondary-text font-semibold uppercase tracking-wider">
-              New Password
+              {t("newPasswordLabel")}
             </p>
             <div className="relative flex items-center">
               <input
                 type={showNew ? "text" : "password"}
-                placeholder="Enter new password (min 8 chars)"
+                placeholder={t("placeholderNewPassword")}
                 {...register("newPassword")}
                 disabled={isPending}
                 className="w-full px-3 py-2 pr-10 border border-border rounded-md focus:border-primary/35 focus:ring-2 focus:ring-primary/10 outline-none transition-all text-foreground bg-background"
@@ -111,7 +114,7 @@ export default function ChangePasswordModal({
                 onClick={onToggleShowNew}
                 disabled={isPending}
                 className="absolute right-3 p-1 text-secondary-text/60 hover:text-secondary-text rounded-full transition-colors cursor-pointer flex items-center justify-center"
-                title={showNew ? "Hide password" : "Show password"}
+                title={showNew ? t("hidePassword") : t("showPassword")}
               >
                 {showNew ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
@@ -124,12 +127,12 @@ export default function ChangePasswordModal({
           </div>
           <div className="space-y-1">
             <p className="text-xs text-secondary-text font-semibold uppercase tracking-wider">
-              Confirm New Password
+              {t("confirmNewPasswordLabel")}
             </p>
             <div className="relative flex items-center">
               <input
                 type={showConfirm ? "text" : "password"}
-                placeholder="Confirm new password"
+                placeholder={t("placeholderConfirmNewPassword")}
                 {...register("confirmNewPassword")}
                 disabled={isPending}
                 className="w-full px-3 py-2 pr-10 border border-border rounded-md focus:border-primary/35 focus:ring-2 focus:ring-primary/10 outline-none transition-all text-foreground bg-background"
@@ -139,7 +142,7 @@ export default function ChangePasswordModal({
                 onClick={onToggleShowConfirm}
                 disabled={isPending}
                 className="absolute right-3 p-1 text-secondary-text/60 hover:text-secondary-text rounded-full transition-colors cursor-pointer flex items-center justify-center"
-                title={showConfirm ? "Hide password" : "Show password"}
+                title={showConfirm ? t("hidePassword") : t("showPassword")}
               >
                 {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
@@ -159,7 +162,7 @@ export default function ChangePasswordModal({
             disabled={isPending}
             className="w-full border border-border rounded-md py-2 text-sm hover:bg-muted transition-colors cursor-pointer text-foreground bg-background disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Cancel
+            {t("cancelBtn")}
           </button>
           <button
             type="submit"
@@ -167,7 +170,7 @@ export default function ChangePasswordModal({
             className="w-full bg-primary hover:bg-primary-dark text-white rounded-md py-2 text-sm font-medium transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
           >
             {isPending && <Loader2 size={16} className="animate-spin" />}
-            Save Changes
+            {t("saveChanges")}
           </button>
         </div>
       </form>

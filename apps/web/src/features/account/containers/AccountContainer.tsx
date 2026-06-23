@@ -19,6 +19,7 @@ import ChangePasswordModal from "../components/ChangePasswordModal";
 import AvatarSection from "../components/AvatarSection";
 import PersonalInfoForm from "../components/PersonalInfoForm";
 import ConfirmModal from "@/shared/components/custom/ConfirmModal";
+import { useTranslation } from "@/shared/lib/i18n/useTranslation";
 
 export default function AccountContainer() {
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
@@ -28,12 +29,13 @@ export default function AccountContainer() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const { t } = useTranslation();
   const { data: user, isLoading } = useMeQuery();
 
   const { mutate: updateProfile, isPending: isUpdating } =
     useUpdateProfileMutation({
       onSuccess: () => {
-        toast.success("Profile updated successfully!");
+        toast.success(t("profileUpdated"));
       },
       onError: (error) => {
         const errorMsg =
@@ -68,7 +70,7 @@ export default function AccountContainer() {
   const { mutate: changePassword, isPending: isChangingPassword } =
     useChangePasswordMutation({
       onSuccess: () => {
-        toast.success("Password changed successfully!");
+        toast.success(t("passwordChanged"));
         handleClosePasswordModal();
       },
       onError: (error) => {
@@ -148,7 +150,7 @@ export default function AccountContainer() {
 
   const handleConfirmDeleteAccount = () => {
     setIsDeleteModalOpen(false);
-    toast.info("To delete your account, please contact the administrator.");
+    toast.info(t("deleteAccountInfo"));
   };
 
   if (isLoading) {
@@ -192,7 +194,9 @@ export default function AccountContainer() {
 
         {/* Change Password Block */}
         <div className="space-y-1">
-          <p className="text-sm font-medium text-secondary-text">SECURITY</p>
+          <p className="text-sm font-medium text-secondary-text uppercase">
+            {t("security")}
+          </p>
           <button
             onClick={() => setIsPasswordModalOpen(true)}
             className="w-full bg-white rounded-md border border-border p-4 text-left hover:bg-surface-secondary transition-colors cursor-pointer"
@@ -201,7 +205,7 @@ export default function AccountContainer() {
               <div className="flex items-center gap-2 text-secondary-text">
                 <RotateCcwKey size={16} />
                 <p className="text-xs font-semibold uppercase">
-                  Change Password
+                  {t("changePassword")}
                 </p>
               </div>
               <ChevronRight className="text-secondary-text/70" size={16} />
@@ -215,7 +219,7 @@ export default function AccountContainer() {
             onClick={() => setIsDeleteModalOpen(true)}
             className="w-full bg-white rounded-md border text-xs font-semibold text-expense uppercase border-expense/60 p-4 text-left hover:bg-expense-light/20 hover:border-expense transition-colors cursor-pointer"
           >
-            Delete Account
+            {t("deleteAccountBtn")}
           </button>
         </div>
       </div>
@@ -232,9 +236,13 @@ export default function AccountContainer() {
           showCurrent={showCurrentPassword}
           showNew={showNewPassword}
           showConfirm={showConfirmPassword}
-          onToggleShowCurrent={() => setShowCurrentPassword(!showCurrentPassword)}
+          onToggleShowCurrent={() =>
+            setShowCurrentPassword(!showCurrentPassword)
+          }
           onToggleShowNew={() => setShowNewPassword(!showNewPassword)}
-          onToggleShowConfirm={() => setShowConfirmPassword(!showConfirmPassword)}
+          onToggleShowConfirm={() =>
+            setShowConfirmPassword(!showConfirmPassword)
+          }
         />
       )}
 
@@ -244,9 +252,9 @@ export default function AccountContainer() {
           onClose={() => setIsDeleteModalOpen(false)}
           onConfirm={handleConfirmDeleteAccount}
           icon={Trash2}
-          title="Delete Account?"
-          des="Are you sure you want to delete your account? This action is permanent and cannot be undone."
-          confirmLabel="Delete"
+          title={t("deleteAccountTitle")}
+          des={t("deleteAccountDesc")}
+          confirmLabel={t("deleteBtn")}
         />
       )}
     </>

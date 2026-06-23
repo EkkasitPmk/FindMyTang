@@ -5,6 +5,7 @@ import {
   FieldErrors,
 } from "react-hook-form";
 import { UpdateProfileFormValues } from "../schemas/account.schema";
+import { useTranslation } from "@/shared/lib/i18n/useTranslation";
 
 interface PersonalInfoFormProps {
   user:
@@ -31,22 +32,26 @@ export default function PersonalInfoForm({
   errors,
   isDirty,
 }: Readonly<PersonalInfoFormProps>) {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-1">
-      <p className="text-sm font-medium text-secondary-text">PERSONAL INFO</p>
+      <p className="text-sm font-medium text-secondary-text uppercase">
+        {t("personalInfo")}
+      </p>
 
       <form onSubmit={handleSubmit(onUpdateProfile)}>
         <div className="bg-white rounded-b-none rounded-md border border-border p-4 m-0">
           <div className="space-y-1">
-            <p className="text-xs text-secondary-text font-semibold">
-              DISPLAY NAME
+            <p className="text-xs text-secondary-text font-semibold uppercase">
+              {t("displayName")}
             </p>
             <div className="relative flex flex-col gap-1">
               <div className="relative flex items-center">
                 <input
                   type="text"
                   disabled={isUpdating}
-                  placeholder="Enter display name"
+                  placeholder={t("placeholderDisplayName")}
                   {...register("displayName")}
                   className="w-full px-3 py-2 border border-border rounded-md focus:border-primary/35 focus:ring-2 focus:ring-primary/10 outline-none transition-all text-foreground bg-background pr-10"
                 />
@@ -55,7 +60,7 @@ export default function PersonalInfoForm({
                     type="submit"
                     disabled={isUpdating}
                     className="absolute right-3 p-1 text-primary hover:bg-primary-light rounded-full transition-colors cursor-pointer"
-                    title="Save Changes"
+                    title={t("saveChanges")}
                   >
                     {isUpdating ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -79,13 +84,13 @@ export default function PersonalInfoForm({
 
       <div className="bg-white rounded-t-none rounded-md border-t-0 border border-border p-4">
         <div className="space-y-1">
-          <p className="text-xs text-secondary-text font-semibold">
-            EMAIL ADDRESS
+          <p className="text-xs text-secondary-text font-semibold uppercase">
+            {t("emailAddressLabel")}
           </p>
           <input
             type="text"
             readOnly
-            value={user?.email || "Guest User"}
+            value={user?.email || t("guestUserText")}
             placeholder=""
             className="w-full px-3 py-2 border border-border rounded-md text-secondary-text/80 bg-background/50 cursor-not-allowed outline-none"
           />
