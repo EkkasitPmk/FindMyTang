@@ -9,7 +9,6 @@ export interface CreateUserData {
   displayName?: string;
   avatarUrl?: string;
   language?: string;
-  timezone?: string;
   categories?: {
     create: Array<{
       name: string;
@@ -27,7 +26,6 @@ export interface UpdateUserData {
   displayName?: string;
   avatarUrl?: string;
   language?: string;
-  timezone?: string;
 }
 
 @Injectable()

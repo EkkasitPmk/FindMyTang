@@ -136,7 +136,6 @@ export class AuthController {
       displayName: user.displayName ?? "User",
       avatarUrl: user.avatarUrl,
       language: user.language,
-      timezone: user.timezone,
       lastSyncedAt: user.lastSyncedAt,
       lastSyncStatus: user.lastSyncStatus,
     };

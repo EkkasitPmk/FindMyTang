@@ -4,7 +4,6 @@ export interface UserProfile {
   displayName: string;
   avatarUrl?: string | null;
   language: string;
-  timezone: string;
   lastSyncedAt?: string | null;
   lastSyncStatus?: "SUCCESS" | "FAILED" | null;
 }

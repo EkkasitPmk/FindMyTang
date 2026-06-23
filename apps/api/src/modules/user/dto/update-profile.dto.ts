@@ -32,13 +32,4 @@ export class UpdateProfileDto {
   @IsOptional()
   @IsIn(["th", "en"], { message: "Language must be either 'th' or 'en'" })
   language?: string;
-
-  @ApiProperty({
-    description: "Timezone preference",
-    example: "Asia/Bangkok",
-    required: false,
-  })
-  @IsString()
-  @IsOptional()
-  timezone?: string;
 }

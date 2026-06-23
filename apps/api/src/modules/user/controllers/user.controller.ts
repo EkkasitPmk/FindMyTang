@@ -32,7 +32,6 @@ export class UserController {
       displayName: updatedUser.displayName,
       avatarUrl: updatedUser.avatarUrl,
       language: updatedUser.language,
-      timezone: updatedUser.timezone,
     };
   }
 

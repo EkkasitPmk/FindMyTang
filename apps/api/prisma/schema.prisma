@@ -17,7 +17,6 @@ model User {
   displayName    String?
   avatarUrl      String?
   language       String        @default("en")
-  timezone       String        @default("Asia/Bangkok")
   lastSyncedAt   DateTime?
   lastSyncStatus String?       // "SUCCESS" | "FAILED"
   createdAt      DateTime      @default(now())

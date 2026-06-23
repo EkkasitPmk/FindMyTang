@@ -2,7 +2,6 @@ export interface UpdateProfileRequest {
   displayName?: string;
   avatarUrl?: string | null;
   language?: string;
-  timezone?: string;
 }
 
 export interface UpdateProfileResponse {
@@ -11,7 +10,6 @@ export interface UpdateProfileResponse {
   displayName: string;
   avatarUrl?: string | null;
   language: string;
-  timezone: string;
 }
 
 export interface ChangePasswordRequest {

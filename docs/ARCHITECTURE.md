@@ -72,7 +72,6 @@ graph TD
       displayName    String?
       avatarUrl      String?
       language       String        @default("th")
-      timezone       String        @default("Asia/Bangkok")
       lastSyncedAt   DateTime?
       lastSyncStatus String?       // "SUCCESS" | "FAILED"
       createdAt      DateTime      @default(now())
@@ -178,7 +177,7 @@ graph TD
 *   `POST /auth/register` : สมัครสมาชิกใหม่ (ส่งข้อมูล `email`, `password`, `displayName`)
 *   `POST /auth/login` : เข้าสู่ระบบรับ JWT (ส่งข้อมูล `email`, `password`)
 *   `POST /auth/sync-guest` : ซิงค์ข้อมูลจาก Local ของ Guest ขึ้นคลาวด์ (ส่งโครงสร้าง Array ของ `assets`, `categories`, `transactions` พร้อมไอดีฝั่งโลคอลเพื่อจับคู่บนเซิร์ฟเวอร์ ทำการ Merge ข้อมูลเข้ากับบัญชีที่มีอยู่เดิม)
-*   `PATCH /users/profile` : อัปเดตข้อมูลโปรไฟล์และการตั้งค่าผู้ใช้ (ส่งข้อมูล `displayName`, `avatarUrl`, `language`, `timezone`)
+*   `PATCH /users/profile` : อัปเดตข้อมูลโปรไฟล์และการตั้งค่าผู้ใช้ (ส่งข้อมูล `displayName`, `avatarUrl`, `language`)
 
 ### 2. หมวดหมู่บัญชีสินทรัพย์ (Assets)
 *   `GET /assets` : ดึงรายการบัญชีสินทรัพย์ทั้งหมดของผู้ใช้งานปัจจุบัน (กรองเฉพาะรายการที่ `deletedAt == null`)
