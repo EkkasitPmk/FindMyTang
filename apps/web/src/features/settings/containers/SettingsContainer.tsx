@@ -40,7 +40,7 @@ export default function SettingsContainer({
       {/* Profile Header */}
       <div className="space-y-2">
         <h5 className="text-[11px] font-semibold text-secondary-text/85 uppercase tracking-wider px-1">
-          Personal info
+          {t("personalInfo")}
         </h5>
         <Link
           href="/settings/account"
@@ -51,7 +51,7 @@ export default function SettingsContainer({
             <div className="flex items-center gap-2.5">
               <User className="w-4 h-4 text-secondary-text" strokeWidth={1.5} />
               <span className="text-xs font-semibold text-primary-text">
-                Account
+                {t("account")}
               </span>
             </div>
             <ChevronRight
