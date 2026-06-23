@@ -6,7 +6,6 @@ import {
   Globe,
   HelpCircle,
   ChevronRight,
-  Settings,
   Download,
   Trash2,
   Lock,
@@ -14,19 +13,17 @@ import {
   Wallet,
 } from "lucide-react";
 import { useTranslation } from "@/shared/lib/i18n/useTranslation";
-import { useMeQuery } from "@/features/nav/hooks/auth.hook";
 import { useIsGuest } from "@/shared/lib/store/guest-store";
 
-interface MoreContainerProps {
+interface SettingsContainerProps {
   onClose?: () => void;
 }
 
-export default function MoreContainer({
+export default function SettingsContainer({
   onClose,
-}: Readonly<MoreContainerProps>) {
+}: Readonly<SettingsContainerProps>) {
   const { t, currentLanguage, changeLanguage } = useTranslation();
   const isGuest = useIsGuest();
-  const { data: user } = useMeQuery({ enabled: !isGuest });
 
   const handleExportData = () => {
     alert(t("exportAlert"));
@@ -38,25 +35,31 @@ export default function MoreContainer({
     }
   };
 
-  // Determine user information to display
-  const userDisplayName = !isGuest && user?.displayName ? user.displayName : "John Doe";
-  const userEmail = !isGuest && user?.email ? user.email : "guest@pocketnote.me";
-
   return (
-    <div className="space-y-6 animate-in fade-in duration-300 max-w-lg mx-auto">
+    <div className="space-y-6 animate-in fade-in duration-300">
       {/* Profile Header */}
-      <div className="bg-surface-secondary border border-border/60 rounded-md p-4 flex items-center gap-4">
-        <div className="w-12 h-12 rounded-md bg-primary-light/50 border border-primary-light flex items-center justify-center">
-          <User className="w-6 h-6 text-primary" strokeWidth={1.5} />
-        </div>
-        <div>
-          <h4 className="text-sm font-bold text-primary-text">
-            {userDisplayName}
-          </h4>
-          <p className="text-xs text-secondary-text/80">
-            {userEmail} {isGuest ? `(${t("guestUser")})` : ""}
-          </p>
-        </div>
+      <div className="space-y-2">
+        <h5 className="text-[11px] font-semibold text-secondary-text/85 uppercase tracking-wider px-1">
+          Personal info
+        </h5>
+        <Link
+          href="/settings/account"
+          onClick={onClose}
+          className="block bg-surface border border-border/60 rounded-md hover:bg-surface-secondary/50 transition-colors cursor-pointer"
+        >
+          <div className="flex justify-between items-center p-3">
+            <div className="flex items-center gap-2.5">
+              <User className="w-4 h-4 text-secondary-text" strokeWidth={1.5} />
+              <span className="text-xs font-semibold text-primary-text">
+                Account
+              </span>
+            </div>
+            <ChevronRight
+              className="w-3.5 h-3.5 text-secondary-text/70"
+              strokeWidth={1.5}
+            />
+          </div>
+        </Link>
       </div>
 
       {/* Sync & Backup Main CTA */}
@@ -141,10 +144,7 @@ export default function MoreContainer({
             className="w-full flex justify-between items-center p-3 hover:bg-surface-secondary/50 transition-colors text-left outline-none cursor-pointer"
           >
             <div className="flex items-center gap-2.5">
-              <Tag
-                className="w-4 h-4 text-secondary-text"
-                strokeWidth={1.5}
-              />
+              <Tag className="w-4 h-4 text-secondary-text" strokeWidth={1.5} />
               <span className="text-xs font-semibold text-primary-text">
                 {t("manageCategories")}
               </span>
@@ -232,4 +232,3 @@ export default function MoreContainer({
     </div>
   );
 }
-

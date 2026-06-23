@@ -1,6 +1,14 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateProfileApi } from "../services/account.service";
-import { UpdateProfileRequest, UpdateProfileResponse } from "../types/account.type";
+import {
+  updateProfileApi,
+  changePasswordApi,
+} from "../services/account.service";
+import {
+  UpdateProfileRequest,
+  UpdateProfileResponse,
+  ChangePasswordRequest,
+  ChangePasswordResponse,
+} from "../types/account.type";
 import { AxiosError } from "axios";
 
 export interface ApiErrorResponse {
@@ -28,5 +36,19 @@ export const useUpdateProfileMutation = (options?: {
       void queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
       options?.onSuccess?.(data);
     },
+  });
+};
+
+export const useChangePasswordMutation = (options?: {
+  onSuccess?: (data: ChangePasswordResponse) => void;
+  onError?: (error: AxiosError<ApiErrorResponse>) => void;
+}) => {
+  return useMutation<
+    ChangePasswordResponse,
+    AxiosError<ApiErrorResponse>,
+    ChangePasswordRequest
+  >({
+    mutationFn: changePasswordApi,
+    ...options,
   });
 };
