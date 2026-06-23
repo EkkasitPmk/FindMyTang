@@ -12,6 +12,7 @@
   - **กฎเหล็กสูงสุด:** การทำงานในส่วน Frontend ทุกอย่าง **ต้องยึดถือและปฏิบัติตาม `apps/web/AGENTS.md` เป็นคัมภีร์หลักอย่างเคร่งครัด 100%** ห้ามนำเสนอโครงสร้างหรือวิธีการอื่นที่ขัดกับไฟล์ดังกล่าวโดยเด็ดขาด
   - **Architecture:** ต้องใช้ Feature-Based Architecture, แยก Service (Axios), Hook (TanStack Query), Container และ Component (Presentation) ตามที่ระบุไว้
   - **Naming & Folder Structure:** ต้องเป๊ะตามที่ `AGENTS.md` กำหนดไว้ทุุกประการ
+  - **Ponytail Mode Limit:** ไม่มีการนำหลักการ Ponytail (Lazy Senior Developer) มาใช้กับงานหน้าบ้าน ยกเว้นในส่วนของ logic เท่านั้น (สำหรับ UI, UX, Styling และความพรีเมียมของหน้าตาแอปพลิเคชันต้องพัฒนาอย่างประณีตและสวยงามตามมาตรฐานสูงสุดเสมอ)
 
 - **Backend Development (apps/api):**
   - **ปรัชญาการทำงาน (Ponytail Mode):** ยึดถือแนวทาง "Lazy Senior Developer" ตามไฟล์ `AGENTS.md` ซึ่งเน้นความมีประสิทธิภาพ (Efficient) ไม่ใช่ความสะเพร่า (Careless)
