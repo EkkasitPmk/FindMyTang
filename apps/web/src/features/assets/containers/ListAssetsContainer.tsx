@@ -1,17 +1,4 @@
-"use client";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "react-toastify";
 import {
-  createAssetSchema,
-  CreateAssetFormValues,
-} from "../schemas/assets.schema";
-import { useCreateAssetMutation } from "../hooks/assets.hook";
-import { AssetType } from "../types/assets.type";
-import AssetForm from "../components/AssetForm";
-import {
-  ArrowRight,
   ChevronRight,
   HandCoins,
   Landmark,
@@ -20,7 +7,7 @@ import {
   Wallet,
 } from "lucide-react";
 
-export default function AssetsContainer() {
+export default function ListAssetsContainer() {
   return (
     <>
       <div className="space-y-4">
@@ -88,17 +75,6 @@ export default function AssetsContainer() {
             </div>
           </div>
         </div>
-
-        <div className="flex gap-4">
-          <div className="flex flex-col grow px-4 py-3 rounded-md border border-outline-variant/30">
-            <span className="text-sm font-medium">Income</span>
-            <span className="text-base font-bold">฿ 45,000</span>
-          </div>
-          <div className="flex flex-col grow px-4 py-3 rounded-md border border-outline-variant/30">
-            <span className="text-sm font-medium">Expanse</span>
-            <span className="text-base font-bold">฿ 12,000</span>
-          </div>
-        </div>
         {/* UI แบบนี้ข้อมูล */}
 
         {/* UI แบบไม่มีข้อมูล */}
@@ -117,6 +93,17 @@ export default function AssetsContainer() {
           </div>
         </div>
         {/* UI แบบไม่มีข้อมูล */}
+
+        <div className="flex gap-4">
+          <div className="flex flex-col grow px-4 py-3 rounded-md border border-outline-variant/30">
+            <span className="text-sm font-medium">Income</span>
+            <span className="text-base font-bold">฿ 45,000</span>
+          </div>
+          <div className="flex flex-col grow px-4 py-3 rounded-md border border-outline-variant/30">
+            <span className="text-sm font-medium">Expanse</span>
+            <span className="text-base font-bold">฿ 12,000</span>
+          </div>
+        </div>
       </div>
     </>
   );

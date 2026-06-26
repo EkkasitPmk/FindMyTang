@@ -54,9 +54,7 @@ export default function CreateAssetsContainer() {
       }
 
       if (errorList.length === 0) {
-        toast.error(
-          "Failed to create asset. Please check validation rules.",
-        );
+        toast.error("Failed to create asset. Please check validation rules.");
         return;
       }
 
