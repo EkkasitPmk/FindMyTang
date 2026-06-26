@@ -108,3 +108,7 @@ dist/
 # OS metadata
 .DS_Store
 Thumbs.db
+
+# Custom ignores
+apps/web/AGENTS.md
+apps/web/CLAUDE.md
