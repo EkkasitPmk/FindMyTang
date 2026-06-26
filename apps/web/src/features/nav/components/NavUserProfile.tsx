@@ -3,7 +3,7 @@ import { LogIn, LogOut } from "lucide-react";
 import Avatar from "@/shared/components/custom/Avatar";
 import { UserProfile } from "@/features/nav/types/auth.type";
 import { useTranslation } from "@/shared/lib/i18n/useTranslation";
-import { cn } from "@/shared/utils";
+import { cn } from "@/shared/lib/utils";
 
 interface NavUserProfileProps {
   user?: UserProfile | null;
