@@ -10,9 +10,11 @@ import { toast } from "react-toastify";
 import FinancialSnapshotContainer from "../../financialSnapshot/containers/FinancialSnapshotContainer";
 import RecentJournalContainer from "@/features/journal/containers/RecentJournalContainer";
 import ListAssetsContainer from "../../assets/containers/ListAssetsContainer";
+import CreateAssetsContainer from "@/features/assets/containers/CreateAssetsContainer";
 
 export default function HomeContainer() {
   const { data: assets, isLoading, error } = useAssets();
+  const [isCreateAssetOpen, setIsCreateAssetOpen] = useState(false);
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
@@ -106,12 +108,18 @@ export default function HomeContainer() {
   };
 
   return (
-    <div className="space-y-4">
-      <FinancialSnapshotContainer />
+    <>
+      <div className="space-y-4">
+        <FinancialSnapshotContainer />
 
-      <ListAssetsContainer />
+        <ListAssetsContainer onAddAsset={() => setIsCreateAssetOpen(true)} />
 
-      <RecentJournalContainer />
-    </div>
+        <RecentJournalContainer />
+      </div>
+
+      {isCreateAssetOpen && (
+        <CreateAssetsContainer onClose={() => setIsCreateAssetOpen(false)} />
+      )}
+    </>
   );
 }

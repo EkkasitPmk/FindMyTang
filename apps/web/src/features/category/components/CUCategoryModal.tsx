@@ -4,7 +4,6 @@ import {
   UseFormSetValue,
   FieldErrors,
 } from "react-hook-form";
-import { cn } from "@/shared/utils";
 import { CircleMinus, CirclePlus, X } from "lucide-react";
 import { Category } from "../types/category.type";
 import { CreateCategoryFormValues } from "../schemas/category.schema";
@@ -13,6 +12,7 @@ import {
   getCategoryIcon,
   SELECTABLE_ICONS,
 } from "@/shared/lib/configs/category-icons.config";
+import { cn } from "@/shared/lib/utils";
 
 interface CUCategoryModalProps {
   isOpen: boolean;

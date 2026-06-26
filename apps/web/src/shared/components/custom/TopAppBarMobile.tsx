@@ -1,4 +1,4 @@
-import { cn } from "@/shared/utils";
+import { cn } from "@/shared/lib/utils";
 import { ChevronLeft } from "lucide-react";
 
 interface TopAppBarMobileProps {
