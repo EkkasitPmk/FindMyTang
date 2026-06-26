@@ -8,8 +8,8 @@ import {
 import { Asset, AssetType } from "@/features/assets/types/assets.type";
 import { toast } from "react-toastify";
 import FinancialSnapshotContainer from "../../financialSnapshot/containers/FinancialSnapshotContainer";
-import AssetsContainer from "../../assets/containers/AssetsContainer";
 import RecentJournalContainer from "@/features/journal/containers/RecentJournalContainer";
+import ListAssetsContainer from "../../assets/containers/ListAssetsContainer";
 
 export default function HomeContainer() {
   const { data: assets, isLoading, error } = useAssets();
@@ -109,7 +109,7 @@ export default function HomeContainer() {
     <div className="space-y-4">
       <FinancialSnapshotContainer />
 
-      <AssetsContainer />
+      <ListAssetsContainer />
 
       <RecentJournalContainer />
     </div>
