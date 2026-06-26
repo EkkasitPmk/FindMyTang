@@ -2,9 +2,10 @@
 import ShowProfileContainer from "@/features/account/containers/ShowProfileContainer";
 import NavContainer from "@/features/nav/containers/NavContainer";
 import TopAppBarMobile from "@/shared/components/custom/TopAppBarMobile";
-import { cn } from "@/shared/utils";
-import { usePathname, useRouter } from "next/navigation";
-import { X } from "lucide-react";
+import { cn } from "@/shared/lib/utils";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useState, useRef, useEffect } from "react";
+import { EllipsisVertical, X } from "lucide-react";
 import { useCategoryUIStore } from "@/features/category/hooks/category.hook";
 import { useTranslation } from "@/shared/lib/i18n/useTranslation";
 
@@ -27,6 +28,7 @@ export default function MainLayout({
     if (path === "/assets/new") return t("newAssets");
     if (path === "/settings/account") return t("account");
     if (path === "/settings") return t("navSettings");
+    if (path === "/assets") return "Asset Detail"; // Default if Suspense falls back
     return "";
   };
   const mobileTitle = getMobileTitle(pathname);
@@ -54,6 +56,9 @@ export default function MainLayout({
         </button>
       );
     }
+    if (pathname === "/assets") {
+      return <AssetsMenu />;
+    }
     return null;
   };
 
@@ -80,18 +85,122 @@ export default function MainLayout({
             )}
           >
             {shouldShowTopAppBar && (
-              <TopAppBarMobile
-                title={mobileTitle}
-                showBackButton={pathname !== "/settings"}
-                onBack={() => router.back()}
-                rightAction={renderRightAction()}
-              />
+              <Suspense
+                fallback={
+                  <TopAppBarMobile
+                    title={mobileTitle}
+                    showBackButton={pathname !== "/settings"}
+                    onBack={() => router.back()}
+                    rightAction={renderRightAction()}
+                  />
+                }
+              >
+                <DynamicTopAppBar
+                  baseTitle={mobileTitle}
+                  pathname={pathname}
+                  onBack={() => router.back()}
+                  rightAction={renderRightAction()}
+                />
+              </Suspense>
             )}
 
             <div className="px-4 py-2">{children}</div>
           </main>
         </div>
       </div>
+    </div>
+  );
+}
+
+function DynamicTopAppBar({
+  baseTitle,
+  pathname,
+  onBack,
+  rightAction,
+}: {
+  baseTitle: string;
+  pathname: string;
+  onBack: () => void;
+  rightAction: React.ReactNode;
+}) {
+  const searchParams = useSearchParams();
+  const title =
+    pathname === "/assets" && searchParams.get("name")
+      ? searchParams.get("name")!
+      : baseTitle;
+
+  return (
+    <TopAppBarMobile
+      title={title}
+      showBackButton={pathname !== "/settings"}
+      onBack={onBack}
+      rightAction={rightAction}
+    />
+  );
+}
+
+function AssetsMenu() {
+  const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  return (
+    <div className="relative" ref={menuRef}>
+      <button
+        type="button"
+        className="p-1 mr-2 cursor-pointer"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <EllipsisVertical size={18} />
+      </button>
+      {isOpen && (
+        <div className="absolute right-3 top-full flex flex-col items-start w-32 bg-white rounded-md py-2 shadow-md z-50 border border-gray-100">
+          <button
+            type="button"
+            className="text-sm py-1 px-3 w-full text-left hover:bg-gray-50"
+            onClick={() => setIsOpen(false)}
+          >
+            Filter
+          </button>
+          <button
+            type="button"
+            className="text-sm py-1 px-3 w-full text-left hover:bg-gray-50"
+            onClick={() => setIsOpen(false)}
+          >
+            Search
+          </button>
+          <button
+            type="button"
+            className="text-sm py-1 px-3 w-full text-left hover:bg-gray-50"
+            onClick={() => setIsOpen(false)}
+          >
+            Sort
+          </button>
+          <button
+            type="button"
+            className="text-sm py-1 px-3 w-full text-left hover:bg-gray-50"
+            onClick={() => setIsOpen(false)}
+          >
+            Archive Asset
+          </button>
+          <button
+            type="button"
+            className="text-sm py-1 px-3 w-full text-left hover:bg-gray-50"
+            onClick={() => setIsOpen(false)}
+          >
+            Delete Asset
+          </button>
+        </div>
+      )}
     </div>
   );
 }
