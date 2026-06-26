@@ -29,6 +29,7 @@ export const createAssetSchema = z.object({
       { message: "Balance must be greater than or equal to 1" },
     )
     .optional(),
+  color: z.string().optional(),
 });
 
 export type CreateAssetFormValues = z.infer<typeof createAssetSchema>;

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
@@ -7,19 +7,23 @@ import {
   createAssetSchema,
   CreateAssetFormValues,
 } from "../schemas/assets.schema";
-import { useCreateAssetMutation } from "../hooks/assets.hook";
-import { AssetType } from "../types/assets.type";
+import { useUpdateAssetMutation } from "../hooks/assets.hook";
+import { Asset, AssetType } from "../types/assets.type";
 import AssetForm from "../components/AssetForm";
 
-interface CreateAssetsContainerProps {
+interface EditAssetsContainerProps {
+  asset: Asset;
   onClose?: () => void;
 }
 
-export default function CreateAssetsContainer({
+export default function EditAssetsContainer({
+  asset,
   onClose,
-}: Readonly<CreateAssetsContainerProps>) {
+}: Readonly<EditAssetsContainerProps>) {
   const [isSelectOpen, setIsSelectOpen] = useState(false);
-  const [selected, setSelected] = useState<string>(AssetType.CASH);
+  const [selected, setSelected] = useState<string>(
+    asset.type || AssetType.CASH,
+  );
 
   const assetTypeList = Object.values(AssetType);
 
@@ -34,12 +38,23 @@ export default function CreateAssetsContainer({
   } = useForm<CreateAssetFormValues>({
     resolver: zodResolver(createAssetSchema),
     defaultValues: {
-      name: "",
-      type: AssetType.CASH,
-      balance: "" as any,
-      color: "#2563EB",
+      name: asset.name,
+      type: asset.type,
+      balance: asset.balance as any,
+      color: asset.color || "#2563EB",
     },
   });
+
+  // Keep internal state synced if asset changes
+  useEffect(() => {
+    reset({
+      name: asset.name,
+      type: asset.type,
+      balance: asset.balance as any,
+      color: asset.color || "#2563EB",
+    });
+    setSelected(asset.type || AssetType.CASH);
+  }, [asset, reset]);
 
   const handleSelect = (type: string) => {
     setSelected(type);
@@ -47,10 +62,9 @@ export default function CreateAssetsContainer({
     setIsSelectOpen(false);
   };
 
-  const { mutate: createAsset, isPending } = useCreateAssetMutation({
+  const { mutate: updateAsset, isPending } = useUpdateAssetMutation({
     onSuccess: (data) => {
-      toast.success(`Asset "${data.name}" created successfully!`);
-      reset();
+      toast.success(`Asset "${data.name}" updated successfully!`);
       if (onClose) onClose();
     },
     onError: (error) => {
@@ -63,7 +77,7 @@ export default function CreateAssetsContainer({
       }
 
       if (errorList.length === 0) {
-        toast.error("Failed to create asset. Please check validation rules.");
+        toast.error("Failed to update asset. Please check validation rules.");
         return;
       }
 
@@ -90,11 +104,14 @@ export default function CreateAssetsContainer({
         ? undefined
         : Number(values.balance);
 
-    createAsset({
-      name: values.name,
-      type: values.type,
-      balance: balanceNum,
-      color: values.color,
+    updateAsset({
+      id: asset.id,
+      data: {
+        name: values.name,
+        type: values.type,
+        balance: balanceNum,
+        color: values.color,
+      },
     });
   };
 
@@ -107,6 +124,7 @@ export default function CreateAssetsContainer({
 
   return (
     <AssetForm
+      isEdit={true}
       register={register}
       handleSubmit={handleSubmit}
       onSubmit={onSubmit}
