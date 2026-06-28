@@ -7,20 +7,27 @@ import {
   Plus,
 } from "lucide-react";
 import { useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
+import { format } from "date-fns";
 import { useAssets } from "../hooks/assets.hook";
+import { useTransactionsQuery } from "../../transactions/hooks/transaction.hook";
+import { TransactionResponse } from "../../transactions/types/transaction.type";
 import EditAssetsContainer from "./EditAssetsContainer";
-import { AssetType } from "../types/assets.type";
+import { cn } from "@/shared/lib/utils";
 
 export default function AssetDetailContainer() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const id = searchParams.get("id");
   const { data: assets, isLoading } = useAssets();
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
 
-  // Get the specified asset or fallback to the first one
   const asset = assets?.find((a) => a.id === id) || assets?.[0];
+
+  const { data: transactionsData, isLoading: isLoadingTransactions } =
+    useTransactionsQuery(asset ? { assetId: asset.id } : undefined);
 
   if (isLoading) {
     return (
@@ -41,11 +48,8 @@ export default function AssetDetailContainer() {
   return (
     <div className="flex flex-col h-[calc(100vh-100px)]">
       <div className="flex flex-col items-center justify-center my-4">
-        <p className="text-gray-500 font-medium">{asset.name}</p>
-        <div
-          className="flex items-center gap-1 mt-1"
-          style={{ color: asset.color || "#000" }}
-        >
+        <p className="text-gray-500 font-medium">BALANCE</p>
+        <div className="flex items-center gap-1 mt-1">
           <span className="text-2xl font-bold">฿</span>
           <p className="text-3xl font-bold">
             {asset.balance.toLocaleString("en-US", {
@@ -63,237 +67,100 @@ export default function AssetDetailContainer() {
 
       <div className="flex-1 overflow-y-auto pb-14">
         <div className="bg-white rounded-md border border-border">
-          <div className="flex items-center justify-between border-b border-border p-2">
-            <div className="flex items-center gap-3">
-              <span className="bg-green-200/90 rounded-full p-2">
-                <Plus size={18} className="text-green-600" />
-              </span>
-              <div className="flex flex-col leading-5">
-                <span className="text-base">Salary</span>
-                <span className="text-sm text-gray-500">Sep 15</span>
-              </div>
+          {isLoadingTransactions ? (
+            <div className="p-4 text-center text-gray-500">
+              Loading transactions...
             </div>
-            <div className="flex items-center gap-1">
-              <span className="text-base text-green-600">+฿65,000.00 </span>
-              <ChevronRight size={18} className="text-gray-400" />
-            </div>
-          </div>
-          <div className="flex items-center justify-between p-2 border-border border-b">
-            <div className="flex items-center gap-3">
-              <span className="bg-red-200/90 rounded-full p-2">
-                <Coffee size={18} className="text-red-600" />
-              </span>
-              <div className="flex flex-col leading-5">
-                <span className="text-base">Starbucks</span>
-                <span className="text-sm text-gray-500">Sep 14</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="text-base text-red-600">-฿185.00 </span>
-              <ChevronRight size={18} className="text-gray-400" />
-            </div>
-          </div>
-          <div className="flex items-center justify-between p-2 border-border border-b">
-            <div className="flex items-center gap-3">
-              <span className="bg-red-200/90 rounded-full p-2">
-                <Coffee size={18} className="text-red-600" />
-              </span>
-              <div className="flex flex-col leading-5">
-                <span className="text-base">Starbucks</span>
-                <span className="text-sm text-gray-500">Sep 14</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="text-base text-red-600">-฿185.00 </span>
-              <ChevronRight size={18} className="text-gray-400" />
-            </div>
-          </div>
-          <div className="flex items-center justify-between p-2 border-border border-b">
-            <div className="flex items-center gap-3">
-              <span className="bg-red-200/90 rounded-full p-2">
-                <Coffee size={18} className="text-red-600" />
-              </span>
-              <div className="flex flex-col leading-5">
-                <span className="text-base">Starbucks</span>
-                <span className="text-sm text-gray-500">Sep 14</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="text-base text-red-600">-฿185.00 </span>
-              <ChevronRight size={18} className="text-gray-400" />
-            </div>
-          </div>
-          <div className="flex items-center justify-between p-2 border-border border-b">
-            <div className="flex items-center gap-3">
-              <span className="bg-red-200/90 rounded-full p-2">
-                <Coffee size={18} className="text-red-600" />
-              </span>
-              <div className="flex flex-col leading-5">
-                <span className="text-base">Starbucks</span>
-                <span className="text-sm text-gray-500">Sep 14</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="text-base text-red-600">-฿185.00 </span>
-              <ChevronRight size={18} className="text-gray-400" />
-            </div>
-          </div>
-          <div className="flex items-center justify-between p-2 border-border border-b">
-            <div className="flex items-center gap-3">
-              <span className="bg-red-200/90 rounded-full p-2">
-                <Coffee size={18} className="text-red-600" />
-              </span>
-              <div className="flex flex-col leading-5">
-                <span className="text-base">Starbucks</span>
-                <span className="text-sm text-gray-500">Sep 14</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="text-base text-red-600">-฿185.00 </span>
-              <ChevronRight size={18} className="text-gray-400" />
-            </div>
-          </div>
-          <div className="flex items-center justify-between p-2 border-border border-b">
-            <div className="flex items-center gap-3">
-              <span className="bg-red-200/90 rounded-full p-2">
-                <Coffee size={18} className="text-red-600" />
-              </span>
-              <div className="flex flex-col leading-5">
-                <span className="text-base">Starbucks</span>
-                <span className="text-sm text-gray-500">Sep 14</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="text-base text-red-600">-฿185.00 </span>
-              <ChevronRight size={18} className="text-gray-400" />
-            </div>
-          </div>
-          <div className="flex items-center justify-between p-2 border-border border-b">
-            <div className="flex items-center gap-3">
-              <span className="bg-red-200/90 rounded-full p-2">
-                <Coffee size={18} className="text-red-600" />
-              </span>
-              <div className="flex flex-col leading-5">
-                <span className="text-base">Starbucks</span>
-                <span className="text-sm text-gray-500">Sep 14</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="text-base text-red-600">-฿185.00 </span>
-              <ChevronRight size={18} className="text-gray-400" />
-            </div>
-          </div>
-          <div className="flex items-center justify-between p-2 border-border border-b">
-            <div className="flex items-center gap-3">
-              <span className="bg-red-200/90 rounded-full p-2">
-                <Coffee size={18} className="text-red-600" />
-              </span>
-              <div className="flex flex-col leading-5">
-                <span className="text-base">Starbucks</span>
-                <span className="text-sm text-gray-500">Sep 14</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="text-base text-red-600">-฿185.00 </span>
-              <ChevronRight size={18} className="text-gray-400" />
-            </div>
-          </div>
-          <div className="flex items-center justify-between p-2 border-border border-b">
-            <div className="flex items-center gap-3">
-              <span className="bg-red-200/90 rounded-full p-2">
-                <Coffee size={18} className="text-red-600" />
-              </span>
-              <div className="flex flex-col leading-5">
-                <span className="text-base">Starbucks</span>
-                <span className="text-sm text-gray-500">Sep 14</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="text-base text-red-600">-฿185.00 </span>
-              <ChevronRight size={18} className="text-gray-400" />
-            </div>
-          </div>
-          <div className="flex items-center justify-between p-2 border-border border-b">
-            <div className="flex items-center gap-3">
-              <span className="bg-red-200/90 rounded-full p-2">
-                <Coffee size={18} className="text-red-600" />
-              </span>
-              <div className="flex flex-col leading-5">
-                <span className="text-base">Starbucks</span>
-                <span className="text-sm text-gray-500">Sep 14</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="text-base text-red-600">-฿185.00 </span>
-              <ChevronRight size={18} className="text-gray-400" />
-            </div>
-          </div>
-          <div className="flex items-center justify-between p-2 border-border border-b">
-            <div className="flex items-center gap-3">
-              <span className="bg-red-200/90 rounded-full p-2">
-                <Coffee size={18} className="text-red-600" />
-              </span>
-              <div className="flex flex-col leading-5">
-                <span className="text-base">Starbucks</span>
-                <span className="text-sm text-gray-500">Sep 14</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="text-base text-red-600">-฿185.00 </span>
-              <ChevronRight size={18} className="text-gray-400" />
-            </div>
-          </div>
-          <div className="flex items-center justify-between p-2 border-border border-b">
-            <div className="flex items-center gap-3">
-              <span className="bg-red-200/90 rounded-full p-2">
-                <Coffee size={18} className="text-red-600" />
-              </span>
-              <div className="flex flex-col leading-5">
-                <span className="text-base">Starbucks</span>
-                <span className="text-sm text-gray-500">Sep 14</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="text-base text-red-600">-฿185.00 </span>
-              <ChevronRight size={18} className="text-gray-400" />
-            </div>
-          </div>
-          <div className="flex items-center justify-between p-2 border-border border-b">
-            <div className="flex items-center gap-3">
-              <span className="bg-red-200/90 rounded-full p-2">
-                <Coffee size={18} className="text-red-600" />
-              </span>
-              <div className="flex flex-col leading-5">
-                <span className="text-base">Starbucks</span>
-                <span className="text-sm text-gray-500">Sep 14</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="text-base text-red-600">-฿185.00 </span>
-              <ChevronRight size={18} className="text-gray-400" />
-            </div>
-          </div>
-          <div className="flex items-center justify-between p-2">
-            <div className="flex items-center gap-3">
-              <span className="bg-red-200/90 rounded-full p-2">
-                <Coffee size={18} className="text-red-600" />
-              </span>
-              <div className="flex flex-col leading-5">
-                <span className="text-base">Starbucks</span>
-                <span className="text-sm text-gray-500">Sep 14</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="text-base text-red-600">-฿185.00 </span>
-              <ChevronRight size={18} className="text-gray-400" />
-            </div>
-          </div>
+          ) : (
+            <>
+              {transactionsData?.items.map(
+                (transaction: TransactionResponse, index: number) => {
+                  const isIncome = transaction.type === "INCOME";
+                  const isExpense = transaction.type === "EXPENSE";
+                  const isLast = index === transactionsData.items.length - 1;
+
+                  let iconElement = null;
+                  let amountColorClass = "text-gray-800";
+                  let amountPrefix = "";
+
+                  if (isIncome) {
+                    iconElement = (
+                      <span className="bg-green-200/90 rounded-full p-2">
+                        <Plus size={18} className="text-green-600" />
+                      </span>
+                    );
+                    amountColorClass = "text-green-600";
+                    amountPrefix = "+";
+                  } else if (isExpense) {
+                    iconElement = (
+                      <span className="bg-red-200/90 rounded-full p-2">
+                        <Coffee size={18} className="text-red-600" />
+                      </span>
+                    );
+                    amountColorClass = "text-red-600";
+                    amountPrefix = "-";
+                  } else {
+                    iconElement = (
+                      <span className="bg-blue-200/90 rounded-full p-2">
+                        <ArrowRightLeft size={18} className="text-blue-600" />
+                      </span>
+                    );
+                  }
+
+                  return (
+                    <div
+                      key={transaction.id}
+                      className={`flex items-center justify-between p-2 ${isLast ? "" : "border-b border-border"}`}
+                    >
+                      <div className="flex items-center gap-3">
+                        {iconElement}
+                        <div className="flex flex-col leading-5">
+                          <span className="text-base">
+                            {transaction.category?.name ||
+                              transaction.note ||
+                              transaction.type}
+                          </span>
+                          <span className="text-sm text-gray-500">
+                            {format(
+                              new Date(transaction.transactionDate),
+                              "MMM dd",
+                            )}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <span className={`text-base ${amountColorClass}`}>
+                          {amountPrefix}฿
+                          {transaction.amount.toLocaleString("en-US", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </span>
+                        <ChevronRight size={18} className="text-gray-400" />
+                      </div>
+                    </div>
+                  );
+                },
+              )}
+              {(!transactionsData?.items ||
+                transactionsData.items.length === 0) && (
+                <div className="p-4 text-center text-gray-500">
+                  No transactions found
+                </div>
+              )}
+            </>
+          )}
         </div>
       </div>
       {/* nav action bottom */}
       <div className="fixed bottom-0 right-0 left-0 py-4 px-4 border-t border-border bg-white">
         <div className="flex gap-3">
-          <button className="w-[25%] flex flex-col items-center justify-center border border-border py-2 rounded-md">
+          <button
+            onClick={() =>
+              router.push(`/transaction?type=TRANSFER&assetId=${asset?.id}`)
+            }
+            className="w-[25%] flex flex-col items-center justify-center border border-border py-2 rounded-md hover:bg-gray-50 cursor-pointer"
+          >
             <ArrowRightLeft size={18} />
             <span className="text-sm">Transfer</span>
           </button>
@@ -304,9 +171,85 @@ export default function AssetDetailContainer() {
             <Pencil size={18} />
             <span className="text-sm">Edit</span>
           </button>
-          <button className="w-[50%] bg-blue-500 text-white text-base font-medium rounded-md cursor-pointer hover:bg-blue-600 transition-colors">
-            Add Transaction
-          </button>
+          <div
+            className={cn(
+              "relative w-[50%] flex items-center bg-primary text-white text-sm font-medium rounded-md cursor-pointer",
+              isAddMenuOpen ? "rounded-tl-none rounded-tr-none" : "",
+            )}
+            style={{ backgroundColor: asset?.color || undefined }}
+          >
+            <button
+              onClick={() => router.push(`/transaction?assetId=${asset?.id}`)}
+              className={cn(
+                "w-full h-full px-2 truncate rounded-md hover:bg-black/10 transition-colors",
+                isAddMenuOpen
+                  ? "rounded-tl-none rounded-tr-none rounded-br-none"
+                  : "rounded-tr-none rounded-br-none",
+              )}
+            >
+              Add Transaction
+            </button>
+
+            <div className="h-full w-px bg-background" />
+
+            <button
+              onClick={() => setIsAddMenuOpen(!isAddMenuOpen)}
+              className={cn(
+                "w-[20%] h-full rounded-md hover:bg-black/10 transition-colors flex items-center justify-center",
+                isAddMenuOpen
+                  ? "rounded-tr-none rounded-tl-none rounded-bl-none"
+                  : "rounded-tl-none rounded-bl-none",
+              )}
+            >
+              <ChevronRight
+                size={20}
+                className={cn(
+                  "transition-transform",
+                  isAddMenuOpen && "-rotate-90",
+                )}
+              />
+            </button>
+
+            {isAddMenuOpen && (
+              <>
+                <button
+                  type="button"
+                  aria-label="Close add menu"
+                  className="fixed inset-0 z-0 w-full h-full cursor-default focus:outline-none"
+                  onClick={() => setIsAddMenuOpen(false)}
+                  tabIndex={-1}
+                />
+                <div
+                  className={cn(
+                    "absolute w-full bottom-full py-1 left-1/2 -translate-x-1/2 z-10 border border-border rounded-md flex flex-col bg-primary text-white overflow-hidden",
+                    isAddMenuOpen ? "rounded-bl-none rounded-br-none" : "",
+                  )}
+                  style={{ backgroundColor: asset?.color || undefined }}
+                >
+                  <button
+                    onClick={() =>
+                      router.push(
+                        `/transaction?type=EXPENSE&assetId=${asset?.id}`,
+                      )
+                    }
+                    className="w-full py-2 text-sm hover:bg-black/10 border-b border-border/20 font-medium"
+                  >
+                    Expense
+                  </button>
+                  <button
+                    onClick={() =>
+                      router.push(
+                        `/transaction?type=INCOME&assetId=${asset?.id}`,
+                      )
+                    }
+                    className="w-full py-2 text-sm hover:bg-black/10 font-medium"
+                  >
+                    Income
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
 

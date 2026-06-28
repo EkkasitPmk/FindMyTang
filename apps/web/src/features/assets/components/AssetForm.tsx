@@ -4,8 +4,10 @@ import {
   UseFormHandleSubmit,
 } from "react-hook-form";
 import { CreateAssetFormValues } from "../schemas/assets.schema";
-import { Check, X, Tag, Wallet } from "lucide-react";
+import { Check, X, Tag } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
+import { getAssetIcon } from "../utils/assets.util";
+import { AssetType } from "../types/assets.type";
 
 const ASSET_COLORS = [
   "#2563EB", // Primary
@@ -52,6 +54,13 @@ export default function AssetForm({
   onBlurBalance,
   isEdit = false,
 }: Readonly<AssetFormProps>) {
+  let submitButtonText = "Create Asset";
+  if (isPending) {
+    submitButtonText = "Saving...";
+  } else if (isEdit) {
+    submitButtonText = "Save Changes";
+  }
+
   return (
     <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-primary-text/20 backdrop-blur-xs transition-opacity duration-300">
       {/* Click outside to close */}
@@ -82,7 +91,7 @@ export default function AssetForm({
         </div>
 
         {/* Scrollable Content */}
-        <div className="px-6 py-5 space-y-5 overflow-y-auto custom-scrollbar">
+        <div className="px-6 py-4 space-y-4 overflow-y-auto custom-scrollbar">
           <p className="text-sm text-on-surface-variant">
             {isEdit
               ? "Update your financial account or wallet details."
@@ -131,7 +140,7 @@ export default function AssetForm({
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none z-10">
-                <Wallet size={18} className="text-gray-400" />
+                {getAssetIcon(selected as AssetType, currentColor, 18)}
               </div>
               <button
                 type="button"
@@ -173,7 +182,14 @@ export default function AssetForm({
                       )}
                       onClick={() => handleSelect(type)}
                     >
-                      <span>{type}</span>
+                      <div className="flex items-center gap-2">
+                        {getAssetIcon(
+                          type as AssetType,
+                          selected === type ? currentColor : undefined,
+                          16,
+                        )}
+                        <span>{type}</span>
+                      </div>
                       {selected === type && (
                         <Check size={16} className="text-primary" />
                       )}
@@ -230,9 +246,9 @@ export default function AssetForm({
 
           {/* Color Selection */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-semibold text-on-surface-variant flex items-center justify-between">
+            <p className="text-sm font-semibold text-on-surface-variant flex items-center justify-between">
               Theme Color
-            </label>
+            </p>
             <div className="grid grid-cols-7 gap-2 p-3 bg-gray-50/50 rounded-lg border border-gray-100">
               {ASSET_COLORS.map((color) => (
                 <button
@@ -270,7 +286,7 @@ export default function AssetForm({
             disabled={isPending}
             className="w-full text-white rounded-lg py-2.5 text-sm font-medium transition-all shadow-md disabled:opacity-50 cursor-pointer bg-primary hover:bg-primary/90 hover:shadow-lg active:scale-[0.98]"
           >
-            {isPending ? "Saving..." : isEdit ? "Save Changes" : "Create Asset"}
+            {submitButtonText}
           </button>
         </div>
       </form>

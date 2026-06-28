@@ -39,6 +39,7 @@ export const useCreateAssetMutation = (options?: {
           name: data.name,
           type: data.type,
           balance: data.balance ?? 0,
+          color: data.color,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };

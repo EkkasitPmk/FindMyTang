@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import "./globals.css";
@@ -10,8 +10,6 @@ export const metadata: Metadata = {
   description:
     "Graceful personal finance tracker designed with modern minimalism.",
 };
-
-import type { Viewport } from "next";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -29,14 +27,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn(
-        "h-full",
-        "antialiased",
-        GeistSans.variable,
-        GeistMono.variable,
-      )}
+      className={cn("antialiased", GeistSans.variable, GeistMono.variable)}
     >
-      <body className="bg-background min-h-full flex flex-col">
+      <body className="bg-background min-h-screen flex flex-col">
         <Providers>{children}</Providers>
       </body>
     </html>

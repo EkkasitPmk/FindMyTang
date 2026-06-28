@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
 import {
@@ -21,9 +21,6 @@ export default function EditAssetsContainer({
   onClose,
 }: Readonly<EditAssetsContainerProps>) {
   const [isSelectOpen, setIsSelectOpen] = useState(false);
-  const [selected, setSelected] = useState<string>(
-    asset.type || AssetType.CASH,
-  );
 
   const assetTypeList = Object.values(AssetType);
 
@@ -32,32 +29,34 @@ export default function EditAssetsContainer({
     handleSubmit,
     setError,
     reset,
+    control,
     setValue,
-    watch,
+    getValues,
     formState: { errors },
   } = useForm<CreateAssetFormValues>({
     resolver: zodResolver(createAssetSchema),
     defaultValues: {
       name: asset.name,
       type: asset.type,
-      balance: asset.balance as any,
+      balance: asset.balance,
       color: asset.color || "#2563EB",
     },
   });
+
+  const currentColor = useWatch({ control, name: "color" });
+  const selected = useWatch({ control, name: "type" }) || AssetType.CASH;
 
   // Keep internal state synced if asset changes
   useEffect(() => {
     reset({
       name: asset.name,
       type: asset.type,
-      balance: asset.balance as any,
+      balance: asset.balance,
       color: asset.color || "#2563EB",
     });
-    setSelected(asset.type || AssetType.CASH);
   }, [asset, reset]);
 
   const handleSelect = (type: string) => {
-    setSelected(type);
     setValue("type", type as AssetType);
     setIsSelectOpen(false);
   };
@@ -116,9 +115,9 @@ export default function EditAssetsContainer({
   };
 
   const handleBlurBalance = () => {
-    const currentVal = watch("balance");
+    const currentVal = getValues("balance");
     if (currentVal && !Number.isNaN(Number(currentVal))) {
-      setValue("balance", Number(currentVal).toFixed(2) as any);
+      setValue("balance", Number(currentVal).toFixed(2));
     }
   };
 
@@ -136,7 +135,7 @@ export default function EditAssetsContainer({
       assetTypeList={assetTypeList}
       handleSelect={handleSelect}
       onClose={onClose}
-      currentColor={watch("color")}
+      currentColor={currentColor}
       onSelectColor={(color) => setValue("color", color)}
       onBlurBalance={handleBlurBalance}
     />

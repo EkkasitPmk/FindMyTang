@@ -19,7 +19,7 @@ import {
 } from "../hooks/category.hook";
 import { Category } from "../types/category.type";
 import { CircleX } from "lucide-react";
-import ConfirmModal from "@/shared/components/custom/ConfirmModal";
+import ConfirmModal from "@/shared/components/customs/ConfirmModal";
 import CUCategoryModal from "../components/CUCategoryModal";
 import CategoryGrid from "../components/CategoryGrid";
 import { AxiosError } from "axios";

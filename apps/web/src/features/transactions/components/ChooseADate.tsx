@@ -3,13 +3,21 @@ import { Calendar } from "@/shared/components/ui/calendar";
 import { Button } from "@/shared/components/ui/button";
 
 interface ChooseADateProps {
-  date?: Date;
-  currentMonth?: Date;
+  selectedDate: Date | undefined;
+  onSelectDate: (date: Date | undefined) => void;
+  displayMonth: Date | undefined;
+  onMonthChange: (month: Date) => void;
+  onConfirm: () => void;
+  onPresetClick: (daysToAdd: number) => void;
 }
 
 export default function ChooseADate({
-  date,
-  currentMonth,
+  selectedDate,
+  onSelectDate,
+  displayMonth,
+  onMonthChange,
+  onConfirm,
+  onPresetClick,
 }: Readonly<ChooseADateProps>) {
   return (
     <Card
@@ -20,11 +28,11 @@ export default function ChooseADate({
         <Calendar
           mode="single"
           weekStartsOn={1}
-          selected={date}
+          selected={selectedDate}
           captionLayout="dropdown"
-          // onSelect={onDateChange}
-          month={currentMonth}
-          // onMonthChange={onMonthChange}
+          onSelect={onSelectDate}
+          month={displayMonth}
+          onMonthChange={onMonthChange}
           fixedWeeks={false}
           className="p-0 [--cell-size:--spacing(9.5)]"
           classNames={{
@@ -37,24 +45,26 @@ export default function ChooseADate({
       </CardContent>
       <CardFooter className="flex flex-wrap gap-2 border-t rounded-b-none group-data-[size=sm]/card:py-2">
         {[
-          { label: "วันนี้", value: 0 },
-          { label: "พรุ่งนี้", value: 1 },
-          { label: "ในอีก 3 วัน", value: 3 },
-          { label: "อีกหนึ่งสัปดาห์", value: 7 },
-          { label: "อีกสองสัปดาห์", value: 14 },
+          { label: "Today", value: 0 },
+          { label: "Tomorrow", value: 1 },
+          { label: "In 3 days", value: 3 },
+          { label: "In 1 week", value: 7 },
+          { label: "In 2 weeks", value: 14 },
         ].map((preset) => (
           <Button
             key={preset.value}
             variant="outline"
             size="sm"
             className="flex-1"
-            // onClick={() => onPresetClick(preset.value)}
+            onClick={() => onPresetClick(preset.value)}
           >
             {preset.label}
           </Button>
         ))}
       </CardFooter>
-      <Button className="mb-2 mx-2 bg-blue-500">ยืนยัน</Button>
+      <Button className="mb-2 mx-2 bg-blue-500 text-white" onClick={onConfirm}>
+        Confirm
+      </Button>
     </Card>
   );
 }

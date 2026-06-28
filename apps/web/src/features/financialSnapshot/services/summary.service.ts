@@ -5,3 +5,8 @@ export const getTodaySummaryApi = async (): Promise<TodaySummary> => {
   const response = await http.get<TodaySummary>("/summary/today");
   return response.data;
 };
+
+export const getThisMonthSummaryApi = async (): Promise<TodaySummary> => {
+  const response = await http.get<TodaySummary>("/summary/monthly");
+  return response.data;
+};

@@ -1,6 +1,6 @@
 import { Check, CircleX, Pencil } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
-import Avatar from "@/shared/components/custom/Avatar";
+import Avatar from "@/shared/components/customs/Avatar";
 import { AVATARS } from "../configs/account.config";
 import { useTranslation } from "@/shared/lib/i18n/useTranslation";
 

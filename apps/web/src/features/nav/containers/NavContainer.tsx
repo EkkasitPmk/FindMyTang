@@ -8,7 +8,7 @@ import { useGuestStore } from "@/shared/lib/store/guest-store";
 import DesktopSidebar from "../components/DesktopSidebar";
 import MobileBottomNav from "../components/MobileBottomNav";
 import MobileDrawer from "../components/MobileDrawer";
-import ConfirmModal from "@/shared/components/custom/ConfirmModal";
+import ConfirmModal from "@/shared/components/customs/ConfirmModal";
 
 export default function NavContainer() {
   const pathname = usePathname();

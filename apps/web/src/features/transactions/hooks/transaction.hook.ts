@@ -2,11 +2,15 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createExpenseApi,
   createIncomeApi,
+  createTransferApi,
+  createAdjustmentApi,
   getTransactionsApi,
 } from "../services/transaction.service";
 import {
   CreateExpenseRequest,
   CreateIncomeRequest,
+  CreateTransferRequest,
+  CreateAdjustmentRequest,
   TransactionResponse,
   TransactionQuery,
   PaginatedTransactionResponse,
@@ -60,6 +64,11 @@ export const useCreateExpenseMutation = (options?: {
     onSuccess: (data) => {
       if (isGuest) {
         addTransaction(data);
+        const state = useGuestStore.getState();
+        const asset = state.assets.find((a) => a.id === data.assetId);
+        if (asset) {
+          state.updateAsset(asset.id, { balance: asset.balance - data.amount });
+        }
       } else {
         queryClient.invalidateQueries({ queryKey: ["assets"] }).catch(() => {});
         queryClient
@@ -111,6 +120,128 @@ export const useCreateIncomeMutation = (options?: {
     onSuccess: (data) => {
       if (isGuest) {
         addTransaction(data);
+        const state = useGuestStore.getState();
+        const asset = state.assets.find((a) => a.id === data.assetId);
+        if (asset) {
+          state.updateAsset(asset.id, { balance: asset.balance + data.amount });
+        }
+      } else {
+        queryClient.invalidateQueries({ queryKey: ["assets"] }).catch(() => {});
+        queryClient
+          .invalidateQueries({ queryKey: ["transactions"] })
+          .catch(() => {});
+      }
+      options?.onSuccess?.(data);
+    },
+  });
+};
+
+export const useCreateTransferMutation = (options?: {
+  onSuccess?: (data: TransactionResponse) => void;
+  onError?: (error: AxiosError<ApiErrorResponse>) => void;
+}) => {
+  const queryClient = useQueryClient();
+  const isGuest = useGuestStore((state) => state.isGuest);
+  const addTransaction = useGuestStore((state) => state.addTransaction);
+
+  return useMutation<
+    TransactionResponse,
+    AxiosError<ApiErrorResponse>,
+    CreateTransferRequest
+  >({
+    mutationFn: async (data) => {
+      if (isGuest) {
+        const state = useGuestStore.getState();
+        const asset = state.assets.find((a) => a.id === data.assetId);
+        const toAsset = state.assets.find((a) => a.id === data.toAssetId);
+
+        const mockResponse: TransactionResponse = {
+          id: crypto.randomUUID(),
+          type: "TRANSFER",
+          amount: data.amount,
+          note: data.note,
+          transactionDate: data.transactionDate,
+          assetId: data.assetId,
+          toAssetId: data.toAssetId,
+          asset: asset ? { ...asset } : undefined,
+          toAsset: toAsset ? { ...toAsset } : undefined,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        return mockResponse;
+      }
+      return createTransferApi(data);
+    },
+    ...options,
+    onSuccess: (data) => {
+      if (isGuest) {
+        addTransaction(data);
+        const state = useGuestStore.getState();
+        const fromAsset = state.assets.find((a) => a.id === data.assetId);
+        const toAsset = state.assets.find((a) => a.id === data.toAssetId);
+        if (fromAsset) {
+          state.updateAsset(fromAsset.id, {
+            balance: fromAsset.balance - data.amount,
+          });
+        }
+        if (toAsset) {
+          state.updateAsset(toAsset.id, {
+            balance: toAsset.balance + data.amount,
+          });
+        }
+      } else {
+        queryClient.invalidateQueries({ queryKey: ["assets"] }).catch(() => {});
+        queryClient
+          .invalidateQueries({ queryKey: ["transactions"] })
+          .catch(() => {});
+      }
+      options?.onSuccess?.(data);
+    },
+  });
+};
+
+export const useCreateAdjustmentMutation = (options?: {
+  onSuccess?: (data: TransactionResponse) => void;
+  onError?: (error: AxiosError<ApiErrorResponse>) => void;
+}) => {
+  const queryClient = useQueryClient();
+  const isGuest = useGuestStore((state) => state.isGuest);
+  const addTransaction = useGuestStore((state) => state.addTransaction);
+
+  return useMutation<
+    TransactionResponse,
+    AxiosError<ApiErrorResponse>,
+    CreateAdjustmentRequest
+  >({
+    mutationFn: async (data) => {
+      if (isGuest) {
+        const state = useGuestStore.getState();
+        const asset = state.assets.find((a) => a.id === data.assetId);
+
+        const mockResponse: TransactionResponse = {
+          id: crypto.randomUUID(),
+          type: "ADJUSTMENT",
+          amount: data.amount,
+          note: data.note,
+          transactionDate: data.transactionDate,
+          assetId: data.assetId,
+          asset: asset ? { ...asset } : undefined,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        return mockResponse;
+      }
+      return createAdjustmentApi(data);
+    },
+    ...options,
+    onSuccess: (data) => {
+      if (isGuest) {
+        addTransaction(data);
+        const state = useGuestStore.getState();
+        const asset = state.assets.find((a) => a.id === data.assetId);
+        if (asset) {
+          state.updateAsset(asset.id, { balance: asset.balance + data.amount });
+        }
       } else {
         queryClient.invalidateQueries({ queryKey: ["assets"] }).catch(() => {});
         queryClient

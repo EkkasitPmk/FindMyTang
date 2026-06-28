@@ -2,7 +2,7 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/shared/lib/utils";
-import Avatar from "@/shared/components/custom/Avatar";
+import Avatar from "@/shared/components/customs/Avatar";
 import { useMeQuery } from "@/features/nav/hooks/auth.hook";
 
 export default function ShowProfileContainer() {

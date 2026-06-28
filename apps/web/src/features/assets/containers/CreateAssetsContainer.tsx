@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
 import {
@@ -28,18 +28,21 @@ export default function CreateAssetsContainer({
     handleSubmit,
     setError,
     reset,
+    control,
     setValue,
-    watch,
+    getValues,
     formState: { errors },
   } = useForm<CreateAssetFormValues>({
     resolver: zodResolver(createAssetSchema),
     defaultValues: {
       name: "",
       type: AssetType.CASH,
-      balance: "" as any,
+      balance: "",
       color: "#2563EB",
     },
   });
+
+  const currentColor = useWatch({ control, name: "color" });
 
   const handleSelect = (type: string) => {
     setSelected(type);
@@ -99,9 +102,9 @@ export default function CreateAssetsContainer({
   };
 
   const handleBlurBalance = () => {
-    const currentVal = watch("balance");
+    const currentVal = getValues("balance");
     if (currentVal && !Number.isNaN(Number(currentVal))) {
-      setValue("balance", Number(currentVal).toFixed(2) as any);
+      setValue("balance", Number(currentVal).toFixed(2));
     }
   };
 
@@ -118,7 +121,7 @@ export default function CreateAssetsContainer({
       assetTypeList={assetTypeList}
       handleSelect={handleSelect}
       onClose={onClose}
-      currentColor={watch("color")}
+      currentColor={currentColor}
       onSelectColor={(color) => setValue("color", color)}
       onBlurBalance={handleBlurBalance}
     />

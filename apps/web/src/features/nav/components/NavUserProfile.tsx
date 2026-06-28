@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { LogIn, LogOut } from "lucide-react";
-import Avatar from "@/shared/components/custom/Avatar";
+import Avatar from "@/shared/components/customs/Avatar";
 import { UserProfile } from "@/features/nav/types/auth.type";
 import { useTranslation } from "@/shared/lib/i18n/useTranslation";
 import { cn } from "@/shared/lib/utils";

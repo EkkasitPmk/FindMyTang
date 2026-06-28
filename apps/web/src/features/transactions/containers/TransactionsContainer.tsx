@@ -1,496 +1,395 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
+import { ArrowRight, ChevronLeft } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "react-toastify";
-import {
-  ArrowDown,
-  ArrowRight,
-  Calendar as CalendarLucide,
-  Camera,
-  Coffee,
-  Coins,
-  Landmark,
-  Utensils,
-} from "lucide-react";
-import {
-  createExpenseSchema,
-  CreateExpenseFormValues,
-} from "../schemas/expense.schema";
-import {
-  createIncomeSchema,
-  CreateIncomeFormValues,
-} from "../schemas/income.schema";
+import { useSearchParams, useRouter } from "next/navigation";
+import { useCategories } from "@/features/category/hooks/category.hook";
+import { useAssets } from "@/features/assets/hooks/assets.hook";
 import {
   useCreateExpenseMutation,
   useCreateIncomeMutation,
-  useTransactionsQuery,
+  useCreateTransferMutation,
+  useCreateAdjustmentMutation,
 } from "../hooks/transaction.hook";
-import { useAssets } from "@/features/assets/hooks/assets.hook";
-import { useCategories } from "@/features/category/hooks/category.hook";
+import {
+  createTransactionSchema,
+  CreateTransactionFormValues,
+} from "../schemas/transaction.schema";
+import { toast } from "react-toastify";
+import TransactionCategoryList from "../components/TransactionCategoryList";
+import TransactionAssetList from "../components/TransactionAssetList";
+import TransactionMoreDetails from "../components/TransactionMoreDetails";
+import { SegmentedControl } from "@/shared/components/customs/SegmentedControl";
+import { CurrencyInput } from "@/shared/components/customs/CurrencyInput";
+import { getFormattedAmount } from "../utils/currency.util";
+import { formatDisplayDate } from "../helpers/date.helper";
 import { cn } from "@/shared/lib/utils";
-import ChooseADate from "../components/ChooseADate";
-
-type TransactionType = "EXPENSE" | "INCOME";
 
 export default function TransactionsContainer() {
-  const [date, setDate] = useState<Date | undefined>(
-    new Date(new Date().getFullYear(), 1, 12),
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <TransactionsContainerContent />
+    </Suspense>
   );
-  const [currentMonth, setCurrentMonth] = useState<Date>(
+}
+
+function TransactionsContainerContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const typeParam = searchParams.get("type");
+  const hasAssetId = searchParams.has("assetId");
+  const defaultType =
+    typeParam === "INCOME" ||
+    typeParam === "EXPENSE" ||
+    typeParam === "TRANSFER" ||
+    typeParam === "ADJUSTMENT"
+      ? typeParam
+      : "EXPENSE";
+  const defaultAssetId = searchParams.get("assetId") || null;
+
+  const {
+    handleSubmit,
+    setValue,
+    reset,
+    formState: { errors },
+  } = useForm<CreateTransactionFormValues>({
+    resolver: zodResolver(createTransactionSchema),
+    defaultValues: {
+      amount: 0,
+      note: "",
+      transactionDate: new Date().toISOString(),
+      assetId: "",
+      categoryId: "",
+    },
+  });
+
+  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [amountDigits, setAmountDigits] = useState<string>("");
+  const [file, setFile] = useState<File | null>(null);
+
+  const createExpense = useCreateExpenseMutation({
+    onSuccess: () => {
+      toast.success("Expense saved successfully!");
+      handleResetForm();
+    },
+  });
+  const createIncome = useCreateIncomeMutation({
+    onSuccess: () => {
+      toast.success("Income saved successfully!");
+      handleResetForm();
+    },
+  });
+  const createTransfer = useCreateTransferMutation({
+    onSuccess: () => {
+      toast.success("Transfer saved successfully!");
+      handleResetForm();
+    },
+  });
+  const createAdjustment = useCreateAdjustmentMutation({
+    onSuccess: () => {
+      toast.success("Adjustment saved successfully!");
+      handleResetForm();
+    },
+  });
+
+  const [currentMonth] = useState<Date>(
     new Date(new Date().getFullYear(), new Date().getMonth(), 1),
   );
 
-  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [tempDate, setTempDate] = useState<Date | undefined>(date);
+  const [displayMonth, setDisplayMonth] = useState<Date | undefined>(
+    currentMonth || date || new Date(),
+  );
+
+  const handleConfirmDate = () => {
+    if (tempDate) {
+      setDate(tempDate);
+    }
+    setIsCalendarOpen(false);
+  };
+
+  const handlePresetClick = (daysToAdd: number) => {
+    const newDate = new Date();
+    newDate.setDate(newDate.getDate() + daysToAdd);
+    setTempDate(newDate);
+    setDisplayMonth(newDate);
+  };
+
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isMoreDetailsOpen, setIsMoreDetailsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<TransactionType>("EXPENSE");
+  const [transactionType, setTransactionType] = useState<
+    "EXPENSE" | "INCOME" | "TRANSFER" | "ADJUSTMENT"
+  >(defaultType);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
+    null,
+  );
+  const [selectedAssetId, setSelectedAssetId] = useState<string | null>(
+    defaultAssetId,
+  );
+  const [selectedAssetToId, setSelectedAssetToId] = useState<string | null>(
+    null,
+  );
 
-  // Filters State
-  const [page, setPage] = useState(1);
-  const [type, setType] = useState("");
-  const [assetId, setAssetId] = useState("");
-  const [categoryId, setCategoryId] = useState("");
-  const [dateRange, setDateRange] = useState("THIS_MONTH");
+  const [isPhotoMenuOpen, setIsPhotoMenuOpen] = useState(false);
 
-  const queryParams = useMemo(() => {
-    const params: any = { page, limit: 10 };
-    if (type) params.type = type;
-    if (assetId) params.assetId = assetId;
-    if (categoryId) params.categoryId = categoryId;
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
-    const now = new Date();
-    if (dateRange === "THIS_MONTH") {
-      params.from = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        1,
-      ).toISOString();
-      params.to = new Date(
-        now.getFullYear(),
-        now.getMonth() + 1,
-        0,
-      ).toISOString();
-    } else if (dateRange === "LAST_MONTH") {
-      params.from = new Date(
-        now.getFullYear(),
-        now.getMonth() - 1,
-        1,
-      ).toISOString();
-      params.to = new Date(now.getFullYear(), now.getMonth(), 0).toISOString();
-    } else if (dateRange === "THIS_YEAR") {
-      params.from = new Date(now.getFullYear(), 0, 1).toISOString();
-      params.to = new Date(now.getFullYear(), 11, 31).toISOString();
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setFile(e.target.files[0]);
     }
-
-    return params;
-  }, [page, type, assetId, categoryId, dateRange]);
-
-  const { data, isLoading: isTxsLoading } = useTransactionsQuery(queryParams);
-  const transactions = data?.items || [];
-  const meta = data?.meta;
-
-  const { data: assets = [] } = useAssets();
-  const { data: categories = [] } = useCategories();
-
-  const now = new Date();
-  const localIso = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
-    .toISOString()
-    .slice(0, 16);
-
-  // Expense Form
-  const expenseForm = useForm<CreateExpenseFormValues>({
-    resolver: zodResolver(createExpenseSchema),
-    defaultValues: {
-      assetId: "",
-      categoryId: "",
-      amount: undefined,
-      note: "",
-      transactionDate: localIso,
-    },
-  });
-
-  // Income Form
-  const incomeForm = useForm<CreateIncomeFormValues>({
-    resolver: zodResolver(createIncomeSchema),
-    defaultValues: {
-      assetId: "",
-      categoryId: "",
-      amount: undefined,
-      note: "",
-      transactionDate: localIso,
-    },
-  });
-
-  const resetForms = () => {
-    const freshIso = new Date(
-      Date.now() - new Date().getTimezoneOffset() * 60000,
-    )
-      .toISOString()
-      .slice(0, 16);
-    const defaults = {
-      assetId: "",
-      categoryId: "",
-      amount: undefined,
-      note: "",
-      transactionDate: freshIso,
-    };
-    expenseForm.reset(defaults);
-    incomeForm.reset(defaults);
   };
 
-  const { mutate: createExpense, isPending: isExpensePending } =
-    useCreateExpenseMutation({
-      onSuccess: () => {
-        toast.success("Expense recorded!");
-        resetForms();
-        setIsFormOpen(false);
-      },
-      onError: (error) => {
-        handleError(error, expenseForm.setError);
-      },
+  const handleRemoveFile = () => setFile(null);
+
+  const handleTakeAPhoto = () => {
+    setIsPhotoMenuOpen(false);
+    cameraInputRef.current?.click();
+  };
+
+  const handleSelectAPhoto = () => {
+    setIsPhotoMenuOpen(false);
+    fileInputRef.current?.click();
+  };
+
+  const { data: categories } = useCategories();
+  const filteredCategories =
+    categories?.filter((c) => c.type === (transactionType as string)) || [];
+
+  const { data: assets } = useAssets();
+
+  const activeCategoryId =
+    selectedCategoryId &&
+    filteredCategories.some((c) => c.id === selectedCategoryId)
+      ? selectedCategoryId
+      : filteredCategories[0]?.id || null;
+
+  const activeAssetId =
+    selectedAssetId && assets?.some((a) => a.id === selectedAssetId)
+      ? selectedAssetId
+      : assets?.[0]?.id || null;
+
+  const availableToAssets = assets?.filter((a) => a.id !== activeAssetId) || [];
+  const activeAssetToId =
+    selectedAssetToId &&
+    availableToAssets.some((a) => a.id === selectedAssetToId)
+      ? selectedAssetToId
+      : availableToAssets[0]?.id || null;
+
+  const handleResetForm = () => {
+    reset({
+      amount: 0,
+      note: "",
+      transactionDate: new Date().toISOString(),
+      assetId: activeAssetId || "",
+      categoryId: activeCategoryId || "",
+      toAssetId: activeAssetToId || "",
     });
+    setAmountDigits("");
+    setFile(null);
+    setDate(new Date());
+  };
 
-  const { mutate: createIncome, isPending: isIncomePending } =
-    useCreateIncomeMutation({
-      onSuccess: () => {
-        toast.success("Income recorded!");
-        resetForms();
-        setIsFormOpen(false);
-      },
-      onError: (error) => {
-        handleError(error, incomeForm.setError);
-      },
-    });
-
-  const handleError = (error: any, setError: any) => {
-    const message = error.response?.data?.message;
-    let errorList: string[] = [];
-    if (Array.isArray(message)) {
-      errorList = message;
-    } else if (message) {
-      errorList = [message];
+  useEffect(() => {
+    if (
+      activeCategoryId &&
+      (transactionType === "EXPENSE" || transactionType === "INCOME")
+    ) {
+      setValue("categoryId", activeCategoryId, { shouldValidate: true });
     }
+  }, [activeCategoryId, setValue, transactionType]);
 
-    if (errorList.length === 0) {
-      toast.error("Failed to save transaction. Please try again.");
-      return;
+  useEffect(() => {
+    if (activeAssetId)
+      setValue("assetId", activeAssetId, { shouldValidate: true });
+  }, [activeAssetId, setValue]);
+
+  useEffect(() => {
+    if (date)
+      setValue("transactionDate", date.toISOString(), { shouldValidate: true });
+  }, [date, setValue]);
+
+  useEffect(() => {
+    if (transactionType === "TRANSFER" && activeAssetToId) {
+      setValue("toAssetId", activeAssetToId, { shouldValidate: true });
     }
+  }, [activeAssetToId, setValue, transactionType]);
 
-    errorList.forEach((msg) => {
-      const lower = msg.toLowerCase();
-      if (lower.includes("asset")) {
-        setError("assetId", { type: "server", message: msg });
-      } else if (lower.includes("category")) {
-        setError("categoryId", { type: "server", message: msg });
-      } else if (lower.includes("amount") || lower.includes("balance")) {
-        setError("amount", { type: "server", message: msg });
-      } else {
-        toast.error(msg);
+  // --- Currency formatting logic ---
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let digits = e.target.value.replace(/\D/g, "");
+    digits = digits.replace(/^0+/, "");
+    if (digits.length > 10) {
+      digits = digits.slice(0, 10);
+    }
+    setAmountDigits(digits);
+
+    if (digits.length > 0) {
+      const padded = digits.padStart(3, "0");
+      const integerPart = padded.slice(0, -2);
+      const decimalPart = padded.slice(-2);
+      const numericVal = Number(`${integerPart}.${decimalPart}`);
+      setValue("amount", numericVal, { shouldValidate: true });
+    } else {
+      setValue("amount", 0, { shouldValidate: true });
+    }
+  };
+
+  const { displayAmount, numericAmount } = getFormattedAmount(amountDigits);
+  const displayDate = formatDisplayDate(date);
+
+  const onSubmit = (
+    data: CreateTransactionFormValues,
+    e?: React.BaseSyntheticEvent,
+  ) => {
+    const formData = new FormData(e?.target as HTMLFormElement);
+    const note = formData.get("note") as string;
+
+    const finalData = { ...data, note, file: file || undefined };
+
+    if (transactionType === "TRANSFER") {
+      if (!data.toAssetId) {
+        toast.error("Please select a target asset");
+        return;
       }
-    });
-  };
+    } else if (transactionType === "EXPENSE" || transactionType === "INCOME") {
+      if (!data.categoryId) {
+        toast.error("Please select a category");
+        return;
+      }
+    }
 
-  const onExpenseSubmit = (values: CreateExpenseFormValues) => {
-    createExpense({
-      assetId: values.assetId,
-      categoryId: values.categoryId,
-      amount: values.amount,
-      note: values.note || undefined,
-      transactionDate: new Date(values.transactionDate).toISOString(),
-    });
-  };
+    if (transactionType === "EXPENSE") {
+      createExpense.mutate({
+        ...finalData,
+        categoryId: data.categoryId as string,
+      });
+    } else if (transactionType === "INCOME") {
+      createIncome.mutate({
+        ...finalData,
+        categoryId: data.categoryId as string,
+      });
+    } else if (transactionType === "TRANSFER") {
+      createTransfer.mutate({
+        ...finalData,
+        toAssetId: data.toAssetId as string,
+      });
+    } else if (transactionType === "ADJUSTMENT") {
+      const selectedAsset = assets?.find((a) => a.id === data.assetId);
+      const currentBalance = selectedAsset ? selectedAsset.balance : 0;
+      const difference = finalData.amount - currentBalance;
 
-  const onIncomeSubmit = (values: CreateIncomeFormValues) => {
-    createIncome({
-      assetId: values.assetId,
-      categoryId: values.categoryId,
-      amount: values.amount,
-      note: values.note || undefined,
-      transactionDate: new Date(values.transactionDate).toISOString(),
-    });
-  };
-
-  const handleFilterChange = (setter: any) => (value: string) => {
-    setter(value);
-    setPage(1);
+      createAdjustment.mutate({
+        ...finalData,
+        amount: difference,
+      });
+    }
   };
 
   return (
-    <form className="space-y-4 pb-24">
-      <p className="text-center text-2xl font-bold">Add Transaction</p>
-
-      <section className="bg-primary-light flex rounded-lg text-xs font-medium p-1">
-        {/* exp. เวลากด */}
-        <button className="w-full grow bg-primary text-white font-bold py-2 rounded-md">
-          Expense
-        </button>
-        <button className="w-full grow py-2 rounded-md">Income</button>
-        <button className="w-full grow py-2 rounded-md">Transfer</button>
-        <button className="w-full grow py-2 rounded-md">Adjustment</button>
-      </section>
-
-      <section className="flex items-center justify-center gap-1">
-        <span className="text-4xl font-bold">฿</span>
-        <input
-          id="balance"
-          type="number"
-          step="any"
-          placeholder="0.00"
-          className={cn(
-            "w-60 bg-background border-0 border-b border-border outline-none transition-all text-center text-3xl font-bold",
-            "tracking-wide",
-            "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
-          )}
-          // {...register("")}
-          // onBlur={(e) => {
-          //   void register("").onBlur(e);
-          //   onBlurBalance?.();
-          // }}
-        />
-      </section>
-
-      <section className="space-y-1">
-        <p className="uppercase text-sm text-secondary-text font-medium">
-          CATEGORY
-        </p>
-        <div className="grid grid-cols-5 gap-y-2 overflow-auto max-h-[24vh] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
-          {/* exp. เมื่อถูกกดเลือก */}
-          <button className="flex flex-col items-center justify-center gap-1">
-            <span className="p-3 rounded-xl bg-primary-light">
-              <Utensils size={18} className="text-primary-text" />
-            </span>
-            <span className="uppercase text-text-primary-text text-xs font-medium truncate">
-              FOOD
-            </span>
-          </button>
-          {/* exp. เมื่อถูกกดเลือก */}
-          <button className="flex flex-col items-center justify-center gap-1">
-            <span className="p-3 rounded-xl bg-surface-secondary">
-              <Coffee size={18} className="text-secondary-text" />
-            </span>
-            <span className="uppercase text-secondary-text text-xs font-medium truncate">
-              coffee
-            </span>
-          </button>
-          <button className="flex flex-col items-center justify-center gap-1">
-            <span className="p-3 rounded-xl bg-surface-secondary">
-              <Coffee size={18} className="text-secondary-text" />
-            </span>
-            <span className="uppercase text-secondary-text text-xs font-medium truncate">
-              coffee
-            </span>
-          </button>
-          <button className="flex flex-col items-center justify-center gap-1">
-            <span className="p-3 rounded-xl bg-surface-secondary">
-              <Coffee size={18} className="text-secondary-text" />
-            </span>
-            <span className="uppercase text-secondary-text text-xs font-medium truncate">
-              coffee
-            </span>
-          </button>
-          <button className="flex flex-col items-center justify-center gap-1">
-            <span className="p-3 rounded-xl bg-surface-secondary">
-              <Coffee size={18} className="text-secondary-text" />
-            </span>
-            <span className="uppercase text-secondary-text text-xs font-medium truncate">
-              coffee
-            </span>
-          </button>
-          <button className="flex flex-col items-center justify-center gap-1">
-            <span className="p-3 rounded-xl bg-surface-secondary">
-              <Coffee size={18} className="text-secondary-text" />
-            </span>
-            <span className="uppercase text-secondary-text text-xs font-medium truncate">
-              coffee
-            </span>
-          </button>
-          <button className="flex flex-col items-center justify-center gap-1">
-            <span className="p-3 rounded-xl bg-surface-secondary">
-              <Coffee size={18} className="text-secondary-text" />
-            </span>
-            <span className="uppercase text-secondary-text text-xs font-medium truncate">
-              coffee
-            </span>
-          </button>
-          <button className="flex flex-col items-center justify-center gap-1">
-            <span className="p-3 rounded-xl bg-surface-secondary">
-              <Coffee size={18} className="text-secondary-text" />
-            </span>
-            <span className="uppercase text-secondary-text text-xs font-medium truncate">
-              coffee
-            </span>
-          </button>
-          <button className="flex flex-col items-center justify-center gap-1">
-            <span className="p-3 rounded-xl bg-surface-secondary">
-              <Coffee size={18} className="text-secondary-text" />
-            </span>
-            <span className="uppercase text-secondary-text text-xs font-medium truncate">
-              coffee
-            </span>
-          </button>
-          <button className="flex flex-col items-center justify-center gap-1">
-            <span className="p-3 rounded-xl bg-surface-secondary">
-              <Coffee size={18} className="text-secondary-text" />
-            </span>
-            <span className="uppercase text-secondary-text text-xs font-medium truncate">
-              coffee
-            </span>
-          </button>
-          <button className="flex flex-col items-center justify-center gap-1">
-            <span className="p-3 rounded-xl bg-surface-secondary">
-              <Coffee size={18} className="text-secondary-text" />
-            </span>
-            <span className="uppercase text-secondary-text text-xs font-medium truncate">
-              coffee
-            </span>
-          </button>
-        </div>
-      </section>
-
-      <section className="space-y-1">
-        <p className="uppercase text-sm text-secondary-text font-medium">
-          ASSET
-        </p>
-        <div className="flex gap-2 py-1 overflow-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
-          <button className="flex items-center justify-center border border-primary bg-primary-light gap-3 w-fit max-w-30 rounded-md px-4 py-2">
-            <span className="bg-background p-2 rounded-full">
-              <Landmark size={18} className="text-primary" />
-            </span>
-            <div className="flex flex-col text-left">
-              <span className="text-sm font-bold text-primary-text">SCB</span>
-              <span className="text-xs text-secondary-text">BANK</span>
-            </div>
-          </button>
-          <button className="flex items-center justify-center border border-border bg-surface-secondary gap-3 w-fit max-w-30 rounded-md px-4 py-2">
-            <span className="bg-background p-2 rounded-full">
-              <Coins size={18} className="text-primary-text" />
-            </span>
-            <div className="flex flex-col text-left">
-              <span className="text-sm font-bold text-primary-text">CASH</span>
-              <span className="text-xs text-secondary-text">CASH</span>
-            </div>
-          </button>
-          <button className="flex items-center justify-center border border-border bg-surface-secondary gap-3 w-fit max-w-30 rounded-md px-4 py-2">
-            <span className="bg-background p-2 rounded-full">
-              <Coins size={18} className="text-primary-text" />
-            </span>
-            <div className="flex flex-col text-left">
-              <span className="text-sm font-bold text-primary-text">CASH</span>
-              <span className="text-xs text-secondary-text">CASH</span>
-            </div>
-          </button>
-          <button className="flex items-center justify-center border border-border bg-surface-secondary gap-3 w-fit max-w-30 rounded-md px-4 py-2">
-            <span className="bg-background p-2 rounded-full">
-              <Coins size={18} className="text-primary-text" />
-            </span>
-            <div className="flex flex-col text-left">
-              <span className="text-sm font-bold text-primary-text">CASH</span>
-              <span className="text-xs text-secondary-text">CASH</span>
-            </div>
-          </button>
-        </div>
-      </section>
-
-      {/* More Details */}
-      <button
-        type="button"
-        onClick={() => setIsMoreDetailsOpen(!isMoreDetailsOpen)}
-        className="my-0 w-full flex items-center justify-center gap-2 text-primary text-sm shrink-0"
+    <form
+      className="space-y-4 pb-24"
+      onSubmit={handleSubmit(onSubmit)}
+      onReset={handleResetForm}
+    >
+      <div
+        className={cn(
+          "flex items-center relative",
+          hasAssetId ? "" : "my-4 mb-8",
+        )}
       >
-        {isMoreDetailsOpen ? "Less Details" : "More Details"}
-        <ArrowDown
-          size={16}
-          className={cn(
-            "transition-transform",
-            isMoreDetailsOpen && "rotate-180",
-          )}
+        {hasAssetId && (
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="p-1 -ml-1 cursor-pointer hover:bg-gray-100 transition-colors"
+          >
+            <ChevronLeft size={24} />
+          </button>
+        )}
+        <p className="text-center text-2xl font-bold absolute left-1/2 -translate-x-1/2 truncate">
+          Add Transaction
+        </p>
+      </div>
+
+      <SegmentedControl
+        value={transactionType}
+        onChange={setTransactionType}
+        options={[
+          { label: "Expense", value: "EXPENSE" },
+          { label: "Income", value: "INCOME" },
+          { label: "Transfer", value: "TRANSFER" },
+          { label: "Adjustment", value: "ADJUSTMENT" },
+        ]}
+      />
+
+      <div className="flex flex-col items-center gap-1">
+        <CurrencyInput
+          id="balance"
+          value={displayAmount}
+          onChange={handleAmountChange}
         />
-      </button>
+        <input type="hidden" name="amount" value={numericAmount} />
+        {errors.amount && (
+          <p className="text-red-500 text-xs">{errors.amount.message}</p>
+        )}
+      </div>
 
-      {isMoreDetailsOpen && (
-        <section className="space-y-1">
-          <p className="uppercase text-sm text-secondary-text font-medium">
-            DETAILS
-          </p>
-          <div className="space-y-3">
-            <div className="relative w-full flex items-center gap-2 bg-white rounded-md border border-border px-4 py-3">
-              <CalendarLucide size={18} className="text-secondary-text" />
-              <button
-                type="button"
-                onClick={() => setIsCalendarOpen(!isCalendarOpen)}
-                className="flex flex-col flex-1 text-left"
-              >
-                <span className="text-secondary-text text-xs font-medium">
-                  DATE
-                </span>
-                <span className="text-sm font-medium">Today, Oct 24</span>
-              </button>
-              {isCalendarOpen && (
-                <>
-                  <div
-                    className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm transition-opacity"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setIsCalendarOpen(false);
-                    }}
-                  />
-                  <ChooseADate date={date} currentMonth={currentMonth} />
-                </>
-              )}
-            </div>
-
-            <div className="w-full bg-white rounded-md border border-border px-4 py-3 space-y-1">
-              <div className="flex items-center gap-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="18"
-                  height="18"
-                  viewBox="0   0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="lucide lucide-list-sort-descending-icon lucide-list-sort-descending text-secondary-text"
-                >
-                  <path d="M15 12H3" />
-                  <path d="M3 5h18" />
-                  <path d="M9 19H3" />
-                </svg>
-                <span className="text-secondary-text text-xs font-medium">
-                  DESCRIPTION
-                </span>
-              </div>
-
-              <textarea
-                name=""
-                id=""
-                placeholder="Add a note..."
-                className="w-full max-h-30 placeholder:text-secondary-text outline-none transition-all bg-white"
-              ></textarea>
-            </div>
-
-            <div className="space-y-2">
-              <p className="uppercase text-xs text-secondary-text font-medium">
-                ATTACHMENT
-              </p>
-              <div className="h-44 flex flex-col items-center justify-center gap-1 rounded-md border-2 border-border border-dashed">
-                <Camera size={24} className="text-secondary-text" />
-                <span className="text-secondary-text text-sm font-medium">
-                  Add Photo
-                </span>
-              </div>
-            </div>
-          </div>
-        </section>
+      {(transactionType === "EXPENSE" || transactionType === "INCOME") && (
+        <TransactionCategoryList
+          categories={filteredCategories}
+          activeCategoryId={activeCategoryId}
+          onSelectCategory={setSelectedCategoryId}
+        />
       )}
-      {/* More Details */}
+
+      <TransactionAssetList
+        assets={assets ?? []}
+        activeAssetId={activeAssetId}
+        onSelectAsset={setSelectedAssetId}
+        activeAssetToId={activeAssetToId}
+        onSelectAssetTo={setSelectedAssetToId}
+        transactionType={transactionType}
+      />
+
+      <TransactionMoreDetails
+        isMoreDetailsOpen={isMoreDetailsOpen}
+        setIsMoreDetailsOpen={setIsMoreDetailsOpen}
+        displayDate={displayDate}
+        tempDate={tempDate}
+        setTempDate={setTempDate}
+        displayMonth={displayMonth}
+        setDisplayMonth={setDisplayMonth}
+        onPresetClick={handlePresetClick}
+        onConfirmDate={handleConfirmDate}
+        isCalendarOpen={isCalendarOpen}
+        setIsCalendarOpen={setIsCalendarOpen}
+        isPhotoMenuOpen={isPhotoMenuOpen}
+        setIsPhotoMenuOpen={setIsPhotoMenuOpen}
+        file={file}
+        onRemoveFile={handleRemoveFile}
+        onTakeAPhoto={handleTakeAPhoto}
+        onSelectAPhoto={handleSelectAPhoto}
+        fileInputRef={fileInputRef}
+        cameraInputRef={cameraInputRef}
+        handleFileChange={handleFileChange}
+      />
 
       {/* Save Transaction */}
       <section className="fixed bottom-18 left-0 right-0 mx-4 bg-background pt-2">
-        <button className="flex items-center justify-center gap-2 bg-primary w-full text-white py-3 rounded-xl text-base font-bold">
-          Save Transaction
+        <button
+          type="submit"
+          disabled={
+            createExpense.isPending ||
+            createIncome.isPending ||
+            createTransfer.isPending ||
+            createAdjustment.isPending
+          }
+          className="flex items-center justify-center gap-2 bg-primary w-full text-white py-3 rounded-xl text-base font-bold capitalize disabled:opacity-50"
+        >
+          Save {transactionType.toLowerCase()}
           <ArrowRight size={18} />
         </button>
       </section>

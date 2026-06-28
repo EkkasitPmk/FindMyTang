@@ -5,6 +5,7 @@ export interface CreateExpenseRequest {
   note?: string;
   transactionDate: string;
   attachmentUrl?: string;
+  file?: File;
 }
 
 export interface CreateIncomeRequest {
@@ -14,6 +15,26 @@ export interface CreateIncomeRequest {
   note?: string;
   transactionDate: string;
   attachmentUrl?: string;
+  file?: File;
+}
+
+export interface CreateTransferRequest {
+  assetId: string;
+  toAssetId: string;
+  amount: number;
+  note?: string;
+  transactionDate: string;
+  attachmentUrl?: string;
+  file?: File;
+}
+
+export interface CreateAdjustmentRequest {
+  assetId: string;
+  amount: number;
+  note?: string;
+  transactionDate: string;
+  attachmentUrl?: string;
+  file?: File;
 }
 
 export type TransactionType = "INCOME" | "EXPENSE" | "TRANSFER" | "ADJUSTMENT";
