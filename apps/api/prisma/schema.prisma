@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,17 +11,72 @@ model User {
   email          String?       @unique
   password       String?
   isGuest        Boolean       @default(false)
-  displayName    String?
-  avatarUrl      String?
-  language       String        @default("en")
-  lastSyncedAt   DateTime?
-  lastSyncStatus String?       // "SUCCESS" | "FAILED"
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
-
+  avatarUrl      String?
+  displayName    String?
+  language       String        @default("en")
+  lastSyncStatus String?
+  lastSyncedAt   DateTime?
   assets         Asset[]
   categories     Category[]
   transactions   Transaction[]
+}
+
+model Asset {
+  id                   String        @id @default(uuid())
+  name                 String
+  userId               String
+  type                 AssetType
+  balance              Decimal       @default(0)
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+  color                String?
+  deletedAt            DateTime?
+  isArchived           Boolean       @default(false)
+  user                 User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions         Transaction[] @relation("AssetToTransaction")
+  transferTransactions Transaction[] @relation("ToAssetToTransaction")
+}
+
+model Category {
+  id           String        @id @default(cuid())
+  name         String
+  userId       String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  color        String?
+  icon         String?
+  type         CategoryType
+  deletedAt    DateTime?
+  isSystem     Boolean       @default(false)
+  displayOrder Int           @default(0)
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+}
+
+model Transaction {
+  id            String          @id @default(uuid())
+  amount        Decimal
+  date          DateTime
+  userId        String
+  assetId       String
+  categoryId    String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  note          String?
+  type          TransactionType
+  deletedAt     DateTime?
+  toAssetId     String?
+  attachmentUrl String?
+  asset         Asset           @relation("AssetToTransaction", fields: [assetId], references: [id], onDelete: Cascade)
+  category      Category?       @relation(fields: [categoryId], references: [id])
+  toAsset       Asset?          @relation("ToAssetToTransaction", fields: [toAssetId], references: [id])
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([assetId])
+  @@index([date])
 }
 
 enum AssetType {
@@ -36,41 +88,9 @@ enum AssetType {
   OTHER
 }
 
-model Asset {
-  id                   String        @id @default(uuid())
-  name                 String
-  userId               String
-  user                 User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type                 AssetType
-  balance              Decimal       @default(0)
-  color                String?
-  isArchived           Boolean       @default(false)
-  transactions         Transaction[] @relation("AssetToTransaction")
-  transferTransactions Transaction[] @relation("ToAssetToTransaction")
-  deletedAt            DateTime?
-  createdAt            DateTime      @default(now())
-  updatedAt            DateTime      @updatedAt
-}
-
 enum CategoryType {
   INCOME
   EXPENSE
-}
-
-model Category {
-  id           String        @id @default(cuid())
-  name         String
-  type         CategoryType
-  color        String?
-  icon         String?
-  userId       String
-  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  isSystem     Boolean       @default(false)
-  displayOrder Int           @default(0)
-  transactions Transaction[]
-  deletedAt    DateTime?
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
 }
 
 enum TransactionType {
@@ -78,28 +98,4 @@ enum TransactionType {
   EXPENSE
   TRANSFER
   ADJUSTMENT
-}
-
-model Transaction {
-  id            String          @id @default(uuid())
-  type          TransactionType
-  amount        Decimal
-  note          String?
-  date          DateTime
-  userId        String
-  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  assetId       String
-  asset         Asset           @relation("AssetToTransaction", fields: [assetId], references: [id], onDelete: Cascade)
-  toAssetId     String?
-  toAsset       Asset?          @relation("ToAssetToTransaction", fields: [toAssetId], references: [id], onDelete: SetNull)
-  categoryId    String?
-  category      Category?       @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  attachmentUrl String?
-  deletedAt     DateTime?
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-
-  @@index([userId])
-  @@index([assetId])
-  @@index([date])
 }

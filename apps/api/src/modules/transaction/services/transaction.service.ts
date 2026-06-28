@@ -13,6 +13,7 @@ import { CreateExpenseDto } from "../dto/create-expense.dto";
 import { CreateIncomeDto } from "../dto/create-income.dto";
 import { UpdateTransactionDto } from "../dto/update-transaction.dto";
 import { Transaction, TransactionType } from "@prisma/client";
+import { createClient } from "@supabase/supabase-js";
 
 import { TransactionQueryDto } from "../dto/transaction-query.dto";
 
@@ -25,15 +26,56 @@ export class TransactionService {
     private readonly prisma: PrismaService,
   ) {}
 
+  private supabase = createClient(
+    process.env.SUPABASE_URL || "",
+    process.env.SUPABASE_ANON_KEY || "",
+  );
+
+  async uploadFile(file: Express.Multer.File): Promise<string | null> {
+    if (!file) return null;
+    try {
+      const bucketName = process.env.SUPABASE_BUCKET || "attachments";
+      const fileExtension = file.originalname.split(".").pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExtension}`;
+      const { data, error } = await this.supabase.storage
+        .from(bucketName)
+        .upload(fileName, file.buffer, {
+          contentType: file.mimetype,
+          upsert: false,
+        });
+
+      if (error) {
+        console.error("Supabase upload error:", error);
+        return null;
+      }
+      const { data: publicUrlData } = this.supabase.storage
+        .from(bucketName)
+        .getPublicUrl(data.path);
+      return publicUrlData.publicUrl;
+    } catch (e) {
+      console.error("Upload exception:", e);
+      return null;
+    }
+  }
+
   async create(
     userId: string,
     dto: CreateTransactionDto,
+    file?: Express.Multer.File,
   ): Promise<Transaction> {
     // 1. Validate main asset
     const asset = await this.assetRepository.findById(dto.assetId);
     if (!asset) throw new NotFoundException("Asset not found");
     if (asset.userId !== userId)
       throw new ForbiddenException("You do not own this asset");
+
+    let attachmentUrl = dto.attachmentUrl;
+    if (file) {
+      const uploadedUrl = await this.uploadFile(file);
+      if (uploadedUrl) {
+        attachmentUrl = uploadedUrl;
+      }
+    }
 
     // 2. Handle based on type
     return this.prisma.$transaction(async (tx) => {
@@ -59,7 +101,7 @@ export class TransactionService {
             userId,
             assetId: dto.assetId,
             toAssetId: dto.toAssetId,
-            attachmentUrl: dto.attachmentUrl,
+            attachmentUrl: attachmentUrl,
           },
         });
 
@@ -81,7 +123,7 @@ export class TransactionService {
             date: new Date(dto.date),
             userId,
             assetId: dto.assetId,
-            attachmentUrl: dto.attachmentUrl,
+            attachmentUrl: attachmentUrl,
           },
         });
 
@@ -121,7 +163,7 @@ export class TransactionService {
             userId,
             assetId: dto.assetId,
             categoryId: dto.categoryId,
-            attachmentUrl: dto.attachmentUrl,
+            attachmentUrl: attachmentUrl,
           },
         });
 

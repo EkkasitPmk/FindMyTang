@@ -8,11 +8,16 @@ import {
   Post,
   Query,
   UseGuards,
+  UseInterceptors,
+  UploadedFile,
 } from "@nestjs/common";
+import { FileInterceptor } from "@nestjs/platform-express";
 import { TransactionService } from "../services/transaction.service";
 import { CreateTransactionDto } from "../dto/create-transaction.dto";
 import { CreateExpenseDto } from "../dto/create-expense.dto";
 import { CreateIncomeDto } from "../dto/create-income.dto";
+import { CreateTransferDto } from "../dto/create-transfer.dto";
+import { CreateAdjustmentDto } from "../dto/create-adjustment.dto";
 import { UpdateTransactionDto } from "../dto/update-transaction.dto";
 import { JwtAuthGuard } from "../../auth/guards/jwt-auth.guard";
 import { CurrentUser } from "../../auth/decorators/current-user.decorator";
@@ -59,28 +64,69 @@ export class TransactionController {
 
   @Post("income")
   @UseGuards(JwtAuthGuard)
-  async createIncome(@CurrentUser() user: User, @Body() dto: CreateIncomeDto) {
+  @UseInterceptors(FileInterceptor("file"))
+  async createIncome(
+    @CurrentUser() user: User,
+    @Body() dto: CreateIncomeDto,
+    @UploadedFile() file?: Express.Multer.File,
+  ) {
     return toResponse(
       await this.transactionService.create(user.id, {
         ...dto,
         type: TransactionType.INCOME,
         date: dto.transactionDate,
-      }),
+      }, file),
     );
   }
 
   @Post("expense")
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor("file"))
   async createExpense(
     @CurrentUser() user: User,
     @Body() dto: CreateExpenseDto,
+    @UploadedFile() file?: Express.Multer.File,
   ) {
     return toResponse(
       await this.transactionService.create(user.id, {
         ...dto,
         type: TransactionType.EXPENSE,
         date: dto.transactionDate,
-      }),
+      }, file),
+    );
+  }
+
+  @Post("transfer")
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor("file"))
+  async createTransfer(
+    @CurrentUser() user: User,
+    @Body() dto: CreateTransferDto,
+    @UploadedFile() file?: Express.Multer.File,
+  ) {
+    return toResponse(
+      await this.transactionService.create(user.id, {
+        ...dto,
+        type: TransactionType.TRANSFER,
+        date: dto.transactionDate,
+      }, file),
+    );
+  }
+
+  @Post("adjustment")
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor("file"))
+  async createAdjustment(
+    @CurrentUser() user: User,
+    @Body() dto: CreateAdjustmentDto,
+    @UploadedFile() file?: Express.Multer.File,
+  ) {
+    return toResponse(
+      await this.transactionService.create(user.id, {
+        ...dto,
+        type: TransactionType.ADJUSTMENT,
+        date: dto.transactionDate,
+      }, file),
     );
   }
 

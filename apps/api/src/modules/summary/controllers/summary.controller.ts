@@ -13,4 +13,9 @@ export class SummaryController {
   async getTodaySummary(@CurrentUser() user: User): Promise<TodaySummary> {
     return this.summaryService.getTodaySummary(user.id);
   }
+
+  @Get("monthly")
+  async getThisMonthSummary(@CurrentUser() user: User): Promise<TodaySummary> {
+    return this.summaryService.getThisMonthSummary(user.id);
+  }
 }

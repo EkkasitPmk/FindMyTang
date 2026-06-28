@@ -21,4 +21,15 @@ export class SummaryService {
       net: income - expense,
     };
   }
+
+  async getThisMonthSummary(userId: string): Promise<TodaySummary> {
+    const income = await this.summaryRepository.getThisMonthIncome(userId);
+    const expense = await this.summaryRepository.getThisMonthExpense(userId);
+
+    return {
+      income,
+      expense,
+      net: income - expense,
+    };
+  }
 }

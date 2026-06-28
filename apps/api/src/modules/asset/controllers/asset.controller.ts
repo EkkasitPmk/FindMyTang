@@ -32,6 +32,7 @@ export class AssetController {
       name: asset.name,
       type: asset.type,
       balance: Number(asset.balance),
+      color: asset.color,
     };
   }
 
@@ -45,6 +46,7 @@ export class AssetController {
       name: asset.name,
       type: asset.type,
       balance: Number(asset.balance),
+      color: asset.color,
     }));
   }
 
@@ -62,6 +64,7 @@ export class AssetController {
       name: asset.name,
       type: asset.type,
       balance: Number(asset.balance),
+      color: asset.color,
     };
   }
 
@@ -75,6 +78,7 @@ export class AssetController {
       name: asset.name,
       type: asset.type,
       balance: Number(asset.balance),
+      color: asset.color,
     };
   }
 }

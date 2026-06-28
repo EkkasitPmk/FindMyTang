@@ -10,19 +10,18 @@ import {
 } from "class-validator";
 import { Type } from "class-transformer";
 
-// ponytail: income-only DTO — no type field, no userId, no balance
-export class CreateIncomeDto {
+export class CreateTransferDto {
   @ApiProperty({ description: "Asset ID", example: "uuid-here" })
   @IsString()
   @IsNotEmpty()
   assetId: string;
 
-  @ApiProperty({ description: "Category ID (must be INCOME type)" })
+  @ApiProperty({ description: "Target Asset ID" })
   @IsString()
   @IsNotEmpty()
-  categoryId: string;
+  toAssetId: string;
 
-  @ApiProperty({ description: "Income amount (must be > 0)", example: 150.5 })
+  @ApiProperty({ description: "Transfer amount (must be > 0)", example: 150.5 })
   @Type(() => Number)
   @IsNumber()
   @IsPositive({ message: "Amount must be greater than 0" })
@@ -30,7 +29,7 @@ export class CreateIncomeDto {
 
   @ApiProperty({
     description: "Optional note",
-    example: "Salary",
+    example: "Transfer to saving",
     required: false,
   })
   @IsString()
