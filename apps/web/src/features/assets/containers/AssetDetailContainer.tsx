@@ -39,7 +39,7 @@ export default function AssetDetailContainer() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100dvh-100px)]">
+    <div className="flex flex-col h-[calc(100vh-100px)]">
       <div className="flex flex-col items-center justify-center my-4">
         <p className="text-gray-500 font-medium">{asset.name}</p>
         <div

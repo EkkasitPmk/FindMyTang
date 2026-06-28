@@ -2,12 +2,12 @@
 import ShowProfileContainer from "@/features/account/containers/ShowProfileContainer";
 import NavContainer from "@/features/nav/containers/NavContainer";
 import TopAppBarMobile from "@/shared/components/custom/TopAppBarMobile";
-import { cn } from "@/shared/lib/utils";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState, useRef, useEffect } from "react";
 import { EllipsisVertical, X } from "lucide-react";
 import { useCategoryUIStore } from "@/features/category/hooks/category.hook";
 import { useTranslation } from "@/shared/lib/i18n/useTranslation";
+import { cn } from "@/shared/lib/utils";
 
 export default function MainLayout({
   children,
