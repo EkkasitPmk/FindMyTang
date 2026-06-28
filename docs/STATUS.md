@@ -149,6 +149,9 @@
 - **Asset List Navigation**: เพิ่มการใช้ `Link` จาก `next/link` หุ้มรายการสินทรัพย์แต่ละตัวใน [ListAssetsContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/assets/containers/ListAssetsContainer.tsx) เพื่อให้เมื่อผู้ใช้มีสินทรัพย์แล้วสามารถกดคลิกที่รายการนั้นแล้วไปยังหน้า `/assets?name=...` ได้ทันที
 - **Dynamic Top App Bar Title**: ปรับปรุงหน้า [layout.tsx](<file:///Users/torikiton/Desktop/PocketNote/apps/web/src/app/(main)/layout.tsx>) ให้คอมโพเนนต์ `TopAppBarMobile` ดึงชื่อสินทรัพย์ (Asset Name) จาก Query Parameters มาแสดงผลบน Top App Bar เวลาที่คลิกเข้ามายังหน้า `/assets` ได้สำเร็จ
 - **Asset Detail Menu Toggle**: เพิ่มการจัดการ State ให้กับเมนูมุมขวาบน (Ellipsis) ในหน้า `/assets` ภายใน [layout.tsx](<file:///Users/torikiton/Desktop/PocketNote/apps/web/src/app/(main)/layout.tsx>) เพื่อให้สามารถเปิด/ปิดเมนูได้จริง พร้อมรองรับการคลิกนอกพื้นที่ (Click Outside) เพื่อปิดเมนูโดยอัตโนมัติ
+- **Asset Delete Functionality**: เพิ่มระบบลบสินทรัพย์ (Delete Asset) ในหน้ารายละเอียดบัญชีสินทรัพย์ โดยปรับปรุงเมนู Top App Bar ใน [layout.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/app/(main)/layout.tsx) เพิ่มการแสดงหน้าต่างยืนยันการลบ (ConfirmModal) และเชื่อมต่อ API เมื่อลบสำเร็จระบบจะนำทางกลับไปยังหน้าแรกโดยอัตโนมัติ
+- **MainLayout Feature Extraction**: แยกโค้ดส่วน `MainLayout` ออกจาก `app/(main)/layout.tsx` นำไปสร้างเป็น Feature ใหม่ (`features/main-layout`) และแยก `AssetsMenu` ไปไว้ใน `features/assets` ตามมาตรฐานโครงสร้าง `AGENTS.md` (Feature-Based Architecture) เพื่อลดความซับซ้อนและให้โค้ดเป็นระเบียบ
+- **AssetsMenu Decoupling & Refactoring**: แยก Logic ออกจาก Component หน้าตาของ `AssetsMenu` ให้เป็น Pure Presentation Component และสร้าง `AssetsMenuContainer` ขึ้นมารองรับการจัดการ State ทั้งหมด (เช่น การเปิด/ปิดเมนู, การลบสินทรัพย์, และ Click-outside) ตามกฎ Architecture อย่างเคร่งครัด
 
 ### 3. งานที่จะต้องทำเป็นลำดับถัดไป (Next Actions)
 
