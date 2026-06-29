@@ -1,4 +1,4 @@
-import { X, Loader2, Eye, EyeOff } from "lucide-react";
+import { Loader2, Eye, EyeOff } from "lucide-react";
 import {
   UseFormRegister,
   UseFormHandleSubmit,
@@ -8,6 +8,7 @@ import { ChangePasswordFormValues } from "../schemas/account.schema";
 import { useTranslation } from "@/shared/lib/i18n/useTranslation";
 import { Input } from "@/shared/components/customs/Input";
 import { Button } from "@/shared/components/customs/Button";
+import { ModalForm } from "@/shared/components/customs/ModalForm";
 
 interface ChangePasswordModalProps {
   isOpen: boolean;
@@ -42,129 +43,17 @@ export default function ChangePasswordModal({
 }: Readonly<ChangePasswordModalProps>) {
   const { t } = useTranslation();
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-primary-text/20 backdrop-blur-xs transition-opacity duration-300">
-      {/* Click outside to close */}
-      <div
-        className="absolute inset-0 cursor-default"
-        onClick={onClose}
-        aria-hidden="true"
-      />
-
-      {/* Modal Dialog Content */}
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="relative bg-surface border border-border rounded-lg shadow-lg max-w-sm w-full animate-subtle-pop z-10"
-      >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-          <span className="text-lg font-medium text-foreground">
-            {t("changePassword")}
-          </span>
-          <Button
-            variant="unstyled"
-            type="button"
-            onClick={onClose}
-            className="text-secondary-text hover:text-foreground cursor-pointer transition-colors"
-          >
-            <X size={20} />
-          </Button>
-        </div>
-        <div className="px-6 py-4 space-y-4">
-          <div className="space-y-1">
-            <p className="text-xs text-secondary-text font-semibold uppercase tracking-wider">
-              {t("currentPasswordLabel")}
-            </p>
-            <div className="relative flex items-center">
-              <Input
-                type={showCurrent ? "text" : "password"}
-                placeholder={t("placeholderCurrentPassword")}
-                disabled={isPending}
-                className="pr-10"
-                error={!!errors.currentPassword}
-                {...register("currentPassword")}
-              />
-              <Button
-                variant="unstyled"
-                type="button"
-                onClick={onToggleShowCurrent}
-                disabled={isPending}
-                className="absolute right-3 p-1 text-secondary-text/60 hover:text-secondary-text rounded-full transition-colors cursor-pointer flex items-center justify-center"
-                title={showCurrent ? t("hidePassword") : t("showPassword")}
-              >
-                {showCurrent ? <EyeOff size={16} /> : <Eye size={16} />}
-              </Button>
-            </div>
-            {errors.currentPassword && (
-              <p className="text-xs text-expense mt-0.5">
-                {errors.currentPassword.message}
-              </p>
-            )}
-          </div>
-          <div className="space-y-1">
-            <p className="text-xs text-secondary-text font-semibold uppercase tracking-wider">
-              {t("newPasswordLabel")}
-            </p>
-            <div className="relative flex items-center">
-              <Input
-                type={showNew ? "text" : "password"}
-                placeholder={t("placeholderNewPassword")}
-                disabled={isPending}
-                className="pr-10"
-                error={!!errors.newPassword}
-                {...register("newPassword")}
-              />
-              <Button
-                variant="unstyled"
-                type="button"
-                onClick={onToggleShowNew}
-                disabled={isPending}
-                className="absolute right-3 p-1 text-secondary-text/60 hover:text-secondary-text rounded-full transition-colors cursor-pointer flex items-center justify-center"
-                title={showNew ? t("hidePassword") : t("showPassword")}
-              >
-                {showNew ? <EyeOff size={16} /> : <Eye size={16} />}
-              </Button>
-            </div>
-            {errors.newPassword && (
-              <p className="text-xs text-expense mt-0.5">
-                {errors.newPassword.message}
-              </p>
-            )}
-          </div>
-          <div className="space-y-1">
-            <p className="text-xs text-secondary-text font-semibold uppercase tracking-wider">
-              {t("confirmNewPasswordLabel")}
-            </p>
-            <div className="relative flex items-center">
-              <Input
-                type={showConfirm ? "text" : "password"}
-                placeholder={t("placeholderConfirmNewPassword")}
-                disabled={isPending}
-                className="pr-10"
-                error={!!errors.confirmNewPassword}
-                {...register("confirmNewPassword")}
-              />
-              <Button
-                variant="unstyled"
-                type="button"
-                onClick={onToggleShowConfirm}
-                disabled={isPending}
-                className="absolute right-3 p-1 text-secondary-text/60 hover:text-secondary-text rounded-full transition-colors cursor-pointer flex items-center justify-center"
-                title={showConfirm ? t("hidePassword") : t("showPassword")}
-              >
-                {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
-              </Button>
-            </div>
-            {errors.confirmNewPassword && (
-              <p className="text-xs text-expense mt-0.5">
-                {errors.confirmNewPassword.message}
-              </p>
-            )}
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 px-6 py-4 bg-background/50 border-t border-border">
+    <ModalForm
+      isOpen={isOpen}
+      onClose={onClose}
+      title={t("changePassword")}
+      onSubmit={handleSubmit(onSubmit)}
+      headerClassName="px-6 py-4 border-b border-border bg-surface"
+      footerClassName="flex items-center gap-2 px-6 py-4 bg-background/50 border-t border-border mt-auto"
+      className="max-w-sm rounded-lg"
+      footer={
+        <>
           <Button
             variant="unstyled"
             type="button"
@@ -183,8 +72,99 @@ export default function ChangePasswordModal({
             {isPending && <Loader2 size={16} className="animate-spin" />}
             {t("saveChanges")}
           </Button>
+        </>
+      }
+    >
+      <div className="space-y-1">
+        <p className="text-xs text-secondary-text font-semibold uppercase tracking-wider">
+          {t("currentPasswordLabel")}
+        </p>
+        <div className="relative flex items-center">
+          <Input
+            type={showCurrent ? "text" : "password"}
+            placeholder={t("placeholderCurrentPassword")}
+            disabled={isPending}
+            className="pr-10"
+            error={!!errors.currentPassword}
+            {...register("currentPassword")}
+          />
+          <Button
+            variant="unstyled"
+            type="button"
+            onClick={onToggleShowCurrent}
+            disabled={isPending}
+            className="absolute right-3 p-1 text-secondary-text/60 hover:text-secondary-text rounded-full transition-colors cursor-pointer flex items-center justify-center"
+            title={showCurrent ? t("hidePassword") : t("showPassword")}
+          >
+            {showCurrent ? <EyeOff size={16} /> : <Eye size={16} />}
+          </Button>
         </div>
-      </form>
-    </div>
+        {errors.currentPassword && (
+          <p className="text-xs text-expense mt-0.5">
+            {errors.currentPassword.message}
+          </p>
+        )}
+      </div>
+      <div className="space-y-1">
+        <p className="text-xs text-secondary-text font-semibold uppercase tracking-wider">
+          {t("newPasswordLabel")}
+        </p>
+        <div className="relative flex items-center">
+          <Input
+            type={showNew ? "text" : "password"}
+            placeholder={t("placeholderNewPassword")}
+            disabled={isPending}
+            className="pr-10"
+            error={!!errors.newPassword}
+            {...register("newPassword")}
+          />
+          <Button
+            variant="unstyled"
+            type="button"
+            onClick={onToggleShowNew}
+            disabled={isPending}
+            className="absolute right-3 p-1 text-secondary-text/60 hover:text-secondary-text rounded-full transition-colors cursor-pointer flex items-center justify-center"
+            title={showNew ? t("hidePassword") : t("showPassword")}
+          >
+            {showNew ? <EyeOff size={16} /> : <Eye size={16} />}
+          </Button>
+        </div>
+        {errors.newPassword && (
+          <p className="text-xs text-expense mt-0.5">
+            {errors.newPassword.message}
+          </p>
+        )}
+      </div>
+      <div className="space-y-1">
+        <p className="text-xs text-secondary-text font-semibold uppercase tracking-wider">
+          {t("confirmNewPasswordLabel")}
+        </p>
+        <div className="relative flex items-center">
+          <Input
+            type={showConfirm ? "text" : "password"}
+            placeholder={t("placeholderConfirmNewPassword")}
+            disabled={isPending}
+            className="pr-10"
+            error={!!errors.confirmNewPassword}
+            {...register("confirmNewPassword")}
+          />
+          <Button
+            variant="unstyled"
+            type="button"
+            onClick={onToggleShowConfirm}
+            disabled={isPending}
+            className="absolute right-3 p-1 text-secondary-text/60 hover:text-secondary-text rounded-full transition-colors cursor-pointer flex items-center justify-center"
+            title={showConfirm ? t("hidePassword") : t("showPassword")}
+          >
+            {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
+          </Button>
+        </div>
+        {errors.confirmNewPassword && (
+          <p className="text-xs text-expense mt-0.5">
+            {errors.confirmNewPassword.message}
+          </p>
+        )}
+      </div>
+    </ModalForm>
   );
 }
