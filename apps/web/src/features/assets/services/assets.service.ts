@@ -25,7 +25,8 @@ export const updateAssetApi = async (
   return response.data;
 };
 
-export const deleteAssetApi = async (id: string): Promise<Asset> => {
-  const response = await http.delete<Asset>(`/assets/${id}`);
+export const deleteAssetApi = async (id: string, hardDelete?: boolean): Promise<Asset> => {
+  const query = hardDelete ? "?hard=true" : "";
+  const response = await http.delete<Asset>(`/assets/${id}${query}`);
   return response.data;
 };

@@ -24,9 +24,9 @@ export default function AssetsMenuContainer() {
     },
   });
 
-  const handleDelete = () => {
+  const handleDelete = (isHardDelete?: boolean) => {
     if (id) {
-      deleteAsset(id);
+      deleteAsset({ id, hardDelete: isHardDelete });
     }
   };
 

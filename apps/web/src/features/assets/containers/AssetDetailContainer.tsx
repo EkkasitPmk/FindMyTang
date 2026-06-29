@@ -5,6 +5,7 @@ import { useAssets } from "../hooks/assets.hook";
 import { useTransactionsQuery } from "../../transactions/hooks/transaction.hook";
 import EditAssetsContainer from "./EditAssetsContainer";
 import AssetDetail from "../components/AssetDetail";
+import ListAssetsContainer from "./ListAssetsContainer";
 
 export default function AssetDetailContainer() {
   const searchParams = useSearchParams();
@@ -22,42 +23,47 @@ export default function AssetDetailContainer() {
 
   return (
     <>
-      <AssetDetail
-        asset={asset}
-        transactionsData={transactionsData}
-        isLoading={isLoading}
-        isLoadingTransactions={isLoadingTransactions}
-        isAddMenuOpen={isAddMenuOpen}
-        onAddMenuToggle={() => setIsAddMenuOpen((prev) => !prev)}
-        onAddMenuClose={() => setIsAddMenuOpen(false)}
-        onTransferClick={() =>
-          router.push(`/transaction?type=TRANSFER&assetId=${asset?.id}`)
-        }
-        onAdjustmentClick={() =>
-          router.push(`/transaction?type=ADJUSTMENT&assetId=${asset?.id}`)
-        }
-        onEditClick={() => setIsEditModalOpen(true)}
-        onAddTransactionClick={() =>
-          router.push(`/transaction?assetId=${asset?.id}`)
-        }
-        onAddExpenseClick={() =>
-          router.push(`/transaction?type=EXPENSE&assetId=${asset?.id}`)
-        }
-        onAddIncomeClick={() =>
-          router.push(`/transaction?type=INCOME&assetId=${asset?.id}`)
-        }
-        onTransactionItemClick={(transaction) =>
-          router.push(
-            `/transaction?type=${transaction.type}&id=${transaction.id}&assetId=${asset?.id}`,
-          )
-        }
-      />
-
-      {isEditModalOpen && asset && (
-        <EditAssetsContainer
-          asset={asset}
-          onClose={() => setIsEditModalOpen(false)}
-        />
+      {id === null ? (
+        <ListAssetsContainer id={id} />
+      ) : (
+        <>
+          <AssetDetail
+            asset={asset}
+            transactionsData={transactionsData}
+            isLoading={isLoading}
+            isLoadingTransactions={isLoadingTransactions}
+            isAddMenuOpen={isAddMenuOpen}
+            onAddMenuToggle={() => setIsAddMenuOpen((prev) => !prev)}
+            onAddMenuClose={() => setIsAddMenuOpen(false)}
+            onTransferClick={() =>
+              router.push(`/transaction?type=TRANSFER&assetId=${asset?.id}`)
+            }
+            onAdjustmentClick={() =>
+              router.push(`/transaction?type=ADJUSTMENT&assetId=${asset?.id}`)
+            }
+            onEditClick={() => setIsEditModalOpen(true)}
+            onAddTransactionClick={() =>
+              router.push(`/transaction?assetId=${asset?.id}`)
+            }
+            onAddExpenseClick={() =>
+              router.push(`/transaction?type=EXPENSE&assetId=${asset?.id}`)
+            }
+            onAddIncomeClick={() =>
+              router.push(`/transaction?type=INCOME&assetId=${asset?.id}`)
+            }
+            onTransactionItemClick={(transaction) =>
+              router.push(
+                `/transaction?type=${transaction.type}&id=${transaction.id}&assetId=${asset?.id}`,
+              )
+            }
+          />
+          {isEditModalOpen && asset && (
+            <EditAssetsContainer
+              asset={asset}
+              onClose={() => setIsEditModalOpen(false)}
+            />
+          )}
+        </>
       )}
     </>
   );

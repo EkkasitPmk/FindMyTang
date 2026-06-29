@@ -11,7 +11,7 @@ interface AssetsMenuProps {
   setIsDeleteModalOpen: (isOpen: boolean) => void;
   menuRef: RefObject<HTMLDivElement | null>;
   assetName: string | null;
-  onDelete: () => void;
+  onDelete: (isHardDelete?: boolean) => void;
 }
 
 export default function AssetsMenu({
@@ -56,11 +56,14 @@ export default function AssetsMenu({
       <ConfirmModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
-        onConfirm={onDelete}
+        onConfirm={(isHardDelete) => onDelete(isHardDelete)}
         icon={Trash2}
         title="Delete Asset"
         des={`Are you sure you want to delete ${assetName || "this asset"}? This action cannot be undone.`}
         confirmLabel="Delete"
+        withHardDeleteOption={true}
+        hardDeleteCheckboxLabel="Delete permanently (Hard Delete)"
+        expectedInputToConfirm={assetName || ""}
       />
     </>
   );

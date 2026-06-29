@@ -36,7 +36,7 @@ export default function MainLayoutContainer({
     if (path === "/assets/new") return t("newAssets");
     if (path === "/settings/account") return t("account");
     if (path === "/settings") return t("navSettings");
-    if (path === "/assets") return assetName || "Asset Detail";
+    if (path === "/assets") return assetName || "Manage Assets";
     return "";
   };
   const mobileTitle = getMobileTitle(pathname);
@@ -66,7 +66,7 @@ export default function MainLayoutContainer({
         </Button>
       );
     }
-    if (pathname === "/assets") {
+    if (pathname === "/assets" && mobileTitle === assetName) {
       return <AssetsMenuContainer />;
     }
     return null;

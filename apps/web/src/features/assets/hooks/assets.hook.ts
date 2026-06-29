@@ -120,8 +120,8 @@ export const useDeleteAssetMutation = (options?: {
   const isGuest = useGuestStore((state) => state.isGuest);
   const deleteAsset = useGuestStore((state) => state.deleteAsset);
 
-  return useMutation<Asset, AxiosError<ApiErrorResponse>, string>({
-    mutationFn: async (id) => {
+  return useMutation<Asset, AxiosError<ApiErrorResponse>, { id: string; hardDelete?: boolean }>({
+    mutationFn: async ({ id, hardDelete }) => {
       if (isGuest) {
         const state = useGuestStore.getState();
         const existingAsset = state.assets.find((a) => a.id === id);
@@ -130,7 +130,7 @@ export const useDeleteAssetMutation = (options?: {
         }
         return existingAsset;
       }
-      return deleteAssetApi(id);
+      return deleteAssetApi(id, hardDelete);
     },
     ...options,
     onSuccess: (data) => {

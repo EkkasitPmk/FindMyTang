@@ -7,10 +7,12 @@ import { Button } from "@/shared/components/customs/Button";
 
 interface ListAssetsContainerProps {
   onAddAsset?: () => void;
+  id?: string | null;
 }
 
 export default function ListAssetsContainer({
   onAddAsset,
+  id,
 }: Readonly<ListAssetsContainerProps>) {
   const { data: assets, isLoading } = useAssets();
   const { data: summary } = useThisMonthSummary();
@@ -94,36 +96,42 @@ export default function ListAssetsContainer({
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-lg font-medium">Assets</span>
-        <Button
-          variant="unstyled"
-          type="button"
-          className="flex items-center justify-center bg-gray-100 hover:bg-gray-200 transition-colors p-1 rounded-full cursor-pointer"
-          onClick={onAddAsset}
-          aria-label="Add Asset"
-        >
-          <Plus size={18} className="text-gray-600" />
-        </Button>
-      </div>
+    <>
+      {id === null ? (
+        <div className="my-2">{renderAssetsList()}</div>
+      ) : (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-lg font-medium">Assets</span>
+            <Button
+              variant="unstyled"
+              type="button"
+              className="flex items-center justify-center bg-gray-100 hover:bg-gray-200 transition-colors p-1 rounded-full cursor-pointer"
+              onClick={onAddAsset}
+              aria-label="Add Asset"
+            >
+              <Plus size={18} className="text-gray-600" />
+            </Button>
+          </div>
 
-      {renderAssetsList()}
+          {renderAssetsList()}
 
-      <div className="flex gap-4">
-        <div className="flex flex-col grow px-4 py-3 rounded-md bg-white border border-outline-variant/30">
-          <span className="text-sm font-medium">Income</span>
-          <span className="text-base font-bold">
-            ฿ {summary?.income?.toLocaleString() ?? 0}
-          </span>
+          <div className="flex gap-4">
+            <div className="flex flex-col grow px-4 py-3 rounded-md bg-white border border-outline-variant/30">
+              <span className="text-sm font-medium">Income</span>
+              <span className="text-base font-bold">
+                ฿ {summary?.income?.toLocaleString() ?? 0}
+              </span>
+            </div>
+            <div className="flex flex-col grow px-4 py-3 rounded-md bg-white border border-outline-variant/30">
+              <span className="text-sm font-medium">Expense</span>
+              <span className="text-base font-bold">
+                ฿ {summary?.expense?.toLocaleString() ?? 0}
+              </span>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col grow px-4 py-3 rounded-md bg-white border border-outline-variant/30">
-          <span className="text-sm font-medium">Expense</span>
-          <span className="text-base font-bold">
-            ฿ {summary?.expense?.toLocaleString() ?? 0}
-          </span>
-        </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 }
