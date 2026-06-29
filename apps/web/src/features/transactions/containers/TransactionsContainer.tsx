@@ -1,7 +1,7 @@
 "use client";
-import { useState, useEffect, useRef, Suspense } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { ArrowRight, ChevronLeft } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useCategories } from "@/features/category/hooks/category.hook";
@@ -11,6 +11,8 @@ import {
   useCreateIncomeMutation,
   useCreateTransferMutation,
   useCreateAdjustmentMutation,
+  useTransactionsQuery,
+  useUpdateTransactionMutation,
 } from "../hooks/transaction.hook";
 import {
   createTransactionSchema,
@@ -24,88 +26,150 @@ import { SegmentedControl } from "@/shared/components/customs/SegmentedControl";
 import { CurrencyInput } from "@/shared/components/customs/CurrencyInput";
 import { getFormattedAmount } from "../utils/currency.util";
 import { formatDisplayDate } from "../helpers/date.helper";
+import {
+  submitTransaction,
+  resolveDefaultTransactionType,
+  createDefaultFormValues,
+  getActiveItemId,
+  parseAmountDigits,
+  convertDigitsToAmount,
+  convertAmountToDigits,
+} from "../helpers/transaction.helper";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/components/customs/Button";
+import { TransactionType } from "../types/transaction.type";
 
 export default function TransactionsContainer() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <TransactionsContainerContent />
-    </Suspense>
-  );
-}
-
-function TransactionsContainerContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const typeParam = searchParams.get("type");
+  const editId = searchParams.get("id");
   const hasAssetId = searchParams.has("assetId");
-  const defaultType =
-    typeParam === "INCOME" ||
-    typeParam === "EXPENSE" ||
-    typeParam === "TRANSFER" ||
-    typeParam === "ADJUSTMENT"
-      ? typeParam
-      : "EXPENSE";
   const defaultAssetId = searchParams.get("assetId") || null;
+  const typeParam = searchParams.get("type");
+
+  const queryParams = useMemo(
+    () => (hasAssetId ? { assetId: defaultAssetId! } : undefined),
+    [hasAssetId, defaultAssetId],
+  );
+  const { data: txData, isLoading } = useTransactionsQuery(queryParams);
+
+  const existingTx = useMemo(
+    () => txData?.items.find((t) => t.id === editId),
+    [txData, editId],
+  );
+  const defaultType = useMemo(
+    () => resolveDefaultTransactionType(existingTx, typeParam),
+    [existingTx, typeParam],
+  );
+
+  const [transactionType, setTransactionType] =
+    useState<TransactionType>(defaultType);
+
+  const [prevTxId, setPrevTxId] = useState<string | null>(null);
+  const [prevTypeParam, setPrevTypeParam] = useState<string | null>(typeParam);
+
+  const [amountDigits, setAmountDigits] = useState<string>("");
+  const [removedAttachment, setRemovedAttachment] = useState(false);
+  const [isMoreDetailsOpen, setIsMoreDetailsOpen] = useState(false);
+
+  const currentMonth = useMemo(
+    () => new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+    [],
+  );
+
+  const [displayMonth, setDisplayMonth] = useState<Date | undefined>(
+    currentMonth,
+  );
+
+  if (existingTx && existingTx.id !== prevTxId) {
+    setPrevTxId(existingTx.id);
+    setTransactionType(existingTx.type);
+    setAmountDigits(convertAmountToDigits(existingTx.amount));
+    setDisplayMonth(new Date(existingTx.transactionDate));
+    setRemovedAttachment(false);
+    if (existingTx.note || existingTx.attachmentUrl) setIsMoreDetailsOpen(true);
+  } else if (!existingTx && typeParam !== prevTypeParam) {
+    setPrevTypeParam(typeParam);
+    setTransactionType(resolveDefaultTransactionType(undefined, typeParam));
+  }
+
+  const defaultValues = useMemo(
+    () => createDefaultFormValues(existingTx, defaultAssetId),
+    [existingTx, defaultAssetId],
+  );
 
   const {
     handleSubmit,
     setValue,
+    control,
     reset,
+    register,
     formState: { errors },
   } = useForm<CreateTransactionFormValues>({
     resolver: zodResolver(createTransactionSchema),
-    defaultValues: {
-      amount: 0,
-      note: "",
-      transactionDate: new Date().toISOString(),
-      assetId: "",
-      categoryId: "",
-    },
+    defaultValues,
   });
 
-  const [date, setDate] = useState<Date | undefined>(new Date());
-  const [amountDigits, setAmountDigits] = useState<string>("");
+  useEffect(() => {
+    reset(defaultValues);
+  }, [defaultValues, reset]);
+
+  const watchTransactionDate = useWatch({ control, name: "transactionDate" });
+  const watchCategoryId = useWatch({ control, name: "categoryId" });
+  const watchAssetId = useWatch({ control, name: "assetId" });
+  const watchToAssetId = useWatch({ control, name: "toAssetId" });
+
+  const date = useMemo(
+    () => (watchTransactionDate ? new Date(watchTransactionDate) : new Date()),
+    [watchTransactionDate],
+  );
+
   const [file, setFile] = useState<File | null>(null);
 
-  const createExpense = useCreateExpenseMutation({
-    onSuccess: () => {
-      toast.success("Expense saved successfully!");
-      handleResetForm();
+  const handleSuccess = useCallback(
+    (message: string) => {
+      toast.success(message);
+      reset(defaultValues);
+      setAmountDigits("");
+      setFile(null);
     },
+    [reset, defaultValues],
+  );
+
+  const createExpense = useCreateExpenseMutation({
+    onSuccess: () => handleSuccess("Expense saved successfully!"),
   });
   const createIncome = useCreateIncomeMutation({
-    onSuccess: () => {
-      toast.success("Income saved successfully!");
-      handleResetForm();
-    },
+    onSuccess: () => handleSuccess("Income saved successfully!"),
   });
   const createTransfer = useCreateTransferMutation({
-    onSuccess: () => {
-      toast.success("Transfer saved successfully!");
-      handleResetForm();
-    },
+    onSuccess: () => handleSuccess("Transfer saved successfully!"),
   });
   const createAdjustment = useCreateAdjustmentMutation({
+    onSuccess: () => handleSuccess("Adjustment saved successfully!"),
+  });
+  const updateTransaction = useUpdateTransactionMutation({
     onSuccess: () => {
-      toast.success("Adjustment saved successfully!");
-      handleResetForm();
+      toast.success("Transaction updated successfully!");
+      if (editId) {
+        router.back();
+      } else {
+        reset(defaultValues);
+        setAmountDigits("");
+        setFile(null);
+      }
     },
   });
 
-  const [currentMonth] = useState<Date>(
-    new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-  );
-
   const [tempDate, setTempDate] = useState<Date | undefined>(date);
-  const [displayMonth, setDisplayMonth] = useState<Date | undefined>(
-    currentMonth || date || new Date(),
-  );
+
+  // displayMonth state is now managed above during render
 
   const handleConfirmDate = () => {
     if (tempDate) {
-      setDate(tempDate);
+      setValue("transactionDate", tempDate.toISOString(), {
+        shouldValidate: true,
+      });
     }
     setIsCalendarOpen(false);
   };
@@ -118,20 +182,6 @@ function TransactionsContainerContent() {
   };
 
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  const [isMoreDetailsOpen, setIsMoreDetailsOpen] = useState(false);
-  const [transactionType, setTransactionType] = useState<
-    "EXPENSE" | "INCOME" | "TRANSFER" | "ADJUSTMENT"
-  >(defaultType);
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
-    null,
-  );
-  const [selectedAssetId, setSelectedAssetId] = useState<string | null>(
-    defaultAssetId,
-  );
-  const [selectedAssetToId, setSelectedAssetToId] = useState<string | null>(
-    null,
-  );
-
   const [isPhotoMenuOpen, setIsPhotoMenuOpen] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -143,7 +193,10 @@ function TransactionsContainerContent() {
     }
   };
 
-  const handleRemoveFile = () => setFile(null);
+  const handleRemoveFile = () => {
+    setFile(null);
+    setRemovedAttachment(true);
+  };
 
   const handleTakeAPhoto = () => {
     setIsPhotoMenuOpen(false);
@@ -156,86 +209,62 @@ function TransactionsContainerContent() {
   };
 
   const { data: categories } = useCategories();
-  const filteredCategories =
-    categories?.filter((c) => c.type === (transactionType as string)) || [];
+  const filteredCategories = useMemo(
+    () =>
+      categories?.filter((c) => c.type === (transactionType as string)) || [],
+    [categories, transactionType],
+  );
 
   const { data: assets } = useAssets();
+  const safeAssets = useMemo(() => assets ?? [], [assets]);
 
-  const activeCategoryId =
-    selectedCategoryId &&
-    filteredCategories.some((c) => c.id === selectedCategoryId)
-      ? selectedCategoryId
-      : filteredCategories[0]?.id || null;
+  const activeCategoryId = getActiveItemId(watchCategoryId, filteredCategories);
+  const activeAssetId = getActiveItemId(watchAssetId, safeAssets);
 
-  const activeAssetId =
-    selectedAssetId && assets?.some((a) => a.id === selectedAssetId)
-      ? selectedAssetId
-      : assets?.[0]?.id || null;
-
-  const availableToAssets = assets?.filter((a) => a.id !== activeAssetId) || [];
-  const activeAssetToId =
-    selectedAssetToId &&
-    availableToAssets.some((a) => a.id === selectedAssetToId)
-      ? selectedAssetToId
-      : availableToAssets[0]?.id || null;
-
-  const handleResetForm = () => {
-    reset({
-      amount: 0,
-      note: "",
-      transactionDate: new Date().toISOString(),
-      assetId: activeAssetId || "",
-      categoryId: activeCategoryId || "",
-      toAssetId: activeAssetToId || "",
-    });
-    setAmountDigits("");
-    setFile(null);
-    setDate(new Date());
-  };
+  const availableToAssets = useMemo(
+    () => safeAssets.filter((a) => a.id !== activeAssetId),
+    [safeAssets, activeAssetId],
+  );
+  const activeAssetToId = getActiveItemId(watchToAssetId, availableToAssets);
 
   useEffect(() => {
+    const isCategoryType =
+      transactionType === "EXPENSE" || transactionType === "INCOME";
     if (
       activeCategoryId &&
-      (transactionType === "EXPENSE" || transactionType === "INCOME")
+      activeCategoryId !== watchCategoryId &&
+      isCategoryType
     ) {
       setValue("categoryId", activeCategoryId, { shouldValidate: true });
     }
-  }, [activeCategoryId, setValue, transactionType]);
+  }, [activeCategoryId, watchCategoryId, setValue, transactionType]);
 
   useEffect(() => {
-    if (activeAssetId)
+    if (activeAssetId && activeAssetId !== watchAssetId) {
       setValue("assetId", activeAssetId, { shouldValidate: true });
-  }, [activeAssetId, setValue]);
+    }
+  }, [activeAssetId, watchAssetId, setValue]);
 
   useEffect(() => {
-    if (date)
-      setValue("transactionDate", date.toISOString(), { shouldValidate: true });
-  }, [date, setValue]);
-
-  useEffect(() => {
-    if (transactionType === "TRANSFER" && activeAssetToId) {
+    if (
+      activeAssetToId &&
+      activeAssetToId !== watchToAssetId &&
+      transactionType === "TRANSFER"
+    ) {
       setValue("toAssetId", activeAssetToId, { shouldValidate: true });
     }
-  }, [activeAssetToId, setValue, transactionType]);
+  }, [activeAssetToId, watchToAssetId, setValue, transactionType]);
 
-  // --- Currency formatting logic ---
+  const handleResetForm = () => {
+    reset(defaultValues);
+    setAmountDigits("");
+    setFile(null);
+  };
+
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let digits = e.target.value.replace(/\D/g, "");
-    digits = digits.replace(/^0+/, "");
-    if (digits.length > 10) {
-      digits = digits.slice(0, 10);
-    }
+    const digits = parseAmountDigits(e.target.value);
     setAmountDigits(digits);
-
-    if (digits.length > 0) {
-      const padded = digits.padStart(3, "0");
-      const integerPart = padded.slice(0, -2);
-      const decimalPart = padded.slice(-2);
-      const numericVal = Number(`${integerPart}.${decimalPart}`);
-      setValue("amount", numericVal, { shouldValidate: true });
-    } else {
-      setValue("amount", 0, { shouldValidate: true });
-    }
+    setValue("amount", convertDigitsToAmount(digits), { shouldValidate: true });
   };
 
   const { displayAmount, numericAmount } = getFormattedAmount(amountDigits);
@@ -248,46 +277,29 @@ function TransactionsContainerContent() {
     const formData = new FormData(e?.target as HTMLFormElement);
     const note = formData.get("note") as string;
 
-    const finalData = { ...data, note, file: file || undefined };
-
-    if (transactionType === "TRANSFER") {
-      if (!data.toAssetId) {
-        toast.error("Please select a target asset");
-        return;
-      }
-    } else if (transactionType === "EXPENSE" || transactionType === "INCOME") {
-      if (!data.categoryId) {
-        toast.error("Please select a category");
-        return;
-      }
-    }
-
-    if (transactionType === "EXPENSE") {
-      createExpense.mutate({
-        ...finalData,
-        categoryId: data.categoryId as string,
-      });
-    } else if (transactionType === "INCOME") {
-      createIncome.mutate({
-        ...finalData,
-        categoryId: data.categoryId as string,
-      });
-    } else if (transactionType === "TRANSFER") {
-      createTransfer.mutate({
-        ...finalData,
-        toAssetId: data.toAssetId as string,
-      });
-    } else if (transactionType === "ADJUSTMENT") {
-      const selectedAsset = assets?.find((a) => a.id === data.assetId);
-      const currentBalance = selectedAsset ? selectedAsset.balance : 0;
-      const difference = finalData.amount - currentBalance;
-
-      createAdjustment.mutate({
-        ...finalData,
-        amount: difference,
-      });
-    }
+    submitTransaction({
+      transactionType,
+      data: { ...data, note },
+      file,
+      assets: safeAssets,
+      createExpense,
+      createIncome,
+      createTransfer,
+      createAdjustment,
+      updateTransaction,
+      editId,
+      removedAttachment,
+      toast,
+    });
   };
+
+  if (editId && isLoading) {
+    return (
+      <div className="flex flex-col h-[calc(100dvh-100px)] items-center justify-center">
+        <p className="text-gray-500">Loading transaction...</p>
+      </div>
+    );
+  }
 
   return (
     <form
@@ -312,18 +324,23 @@ function TransactionsContainerContent() {
           </Button>
         )}
         <p className="text-center text-2xl font-bold absolute left-1/2 -translate-x-1/2 truncate">
-          Add Transaction
+          {editId ? "Edit Transaction" : "Add Transaction"}
         </p>
       </div>
 
       <SegmentedControl
         value={transactionType}
-        onChange={setTransactionType}
+        onChange={(val) => setTransactionType(val as TransactionType)}
         options={[
           { label: "Expense", value: "EXPENSE" },
           { label: "Income", value: "INCOME" },
-          { label: "Transfer", value: "TRANSFER" },
-          { label: "Adjustment", value: "ADJUSTMENT" },
+          ...(editId &&
+          (existingTx?.type === "EXPENSE" || existingTx?.type === "INCOME")
+            ? []
+            : [
+                { label: "Transfer", value: "TRANSFER" },
+                { label: "Adjustment", value: "ADJUSTMENT" },
+              ]),
         ]}
       />
 
@@ -342,17 +359,23 @@ function TransactionsContainerContent() {
       {(transactionType === "EXPENSE" || transactionType === "INCOME") && (
         <TransactionCategoryList
           categories={filteredCategories}
-          activeCategoryId={activeCategoryId}
-          onSelectCategory={setSelectedCategoryId}
+          activeCategoryId={watchCategoryId || null}
+          onSelectCategory={(id) =>
+            setValue("categoryId", id, { shouldValidate: true })
+          }
         />
       )}
 
       <TransactionAssetList
-        assets={assets ?? []}
-        activeAssetId={activeAssetId}
-        onSelectAsset={setSelectedAssetId}
-        activeAssetToId={activeAssetToId}
-        onSelectAssetTo={setSelectedAssetToId}
+        assets={safeAssets}
+        activeAssetId={watchAssetId || null}
+        onSelectAsset={(id) =>
+          setValue("assetId", id, { shouldValidate: true })
+        }
+        activeAssetToId={watchToAssetId || null}
+        onSelectAssetTo={(id) =>
+          setValue("toAssetId", id, { shouldValidate: true })
+        }
         transactionType={transactionType}
       />
 
@@ -371,15 +394,16 @@ function TransactionsContainerContent() {
         isPhotoMenuOpen={isPhotoMenuOpen}
         setIsPhotoMenuOpen={setIsPhotoMenuOpen}
         file={file}
+        attachmentUrl={removedAttachment ? null : existingTx?.attachmentUrl}
         onRemoveFile={handleRemoveFile}
         onTakeAPhoto={handleTakeAPhoto}
         onSelectAPhoto={handleSelectAPhoto}
         fileInputRef={fileInputRef}
         cameraInputRef={cameraInputRef}
         handleFileChange={handleFileChange}
+        register={register}
       />
 
-      {/* Save Transaction */}
       <section className="fixed bottom-18 left-0 right-0 mx-4 bg-background pt-2">
         <Button
           variant="unstyled"
@@ -388,7 +412,8 @@ function TransactionsContainerContent() {
             createExpense.isPending ||
             createIncome.isPending ||
             createTransfer.isPending ||
-            createAdjustment.isPending
+            createAdjustment.isPending ||
+            updateTransaction.isPending
           }
           className="flex items-center justify-center gap-2 bg-primary w-full text-white py-3 rounded-xl text-base font-bold capitalize disabled:opacity-50"
         >
@@ -396,7 +421,6 @@ function TransactionsContainerContent() {
           <ArrowRight size={18} />
         </Button>
       </section>
-      {/* Save Transaction */}
     </form>
   );
 }

@@ -7,6 +7,7 @@ import {
   TransactionResponse,
   TransactionQuery,
   PaginatedTransactionResponse,
+  UpdateTransactionRequest,
 } from "../types/transaction.type";
 
 export const createExpenseApi = async (
@@ -106,6 +107,33 @@ export const getTransactionsApi = async (
   const response = await http.get<PaginatedTransactionResponse>(
     "/transactions",
     { params },
+  );
+  return response.data;
+};
+
+export const updateTransactionApi = async (
+  id: string,
+  data: UpdateTransactionRequest,
+): Promise<TransactionResponse> => {
+  const formData = new FormData();
+  formData.append("type", data.type);
+  formData.append("assetId", data.assetId);
+  formData.append("amount", data.amount.toString());
+  if (data.note) formData.append("note", data.note);
+  formData.append("date", data.transactionDate);
+  if (data.toAssetId) formData.append("toAssetId", data.toAssetId);
+  if (data.categoryId) formData.append("categoryId", data.categoryId);
+  if (data.attachmentUrl === null) formData.append("attachmentUrl", "");
+  if (data.file) formData.append("file", data.file);
+
+  const response = await http.patch<TransactionResponse>(
+    `/transactions/${id}`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    },
   );
   return response.data;
 };

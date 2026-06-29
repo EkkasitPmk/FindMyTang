@@ -7,6 +7,8 @@ import {
   CirclePlus,
   X,
 } from "lucide-react";
+import { UseFormRegister } from "react-hook-form";
+import { CreateTransactionFormValues } from "../schemas/transaction.schema";
 import ChooseADate from "./ChooseADate";
 import { Button } from "@/shared/components/customs/Button";
 
@@ -25,12 +27,14 @@ interface TransactionMoreDetailsProps {
   isPhotoMenuOpen: boolean;
   setIsPhotoMenuOpen: (open: boolean) => void;
   file: File | null;
+  attachmentUrl?: string | null;
   onRemoveFile: () => void;
   onTakeAPhoto: () => void;
   onSelectAPhoto: () => void;
   fileInputRef: React.RefObject<HTMLInputElement | null>;
   cameraInputRef: React.RefObject<HTMLInputElement | null>;
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  register: UseFormRegister<CreateTransactionFormValues>;
 }
 
 export default function TransactionMoreDetails({
@@ -48,13 +52,127 @@ export default function TransactionMoreDetails({
   isPhotoMenuOpen,
   setIsPhotoMenuOpen,
   file,
+  attachmentUrl,
   onRemoveFile,
   onTakeAPhoto,
   onSelectAPhoto,
   fileInputRef,
   cameraInputRef,
   handleFileChange,
+  register,
 }: Readonly<TransactionMoreDetailsProps>) {
+  const renderAttachment = () => {
+    if (file) {
+      return (
+        <div className="w-full flex flex-col items-center justify-center rounded-md border-2 border-border relative overflow-hidden">
+          <Image
+            src={URL.createObjectURL(file)}
+            alt="attachment preview"
+            width={0}
+            height={0}
+            sizes="100vw"
+            className="w-full h-auto object-contain"
+            unoptimized
+          />
+          <Button
+            variant="unstyled"
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onRemoveFile();
+            }}
+            className="absolute top-2 right-2 p-1.5 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors"
+          >
+            <X size={16} className="text-white" />
+          </Button>
+        </div>
+      );
+    }
+
+    if (attachmentUrl) {
+      return (
+        <div className="w-full flex flex-col items-center justify-center rounded-md border-2 border-border relative overflow-hidden">
+          <Image
+            src={attachmentUrl}
+            alt="existing attachment"
+            width={0}
+            height={0}
+            sizes="100vw"
+            className="w-full h-auto object-contain"
+            unoptimized
+          />
+          <Button
+            variant="unstyled"
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onRemoveFile();
+            }}
+            className="absolute top-2 right-2 p-1.5 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors"
+          >
+            <X size={16} className="text-white" />
+          </Button>
+        </div>
+      );
+    }
+
+    return (
+      <div className="relative w-full">
+        <Button
+          variant="unstyled"
+          type="button"
+          onClick={() => setIsPhotoMenuOpen(!isPhotoMenuOpen)}
+          className="w-full h-44 flex flex-col items-center justify-center gap-1 rounded-md border-2 border-border border-dashed"
+        >
+          <Camera size={24} className="text-secondary-text" />
+          <div className="text-secondary-text flex items-center gap-1">
+            <CirclePlus size={14} />
+            <p className="text-sm font-medium">Add Photo</p>
+          </div>
+        </Button>
+
+        {isPhotoMenuOpen && (
+          <>
+            <Button
+              variant="unstyled"
+              type="button"
+              aria-label="Close photo menu"
+              className="fixed inset-0 z-10 w-full h-full cursor-default border-none outline-none bg-transparent"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsPhotoMenuOpen(false);
+              }}
+            />
+            <div className="absolute top-[65%] left-1/2 -translate-x-1/2 bg-white px-3 py-1 rounded-md border border-border flex flex-col items-start justify-center z-20 shadow-lg min-w-37.5">
+              <Button
+                variant="unstyled"
+                type="button"
+                className="text-sm font-medium text-left w-full py-2 hover:text-primary transition-colors cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onTakeAPhoto();
+                }}
+              >
+                Take a photo
+              </Button>
+              <Button
+                variant="unstyled"
+                type="button"
+                className="text-sm font-medium text-left w-full py-2 hover:text-primary transition-colors cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSelectAPhoto();
+                }}
+              >
+                Select a photo
+              </Button>
+            </div>
+          </>
+        )}
+      </div>
+    );
+  };
+
   return (
     <>
       <div className="flex items-center justify-center">
@@ -142,10 +260,10 @@ export default function TransactionMoreDetails({
               </div>
 
               <textarea
-                name="note"
                 id="note"
                 placeholder="Add a note..."
                 className="w-full min-h-15 max-h-30 placeholder:text-secondary-text outline-none transition-all bg-white"
+                {...register("note")}
               ></textarea>
             </div>
 
@@ -153,84 +271,7 @@ export default function TransactionMoreDetails({
               <p className="uppercase text-xs text-secondary-text font-medium">
                 ATTACHMENT
               </p>
-              {file ? (
-                <div className="w-full flex flex-col items-center justify-center rounded-md border-2 border-border relative overflow-hidden">
-                  <Image
-                    src={URL.createObjectURL(file)}
-                    alt="attachment preview"
-                    width={0}
-                    height={0}
-                    sizes="100vw"
-                    className="w-full h-auto object-contain"
-                    unoptimized
-                  />
-                  <Button
-                    variant="unstyled"
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onRemoveFile();
-                    }}
-                    className="absolute top-2 right-2 p-1.5 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors"
-                  >
-                    <X size={16} className="text-white" />
-                  </Button>
-                </div>
-              ) : (
-                <div className="relative w-full">
-                  <Button
-                    variant="unstyled"
-                    type="button"
-                    onClick={() => setIsPhotoMenuOpen(!isPhotoMenuOpen)}
-                    className="w-full h-44 flex flex-col items-center justify-center gap-1 rounded-md border-2 border-border border-dashed"
-                  >
-                    <Camera size={24} className="text-secondary-text" />
-                    <div className="text-secondary-text flex items-center gap-1">
-                      <CirclePlus size={14} />
-                      <p className="text-sm font-medium">Add Photo</p>
-                    </div>
-                  </Button>
-
-                  {isPhotoMenuOpen && (
-                    <>
-                      <Button
-                        variant="unstyled"
-                        type="button"
-                        aria-label="Close photo menu"
-                        className="fixed inset-0 z-10 w-full h-full cursor-default border-none outline-none bg-transparent"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setIsPhotoMenuOpen(false);
-                        }}
-                      />
-                      <div className="absolute top-[65%] left-1/2 -translate-x-1/2 bg-white px-3 py-1 rounded-md border border-border flex flex-col items-start justify-center z-20 shadow-lg min-w-37.5">
-                        <Button
-                          variant="unstyled"
-                          type="button"
-                          className="text-sm font-medium text-left w-full py-2 hover:text-primary transition-colors cursor-pointer"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onTakeAPhoto();
-                          }}
-                        >
-                          Take a photo
-                        </Button>
-                        <Button
-                          variant="unstyled"
-                          type="button"
-                          className="text-sm font-medium text-left w-full py-2 hover:text-primary transition-colors cursor-pointer"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onSelectAPhoto();
-                          }}
-                        >
-                          Select a photo
-                        </Button>
-                      </div>
-                    </>
-                  )}
-                </div>
-              )}
+              {renderAttachment()}
               <input
                 type="file"
                 accept="image/*"

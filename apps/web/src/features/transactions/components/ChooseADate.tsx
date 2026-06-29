@@ -1,6 +1,8 @@
 import { Card, CardContent, CardFooter } from "@/shared/components/ui/card";
 import { Calendar } from "@/shared/components/ui/calendar";
 import { Button } from "@/shared/components/ui/button";
+import { getDiffDays } from "../helpers/date.helper";
+import { cn } from "@/shared/lib/utils";
 
 interface ChooseADateProps {
   selectedDate: Date | undefined;
@@ -19,6 +21,8 @@ export default function ChooseADate({
   onConfirm,
   onPresetClick,
 }: Readonly<ChooseADateProps>) {
+  const diffDays = getDiffDays(selectedDate);
+
   return (
     <Card
       className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 mx-auto w-fit max-w-74 data-[size=sm]:py-1 data-[size=sm]:gap-2 shadow-2xl z-50"
@@ -53,16 +57,26 @@ export default function ChooseADate({
         ].map((preset) => (
           <Button
             key={preset.value}
+            type="button"
             variant="outline"
             size="sm"
-            className="flex-1"
+            className={cn(
+              "flex-1 transition-colors",
+              diffDays === preset.value
+                ? "bg-blue-50 text-blue-500 border-blue-500 hover:bg-blue-50 hover:text-blue-600"
+                : "",
+            )}
             onClick={() => onPresetClick(preset.value)}
           >
             {preset.label}
           </Button>
         ))}
       </CardFooter>
-      <Button className="mb-2 mx-2 bg-blue-500 text-white" onClick={onConfirm}>
+      <Button
+        type="button"
+        className="mb-2 mx-2 bg-blue-500 text-white"
+        onClick={onConfirm}
+      >
         Confirm
       </Button>
     </Card>

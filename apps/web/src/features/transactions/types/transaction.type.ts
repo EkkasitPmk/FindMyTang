@@ -37,6 +37,18 @@ export interface CreateAdjustmentRequest {
   file?: File;
 }
 
+export interface UpdateTransactionRequest {
+  type: TransactionType;
+  assetId: string;
+  amount: number;
+  note?: string;
+  transactionDate: string;
+  toAssetId?: string;
+  categoryId?: string;
+  attachmentUrl?: string | null;
+  file?: File | null;
+}
+
 export type TransactionType = "INCOME" | "EXPENSE" | "TRANSFER" | "ADJUSTMENT";
 
 export interface TransactionResponse {

@@ -1,5 +1,5 @@
-export function formatDisplayDate(date: Date | undefined): string {
-  if (!date) return "";
+export function getDiffDays(date: Date | undefined): number | null {
+  if (!date) return null;
   const today = new Date();
   const startOfToday = new Date(
     today.getFullYear(),
@@ -13,7 +13,12 @@ export function formatDisplayDate(date: Date | undefined): string {
   );
 
   const diffTime = startOfSelected.getTime() - startOfToday.getTime();
-  const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+  return Math.round(diffTime / (1000 * 60 * 60 * 24));
+}
+
+export function formatDisplayDate(date: Date | undefined): string {
+  const diffDays = getDiffDays(date);
+  if (diffDays === null || !date) return "";
 
   let prefix = "";
   if (diffDays === 0) {
