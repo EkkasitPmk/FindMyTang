@@ -19,8 +19,7 @@ export class JwtRefreshStrategy extends PassportStrategy(
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: Request) => {
           const cookies = request?.cookies as
-            | Record<string, unknown>
-            | undefined;
+            Record<string, unknown> | undefined;
           return (cookies?.refresh_token as string | undefined) || null;
         },
       ]),

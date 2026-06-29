@@ -27,7 +27,10 @@ export class UserService {
 
     // ponytail: compare existing password if it is set. If not set (e.g. guest/oauth), skip check.
     if (user.password) {
-      const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+      const isPasswordValid = await bcrypt.compare(
+        currentPassword,
+        user.password,
+      );
       if (!isPasswordValid) {
         throw new BadRequestException("Incorrect current password");
       }
