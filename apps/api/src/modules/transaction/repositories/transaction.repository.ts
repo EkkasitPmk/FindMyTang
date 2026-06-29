@@ -62,7 +62,7 @@ export class TransactionRepository {
           toAsset: true,
           category: true,
         },
-        orderBy: { date: "desc" },
+        orderBy: [{ date: "desc" }, { createdAt: "desc" }],
         skip,
         take: limit,
       }),
