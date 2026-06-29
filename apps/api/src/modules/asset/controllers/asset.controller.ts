@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   UseGuards,
+  Query,
 } from "@nestjs/common";
 import { AssetService } from "../services/asset.service";
 import { CreateAssetDto } from "../dto/create-asset.dto";
@@ -70,9 +71,14 @@ export class AssetController {
 
   @Delete(":id")
   @UseGuards(JwtAuthGuard)
-  async delete(@Param("id") id: string, @CurrentUser() user: User) {
-    // ponytail: Delete asset endpoint, mapping Prisma Decimal to number in response.
-    const asset = await this.assetService.delete(id, user.id);
+  async delete(
+    @Param("id") id: string,
+    @CurrentUser() user: User,
+    @Query("hard") hard?: string,
+  ) {
+    // ponytail: Delete asset endpoint, mapping Prisma Decimal to number in response. Supports hard delete.
+    const isHard = hard === "true";
+    const asset = await this.assetService.delete(id, user.id, isHard);
     return {
       id: asset.id,
       name: asset.name,

@@ -43,6 +43,24 @@ export class AssetRepository {
     });
   }
 
+  async findAttachmentsByAssetId(
+    id: string,
+    userId: string,
+  ): Promise<string[]> {
+    // ponytail: Finds all non-null attachment URLs for transactions associated with this asset.
+    const transactions = await this.prisma.transaction.findMany({
+      where: {
+        userId,
+        OR: [{ assetId: id }, { toAssetId: id }],
+        attachmentUrl: { not: null },
+      },
+      select: { attachmentUrl: true },
+    });
+    return transactions
+      .map((t) => t.attachmentUrl)
+      .filter((url): url is string => Boolean(url));
+  }
+
   async update(
     id: string,
     userId: string,
@@ -61,14 +79,30 @@ export class AssetRepository {
     });
   }
 
-  async delete(id: string, userId: string): Promise<Asset> {
-    // ponytail: Soft deletes an asset matching id and userId.
+  async delete(
+    id: string,
+    userId: string,
+    hard: boolean = false,
+  ): Promise<Asset> {
+    // ponytail: Soft deletes or hard deletes an asset matching id and userId.
     const asset = await this.prisma.asset.findFirst({
       where: { id, userId, deletedAt: null },
     });
     if (!asset) {
       throw new Error("Asset not found or access denied");
     }
+
+    if (hard) {
+      // Clean up transactions where this asset is the destination (toAssetId)
+      // Transactions where this asset is the source (assetId) will cascade automatically.
+      await this.prisma.transaction.deleteMany({
+        where: { toAssetId: id },
+      });
+      return this.prisma.asset.delete({
+        where: { id },
+      });
+    }
+
     return this.prisma.asset.update({
       where: { id },
       data: { deletedAt: new Date() },
