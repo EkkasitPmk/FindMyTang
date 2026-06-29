@@ -24,16 +24,22 @@ export default function TransactionAssetList({
         ASSET
         {transactionType === "TRANSFER" && " (from)"}
       </p>
-      <div className="flex gap-2 py-1 overflow-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
-        {assets.map((asset) => (
-          <TransactionAssetItem
-            key={asset.id}
-            asset={asset}
-            isSelected={activeAssetId === asset.id}
-            onClick={onSelectAsset}
-          />
-        ))}
-      </div>
+      {assets.length === 0 ? (
+        <p className="text-xs text-red-500 border border-error text-center py-4 rounded-md my-1">
+          No assets found. Please add an asset first.
+        </p>
+      ) : (
+        <div className="flex gap-2 py-1 overflow-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
+          {assets.map((asset) => (
+            <TransactionAssetItem
+              key={asset.id}
+              asset={asset}
+              isSelected={activeAssetId === asset.id}
+              onClick={onSelectAsset}
+            />
+          ))}
+        </div>
+      )}
 
       {transactionType === "TRANSFER" && (
         <>
