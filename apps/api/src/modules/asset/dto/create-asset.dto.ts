@@ -18,7 +18,7 @@ export class CreateAssetDto {
   @IsString()
   @IsNotEmpty({ message: "Asset name is required" })
   @MaxLength(100, { message: "Asset name must not exceed 100 characters" })
-  name: string;
+  name!: string;
 
   @ApiProperty({
     description: "Type of the asset",
@@ -27,7 +27,7 @@ export class CreateAssetDto {
   })
   @IsEnum(AssetType, { message: "Invalid asset type" })
   @IsNotEmpty({ message: "Asset type is required" })
-  type: AssetType;
+  type!: AssetType;
 
   @ApiProperty({
     description: "Initial balance of the asset",
@@ -39,7 +39,6 @@ export class CreateAssetDto {
   @IsOptional()
   balance?: number;
 
-
   @ApiProperty({
     description: "Hex color code for the asset",
     example: "#3B82F6",
@@ -48,5 +47,4 @@ export class CreateAssetDto {
   @IsString()
   @IsOptional()
   color?: string;
-
 }
