@@ -6,6 +6,7 @@ import {
   UseFormHandleSubmit,
 } from "react-hook-form";
 import { RegisterFormValues } from "../schemas/register.schema";
+import { Input } from "@/shared/components/customs/Input";
 
 interface RegisterFormProps {
   register: UseFormRegister<RegisterFormValues>;
@@ -30,7 +31,6 @@ export default function RegisterForm({
   onToggleShowPassword,
   onToggleShowConfirmPassword,
 }: Readonly<RegisterFormProps>) {
-
   return (
     <div className="min-h-screen flex flex-col justify-center bg-background py-8 px-4 sm:px-6 lg:px-8">
       {/* Main Registration Content */}
@@ -49,11 +49,12 @@ export default function RegisterForm({
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
           {/* Display Name */}
           <div className="flex flex-col gap-1.5">
-            <input
+            <Input
               type="text"
               placeholder="Display Name"
+              className="bg-surface-secondary"
+              error={!!errors.displayName}
               {...register("displayName")}
-              className="w-full h-12 px-4 bg-surface-secondary border border-border/50 rounded-lg text-primary-text placeholder:text-secondary-text/60 focus:ring-2 focus:ring-primary/20 outline-none transition-all duration-200"
             />
             {errors.displayName && (
               <p className="text-xs text-expense font-medium">
@@ -64,11 +65,12 @@ export default function RegisterForm({
 
           {/* Email Address */}
           <div className="flex flex-col gap-1.5">
-            <input
+            <Input
               type="email"
               placeholder="Email address"
+              className="bg-surface-secondary"
+              error={!!errors.email}
               {...register("email")}
-              className="w-full h-12 px-4 bg-surface-secondary border border-border/50 rounded-lg text-primary-text placeholder:text-secondary-text/60 focus:ring-2 focus:ring-primary/20 outline-none transition-all duration-200"
             />
             {errors.email && (
               <p className="text-xs text-expense font-medium">
@@ -80,11 +82,12 @@ export default function RegisterForm({
           {/* Password */}
           <div className="flex flex-col gap-1.5">
             <div className="relative">
-              <input
+              <Input
                 type={showPassword ? "text" : "password"}
                 placeholder="Password"
+                className="pr-12 bg-surface-secondary"
+                error={!!errors.password}
                 {...register("password")}
-                className="w-full h-12 pl-4 pr-12 bg-surface-secondary border border-border/50 rounded-lg text-primary-text placeholder:text-secondary-text/60 focus:ring-2 focus:ring-primary/20 outline-none transition-all duration-200"
               />
               <button
                 type="button"
@@ -108,11 +111,12 @@ export default function RegisterForm({
           {/* Confirm Password */}
           <div className="flex flex-col gap-1.5">
             <div className="relative">
-              <input
+              <Input
                 type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm Password"
+                className="pr-12 bg-surface-secondary"
+                error={!!errors.confirmPassword}
                 {...register("confirmPassword")}
-                className="w-full h-12 pl-4 pr-12 bg-surface-secondary border border-border/50 rounded-lg text-primary-text placeholder:text-secondary-text/60 focus:ring-2 focus:ring-primary/20 outline-none transition-all duration-200"
               />
               <button
                 type="button"
