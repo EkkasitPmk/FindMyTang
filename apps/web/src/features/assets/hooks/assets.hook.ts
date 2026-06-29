@@ -50,7 +50,7 @@ export const useCreateAssetMutation = (options?: {
     ...options,
     onSuccess: (data) => {
       if (isGuest) {
-        addAsset(data as Asset);
+        addAsset(data);
       } else {
         void queryClient.invalidateQueries({ queryKey: ["assets"] });
       }
@@ -83,7 +83,7 @@ export const useUpdateAssetMutation = (options?: {
           ...existingAsset,
           ...data,
           updatedAt: new Date().toISOString(),
-        } as Asset;
+        };
         return mockResponse;
       }
       return updateAssetApi(id, data);
@@ -91,7 +91,7 @@ export const useUpdateAssetMutation = (options?: {
     ...options,
     onSuccess: (data) => {
       if (isGuest) {
-        updateAsset(data.id, data as Partial<Asset>);
+        updateAsset(data.id, data);
       } else {
         void queryClient.invalidateQueries({ queryKey: ["assets"] });
       }
@@ -120,7 +120,11 @@ export const useDeleteAssetMutation = (options?: {
   const isGuest = useGuestStore((state) => state.isGuest);
   const deleteAsset = useGuestStore((state) => state.deleteAsset);
 
-  return useMutation<Asset, AxiosError<ApiErrorResponse>, { id: string; hardDelete?: boolean }>({
+  return useMutation<
+    Asset,
+    AxiosError<ApiErrorResponse>,
+    { id: string; hardDelete?: boolean }
+  >({
     mutationFn: async ({ id, hardDelete }) => {
       if (isGuest) {
         const state = useGuestStore.getState();
