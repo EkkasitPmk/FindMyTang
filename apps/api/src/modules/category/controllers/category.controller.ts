@@ -59,10 +59,7 @@ export class CategoryController {
 
   @Patch("reorder")
   @UseGuards(JwtAuthGuard)
-  async reorder(
-    @CurrentUser() user: User,
-    @Body("ids") ids: string[],
-  ) {
+  async reorder(@CurrentUser() user: User, @Body("ids") ids: string[]) {
     // ponytail: Reorder categories endpoint.
     await this.categoryService.reorder(user.id, ids);
     return { success: true };

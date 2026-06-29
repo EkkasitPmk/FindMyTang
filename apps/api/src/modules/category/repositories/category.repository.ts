@@ -41,10 +41,7 @@ export class CategoryRepository {
     // ponytail: Fetches all categories belonging to the user that are not soft-deleted, sorted by displayOrder ASC, then createdAt ASC.
     return this.prisma.category.findMany({
       where: { userId, deletedAt: null },
-      orderBy: [
-        { displayOrder: "asc" },
-        { createdAt: "asc" },
-      ],
+      orderBy: [{ displayOrder: "asc" }, { createdAt: "asc" }],
     });
   }
 
