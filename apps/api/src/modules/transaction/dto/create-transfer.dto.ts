@@ -14,18 +14,18 @@ export class CreateTransferDto {
   @ApiProperty({ description: "Asset ID", example: "uuid-here" })
   @IsString()
   @IsNotEmpty()
-  assetId: string;
+  assetId!: string;
 
   @ApiProperty({ description: "Target Asset ID" })
   @IsString()
   @IsNotEmpty()
-  toAssetId: string;
+  toAssetId!: string;
 
   @ApiProperty({ description: "Transfer amount (must be > 0)", example: 150.5 })
   @Type(() => Number)
   @IsNumber()
   @IsPositive({ message: "Amount must be greater than 0" })
-  amount: number;
+  amount!: number;
 
   @ApiProperty({
     description: "Optional note",
@@ -43,5 +43,5 @@ export class CreateTransferDto {
   })
   @IsDateString()
   @IsNotEmpty()
-  transactionDate: string;
+  transactionDate!: string;
 }

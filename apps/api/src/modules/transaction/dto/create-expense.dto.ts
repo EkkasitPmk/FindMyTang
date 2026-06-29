@@ -15,18 +15,18 @@ export class CreateExpenseDto {
   @ApiProperty({ description: "Asset ID", example: "uuid-here" })
   @IsString()
   @IsNotEmpty()
-  assetId: string;
+  assetId!: string;
 
   @ApiProperty({ description: "Category ID (must be EXPENSE type)" })
   @IsString()
   @IsNotEmpty()
-  categoryId: string;
+  categoryId!: string;
 
   @ApiProperty({ description: "Expense amount (must be > 0)", example: 150.5 })
   @Type(() => Number)
   @IsNumber()
   @IsPositive({ message: "Amount must be greater than 0" })
-  amount: number;
+  amount!: number;
 
   @ApiProperty({
     description: "Optional note",
@@ -44,5 +44,5 @@ export class CreateExpenseDto {
   })
   @IsDateString()
   @IsNotEmpty()
-  transactionDate: string;
+  transactionDate!: string;
 }

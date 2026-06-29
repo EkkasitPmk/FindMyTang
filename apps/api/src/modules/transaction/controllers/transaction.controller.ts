@@ -22,12 +22,18 @@ import { UpdateTransactionDto } from "../dto/update-transaction.dto";
 import { JwtAuthGuard } from "../../auth/guards/jwt-auth.guard";
 import { CurrentUser } from "../../auth/decorators/current-user.decorator";
 import { TransactionType } from "@prisma/client";
-import type { User, Transaction } from "@prisma/client";
+import type { User, Transaction, Asset, Category } from "@prisma/client";
 import { TransactionQueryDto } from "../dto/transaction-query.dto";
+
+type TransactionWithRelations = Transaction & {
+  asset?: Asset | null;
+  toAsset?: Asset | null;
+  category?: Category | null;
+};
 
 // ponytail: maps Prisma Transaction to a plain JSON-safe object (Decimal → number)
 // and handles included relations if present
-function toResponse(tx: any) {
+function toResponse(tx: TransactionWithRelations) {
   return {
     id: tx.id,
     type: tx.type,
@@ -35,13 +41,23 @@ function toResponse(tx: any) {
     note: tx.note,
     transactionDate: tx.date,
     assetId: tx.assetId,
+    toAssetId: tx.toAssetId,
     categoryId: tx.categoryId,
+    attachmentUrl: tx.attachmentUrl,
     asset: tx.asset
       ? {
           id: tx.asset.id,
           name: tx.asset.name,
           type: tx.asset.type,
           balance: Number(tx.asset.balance),
+        }
+      : undefined,
+    toAsset: tx.toAsset
+      ? {
+          id: tx.toAsset.id,
+          name: tx.toAsset.name,
+          type: tx.toAsset.type,
+          balance: Number(tx.toAsset.balance),
         }
       : undefined,
     category: tx.category
@@ -71,11 +87,15 @@ export class TransactionController {
     @UploadedFile() file?: Express.Multer.File,
   ) {
     return toResponse(
-      await this.transactionService.create(user.id, {
-        ...dto,
-        type: TransactionType.INCOME,
-        date: dto.transactionDate,
-      }, file),
+      await this.transactionService.create(
+        user.id,
+        {
+          ...dto,
+          type: TransactionType.INCOME,
+          date: dto.transactionDate,
+        },
+        file,
+      ),
     );
   }
 
@@ -88,11 +108,15 @@ export class TransactionController {
     @UploadedFile() file?: Express.Multer.File,
   ) {
     return toResponse(
-      await this.transactionService.create(user.id, {
-        ...dto,
-        type: TransactionType.EXPENSE,
-        date: dto.transactionDate,
-      }, file),
+      await this.transactionService.create(
+        user.id,
+        {
+          ...dto,
+          type: TransactionType.EXPENSE,
+          date: dto.transactionDate,
+        },
+        file,
+      ),
     );
   }
 
@@ -105,11 +129,15 @@ export class TransactionController {
     @UploadedFile() file?: Express.Multer.File,
   ) {
     return toResponse(
-      await this.transactionService.create(user.id, {
-        ...dto,
-        type: TransactionType.TRANSFER,
-        date: dto.transactionDate,
-      }, file),
+      await this.transactionService.create(
+        user.id,
+        {
+          ...dto,
+          type: TransactionType.TRANSFER,
+          date: dto.transactionDate,
+        },
+        file,
+      ),
     );
   }
 
@@ -122,11 +150,15 @@ export class TransactionController {
     @UploadedFile() file?: Express.Multer.File,
   ) {
     return toResponse(
-      await this.transactionService.create(user.id, {
-        ...dto,
-        type: TransactionType.ADJUSTMENT,
-        date: dto.transactionDate,
-      }, file),
+      await this.transactionService.create(
+        user.id,
+        {
+          ...dto,
+          type: TransactionType.ADJUSTMENT,
+          date: dto.transactionDate,
+        },
+        file,
+      ),
     );
   }
 
@@ -162,12 +194,16 @@ export class TransactionController {
 
   @Patch(":id")
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor("file"))
   async update(
     @Param("id") id: string,
     @CurrentUser() user: User,
     @Body() dto: UpdateTransactionDto,
+    @UploadedFile() file?: Express.Multer.File,
   ) {
-    return toResponse(await this.transactionService.update(id, user.id, dto));
+    return toResponse(
+      await this.transactionService.update(id, user.id, dto, file),
+    );
   }
 
   @Delete(":id")

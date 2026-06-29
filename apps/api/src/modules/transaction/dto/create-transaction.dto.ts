@@ -9,6 +9,7 @@ import {
   MaxLength,
 } from "class-validator";
 import { TransactionType } from "@prisma/client";
+import { Type } from "class-transformer";
 
 export class CreateTransactionDto {
   @ApiProperty({
@@ -18,12 +19,13 @@ export class CreateTransactionDto {
   })
   @IsEnum(TransactionType, { message: "Invalid transaction type" })
   @IsNotEmpty()
-  type: TransactionType;
+  type!: TransactionType;
 
   @ApiProperty({ description: "Transaction amount", example: 150.5 })
+  @Type(() => Number)
   @IsNumber()
   @IsNotEmpty()
-  amount: number;
+  amount!: number;
 
   @ApiProperty({
     description: "Optional note",
@@ -41,12 +43,12 @@ export class CreateTransactionDto {
   })
   @IsDateString()
   @IsNotEmpty()
-  date: string;
+  date!: string;
 
   @ApiProperty({ description: "Asset ID", example: "uuid-here" })
   @IsString()
   @IsNotEmpty()
-  assetId: string;
+  assetId!: string;
 
   @ApiProperty({
     description: "Target Asset ID (required for TRANSFER)",

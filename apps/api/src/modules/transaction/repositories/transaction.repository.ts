@@ -11,7 +11,7 @@ export interface CreateTransactionData {
   assetId: string;
   toAssetId?: string;
   categoryId?: string;
-  attachmentUrl?: string;
+  attachmentUrl?: string | null;
 }
 
 @Injectable()
@@ -59,6 +59,7 @@ export class TransactionRepository {
         where,
         include: {
           asset: true,
+          toAsset: true,
           category: true,
         },
         orderBy: { date: "desc" },

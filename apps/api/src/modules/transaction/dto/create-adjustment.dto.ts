@@ -13,12 +13,12 @@ export class CreateAdjustmentDto {
   @ApiProperty({ description: "Asset ID", example: "uuid-here" })
   @IsString()
   @IsNotEmpty()
-  assetId: string;
+  assetId!: string;
 
   @ApiProperty({ description: "Adjustment amount", example: 150.5 })
   @Type(() => Number)
   @IsNumber()
-  amount: number;
+  amount!: number;
 
   @ApiProperty({
     description: "Optional note",
@@ -36,5 +36,5 @@ export class CreateAdjustmentDto {
   })
   @IsDateString()
   @IsNotEmpty()
-  transactionDate: string;
+  transactionDate!: string;
 }
