@@ -8,8 +8,10 @@ export class ChangePasswordDto {
   })
   @IsString()
   @IsNotEmpty({ message: "Current password is required" })
-  @MinLength(8, { message: "Current password must be at least 8 characters long" })
-  currentPassword: string;
+  @MinLength(8, {
+    message: "Current password must be at least 8 characters long",
+  })
+  currentPassword!: string;
 
   @ApiProperty({
     description: "New password of the user",
@@ -18,7 +20,7 @@ export class ChangePasswordDto {
   @IsString()
   @IsNotEmpty({ message: "New password is required" })
   @MinLength(8, { message: "New password must be at least 8 characters long" })
-  newPassword: string;
+  newPassword!: string;
 
   @ApiProperty({
     description: "Confirmation of the new password",
@@ -26,6 +28,8 @@ export class ChangePasswordDto {
   })
   @IsString()
   @IsNotEmpty({ message: "Confirm new password is required" })
-  @MinLength(8, { message: "Confirm new password must be at least 8 characters long" })
-  confirmNewPassword: string;
+  @MinLength(8, {
+    message: "Confirm new password must be at least 8 characters long",
+  })
+  confirmNewPassword!: string;
 }
