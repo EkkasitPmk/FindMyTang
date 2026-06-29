@@ -1,12 +1,6 @@
 import Image from "next/image";
 import { cn } from "@/shared/lib/utils";
-import {
-  ArrowDown,
-  Calendar as CalendarLucide,
-  Camera,
-  CirclePlus,
-  X,
-} from "lucide-react";
+import { ArrowDown, Calendar as CalendarLucide, Camera, X } from "lucide-react";
 import { UseFormRegister } from "react-hook-form";
 import { CreateTransactionFormValues } from "../schemas/transaction.schema";
 import ChooseADate from "./ChooseADate";
@@ -118,56 +112,49 @@ export default function TransactionMoreDetails({
 
     return (
       <div className="relative w-full">
-        <Button
-          variant="unstyled"
-          type="button"
-          onClick={() => setIsPhotoMenuOpen(!isPhotoMenuOpen)}
-          className="w-full h-44 flex flex-col items-center justify-center gap-1 rounded-md border-2 border-border border-dashed"
-        >
-          <Camera size={24} className="text-secondary-text" />
-          <div className="text-secondary-text flex items-center gap-1">
-            <CirclePlus size={14} />
-            <p className="text-sm font-medium">Add Photo</p>
-          </div>
-        </Button>
-
-        {isPhotoMenuOpen && (
-          <>
+        {isPhotoMenuOpen ? (
+          <div className="relative w-full h-44 flex flex-col items-center justify-center gap-2 rounded-md border-2 border-primary/40 border-dashed bg-primary/5">
             <Button
               variant="unstyled"
               type="button"
-              aria-label="Close photo menu"
-              className="fixed inset-0 z-10 w-full h-full cursor-default border-none outline-none bg-transparent"
+              onClick={() => setIsPhotoMenuOpen(!isPhotoMenuOpen)}
+              className="absolute top-1 right-2"
+            >
+              <X className="text-error" />
+            </Button>
+            <Button
+              variant="unstyled"
+              type="button"
+              className="text-sm font-medium text-center w-[80%] py-2.5 bg-white border border-gray-200 rounded-lg hover:text-primary transition-colors cursor-pointer"
               onClick={(e) => {
                 e.stopPropagation();
-                setIsPhotoMenuOpen(false);
+                onTakeAPhoto();
               }}
-            />
-            <div className="absolute top-[65%] left-1/2 -translate-x-1/2 bg-white px-3 py-1 rounded-md border border-border flex flex-col items-start justify-center z-20 shadow-lg min-w-37.5">
-              <Button
-                variant="unstyled"
-                type="button"
-                className="text-sm font-medium text-left w-full py-2 hover:text-primary transition-colors cursor-pointer"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onTakeAPhoto();
-                }}
-              >
-                Take a photo
-              </Button>
-              <Button
-                variant="unstyled"
-                type="button"
-                className="text-sm font-medium text-left w-full py-2 hover:text-primary transition-colors cursor-pointer"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onSelectAPhoto();
-                }}
-              >
-                Select a photo
-              </Button>
-            </div>
-          </>
+            >
+              Take a photo
+            </Button>
+            <Button
+              variant="unstyled"
+              type="button"
+              className="text-sm font-medium text-center w-[80%] py-2.5 bg-white border border-gray-200 rounded-lg hover:text-primary transition-colors cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                onSelectAPhoto();
+              }}
+            >
+              Select a photo
+            </Button>
+          </div>
+        ) : (
+          <Button
+            variant="unstyled"
+            type="button"
+            onClick={() => setIsPhotoMenuOpen(true)}
+            className="w-full h-44 flex flex-col items-center justify-center gap-1 rounded-md border-2 border-border border-dashed hover:bg-gray-50/50 transition-colors cursor-pointer"
+          >
+            <Camera size={24} className="text-secondary-text" />
+            <p className="text-sm font-medium text-secondary-text">Add Photo</p>
+          </Button>
         )}
       </div>
     );

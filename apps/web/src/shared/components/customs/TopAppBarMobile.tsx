@@ -17,7 +17,7 @@ export default function TopAppBarMobile({
   return (
     <div
       className={cn(
-        "flex items-center relative border-b border-gray-200 pb-2",
+        "flex items-center relative border-b border-gray-200 pb-2 px-2",
         !showBackButton && rightAction && "justify-end",
         showBackButton && rightAction && "justify-between",
       )}

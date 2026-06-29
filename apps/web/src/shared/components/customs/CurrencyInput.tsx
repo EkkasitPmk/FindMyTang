@@ -14,18 +14,22 @@ export function CurrencyInput({
   ...props
 }: Readonly<CurrencyInputProps>) {
   return (
-    <div className={cn("flex items-center justify-center gap-1", className)}>
-      <span className="text-4xl font-bold">{symbol}</span>
-      <input
-        type="text"
-        inputMode="numeric"
-        placeholder="0.00"
-        className={cn(
-          "w-60 bg-background border-0 border-b border-border outline-none transition-all text-center text-3xl font-bold",
-          "tracking-wide",
-        )}
-        {...props}
-      />
+    <div
+      className={cn("flex items-center justify-center gap-1 w-full", className)}
+    >
+      <p className="text-4xl font-bold text-left w-[85%]">{symbol}</p>
+      <div className="absolute left-1/2 -translate-x-1/2">
+        <input
+          type="text"
+          inputMode="numeric"
+          placeholder="0.00"
+          className={cn(
+            "w-60 bg-background border-0 border-b border-border outline-none transition-all text-center text-3xl font-bold",
+            "tracking-wide",
+          )}
+          {...props}
+        />
+      </div>
     </div>
   );
 }

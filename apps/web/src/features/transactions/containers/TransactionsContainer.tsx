@@ -293,6 +293,29 @@ export default function TransactionsContainer() {
     });
   };
 
+  const transactionTypeOptions = useMemo(() => {
+    if (editId) {
+      if (existingTx?.type === "TRANSFER") {
+        return [{ label: "Transfer", value: "TRANSFER" }];
+      }
+      if (existingTx?.type === "ADJUSTMENT") {
+        return [{ label: "Adjustment", value: "ADJUSTMENT" }];
+      }
+      if (existingTx?.type === "EXPENSE" || existingTx?.type === "INCOME") {
+        return [
+          { label: "Expense", value: "EXPENSE" },
+          { label: "Income", value: "INCOME" },
+        ];
+      }
+    }
+    return [
+      { label: "Expense", value: "EXPENSE" },
+      { label: "Income", value: "INCOME" },
+      { label: "Transfer", value: "TRANSFER" },
+      { label: "Adjustment", value: "ADJUSTMENT" },
+    ];
+  }, [editId, existingTx?.type]);
+
   if (editId && isLoading) {
     return (
       <div className="flex flex-col h-[calc(100dvh-100px)] items-center justify-center">
@@ -303,14 +326,14 @@ export default function TransactionsContainer() {
 
   return (
     <form
-      className="space-y-4 pb-24"
+      className="space-y-4 pb-26"
       onSubmit={handleSubmit(onSubmit)}
       onReset={handleResetForm}
     >
       <div
         className={cn(
-          "flex items-center relative",
-          hasAssetId ? "" : "my-4 mb-8",
+          "flex items-center relative mb-2",
+          hasAssetId ? "" : "mb-2 justify-center",
         )}
       >
         {hasAssetId && (
@@ -323,7 +346,12 @@ export default function TransactionsContainer() {
             <ChevronLeft size={24} />
           </Button>
         )}
-        <p className="text-center text-2xl font-bold absolute left-1/2 -translate-x-1/2 truncate">
+        <p
+          className={cn(
+            "text-center text-2xl font-bold truncate",
+            hasAssetId ? "absolute left-1/2 -translate-x-1/2" : "",
+          )}
+        >
           {editId ? "Edit Transaction" : "Add Transaction"}
         </p>
       </div>
@@ -331,20 +359,10 @@ export default function TransactionsContainer() {
       <SegmentedControl
         value={transactionType}
         onChange={(val) => setTransactionType(val as TransactionType)}
-        options={[
-          { label: "Expense", value: "EXPENSE" },
-          { label: "Income", value: "INCOME" },
-          ...(editId &&
-          (existingTx?.type === "EXPENSE" || existingTx?.type === "INCOME")
-            ? []
-            : [
-                { label: "Transfer", value: "TRANSFER" },
-                { label: "Adjustment", value: "ADJUSTMENT" },
-              ]),
-        ]}
+        options={transactionTypeOptions}
       />
 
-      <div className="flex flex-col items-center gap-1">
+      <div className="flex flex-col items-center gap-1 relative">
         <CurrencyInput
           id="balance"
           value={displayAmount}

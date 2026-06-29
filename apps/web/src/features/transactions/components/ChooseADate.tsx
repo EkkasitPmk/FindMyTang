@@ -74,7 +74,7 @@ export default function ChooseADate({
       </CardFooter>
       <Button
         type="button"
-        className="mb-2 mx-2 bg-blue-500 text-white"
+        className="mb-2 mx-2 py-4 bg-blue-500 text-white"
         onClick={onConfirm}
       >
         Confirm
