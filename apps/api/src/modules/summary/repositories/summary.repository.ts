@@ -63,7 +63,11 @@ export class SummaryRepository {
   async getThisMonthIncome(userId: string): Promise<number> {
     const today = new Date();
     const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    const startOfNextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+    const startOfNextMonth = new Date(
+      today.getFullYear(),
+      today.getMonth() + 1,
+      1,
+    );
 
     const result = await this.prisma.transaction.aggregate({
       where: {
@@ -89,7 +93,11 @@ export class SummaryRepository {
   async getThisMonthExpense(userId: string): Promise<number> {
     const today = new Date();
     const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    const startOfNextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+    const startOfNextMonth = new Date(
+      today.getFullYear(),
+      today.getMonth() + 1,
+      1,
+    );
 
     const result = await this.prisma.transaction.aggregate({
       where: {
