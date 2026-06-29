@@ -6,6 +6,7 @@ import {
 } from "react-hook-form";
 import { UpdateProfileFormValues } from "../schemas/account.schema";
 import { useTranslation } from "@/shared/lib/i18n/useTranslation";
+import { Input } from "@/shared/components/customs/Input";
 
 interface PersonalInfoFormProps {
   user:
@@ -48,12 +49,13 @@ export default function PersonalInfoForm({
             </p>
             <div className="relative flex flex-col gap-1">
               <div className="relative flex items-center">
-                <input
+                <Input
                   type="text"
                   disabled={isUpdating}
                   placeholder={t("placeholderDisplayName")}
+                  className="pr-10"
+                  error={!!errors.displayName}
                   {...register("displayName")}
-                  className="w-full px-3 py-2 border border-border rounded-md focus:border-primary/35 focus:ring-2 focus:ring-primary/10 outline-none transition-all text-foreground bg-background pr-10"
                 />
                 {isDirty ? (
                   <button
@@ -87,12 +89,12 @@ export default function PersonalInfoForm({
           <p className="text-xs text-secondary-text font-semibold uppercase">
             {t("emailAddressLabel")}
           </p>
-          <input
+          <Input
             type="text"
             readOnly
             value={user?.email || t("guestUserText")}
             placeholder=""
-            className="w-full px-3 py-2 border border-border rounded-md text-secondary-text/80 bg-background/50 cursor-not-allowed outline-none"
+            className="text-secondary-text/80 bg-background/50 cursor-not-allowed"
           />
         </div>
       </div>

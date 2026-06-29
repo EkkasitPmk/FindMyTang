@@ -6,6 +6,7 @@ import {
   UseFormHandleSubmit,
 } from "react-hook-form";
 import { LoginFormValues } from "../schemas/login.schema";
+import { Input } from "@/shared/components/customs/Input";
 
 interface LoginFormProps {
   register: UseFormRegister<LoginFormValues>;
@@ -30,7 +31,6 @@ export default function LoginForm({
   showPassword,
   onToggleShowPassword,
 }: Readonly<LoginFormProps>) {
-
   return (
     <div className="min-h-screen flex flex-col justify-center bg-background py-8 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-sm mx-auto bg-surface p-8 sm:p-10 border border-border/60 rounded-2xl shadow-sm animate-subtle-pop space-y-6">
@@ -64,10 +64,11 @@ export default function LoginForm({
         >
           {/* Email Field */}
           <div className="flex flex-col gap-1.5">
-            <input
-              className="w-full h-12 px-4 bg-surface-secondary border border-border/50 rounded-lg text-primary-text placeholder:text-secondary-text/60 transition-all focus:border-primary/50 outline-none focus:ring-2 focus:ring-primary/20"
+            <Input
+              className="bg-surface-secondary"
               placeholder="Email address"
               type="email"
+              error={!!errors.email}
               {...register("email")}
             />
             {errors.email && (
@@ -80,10 +81,11 @@ export default function LoginForm({
           {/* Password Field */}
           <div className="flex flex-col gap-1.5">
             <div className="relative">
-              <input
-                className="w-full h-12 pl-4 pr-12 bg-surface-secondary border border-border/50 rounded-lg text-primary-text placeholder:text-secondary-text/60 transition-all focus:border-primary/50 outline-none focus:ring-2 focus:ring-primary/20"
+              <Input
+                className="pr-12 bg-surface-secondary"
                 placeholder="Password"
                 type={showPassword ? "text" : "password"}
+                error={!!errors.password}
                 {...register("password")}
               />
               <button

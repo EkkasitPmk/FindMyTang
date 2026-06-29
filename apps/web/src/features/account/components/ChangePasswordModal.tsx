@@ -6,6 +6,7 @@ import {
 } from "react-hook-form";
 import { ChangePasswordFormValues } from "../schemas/account.schema";
 import { useTranslation } from "@/shared/lib/i18n/useTranslation";
+import { Input } from "@/shared/components/customs/Input";
 
 interface ChangePasswordModalProps {
   isOpen: boolean;
@@ -74,12 +75,13 @@ export default function ChangePasswordModal({
               {t("currentPasswordLabel")}
             </p>
             <div className="relative flex items-center">
-              <input
+              <Input
                 type={showCurrent ? "text" : "password"}
                 placeholder={t("placeholderCurrentPassword")}
-                {...register("currentPassword")}
                 disabled={isPending}
-                className="w-full px-3 py-2 pr-10 border border-border rounded-md focus:border-primary/35 focus:ring-2 focus:ring-primary/10 outline-none transition-all text-foreground bg-background"
+                className="pr-10"
+                error={!!errors.currentPassword}
+                {...register("currentPassword")}
               />
               <button
                 type="button"
@@ -102,12 +104,13 @@ export default function ChangePasswordModal({
               {t("newPasswordLabel")}
             </p>
             <div className="relative flex items-center">
-              <input
+              <Input
                 type={showNew ? "text" : "password"}
                 placeholder={t("placeholderNewPassword")}
-                {...register("newPassword")}
                 disabled={isPending}
-                className="w-full px-3 py-2 pr-10 border border-border rounded-md focus:border-primary/35 focus:ring-2 focus:ring-primary/10 outline-none transition-all text-foreground bg-background"
+                className="pr-10"
+                error={!!errors.newPassword}
+                {...register("newPassword")}
               />
               <button
                 type="button"
@@ -130,12 +133,13 @@ export default function ChangePasswordModal({
               {t("confirmNewPasswordLabel")}
             </p>
             <div className="relative flex items-center">
-              <input
+              <Input
                 type={showConfirm ? "text" : "password"}
                 placeholder={t("placeholderConfirmNewPassword")}
-                {...register("confirmNewPassword")}
                 disabled={isPending}
-                className="w-full px-3 py-2 pr-10 border border-border rounded-md focus:border-primary/35 focus:ring-2 focus:ring-primary/10 outline-none transition-all text-foreground bg-background"
+                className="pr-10"
+                error={!!errors.confirmNewPassword}
+                {...register("confirmNewPassword")}
               />
               <button
                 type="button"

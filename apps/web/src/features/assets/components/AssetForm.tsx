@@ -8,6 +8,7 @@ import { Check, X, Tag } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { getAssetIcon } from "../utils/assets.util";
 import { AssetType } from "../types/assets.type";
+import { Input } from "@/shared/components/customs/Input";
 
 const ASSET_COLORS = [
   "#2563EB", // Primary
@@ -110,16 +111,12 @@ export default function AssetForm({
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                 <Tag size={18} className="text-gray-400" />
               </div>
-              <input
+              <Input
                 id="name"
                 type="text"
                 placeholder="e.g. Cash, Main Bank"
-                className={cn(
-                  "w-full h-12 pl-10 pr-4 bg-background border rounded-lg outline-none transition-all",
-                  errors.name
-                    ? "border-error focus:border-error"
-                    : "border-outline/20 focus:border-primary/50 focus:ring-2 focus:ring-primary/20",
-                )}
+                className="pl-10"
+                error={!!errors.name}
                 {...register("name")}
               />
             </div>
@@ -218,18 +215,13 @@ export default function AssetForm({
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                 <span className="font-semibold text-gray-400">฿</span>
               </div>
-              <input
+              <Input
                 id="balance"
                 type="number"
                 step="any"
                 placeholder="0.00"
-                className={cn(
-                  "w-full h-12 pl-9 pr-4 bg-background border rounded-lg outline-none transition-all font-medium",
-                  "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
-                  errors.balance
-                    ? "border-error focus:border-error"
-                    : "border-outline/20 focus:border-primary/50 focus:ring-2 focus:ring-primary/20",
-                )}
+                className="pl-9 font-medium [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                error={!!errors.balance}
                 {...register("balance")}
                 onBlur={(e) => {
                   void register("balance").onBlur(e);

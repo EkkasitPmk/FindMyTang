@@ -13,6 +13,7 @@ import {
   SELECTABLE_ICONS,
 } from "@/shared/lib/configs/category-icons.config";
 import { cn } from "@/shared/lib/utils";
+import { Input } from "@/shared/components/customs/Input";
 
 interface CUCategoryModalProps {
   isOpen: boolean;
@@ -85,11 +86,11 @@ export default function CUCategoryModal({
             <p className="text-xs text-muted-foreground font-semibold">
               CATEGORY NAME
             </p>
-            <input
+            <Input
               type="text"
-              {...register("name")}
               placeholder="e.g. Coffee"
-              className="w-full px-3 py-2 border border-border rounded-md focus:border-primary/35 focus:ring-2 focus:ring-primary/10 outline-none transition-all text-foreground bg-background"
+              error={!!errors.name}
+              {...register("name")}
             />
             {errors.name && (
               <p className="text-xs text-error">{errors.name.message}</p>
