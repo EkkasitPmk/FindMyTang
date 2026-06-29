@@ -1,5 +1,9 @@
-import { ArrowRightLeft, ChevronRight, Pencil } from "lucide-react";
-import { format } from "date-fns";
+import {
+  ArrowRightLeft,
+  ChevronRight,
+  Pencil,
+  SlidersHorizontal,
+} from "lucide-react";
 import { Asset } from "../types/assets.type";
 import {
   TransactionResponse,
@@ -8,6 +12,7 @@ import {
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/components/customs/Button";
 import { getCategoryIcon } from "@/shared/lib/configs/category-icons.config";
+import { formatDisplayDate } from "../../transactions/helpers/date.helper";
 
 interface AssetDetailProps {
   asset?: Asset;
@@ -18,6 +23,7 @@ interface AssetDetailProps {
   onAddMenuToggle: () => void;
   onAddMenuClose: () => void;
   onTransferClick: () => void;
+  onAdjustmentClick: () => void;
   onEditClick: () => void;
   onAddTransactionClick: () => void;
   onAddExpenseClick: () => void;
@@ -34,6 +40,7 @@ export default function AssetDetail({
   onAddMenuToggle,
   onAddMenuClose,
   onTransferClick,
+  onAdjustmentClick,
   onEditClick,
   onAddTransactionClick,
   onAddExpenseClick,
@@ -58,7 +65,15 @@ export default function AssetDetail({
 
   return (
     <div className="flex flex-col h-[calc(100vh-100px)]">
-      <div className="flex flex-col items-center justify-center my-4">
+      <div className="relative flex flex-col items-center justify-center my-4">
+        <Button
+          variant="unstyled"
+          onClick={onEditClick}
+          className="absolute right-0 top-0 p-2 text-gray-400 hover:text-gray-700 transition-colors cursor-pointer"
+          title="Edit Asset"
+        >
+          <Pencil size={18} />
+        </Button>
         <p className="text-gray-500 font-medium">BALANCE</p>
         <div className="flex items-center gap-1 mt-1">
           <span className="text-2xl font-bold">฿</span>
@@ -115,6 +130,18 @@ export default function AssetDetail({
                         <CategoryIcon size={18} />
                       </span>
                     );
+                  } else if (transaction.type === "TRANSFER") {
+                    iconElement = (
+                      <span className="bg-gray-100 rounded-full p-2 text-blue-500">
+                        <ArrowRightLeft size={18} />
+                      </span>
+                    );
+                  } else if (transaction.type === "ADJUSTMENT") {
+                    iconElement = (
+                      <span className="bg-gray-100 rounded-full p-2 text-purple-500">
+                        <SlidersHorizontal size={18} />
+                      </span>
+                    );
                   }
 
                   return (
@@ -123,20 +150,22 @@ export default function AssetDetail({
                       key={transaction.id}
                       type="button"
                       onClick={() => onTransactionItemClick(transaction)}
-                      className={`w-full text-left flex items-center justify-between p-2 cursor-pointer hover:bg-gray-50 focus:outline-none focus:bg-gray-50 transition-colors ${isLast ? "" : "border-b border-border"}`}
+                      className={`w-full text-left flex items-center justify-between p-2 cursor-pointer hover:bg-gray-50 focus:outline-none focus:bg-gray-50 transition-colors${isLast ? "" : "border-b border-border"}`}
                     >
                       <div className="flex items-center gap-3">
                         {iconElement}
                         <div className="flex flex-col leading-5">
-                          <span className="text-base">
-                            {transaction.category?.name ||
-                              transaction.note ||
-                              transaction.type}
+                          <span className="text-base capitalize">
+                            {transaction.type === "ADJUSTMENT" ||
+                            transaction.type === "TRANSFER"
+                              ? transaction.type.toLowerCase()
+                              : transaction.category?.name ||
+                                transaction.note ||
+                                transaction.type}
                           </span>
-                          <span className="text-sm text-gray-500">
-                            {format(
+                          <span className="text-xs text-gray-500">
+                            {formatDisplayDate(
                               new Date(transaction.transactionDate),
-                              "MMM dd",
                             )}
                           </span>
                         </div>
@@ -165,24 +194,25 @@ export default function AssetDetail({
           )}
         </div>
       </div>
+
       {/* nav action bottom */}
-      <div className="fixed bottom-0 right-0 left-0 py-4 px-4 border-t border-border bg-white">
+      <div className="fixed bottom-0 right-0 left-0 py-2 px-4 border-t border-border bg-white z-50">
         <div className="flex gap-3">
           <Button
             variant="unstyled"
             onClick={onTransferClick}
-            className="w-[25%] flex flex-col items-center justify-center border border-border py-2 rounded-md hover:bg-gray-50 cursor-pointer"
+            className="w-[25%] flex flex-col items-center justify-center border border-border py-1.5 rounded-md hover:bg-gray-50 cursor-pointer"
           >
             <ArrowRightLeft size={18} />
-            <span className="text-sm">Transfer</span>
+            <span className="text-sm mt-px">Transfer</span>
           </Button>
           <Button
             variant="unstyled"
-            onClick={onEditClick}
-            className="w-[25%] flex flex-col items-center justify-center border border-border py-2 rounded-md cursor-pointer hover:bg-gray-50"
+            onClick={onAdjustmentClick}
+            className="w-[25%] flex flex-col items-center justify-center border border-border py-1.5 rounded-md cursor-pointer hover:bg-gray-50"
           >
-            <Pencil size={18} />
-            <span className="text-sm">Edit</span>
+            <SlidersHorizontal size={18} />
+            <span className="text-sm mt-px">Adjust</span>
           </Button>
           <div
             className={cn(

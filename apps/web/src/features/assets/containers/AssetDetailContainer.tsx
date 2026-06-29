@@ -33,6 +33,9 @@ export default function AssetDetailContainer() {
         onTransferClick={() =>
           router.push(`/transaction?type=TRANSFER&assetId=${asset?.id}`)
         }
+        onAdjustmentClick={() =>
+          router.push(`/transaction?type=ADJUSTMENT&assetId=${asset?.id}`)
+        }
         onEditClick={() => setIsEditModalOpen(true)}
         onAddTransactionClick={() =>
           router.push(`/transaction?assetId=${asset?.id}`)

@@ -97,34 +97,6 @@ export default function AssetForm({
           : "Add a new financial account or wallet to track your balance."}
       </p>
 
-      {/* Name */}
-      <div className="flex flex-col gap-1.5">
-        <label
-          htmlFor="name"
-          className="text-sm font-semibold text-on-surface-variant"
-        >
-          Asset Name
-        </label>
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-            <Tag size={18} className="text-gray-400" />
-          </div>
-          <Input
-            id="name"
-            type="text"
-            placeholder="e.g. Cash, Main Bank"
-            className="pl-10"
-            error={!!errors.name}
-            {...register("name")}
-          />
-        </div>
-        {errors.name && (
-          <p className="text-xs text-error font-medium">
-            {errors.name.message}
-          </p>
-        )}
-      </div>
-
       {/* Type */}
       <div className="flex flex-col gap-1.5 relative">
         <label
@@ -203,38 +175,68 @@ export default function AssetForm({
         )}
       </div>
 
-      {/* Balance */}
+      {/* Name */}
       <div className="flex flex-col gap-1.5">
         <label
-          htmlFor="balance"
+          htmlFor="name"
           className="text-sm font-semibold text-on-surface-variant"
         >
-          {isEdit ? "Current Balance" : "Initial Balance"}
+          Asset Name
         </label>
         <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <span className="font-semibold text-gray-400">฿</span>
+          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+            <Tag size={18} className="text-gray-400" />
           </div>
           <Input
-            id="balance"
-            type="number"
-            step="any"
-            placeholder="0.00"
-            className="pl-9 font-medium [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            error={!!errors.balance}
-            {...register("balance")}
-            onBlur={(e) => {
-              void register("balance").onBlur(e);
-              onBlurBalance?.();
-            }}
+            id="name"
+            type="text"
+            placeholder="e.g. Cash, Main Bank"
+            className="pl-10"
+            error={!!errors.name}
+            {...register("name")}
           />
         </div>
-        {errors.balance && (
+        {errors.name && (
           <p className="text-xs text-error font-medium">
-            {errors.balance.message}
+            {errors.name.message}
           </p>
         )}
       </div>
+
+      {/* Balance */}
+      {!isEdit && (
+        <div className="flex flex-col gap-1.5">
+          <label
+            htmlFor="balance"
+            className="text-sm font-semibold text-on-surface-variant"
+          >
+            Initial Balance
+          </label>
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <span className="font-semibold text-gray-400">฿</span>
+            </div>
+            <Input
+              id="balance"
+              type="number"
+              step="any"
+              placeholder="0.00"
+              className="pl-9 font-medium [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              error={!!errors.balance}
+              {...register("balance")}
+              onBlur={(e) => {
+                void register("balance").onBlur(e);
+                onBlurBalance?.();
+              }}
+            />
+          </div>
+          {errors.balance && (
+            <p className="text-xs text-error font-medium">
+              {errors.balance.message}
+            </p>
+          )}
+        </div>
+      )}
 
       {/* Color Selection */}
       <div className="flex flex-col gap-1.5">
