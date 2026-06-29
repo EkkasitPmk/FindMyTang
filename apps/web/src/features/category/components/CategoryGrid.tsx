@@ -1,6 +1,7 @@
 import { Category } from "../types/category.type";
 import { CircleX, Grip, Plus } from "lucide-react";
 import { getCategoryIcon } from "@/shared/lib/configs/category-icons.config";
+import { Button } from "@/shared/components/customs/Button";
 
 interface CategoryGridProps {
   categories: Category[];
@@ -34,7 +35,8 @@ export default function CategoryGrid({
   return (
     <div className="grid grid-cols-3 gap-2 overflow-auto max-h-[70vh]">
       {/* New Category */}
-      <button
+      <Button
+        variant="unstyled"
         type="button"
         onClick={onNewCategoryClick}
         className="flex flex-col items-center justify-center gap-3 border border-border border-dashed p-4 rounded-lg cursor-pointer hover:bg-surface-variant/10 transition-colors"
@@ -43,7 +45,7 @@ export default function CategoryGrid({
           <Plus size={16} />
         </span>
         <span className="text-xs font-medium truncate">New Category</span>
-      </button>
+      </Button>
       {/* New Category */}
 
       {categories.map((category, index) => {
@@ -57,7 +59,8 @@ export default function CategoryGrid({
               ${draggedIndex === index ? "opacity-40" : ""}
             `}
           >
-            <button
+            <Button
+              variant="unstyled"
               type="button"
               data-index={index}
               tabIndex={isEditingList ? -1 : 0}
@@ -101,10 +104,11 @@ export default function CategoryGrid({
               <span className="text-xs font-medium truncate w-full text-center">
                 {category.name}
               </span>
-            </button>
+            </Button>
 
             {!category.isSystem && isEditingList && (
-              <button
+              <Button
+                variant="unstyled"
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -113,17 +117,18 @@ export default function CategoryGrid({
                 className="absolute top-1 right-1 text-error transition-colors"
               >
                 <CircleX size={16} />
-              </button>
+              </Button>
             )}
 
             {!category.isSystem && isEditingList && (
-              <button
+              <Button
+                variant="unstyled"
                 className="absolute bottom-1 right-1 cursor-grab"
                 type="button"
                 onClick={(e) => e.stopPropagation()}
               >
                 <Grip size={14} />
-              </button>
+              </Button>
             )}
           </div>
         );

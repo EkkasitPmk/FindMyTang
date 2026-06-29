@@ -9,6 +9,7 @@ import { cn } from "@/shared/lib/utils";
 import { getAssetIcon } from "../utils/assets.util";
 import { AssetType } from "../types/assets.type";
 import { Input } from "@/shared/components/customs/Input";
+import { Button } from "@/shared/components/customs/Button";
 
 const ASSET_COLORS = [
   "#2563EB", // Primary
@@ -82,13 +83,14 @@ export default function AssetForm({
               {isEdit ? "Edit Asset" : "Create New Asset"}
             </h2>
           </div>
-          <button
+          <Button
+            variant="unstyled"
             type="button"
             onClick={onClose}
             className="p-2 -mr-2 text-muted-foreground hover:text-foreground hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
           >
             <X size={20} />
-          </button>
+          </Button>
         </div>
 
         {/* Scrollable Content */}
@@ -139,7 +141,8 @@ export default function AssetForm({
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none z-10">
                 {getAssetIcon(selected as AssetType, currentColor, 18)}
               </div>
-              <button
+              <Button
+                variant="unstyled"
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
                 className={cn(
@@ -164,13 +167,14 @@ export default function AssetForm({
                     d="M19 9l-7 7-7-7"
                   />
                 </svg>
-              </button>
+              </Button>
             </div>
             {isOpen && (
               <ul className="absolute top-19 w-full bg-white border border-gray-200 rounded-lg shadow-xl py-1.5 z-20 max-h-52 overflow-y-auto animate-in fade-in zoom-in-95">
                 {assetTypeList.map((type) => (
                   <li key={type}>
-                    <button
+                    <Button
+                      variant="unstyled"
                       type="button"
                       className={cn(
                         "w-full px-4 py-2.5 text-sm flex items-center justify-between hover:bg-gray-50 cursor-pointer text-left transition-colors",
@@ -190,7 +194,7 @@ export default function AssetForm({
                       {selected === type && (
                         <Check size={16} className="text-primary" />
                       )}
-                    </button>
+                    </Button>
                   </li>
                 ))}
               </ul>
@@ -243,7 +247,8 @@ export default function AssetForm({
             </p>
             <div className="grid grid-cols-7 gap-2 p-3 bg-gray-50/50 rounded-lg border border-gray-100">
               {ASSET_COLORS.map((color) => (
-                <button
+                <Button
+                  variant="unstyled"
                   key={color}
                   type="button"
                   onClick={() => onSelectColor?.(color)}
@@ -256,7 +261,7 @@ export default function AssetForm({
                       <Check size={16} className="text-white drop-shadow-md" />
                     </div>
                   )}
-                </button>
+                </Button>
               ))}
             </div>
             {/* hidden input for form registration */}
@@ -266,20 +271,22 @@ export default function AssetForm({
 
         {/* Submit */}
         <div className="flex items-center gap-3 px-6 py-4 bg-gray-50/80 border-t border-border mt-auto">
-          <button
+          <Button
+            variant="unstyled"
             type="button"
             onClick={onClose}
             className="w-full border border-gray-300 rounded-lg py-2.5 text-sm font-medium hover:bg-gray-100 transition-colors cursor-pointer text-gray-700 bg-white shadow-sm"
           >
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="unstyled"
             type="submit"
             disabled={isPending}
             className="w-full text-white rounded-lg py-2.5 text-sm font-medium transition-all shadow-md disabled:opacity-50 cursor-pointer bg-primary hover:bg-primary/90 hover:shadow-lg active:scale-[0.98]"
           >
             {submitButtonText}
-          </button>
+          </Button>
         </div>
       </form>
     </div>

@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useTranslation } from "@/shared/lib/i18n/useTranslation";
 import { useIsGuest } from "@/shared/lib/store/guest-store";
+import { Button } from "@/shared/components/customs/Button";
 
 interface SettingsContainerProps {
   onClose?: () => void;
@@ -107,7 +108,8 @@ export default function SettingsContainer({
               </span>
             </div>
             <div className="flex gap-1">
-              <button
+              <Button
+                variant="unstyled"
                 onClick={() => changeLanguage("en")}
                 className={`py-1 px-2.5 rounded-md text-[10px] font-bold transition-all active-press cursor-pointer ${
                   currentLanguage === "en"
@@ -116,8 +118,9 @@ export default function SettingsContainer({
                 }`}
               >
                 English
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="unstyled"
                 onClick={() => changeLanguage("th")}
                 className={`py-1 px-2.5 rounded-md text-[10px] font-bold transition-all active-press cursor-pointer ${
                   currentLanguage === "th"
@@ -126,7 +129,7 @@ export default function SettingsContainer({
                 }`}
               >
                 ไทย
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -182,7 +185,8 @@ export default function SettingsContainer({
           {t("dataManagement")}
         </h5>
         <div className="bg-surface border border-border/60 rounded-md divide-y divide-border">
-          <button
+          <Button
+            variant="unstyled"
             onClick={handleExportData}
             className="w-full flex justify-between items-center p-3 hover:bg-surface-secondary/50 transition-colors text-left outline-none cursor-pointer"
           >
@@ -199,9 +203,10 @@ export default function SettingsContainer({
               className="w-3.5 h-3.5 text-secondary-text/70"
               strokeWidth={1.5}
             />
-          </button>
+          </Button>
 
-          <button
+          <Button
+            variant="unstyled"
             onClick={handleResetData}
             className="w-full flex justify-between items-center p-3 hover:bg-expense-light/50 transition-colors text-left outline-none cursor-pointer group"
           >
@@ -215,7 +220,7 @@ export default function SettingsContainer({
               className="w-3.5 h-3.5 text-secondary-text/70 group-hover:text-expense"
               strokeWidth={1.5}
             />
-          </button>
+          </Button>
         </div>
       </div>
 

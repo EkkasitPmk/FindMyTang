@@ -8,6 +8,7 @@ import {
   X,
 } from "lucide-react";
 import ChooseADate from "./ChooseADate";
+import { Button } from "@/shared/components/customs/Button";
 
 interface TransactionMoreDetailsProps {
   isMoreDetailsOpen: boolean;
@@ -57,7 +58,8 @@ export default function TransactionMoreDetails({
   return (
     <>
       <div className="flex items-center justify-center">
-        <button
+        <Button
+          variant="unstyled"
           type="button"
           onClick={() => setIsMoreDetailsOpen(!isMoreDetailsOpen)}
           className="my-0 flex items-center justify-center gap-2 text-primary text-sm shrink-0"
@@ -70,7 +72,7 @@ export default function TransactionMoreDetails({
               isMoreDetailsOpen && "-rotate-180",
             )}
           />
-        </button>
+        </Button>
       </div>
 
       {isMoreDetailsOpen && (
@@ -81,7 +83,8 @@ export default function TransactionMoreDetails({
           <div className="space-y-3">
             <div className="relative w-full flex items-center gap-2 bg-white rounded-md border border-border px-4 py-3">
               <CalendarLucide size={18} className="text-secondary-text" />
-              <button
+              <Button
+                variant="unstyled"
                 type="button"
                 onClick={() => setIsCalendarOpen(!isCalendarOpen)}
                 className="flex flex-col flex-1 text-left"
@@ -90,10 +93,11 @@ export default function TransactionMoreDetails({
                   DATE
                 </span>
                 <span className="text-sm font-medium">{displayDate}</span>
-              </button>
+              </Button>
               {isCalendarOpen && (
                 <>
-                  <button
+                  <Button
+                    variant="unstyled"
                     type="button"
                     aria-label="Close calendar"
                     className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm transition-opacity border-none outline-none"
@@ -160,7 +164,8 @@ export default function TransactionMoreDetails({
                     className="w-full h-auto object-contain"
                     unoptimized
                   />
-                  <button
+                  <Button
+                    variant="unstyled"
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
@@ -169,11 +174,12 @@ export default function TransactionMoreDetails({
                     className="absolute top-2 right-2 p-1.5 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors"
                   >
                     <X size={16} className="text-white" />
-                  </button>
+                  </Button>
                 </div>
               ) : (
                 <div className="relative w-full">
-                  <button
+                  <Button
+                    variant="unstyled"
                     type="button"
                     onClick={() => setIsPhotoMenuOpen(!isPhotoMenuOpen)}
                     className="w-full h-44 flex flex-col items-center justify-center gap-1 rounded-md border-2 border-border border-dashed"
@@ -183,11 +189,12 @@ export default function TransactionMoreDetails({
                       <CirclePlus size={14} />
                       <p className="text-sm font-medium">Add Photo</p>
                     </div>
-                  </button>
+                  </Button>
 
                   {isPhotoMenuOpen && (
                     <>
-                      <button
+                      <Button
+                        variant="unstyled"
                         type="button"
                         aria-label="Close photo menu"
                         className="fixed inset-0 z-10 w-full h-full cursor-default border-none outline-none bg-transparent"
@@ -197,7 +204,8 @@ export default function TransactionMoreDetails({
                         }}
                       />
                       <div className="absolute top-[65%] left-1/2 -translate-x-1/2 bg-white px-3 py-1 rounded-md border border-border flex flex-col items-start justify-center z-20 shadow-lg min-w-37.5">
-                        <button
+                        <Button
+                          variant="unstyled"
                           type="button"
                           className="text-sm font-medium text-left w-full py-2 hover:text-primary transition-colors cursor-pointer"
                           onClick={(e) => {
@@ -206,8 +214,9 @@ export default function TransactionMoreDetails({
                           }}
                         >
                           Take a photo
-                        </button>
-                        <button
+                        </Button>
+                        <Button
+                          variant="unstyled"
                           type="button"
                           className="text-sm font-medium text-left w-full py-2 hover:text-primary transition-colors cursor-pointer"
                           onClick={(e) => {
@@ -216,7 +225,7 @@ export default function TransactionMoreDetails({
                           }}
                         >
                           Select a photo
-                        </button>
+                        </Button>
                       </div>
                     </>
                   )}

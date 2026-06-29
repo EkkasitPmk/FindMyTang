@@ -20,6 +20,7 @@ import AvatarSection from "../components/AvatarSection";
 import PersonalInfoForm from "../components/PersonalInfoForm";
 import ConfirmModal from "@/shared/components/customs/ConfirmModal";
 import { useTranslation } from "@/shared/lib/i18n/useTranslation";
+import { Button } from "@/shared/components/customs/Button";
 
 export default function AccountContainer() {
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
@@ -197,7 +198,8 @@ export default function AccountContainer() {
           <p className="text-sm font-medium text-secondary-text uppercase">
             {t("security")}
           </p>
-          <button
+          <Button
+            variant="unstyled"
             onClick={() => setIsPasswordModalOpen(true)}
             className="w-full bg-white rounded-md border border-border p-4 text-left hover:bg-surface-secondary transition-colors cursor-pointer"
           >
@@ -210,17 +212,18 @@ export default function AccountContainer() {
               </div>
               <ChevronRight className="text-secondary-text/70" size={16} />
             </div>
-          </button>
+          </Button>
         </div>
 
         {/* Delete Account Block */}
         <div className="space-y-1">
-          <button
+          <Button
+            variant="unstyled"
             onClick={() => setIsDeleteModalOpen(true)}
             className="w-full bg-white rounded-md border text-xs font-semibold text-expense uppercase border-expense/60 p-4 text-left hover:bg-expense-light/20 hover:border-expense transition-colors cursor-pointer"
           >
             {t("deleteAccountBtn")}
-          </button>
+          </Button>
         </div>
       </div>
 

@@ -7,6 +7,7 @@ import {
 } from "react-hook-form";
 import { RegisterFormValues } from "../schemas/register.schema";
 import { Input } from "@/shared/components/customs/Input";
+import { Button } from "@/shared/components/customs/Button";
 
 interface RegisterFormProps {
   register: UseFormRegister<RegisterFormValues>;
@@ -89,7 +90,8 @@ export default function RegisterForm({
                 error={!!errors.password}
                 {...register("password")}
               />
-              <button
+              <Button
+                variant="unstyled"
                 type="button"
                 onClick={onToggleShowPassword}
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-secondary-text hover:text-primary transition-colors outline-none cursor-pointer"
@@ -99,7 +101,7 @@ export default function RegisterForm({
                 ) : (
                   <Eye className="w-5 h-5" />
                 )}
-              </button>
+              </Button>
             </div>
             {errors.password && (
               <p className="text-xs text-expense font-medium">
@@ -118,7 +120,8 @@ export default function RegisterForm({
                 error={!!errors.confirmPassword}
                 {...register("confirmPassword")}
               />
-              <button
+              <Button
+                variant="unstyled"
                 type="button"
                 onClick={onToggleShowConfirmPassword}
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-secondary-text hover:text-primary transition-colors outline-none cursor-pointer"
@@ -128,7 +131,7 @@ export default function RegisterForm({
                 ) : (
                   <Eye className="w-5 h-5" />
                 )}
-              </button>
+              </Button>
             </div>
             {errors.confirmPassword && (
               <p className="text-xs text-expense font-medium">
@@ -175,13 +178,14 @@ export default function RegisterForm({
           </div>
 
           {/* Primary Action Button */}
-          <button
+          <Button
+            variant="unstyled"
             type="submit"
             disabled={isPending}
             className="w-full h-12 bg-primary text-white text-base rounded-lg font-semibold hover:bg-primary-hover active:scale-[0.98] active-press transition-all shadow-sm flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             {isPending ? "Creating Account..." : "Create Account"}
-          </button>
+          </Button>
         </form>
 
         {/* Divider */}

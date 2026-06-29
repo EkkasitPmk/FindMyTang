@@ -7,6 +7,7 @@ import {
 import { ChangePasswordFormValues } from "../schemas/account.schema";
 import { useTranslation } from "@/shared/lib/i18n/useTranslation";
 import { Input } from "@/shared/components/customs/Input";
+import { Button } from "@/shared/components/customs/Button";
 
 interface ChangePasswordModalProps {
   isOpen: boolean;
@@ -61,13 +62,14 @@ export default function ChangePasswordModal({
           <span className="text-lg font-medium text-foreground">
             {t("changePassword")}
           </span>
-          <button
+          <Button
+            variant="unstyled"
             type="button"
             onClick={onClose}
             className="text-secondary-text hover:text-foreground cursor-pointer transition-colors"
           >
             <X size={20} />
-          </button>
+          </Button>
         </div>
         <div className="px-6 py-4 space-y-4">
           <div className="space-y-1">
@@ -83,7 +85,8 @@ export default function ChangePasswordModal({
                 error={!!errors.currentPassword}
                 {...register("currentPassword")}
               />
-              <button
+              <Button
+                variant="unstyled"
                 type="button"
                 onClick={onToggleShowCurrent}
                 disabled={isPending}
@@ -91,7 +94,7 @@ export default function ChangePasswordModal({
                 title={showCurrent ? t("hidePassword") : t("showPassword")}
               >
                 {showCurrent ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
+              </Button>
             </div>
             {errors.currentPassword && (
               <p className="text-xs text-expense mt-0.5">
@@ -112,7 +115,8 @@ export default function ChangePasswordModal({
                 error={!!errors.newPassword}
                 {...register("newPassword")}
               />
-              <button
+              <Button
+                variant="unstyled"
                 type="button"
                 onClick={onToggleShowNew}
                 disabled={isPending}
@@ -120,7 +124,7 @@ export default function ChangePasswordModal({
                 title={showNew ? t("hidePassword") : t("showPassword")}
               >
                 {showNew ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
+              </Button>
             </div>
             {errors.newPassword && (
               <p className="text-xs text-expense mt-0.5">
@@ -141,7 +145,8 @@ export default function ChangePasswordModal({
                 error={!!errors.confirmNewPassword}
                 {...register("confirmNewPassword")}
               />
-              <button
+              <Button
+                variant="unstyled"
                 type="button"
                 onClick={onToggleShowConfirm}
                 disabled={isPending}
@@ -149,7 +154,7 @@ export default function ChangePasswordModal({
                 title={showConfirm ? t("hidePassword") : t("showPassword")}
               >
                 {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
+              </Button>
             </div>
             {errors.confirmNewPassword && (
               <p className="text-xs text-expense mt-0.5">
@@ -160,22 +165,24 @@ export default function ChangePasswordModal({
         </div>
 
         <div className="flex items-center gap-2 px-6 py-4 bg-background/50 border-t border-border">
-          <button
+          <Button
+            variant="unstyled"
             type="button"
             onClick={onClose}
             disabled={isPending}
             className="w-full border border-border rounded-md py-2 text-sm hover:bg-muted transition-colors cursor-pointer text-foreground bg-background disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {t("cancelBtn")}
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="unstyled"
             type="submit"
             disabled={isPending}
             className="w-full bg-primary hover:bg-primary-dark text-white rounded-md py-2 text-sm font-medium transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
           >
             {isPending && <Loader2 size={16} className="animate-spin" />}
             {t("saveChanges")}
-          </button>
+          </Button>
         </div>
       </form>
     </div>

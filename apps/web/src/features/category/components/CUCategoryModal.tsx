@@ -14,6 +14,7 @@ import {
 } from "@/shared/lib/configs/category-icons.config";
 import { cn } from "@/shared/lib/utils";
 import { Input } from "@/shared/components/customs/Input";
+import { Button } from "@/shared/components/customs/Button";
 
 interface CUCategoryModalProps {
   isOpen: boolean;
@@ -73,13 +74,14 @@ export default function CUCategoryModal({
           <span className="text-lg font-medium">
             {category ? "Edit Category" : "New Category"}
           </span>
-          <button
+          <Button
+            variant="unstyled"
             type="button"
             onClick={onClose}
             className="text-muted-foreground hover:text-foreground"
           >
             <X size={20} />
-          </button>
+          </Button>
         </div>
         <div className="px-6 py-4 space-y-4">
           <div className="space-y-1">
@@ -103,7 +105,8 @@ export default function CUCategoryModal({
             </p>
             {/* Select Option Tab */}
             <div className="flex gap-2">
-              <button
+              <Button
+                variant="unstyled"
                 type="button"
                 onClick={() => setValue("type", "EXPENSE")}
                 className={cn(
@@ -115,8 +118,9 @@ export default function CUCategoryModal({
               >
                 <CircleMinus size={16} />
                 Expense
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="unstyled"
                 type="button"
                 onClick={() => setValue("type", "INCOME")}
                 className={cn(
@@ -128,7 +132,7 @@ export default function CUCategoryModal({
               >
                 <CirclePlus size={16} />
                 Income
-              </button>
+              </Button>
             </div>
             {errors.type && (
               <p className="text-xs text-error">{errors.type.message}</p>
@@ -142,7 +146,8 @@ export default function CUCategoryModal({
                 const Icon = getCategoryIcon(iconName, transactionType);
                 const isSelected = selectedIconName === iconName;
                 return (
-                  <button
+                  <Button
+                    variant="unstyled"
                     key={iconName}
                     type="button"
                     onClick={() => setValue("icon", iconName)}
@@ -174,7 +179,7 @@ export default function CUCategoryModal({
                     >
                       <Icon size={18} />
                     </span>
-                  </button>
+                  </Button>
                 );
               })}
             </div>
@@ -193,7 +198,8 @@ export default function CUCategoryModal({
               {PREMIUM_COLORS.map((color) => {
                 const isSelected = selectedColor === color;
                 return (
-                  <button
+                  <Button
+                    variant="unstyled"
                     key={color}
                     type="button"
                     onClick={() => setValue("color", color)}
@@ -215,7 +221,7 @@ export default function CUCategoryModal({
                         style={{ backgroundColor: color }}
                       />
                     )}
-                  </button>
+                  </Button>
                 );
               })}
 
@@ -270,21 +276,23 @@ export default function CUCategoryModal({
         </div>
 
         <div className="flex items-center gap-2 px-6 py-4 bg-background/50 border-t border-border">
-          <button
+          <Button
+            variant="unstyled"
             type="button"
             onClick={onClose}
             className="w-full border border-border rounded-md py-2 text-sm hover:bg-muted transition-colors cursor-pointer text-foreground bg-background"
           >
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="unstyled"
             type="submit"
             disabled={isPending}
             className="w-full text-white rounded-md py-2 text-sm font-medium transition-all shadow-sm disabled:opacity-50 cursor-pointer"
             style={{ backgroundColor: selectedColor }}
           >
             {isPending ? "Saving..." : "Save Category"}
-          </button>
+          </Button>
         </div>
       </form>
     </div>
