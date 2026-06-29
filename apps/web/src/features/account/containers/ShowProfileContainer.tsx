@@ -4,6 +4,7 @@ import Link from "next/link";
 import { cn } from "@/shared/lib/utils";
 import Avatar from "@/shared/components/customs/Avatar";
 import { useMeQuery } from "@/features/nav/hooks/auth.hook";
+import { Button } from "@/shared/components/customs/Button";
 
 export default function ShowProfileContainer() {
   const pathname = usePathname();
@@ -35,14 +36,14 @@ export default function ShowProfileContainer() {
 
       {/* ส่วนที่ห้ามเอาออกหรือทำอะไรก็ช่าง */}
       {/* <div className="hidden">
-        <button
+        <Button variant="unstyled"
           aria-label="Notifications"
           className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-variant transition-colors active:scale-95 duration-200"
         >
           <span className="material-symbols-outlined text-on-surface-variant">
             notifications
           </span>
-        </button>
+        </Button>
       </div> */}
       {/* ส่วนที่ห้ามเอาออกหรือทำอะไรก็ช่าง */}
     </header>

@@ -3,6 +3,7 @@ import { cn } from "@/shared/lib/utils";
 import Avatar from "@/shared/components/customs/Avatar";
 import { AVATARS } from "../configs/account.config";
 import { useTranslation } from "@/shared/lib/i18n/useTranslation";
+import { Button } from "@/shared/components/customs/Button";
 
 interface AvatarSectionProps {
   user:
@@ -33,7 +34,8 @@ export default function AvatarSection({
   return (
     <div className="relative w-full flex flex-col items-center justify-center gap-4 my-6">
       <div className="relative">
-        <button
+        <Button
+          variant="unstyled"
           onClick={onToggleSelectingAvatar}
           disabled={isUpdating}
           className="relative bg-background border border-border rounded-full p-1 hover:ring-4 hover:ring-primary/10 transition-all group w-18 h-18 flex items-center justify-center"
@@ -47,10 +49,11 @@ export default function AvatarSection({
               />
             </span>
           )}
-        </button>
+        </Button>
 
         {user?.avatarUrl && (
-          <button
+          <Button
+            variant="unstyled"
             type="button"
             disabled={isUpdating}
             onClick={onRemoveAvatar}
@@ -58,14 +61,15 @@ export default function AvatarSection({
             title={t("removeAvatar")}
           >
             <CircleX size={16} />
-          </button>
+          </Button>
         )}
       </div>
 
       {isSelectingAvatar && (
         <>
           {/* Backdrop สำหรับดักจับการคลิกที่ว่างเพื่อปิด */}
-          <button
+          <Button
+            variant="unstyled"
             type="button"
             aria-hidden="true"
             tabIndex={-1}
@@ -80,7 +84,8 @@ export default function AvatarSection({
               {AVATARS.map((avatar) => {
                 const isSelected = user?.avatarUrl === avatar;
                 return (
-                  <button
+                  <Button
+                    variant="unstyled"
                     key={avatar}
                     onClick={() => onSelectAvatar(avatar)}
                     className={cn(
@@ -98,7 +103,7 @@ export default function AvatarSection({
                         </div>
                       </div>
                     )}
-                  </button>
+                  </Button>
                 );
               })}
             </div>

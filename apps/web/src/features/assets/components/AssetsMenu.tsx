@@ -2,6 +2,7 @@ import { EllipsisVertical, Trash2 } from "lucide-react";
 import ConfirmModal from "@/shared/components/customs/ConfirmModal";
 import MenuItem from "@/shared/components/customs/MenuItem";
 import { RefObject } from "react";
+import { Button } from "@/shared/components/customs/Button";
 
 interface AssetsMenuProps {
   isOpen: boolean;
@@ -25,13 +26,14 @@ export default function AssetsMenu({
   return (
     <>
       <div className="relative" ref={menuRef}>
-        <button
+        <Button
+          variant="unstyled"
           type="button"
           className="p-1 mr-2 cursor-pointer"
           onClick={() => setIsOpen(!isOpen)}
         >
           <EllipsisVertical size={18} />
-        </button>
+        </Button>
         {isOpen && (
           <div className="absolute right-3 top-full flex flex-col items-start w-32 bg-white rounded-md py-2 shadow-md z-50 border border-gray-100">
             <MenuItem onClick={() => setIsOpen(false)}>Filter</MenuItem>

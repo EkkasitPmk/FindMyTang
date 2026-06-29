@@ -14,6 +14,7 @@ import { useTransactionsQuery } from "../../transactions/hooks/transaction.hook"
 import { TransactionResponse } from "../../transactions/types/transaction.type";
 import EditAssetsContainer from "./EditAssetsContainer";
 import { cn } from "@/shared/lib/utils";
+import { Button } from "@/shared/components/customs/Button";
 
 export default function AssetDetailContainer() {
   const searchParams = useSearchParams();
@@ -155,7 +156,8 @@ export default function AssetDetailContainer() {
       {/* nav action bottom */}
       <div className="fixed bottom-0 right-0 left-0 py-4 px-4 border-t border-border bg-white">
         <div className="flex gap-3">
-          <button
+          <Button
+            variant="unstyled"
             onClick={() =>
               router.push(`/transaction?type=TRANSFER&assetId=${asset?.id}`)
             }
@@ -163,14 +165,15 @@ export default function AssetDetailContainer() {
           >
             <ArrowRightLeft size={18} />
             <span className="text-sm">Transfer</span>
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="unstyled"
             onClick={() => setIsEditModalOpen(true)}
             className="w-[25%] flex flex-col items-center justify-center border border-border py-2 rounded-md cursor-pointer hover:bg-gray-50"
           >
             <Pencil size={18} />
             <span className="text-sm">Edit</span>
-          </button>
+          </Button>
           <div
             className={cn(
               "relative w-[50%] flex items-center bg-primary text-white text-sm font-medium rounded-md cursor-pointer",
@@ -178,7 +181,8 @@ export default function AssetDetailContainer() {
             )}
             style={{ backgroundColor: asset?.color || undefined }}
           >
-            <button
+            <Button
+              variant="unstyled"
               onClick={() => router.push(`/transaction?assetId=${asset?.id}`)}
               className={cn(
                 "w-full h-full px-2 truncate rounded-md hover:bg-black/10 transition-colors",
@@ -188,11 +192,12 @@ export default function AssetDetailContainer() {
               )}
             >
               Add Transaction
-            </button>
+            </Button>
 
             <div className="h-full w-px bg-background" />
 
-            <button
+            <Button
+              variant="unstyled"
               onClick={() => setIsAddMenuOpen(!isAddMenuOpen)}
               className={cn(
                 "w-[20%] h-full rounded-md hover:bg-black/10 transition-colors flex items-center justify-center",
@@ -208,11 +213,12 @@ export default function AssetDetailContainer() {
                   isAddMenuOpen && "-rotate-90",
                 )}
               />
-            </button>
+            </Button>
 
             {isAddMenuOpen && (
               <>
-                <button
+                <Button
+                  variant="unstyled"
                   type="button"
                   aria-label="Close add menu"
                   className="fixed inset-0 z-0 w-full h-full cursor-default focus:outline-none"
@@ -226,7 +232,8 @@ export default function AssetDetailContainer() {
                   )}
                   style={{ backgroundColor: asset?.color || undefined }}
                 >
-                  <button
+                  <Button
+                    variant="unstyled"
                     onClick={() =>
                       router.push(
                         `/transaction?type=EXPENSE&assetId=${asset?.id}`,
@@ -235,8 +242,9 @@ export default function AssetDetailContainer() {
                     className="w-full py-2 text-sm hover:bg-black/10 border-b border-border/20 font-medium"
                   >
                     Expense
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    variant="unstyled"
                     onClick={() =>
                       router.push(
                         `/transaction?type=INCOME&assetId=${asset?.id}`,
@@ -245,7 +253,7 @@ export default function AssetDetailContainer() {
                     className="w-full py-2 text-sm hover:bg-black/10 font-medium"
                   >
                     Income
-                  </button>
+                  </Button>
                 </div>
               </>
             )}

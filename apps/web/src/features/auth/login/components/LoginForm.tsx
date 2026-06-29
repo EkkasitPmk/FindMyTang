@@ -7,6 +7,7 @@ import {
 } from "react-hook-form";
 import { LoginFormValues } from "../schemas/login.schema";
 import { Input } from "@/shared/components/customs/Input";
+import { Button } from "@/shared/components/customs/Button";
 
 interface LoginFormProps {
   register: UseFormRegister<LoginFormValues>;
@@ -88,7 +89,8 @@ export default function LoginForm({
                 error={!!errors.password}
                 {...register("password")}
               />
-              <button
+              <Button
+                variant="unstyled"
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-secondary-text hover:text-primary transition-colors cursor-pointer flex items-center justify-center"
                 type="button"
                 onClick={onToggleShowPassword}
@@ -98,7 +100,7 @@ export default function LoginForm({
                 ) : (
                   <Eye className="w-5 h-5" />
                 )}
-              </button>
+              </Button>
             </div>
             {errors.password && (
               <p className="text-xs text-expense font-medium">
@@ -116,13 +118,14 @@ export default function LoginForm({
           </div>
 
           {/* Primary Action Button */}
-          <button
+          <Button
+            variant="unstyled"
             className="w-full h-12 bg-primary text-white font-semibold text-base rounded-lg flex items-center justify-center active:scale-[0.98] transition-all hover:bg-primary-hover cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             type="submit"
             disabled={isPending}
           >
             {isPending ? "Logging In..." : "Log In"}
-          </button>
+          </Button>
         </form>
 
         {/* Divider */}
@@ -136,7 +139,8 @@ export default function LoginForm({
 
         {/* Social Authentication & Guest Mode */}
         <div className="flex flex-col space-y-3">
-          <button
+          <Button
+            variant="unstyled"
             className="w-full h-12 border border-border bg-surface text-primary-text font-medium rounded-lg flex items-center justify-center gap-2.5 active:scale-[0.98] transition-all hover:bg-surface-secondary cursor-pointer"
             type="button"
             onClick={onGoogleLogin}
@@ -166,16 +170,17 @@ export default function LoginForm({
               />
             </svg>
             Continue with Google
-          </button>
+          </Button>
 
-          <button
+          <Button
+            variant="unstyled"
             className="w-full h-12 bg-surface-secondary hover:bg-border/40 text-primary-text font-semibold rounded-lg flex items-center justify-center gap-2.5 active:scale-[0.98] transition-all cursor-pointer"
             type="button"
             onClick={onGuestLogin}
           >
             <User className="w-5 h-5 text-secondary-text" strokeWidth={2} />
             Continue as Guest
-          </button>
+          </Button>
         </div>
 
         {/* Footer Link */}

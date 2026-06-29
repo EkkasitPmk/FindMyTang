@@ -152,6 +152,7 @@
 - **Asset Delete Functionality**: เพิ่มระบบลบสินทรัพย์ (Delete Asset) ในหน้ารายละเอียดบัญชีสินทรัพย์ โดยปรับปรุงเมนู Top App Bar ใน [layout.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/app/(main)/layout.tsx) เพิ่มการแสดงหน้าต่างยืนยันการลบ (ConfirmModal) และเชื่อมต่อ API เมื่อลบสำเร็จระบบจะนำทางกลับไปยังหน้าแรกโดยอัตโนมัติ
 - **MainLayout Feature Extraction**: แยกโค้ดส่วน `MainLayout` ออกจาก `app/(main)/layout.tsx` นำไปสร้างเป็น Feature ใหม่ (`features/main-layout`) และแยก `AssetsMenu` ไปไว้ใน `features/assets` ตามมาตรฐานโครงสร้าง `AGENTS.md` (Feature-Based Architecture) เพื่อลดความซับซ้อนและให้โค้ดเป็นระเบียบ
 - **AssetsMenu Decoupling & Refactoring**: แยก Logic ออกจาก Component หน้าตาของ `AssetsMenu` ให้เป็น Pure Presentation Component และสร้าง `AssetsMenuContainer` ขึ้นมารองรับการจัดการ State ทั้งหมด (เช่น การเปิด/ปิดเมนู, การลบสินทรัพย์, และ Click-outside) ตามกฎ Architecture อย่างเคร่งครัด
+- **Reusable Button Component**: สร้าง custom Button component และปรับเปลี่ยนการเรียกใช้งานปุ่มธรรมดาทั่วทั้งฟีเจอร์ให้มาใช้ Button ตัวนี้ (variant="unstyled") ทั้งหมดโดยที่หน้าตาและพฤติกรรม UI ยังคงเดิม (`shared/components/customs/Button.tsx`) ที่ต่อยอดจาก shadcn/ui โดยเพิ่มคุณสมบัติรองรับสถานะการโหลด (`isLoading`) และการแสดงไอคอนซ้ายขวา (`leftIcon`, `rightIcon`) เพื่อใช้เป็นมาตรฐานสำหรับทุกฟีเจอร์ทั่วทั้งผลิตภัณฑ์
 
 ### 3. งานที่จะต้องทำเป็นลำดับถัดไป (Next Actions)
 

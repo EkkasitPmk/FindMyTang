@@ -25,6 +25,7 @@ import { CurrencyInput } from "@/shared/components/customs/CurrencyInput";
 import { getFormattedAmount } from "../utils/currency.util";
 import { formatDisplayDate } from "../helpers/date.helper";
 import { cn } from "@/shared/lib/utils";
+import { Button } from "@/shared/components/customs/Button";
 
 export default function TransactionsContainer() {
   return (
@@ -301,13 +302,14 @@ function TransactionsContainerContent() {
         )}
       >
         {hasAssetId && (
-          <button
+          <Button
+            variant="unstyled"
             type="button"
             onClick={() => router.back()}
             className="p-1 -ml-1 cursor-pointer hover:bg-gray-100 transition-colors"
           >
             <ChevronLeft size={24} />
-          </button>
+          </Button>
         )}
         <p className="text-center text-2xl font-bold absolute left-1/2 -translate-x-1/2 truncate">
           Add Transaction
@@ -379,7 +381,8 @@ function TransactionsContainerContent() {
 
       {/* Save Transaction */}
       <section className="fixed bottom-18 left-0 right-0 mx-4 bg-background pt-2">
-        <button
+        <Button
+          variant="unstyled"
           type="submit"
           disabled={
             createExpense.isPending ||
@@ -391,7 +394,7 @@ function TransactionsContainerContent() {
         >
           Save {transactionType.toLowerCase()}
           <ArrowRight size={18} />
-        </button>
+        </Button>
       </section>
       {/* Save Transaction */}
     </form>

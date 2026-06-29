@@ -3,6 +3,7 @@ import { ChevronRight, Landmark, Link2, Plus } from "lucide-react";
 import { useAssets } from "../hooks/assets.hook";
 import { getAssetIcon } from "../utils/assets.util";
 import { useThisMonthSummary } from "../../financialSnapshot/hooks/summary.hook";
+import { Button } from "@/shared/components/customs/Button";
 
 interface ListAssetsContainerProps {
   onAddAsset?: () => void;
@@ -79,14 +80,15 @@ export default function ListAssetsContainer({
         <span className="text-base font-normal text-gray-600">
           No assets linked yet
         </span>
-        <button
+        <Button
+          variant="unstyled"
           type="button"
           className="flex items-center gap-2 text-primary font-medium cursor-pointer hover:underline bg-transparent border-none p-0"
           onClick={onAddAsset}
         >
           <Link2 size={18} />
           <span>Add Asset</span>
-        </button>
+        </Button>
       </div>
     );
   };
@@ -95,14 +97,15 @@ export default function ListAssetsContainer({
     <div className="space-y-4">
       <div className="flex items-center justify-between mb-2">
         <span className="text-lg font-medium">Assets</span>
-        <button
+        <Button
+          variant="unstyled"
           type="button"
           className="flex items-center justify-center bg-gray-100 hover:bg-gray-200 transition-colors p-1 rounded-full cursor-pointer"
           onClick={onAddAsset}
           aria-label="Add Asset"
         >
           <Plus size={18} className="text-gray-600" />
-        </button>
+        </Button>
       </div>
 
       {renderAssetsList()}

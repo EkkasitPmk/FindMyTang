@@ -23,6 +23,7 @@ import ConfirmModal from "@/shared/components/customs/ConfirmModal";
 import CUCategoryModal from "../components/CUCategoryModal";
 import CategoryGrid from "../components/CategoryGrid";
 import { AxiosError } from "axios";
+import { Button } from "@/shared/components/customs/Button";
 
 export default function CategoryContainer() {
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
@@ -338,7 +339,8 @@ export default function CategoryContainer() {
 
       {/* Select Option Tab */}
       <div className="flex border-b border-outline/10 mb-1 cursor-pointer">
-        <button
+        <Button
+          variant="unstyled"
           type="button"
           onClick={() => setActiveTab("EXPENSE")}
           className={`grow text-center py-2 text-base font-medium border-b-2 ${
@@ -348,8 +350,9 @@ export default function CategoryContainer() {
           }`}
         >
           Expenses
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="unstyled"
           type="button"
           onClick={() => setActiveTab("INCOME")}
           className={`grow text-center py-2 text-base font-medium border-b-2 ${
@@ -359,7 +362,7 @@ export default function CategoryContainer() {
           }`}
         >
           Income
-        </button>
+        </Button>
       </div>
       {/* Select Option Tab */}
 

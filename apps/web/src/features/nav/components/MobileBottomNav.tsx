@@ -2,6 +2,7 @@ import Link from "next/link";
 import { navItems } from "../configs/navigation.config";
 import { useTranslation } from "@/shared/lib/i18n/useTranslation";
 import { MoreHorizontal } from "lucide-react";
+import { Button } from "@/shared/components/customs/Button";
 
 interface MobileBottomNavProps {
   pathname: string;
@@ -29,7 +30,8 @@ export default function MobileBottomNav({
           const isMoreActive =
             pathname.startsWith("/settings") || mobileMenuOpen;
           return (
-            <button
+            <Button
+              variant="unstyled"
               key={item.href}
               onClick={onMenuOpen}
               className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-md text-[10px] font-semibold transition-all active-press cursor-pointer outline-none ${
@@ -45,7 +47,7 @@ export default function MobileBottomNav({
                 />
               </div>
               {t("navMore")}
-            </button>
+            </Button>
           );
         }
 

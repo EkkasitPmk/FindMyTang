@@ -1,6 +1,7 @@
 import { cn } from "@/shared/lib/utils";
 import { Coins, Landmark } from "lucide-react";
 import { Asset } from "@/features/assets/types/assets.type";
+import { Button } from "@/shared/components/customs/Button";
 
 interface TransactionAssetItemProps {
   asset: Asset;
@@ -14,7 +15,8 @@ export default function TransactionAssetItem({
   onClick,
 }: Readonly<TransactionAssetItemProps>) {
   return (
-    <button
+    <Button
+      variant="unstyled"
       type="button"
       onClick={() => onClick(asset.id)}
       className={cn(
@@ -55,6 +57,6 @@ export default function TransactionAssetItem({
           })}
         </span>
       </div>
-    </button>
+    </Button>
   );
 }

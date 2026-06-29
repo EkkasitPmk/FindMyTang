@@ -7,6 +7,7 @@ import {
 import { UpdateProfileFormValues } from "../schemas/account.schema";
 import { useTranslation } from "@/shared/lib/i18n/useTranslation";
 import { Input } from "@/shared/components/customs/Input";
+import { Button } from "@/shared/components/customs/Button";
 
 interface PersonalInfoFormProps {
   user:
@@ -58,7 +59,8 @@ export default function PersonalInfoForm({
                   {...register("displayName")}
                 />
                 {isDirty ? (
-                  <button
+                  <Button
+                    variant="unstyled"
                     type="submit"
                     disabled={isUpdating}
                     className="absolute right-3 p-1 text-primary hover:bg-primary-light rounded-full transition-colors cursor-pointer"
@@ -69,7 +71,7 @@ export default function PersonalInfoForm({
                     ) : (
                       <Check className="w-4 h-4" />
                     )}
-                  </button>
+                  </Button>
                 ) : (
                   <Pencil className="absolute right-3 w-4 h-4 text-secondary-text/60 pointer-events-none" />
                 )}

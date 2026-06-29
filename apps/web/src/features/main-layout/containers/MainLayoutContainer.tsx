@@ -8,6 +8,7 @@ import { useCategoryUIStore } from "@/features/category/hooks/category.hook";
 import { useTranslation } from "@/shared/lib/i18n/useTranslation";
 import { cn } from "@/shared/lib/utils";
 import AssetsMenuContainer from "@/features/assets/containers/AssetsMenuContainer";
+import { Button } from "@/shared/components/customs/Button";
 
 export default function MainLayoutContainer({
   children,
@@ -43,24 +44,26 @@ export default function MainLayoutContainer({
   const renderRightAction = () => {
     if (pathname === "/categories") {
       return (
-        <button
+        <Button
+          variant="unstyled"
           type="button"
           onClick={toggleEditingList}
           className="text-sm mr-4 text-primary hover:text-primary-dark font-medium transition-colors cursor-pointer"
         >
           {isEditingList ? t("done") : t("edit")}
-        </button>
+        </Button>
       );
     }
     if (pathname === "/settings") {
       return (
-        <button
+        <Button
+          variant="unstyled"
           type="button"
           onClick={() => router.back()}
           className="p-1 mr-1 cursor-pointer"
         >
           <X size={24} />
-        </button>
+        </Button>
       );
     }
     if (pathname === "/assets") {

@@ -2,6 +2,7 @@ import { Wallet, X } from "lucide-react";
 import NavLinks from "./NavLinks";
 import NavUserProfile from "./NavUserProfile";
 import { UserProfile } from "@/features/nav/types/auth.type";
+import { Button } from "@/shared/components/customs/Button";
 
 interface MobileDrawerProps {
   isOpen: boolean;
@@ -25,7 +26,8 @@ export default function MobileDrawer({
   return (
     <div className="fixed inset-0 z-50 md:hidden">
       {/* Backdrop */}
-      <button
+      <Button
+        variant="unstyled"
         type="button"
         aria-hidden="true"
         tabIndex={-1}
@@ -46,12 +48,13 @@ export default function MobileDrawer({
                 PocketNote
               </span>
             </div>
-            <button
+            <Button
+              variant="unstyled"
               onClick={onClose}
               className="p-1.5 rounded-md hover:bg-surface-secondary text-secondary-text"
             >
               <X className="w-5 h-5" strokeWidth={1.5} />
-            </button>
+            </Button>
           </div>
 
           {/* Navigation list */}

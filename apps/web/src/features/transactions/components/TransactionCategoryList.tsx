@@ -3,6 +3,7 @@ import { getCategoryIcon } from "@/shared/lib/configs/category-icons.config";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { Category } from "@/features/category/types/category.type";
+import { Button } from "@/shared/components/customs/Button";
 
 interface TransactionCategoryListProps {
   categories: Category[];
@@ -26,7 +27,8 @@ export default function TransactionCategoryList({
           const isSelected = activeCategoryId === category.id;
 
           return (
-            <button
+            <Button
+              variant="unstyled"
               key={category.id}
               type="button"
               onClick={() => onSelectCategory(category.id)}
@@ -51,7 +53,7 @@ export default function TransactionCategoryList({
               >
                 {category.name}
               </span>
-            </button>
+            </Button>
           );
         })}
         {/* ปุ่มแก้ไข category กดแล้วไปยัง /categories */}

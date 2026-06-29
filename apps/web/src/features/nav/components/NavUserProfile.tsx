@@ -4,6 +4,7 @@ import Avatar from "@/shared/components/customs/Avatar";
 import { UserProfile } from "@/features/nav/types/auth.type";
 import { useTranslation } from "@/shared/lib/i18n/useTranslation";
 import { cn } from "@/shared/lib/utils";
+import { Button } from "@/shared/components/customs/Button";
 
 interface NavUserProfileProps {
   user?: UserProfile | null;
@@ -64,7 +65,8 @@ export default function NavUserProfile({
       </div>
       {!isLoading &&
         (user ? (
-          <button
+          <Button
+            variant="unstyled"
             onClick={() => {
               onLogout();
               onActionClick?.();
@@ -73,7 +75,7 @@ export default function NavUserProfile({
           >
             <LogOut className="w-4 h-4 text-expense" strokeWidth={1.5} />
             <span className="text-expense">Log Out</span>
-          </button>
+          </Button>
         ) : (
           <Link
             href="/login"
