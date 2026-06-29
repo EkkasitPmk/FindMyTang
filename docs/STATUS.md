@@ -154,6 +154,8 @@
 - **AssetsMenu Decoupling & Refactoring**: แยก Logic ออกจาก Component หน้าตาของ `AssetsMenu` ให้เป็น Pure Presentation Component และสร้าง `AssetsMenuContainer` ขึ้นมารองรับการจัดการ State ทั้งหมด (เช่น การเปิด/ปิดเมนู, การลบสินทรัพย์, และ Click-outside) ตามกฎ Architecture อย่างเคร่งครัด
 - **Reusable Button Component**: สร้าง custom Button component และปรับเปลี่ยนการเรียกใช้งานปุ่มธรรมดาทั่วทั้งฟีเจอร์ให้มาใช้ Button ตัวนี้ (variant="unstyled") ทั้งหมดโดยที่หน้าตาและพฤติกรรม UI ยังคงเดิม (`shared/components/customs/Button.tsx`) ที่ต่อยอดจาก shadcn/ui โดยเพิ่มคุณสมบัติรองรับสถานะการโหลด (`isLoading`) และการแสดงไอคอนซ้ายขวา (`leftIcon`, `rightIcon`) เพื่อใช้เป็นมาตรฐานสำหรับทุกฟีเจอร์ทั่วทั้งผลิตภัณฑ์
 
+- **ModalForm Reusability**: สร้างคอมโพเนนต์ `ModalForm` เพื่อลดความซ้ำซ้อนของโค้ด และปรับปรุงคอมโพเนนต์ต่างๆ (`AssetForm`, `CUCategoryModal`, และ `ChangePasswordModal`) ให้เปลี่ยนมาเรียกใช้ Modal กลางตัวนี้ทั้งหมด พร้อมทั้งปรับ UI การเลือกสี (Color Selection) ใน `CUCategoryModal` ให้มีดีไซน์มาตรฐานเดียวกัน 100%
+
 ### 3. งานที่จะต้องทำเป็นลำดับถัดไป (Next Actions)
 
 - [x] **พัฒนา UI การจัดการหมวดหมู่เพิ่มเติม (Category CRUD - Form & Actions)**: ทำฟอร์มสำหรับเพิ่ม/แก้ไขหมวดหมู่ส่วนตัว พร้อมเชื่อมโยง Action การลบและการบันทึกข้อมูลให้สมบูรณ์ (Sprint 1)
