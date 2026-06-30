@@ -38,7 +38,6 @@ export default function EditAssetsContainer({
     defaultValues: {
       name: asset.name,
       type: asset.type,
-      balance: asset.balance,
       color: asset.color || "#2563EB",
     },
   });
@@ -51,7 +50,6 @@ export default function EditAssetsContainer({
     reset({
       name: asset.name,
       type: asset.type,
-      balance: asset.balance,
       color: asset.color || "#2563EB",
     });
   }, [asset, reset]);
@@ -108,7 +106,7 @@ export default function EditAssetsContainer({
       data: {
         name: values.name,
         type: values.type,
-        balance: balanceNum,
+        ...(balanceNum !== undefined && { balance: balanceNum }),
         color: values.color,
       },
     });

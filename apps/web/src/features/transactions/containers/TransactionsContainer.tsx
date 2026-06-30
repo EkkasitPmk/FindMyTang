@@ -48,7 +48,7 @@ export default function TransactionsContainer() {
   const typeParam = searchParams.get("type");
 
   const queryParams = useMemo(
-    () => (hasAssetId ? { assetId: defaultAssetId! } : undefined),
+    () => (hasAssetId ? { assetId: defaultAssetId!, limit: 9999 } : { limit: 9999 }),
     [hasAssetId, defaultAssetId],
   );
   const { data: txData, isLoading } = useTransactionsQuery(queryParams);

@@ -84,7 +84,8 @@ export default function AssetForm({
             variant="unstyled"
             type="submit"
             disabled={isPending}
-            className="w-full text-white rounded-lg py-2.5 text-sm font-medium transition-all shadow-md disabled:opacity-50 cursor-pointer bg-primary hover:bg-primary/90 hover:shadow-lg active:scale-[0.98]"
+            style={{ backgroundColor: currentColor }}
+            className="w-full text-white rounded-lg py-2.5 text-sm font-medium transition-all shadow-md disabled:opacity-50 cursor-pointer hover:opacity-90 hover:shadow-lg active:scale-[0.98]"
           >
             {submitButtonText}
           </Button>

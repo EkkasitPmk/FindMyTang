@@ -7,16 +7,17 @@ import {
 import { Asset } from "../types/assets.type";
 import {
   TransactionResponse,
-  PaginatedTransactionResponse,
+  GroupedTransaction,
 } from "../../transactions/types/transaction.type";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/components/customs/Button";
-import { getCategoryIcon } from "@/shared/lib/configs/category-icons.config";
-import { formatDisplayDate } from "../../transactions/helpers/date.helper";
+import { DropdownSelect } from "@/shared/components/customs/DropdownSelect";
+import { Dispatch, SetStateAction } from "react";
+import { TransactionItem } from "./TransactionItem";
 
 interface AssetDetailProps {
   asset?: Asset;
-  transactionsData?: PaginatedTransactionResponse;
+  groupedTransactions: GroupedTransaction[];
   isLoading: boolean;
   isLoadingTransactions: boolean;
   isAddMenuOpen: boolean;
@@ -29,11 +30,23 @@ interface AssetDetailProps {
   onAddExpenseClick: () => void;
   onAddIncomeClick: () => void;
   onTransactionItemClick: (transaction: TransactionResponse) => void;
+  selected: string;
+  months: string[];
+  handleSelect: (months: string) => void;
+  years: string[];
+  selectedYear: string;
+  handleSelectYear: (year: string) => void;
+  isMonthOpen: boolean;
+  setIsMonthOpen: Dispatch<SetStateAction<boolean>>;
+  isYearOpen: boolean;
+  setIsYearOpen: Dispatch<SetStateAction<boolean>>;
+  expandedTransactionId: string | null;
+  setExpandedTransactionId: Dispatch<SetStateAction<string | null>>;
 }
 
 export default function AssetDetail({
   asset,
-  transactionsData,
+  groupedTransactions,
   isLoading,
   isLoadingTransactions,
   isAddMenuOpen,
@@ -46,6 +59,18 @@ export default function AssetDetail({
   onAddExpenseClick,
   onAddIncomeClick,
   onTransactionItemClick,
+  selected,
+  months,
+  handleSelect,
+  years,
+  selectedYear,
+  handleSelectYear,
+  isMonthOpen,
+  setIsMonthOpen,
+  isYearOpen,
+  setIsYearOpen,
+  expandedTransactionId,
+  setExpandedTransactionId,
 }: Readonly<AssetDetailProps>) {
   if (isLoading) {
     return (
@@ -64,20 +89,35 @@ export default function AssetDetail({
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-100px)]">
-      <div className="relative flex flex-col items-center justify-center my-4">
+    <div className="flex flex-col h-[calc(100vh-110px)] space-y-4">
+      <div className="relative flex flex-col items-center justify-center mt-6 mb-2">
         <Button
           variant="unstyled"
           onClick={onEditClick}
-          className="absolute right-0 top-0 p-2 text-gray-400 hover:text-gray-700 transition-colors cursor-pointer"
+          className="absolute right-0 -top-2 p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-all cursor-pointer"
           title="Edit Asset"
         >
           <Pencil size={18} />
         </Button>
-        <p className="text-gray-500 font-medium">BALANCE</p>
-        <div className="flex items-center gap-1 mt-1">
-          <span className="text-2xl font-bold">฿</span>
-          <p className="text-3xl font-bold">
+        <div
+          className="px-3 py-1 rounded-full bg-opacity-10 mb-2"
+          style={{ backgroundColor: `${asset.color || "#2563EB"}1A` }}
+        >
+          <p
+            className="font-semibold text-lg tracking-widest uppercase"
+            style={{ color: asset.color || undefined }}
+          >
+            balance
+          </p>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span
+            className="text-3xl font-bold opacity-80"
+            style={{ color: asset.color || undefined }}
+          >
+            ฿
+          </span>
+          <p className="text-3xl font-extrabold tracking-tight text-gray-900">
             {asset.balance.toLocaleString("en-US", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
@@ -86,113 +126,67 @@ export default function AssetDetail({
         </div>
       </div>
 
-      <div className="flex items-center justify-between my-2">
-        <p>Recent Transactions</p>
-        <ChevronRight size={18} />
+      <div className="mb-2">
+        <p className="text-base text-primary-text">Recent Transactions</p>
+        <span className="text-secondary-text text-sm">Period</span>
+        <div className="flex items-center justify-between">
+          <DropdownSelect
+            options={months}
+            selected={selected}
+            isOpen={isMonthOpen}
+            onToggle={() => setIsMonthOpen(!isMonthOpen)}
+            themeColor={asset.color}
+            onSelect={(month) => {
+              handleSelect(month);
+              setIsMonthOpen(false);
+            }}
+          />
+          <DropdownSelect
+            options={years}
+            selected={selectedYear}
+            isOpen={isYearOpen}
+            onToggle={() => setIsYearOpen(!isYearOpen)}
+            themeColor={asset.color}
+            onSelect={(year) => {
+              handleSelectYear(year);
+              setIsYearOpen(false);
+            }}
+          />
+        </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto pb-14">
-        <div className="bg-white rounded-md border border-border">
-          {isLoadingTransactions ? (
-            <div className="p-4 text-center text-gray-500">
-              Loading transactions...
-            </div>
-          ) : (
-            <>
-              {transactionsData?.items.map(
-                (transaction: TransactionResponse, index: number) => {
-                  const isIncome = transaction.type === "INCOME";
-                  const isExpense = transaction.type === "EXPENSE";
-                  const isLast = index === transactionsData.items.length - 1;
-
-                  let iconElement = null;
-                  let amountColorClass = "text-gray-800";
-                  let amountPrefix = "";
-
-                  if (isIncome) {
-                    amountColorClass = "text-green-600";
-                    amountPrefix = "+";
-                  } else if (isExpense) {
-                    amountColorClass = "text-red-600";
-                    amountPrefix = "-";
-                  }
-
-                  if (transaction.category) {
-                    const CategoryIcon = getCategoryIcon(
-                      transaction.category.icon,
-                      transaction.category.type,
-                    );
-                    iconElement = (
-                      <span
-                        className="bg-gray-100 rounded-full p-2"
-                        style={{ color: transaction.category.color }}
-                      >
-                        <CategoryIcon size={18} />
-                      </span>
-                    );
-                  } else if (transaction.type === "TRANSFER") {
-                    iconElement = (
-                      <span className="bg-gray-100 rounded-full p-2 text-blue-500">
-                        <ArrowRightLeft size={18} />
-                      </span>
-                    );
-                  } else if (transaction.type === "ADJUSTMENT") {
-                    iconElement = (
-                      <span className="bg-gray-100 rounded-full p-2 text-purple-500">
-                        <SlidersHorizontal size={18} />
-                      </span>
-                    );
-                  }
-
-                  return (
-                    <Button
-                      variant="unstyled"
-                      key={transaction.id}
-                      type="button"
-                      onClick={() => onTransactionItemClick(transaction)}
-                      className={`w-full text-left flex items-center justify-between p-2 cursor-pointer hover:bg-gray-50 focus:outline-none focus:bg-gray-50 transition-colors${isLast ? "" : "border-b border-border"}`}
-                    >
-                      <div className="flex items-center gap-3">
-                        {iconElement}
-                        <div className="flex flex-col leading-5">
-                          <span className="text-base capitalize">
-                            {transaction.type === "ADJUSTMENT" ||
-                            transaction.type === "TRANSFER"
-                              ? transaction.type.toLowerCase()
-                              : transaction.category?.name ||
-                                transaction.note ||
-                                transaction.type}
-                          </span>
-                          <span className="text-xs text-gray-500">
-                            {formatDisplayDate(
-                              new Date(transaction.transactionDate),
-                            )}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <span className={`text-base ${amountColorClass}`}>
-                          {amountPrefix}฿
-                          {transaction.amount.toLocaleString("en-US", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
-                        </span>
-                        <ChevronRight size={18} className="text-gray-400" />
-                      </div>
-                    </Button>
-                  );
-                },
-              )}
-              {(!transactionsData?.items ||
-                transactionsData.items.length === 0) && (
-                <div className="p-4 text-center text-gray-500">
-                  No transactions found
+      <div className="flex-1 overflow-y-auto relative">
+        {isLoadingTransactions ? (
+          <div className="p-4 text-center text-gray-500">
+            Loading transactions...
+          </div>
+        ) : (
+          <div className="bg-white">
+            {groupedTransactions.map((group) => (
+              <div key={group.dateStr} className="relative">
+                <div className="sticky top-0 bg-white z-10 py-2 text-base font-medium px-2">
+                  <span>{group.dateStr}</span>
                 </div>
-              )}
-            </>
-          )}
-        </div>
+                <div className="space-y-1">
+                  {group.items.map((transaction) => (
+                    <TransactionItem
+                      key={transaction.id}
+                      transaction={transaction}
+                      expandedTransactionId={expandedTransactionId}
+                      setExpandedTransactionId={setExpandedTransactionId}
+                      onTransactionItemClick={onTransactionItemClick}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
+            {!groupedTransactions?.length && (
+              <div className="p-4 text-center text-gray-500">
+                No transactions found
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* nav action bottom */}

@@ -103,3 +103,8 @@ export interface PaginatedTransactionResponse {
     totalPages: number;
   };
 }
+
+export interface GroupedTransaction {
+  dateStr: string;
+  items: TransactionResponse[];
+}

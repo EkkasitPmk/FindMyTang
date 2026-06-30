@@ -39,10 +39,6 @@ export function formatDisplayDate(date: Date | undefined): string {
         : `${Math.abs(diffDays)} days ago`;
   }
 
-  const dateStr = date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
+  const dateStr = `${String(date.getDate()).padStart(2, "0")} ${date.toLocaleString("en-US", { month: "long" })} ${String(date.getFullYear()).slice(-2)}`;
   return prefix ? `${prefix}, ${dateStr}` : dateStr;
 }

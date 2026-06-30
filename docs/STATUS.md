@@ -155,6 +155,7 @@
 - **Reusable Button Component**: สร้าง custom Button component และปรับเปลี่ยนการเรียกใช้งานปุ่มธรรมดาทั่วทั้งฟีเจอร์ให้มาใช้ Button ตัวนี้ (variant="unstyled") ทั้งหมดโดยที่หน้าตาและพฤติกรรม UI ยังคงเดิม (`shared/components/customs/Button.tsx`) ที่ต่อยอดจาก shadcn/ui โดยเพิ่มคุณสมบัติรองรับสถานะการโหลด (`isLoading`) และการแสดงไอคอนซ้ายขวา (`leftIcon`, `rightIcon`) เพื่อใช้เป็นมาตรฐานสำหรับทุกฟีเจอร์ทั่วทั้งผลิตภัณฑ์
 
 - **ModalForm Reusability**: สร้างคอมโพเนนต์ `ModalForm` เพื่อลดความซ้ำซ้อนของโค้ด และปรับปรุงคอมโพเนนต์ต่างๆ (`AssetForm`, `CUCategoryModal`, และ `ChangePasswordModal`) ให้เปลี่ยนมาเรียกใช้ Modal กลางตัวนี้ทั้งหมด พร้อมทั้งปรับ UI การเลือกสี (Color Selection) ใน `CUCategoryModal` ให้มีดีไซน์มาตรฐานเดียวกัน 100%
+- **AssetDetail Refactoring & Strict Architecture Compliance**: ปรับปรุง UI ของ `AssetDetail` ให้รองรับรูปแบบ Accordion (ขยายเพื่อดูรายละเอียด Transaction) ตาม mockdata และทำการ Refactor เพื่อลด Cognitive Complexity โดยการแยก `TransactionItem` ออกมาเป็นไฟล์ `TransactionItem.tsx` ตามกฎ Feature-Based Architecture ใน `AGENTS.md` อย่างเคร่งครัด พร้อมทั้งแก้ไขบั๊ก `react/no-unstable-nested-components` ที่เกิดจากการเรนเดอร์ไอคอนในระหว่าง render cycle ได้อย่างสมบูรณ์
 
 ### 3. งานที่จะต้องทำเป็นลำดับถัดไป (Next Actions)
 
