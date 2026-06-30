@@ -24,21 +24,21 @@ export function TransactionItemDetails({
   onDeleteClick,
 }: Readonly<TransactionItemDetailsProps>) {
   return (
-    <div className="px-4 py-3 bg-white rounded-bl-md rounded-br-md border-t-0 border border-border text-sm space-y-2">
+    <div className="px-4 pb-3 bg-surface-secondary rounded-bl-md rounded-br-md border-t-0 border border-border text-sm space-y-px">
       {isIncomeOrExpense && (
         <>
           <div className="flex items-center justify-between">
-            <p className="text-gray-500 capitalize">Transaction Type</p>
+            <p className="text-gray-500 capitalize">Transaction Type:</p>
             <p className="capitalize font-medium">
               {transaction.type.toLowerCase()}
             </p>
           </div>
           <div className="flex items-center justify-between">
-            <p className="text-gray-500 capitalize">Description</p>
+            <p className="text-gray-500 capitalize">Description:</p>
             <p className="font-medium text-right">{transaction.note || "-"}</p>
           </div>
           <div className="flex items-center justify-between">
-            <p className="text-gray-500 capitalize">Category</p>
+            <p className="text-gray-500 capitalize">Category:</p>
             <p className="font-medium">{transaction.category?.name || "-"}</p>
           </div>
         </>
@@ -47,7 +47,7 @@ export function TransactionItemDetails({
       {isAdjustment && (
         <>
           <div className="flex items-center justify-between">
-            <p className="text-gray-500 capitalize">Adjustment</p>
+            <p className="text-gray-500 capitalize">Adjustment:</p>
             <p className="font-medium">
               {transaction.amount >= 0 ? "+" : ""}
               {transaction.amount.toLocaleString("en-US", {
@@ -57,7 +57,7 @@ export function TransactionItemDetails({
             </p>
           </div>
           <div className="flex items-center justify-between">
-            <p className="text-gray-500 capitalize">Description</p>
+            <p className="text-gray-500 capitalize">Description:</p>
             <p className="font-medium text-right">{transaction.note || "-"}</p>
           </div>
         </>
@@ -66,18 +66,18 @@ export function TransactionItemDetails({
       {isTransfer && (
         <>
           <div className="flex items-center justify-between">
-            <p className="text-gray-500 capitalize">Transfer (To)</p>
+            <p className="text-gray-500 capitalize">Transfer (To):</p>
             <p className="font-medium">{transaction.toAsset?.name || "-"}</p>
           </div>
           <div className="flex items-center justify-between">
-            <p className="text-gray-500 capitalize">Description</p>
+            <p className="text-gray-500 capitalize">Description:</p>
             <p className="font-medium text-right">{transaction.note || "-"}</p>
           </div>
         </>
       )}
 
       <div className="flex items-center justify-between">
-        <p className="text-gray-500 capitalize">Date</p>
+        <p className="text-gray-500 capitalize">Date:</p>
         <p className="font-medium">
           {new Date(transaction.transactionDate).toLocaleDateString("en-GB", {
             day: "numeric",
@@ -89,7 +89,7 @@ export function TransactionItemDetails({
 
       {transaction.attachmentUrl && (
         <div className="pt-2">
-          <p className="text-gray-500 mb-2 capitalize">Attachment</p>
+          <p className="text-gray-500 mb-2 capitalize">Attachment:</p>
           <Image
             src={transaction.attachmentUrl}
             alt="attachment"

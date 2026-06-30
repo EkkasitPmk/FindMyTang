@@ -10,7 +10,7 @@ export default function HomeContainer() {
 
   return (
     <>
-      <div className="space-y-4">
+      <div className="space-y-4 px-4">
         <FinancialSnapshotContainer />
 
         <ListAssetsContainer onAddAsset={() => setIsCreateAssetOpen(true)} />

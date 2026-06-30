@@ -356,11 +356,11 @@ export default function TransactionsContainer() {
 
   return (
     <form
-      className="space-y-4 pb-26"
       onSubmit={handleSubmit(onSubmit)}
       onReset={handleResetForm}
+      className="pb-26"
     >
-      <div
+      <header
         className={cn(
           "flex items-center relative mb-2",
           hasAssetId ? "" : "mb-2 justify-center",
@@ -396,93 +396,95 @@ export default function TransactionsContainer() {
             </Button>
           </div>
         )}
-      </div>
+      </header>
 
-      <SegmentedControl
-        value={transactionType}
-        onChange={(val) => setTransactionType(val as TransactionType)}
-        options={transactionTypeOptions}
-      />
-
-      <div className="flex flex-col items-center gap-1 relative">
-        <CurrencyInput
-          id="balance"
-          ref={amountInputRef}
-          value={displayAmount}
-          onChange={handleCurrencyInput}
+      <div className="space-y-4 px-4">
+        <SegmentedControl
+          value={transactionType}
+          onChange={(val) => setTransactionType(val as TransactionType)}
+          options={transactionTypeOptions}
         />
-        <input type="hidden" name="amount" value={numericAmount} />
-        {errors.amount && (
-          <p className="text-red-500 text-xs">{errors.amount.message}</p>
+
+        <section className="flex flex-col items-center gap-1 relative">
+          <CurrencyInput
+            id="balance"
+            ref={amountInputRef}
+            value={displayAmount}
+            onChange={handleCurrencyInput}
+          />
+          <input type="hidden" name="amount" value={numericAmount} />
+          {errors.amount && (
+            <p className="text-red-500 text-xs">{errors.amount.message}</p>
+          )}
+        </section>
+
+        {(transactionType === "EXPENSE" || transactionType === "INCOME") && (
+          <TransactionCategoryList
+            categories={filteredCategories}
+            activeCategoryId={watchCategoryId || null}
+            onSelectCategory={(id) =>
+              setValue("categoryId", id, { shouldValidate: true })
+            }
+          />
         )}
-      </div>
 
-      {(transactionType === "EXPENSE" || transactionType === "INCOME") && (
-        <TransactionCategoryList
-          categories={filteredCategories}
-          activeCategoryId={watchCategoryId || null}
-          onSelectCategory={(id) =>
-            setValue("categoryId", id, { shouldValidate: true })
+        <TransactionAssetList
+          assets={safeAssets}
+          activeAssetId={watchAssetId || null}
+          onSelectAsset={(id) =>
+            setValue("assetId", id, { shouldValidate: true })
           }
+          activeAssetToId={watchToAssetId || null}
+          onSelectAssetTo={(id) =>
+            setValue("toAssetId", id, { shouldValidate: true })
+          }
+          transactionType={transactionType}
         />
-      )}
 
-      <TransactionAssetList
-        assets={safeAssets}
-        activeAssetId={watchAssetId || null}
-        onSelectAsset={(id) =>
-          setValue("assetId", id, { shouldValidate: true })
-        }
-        activeAssetToId={watchToAssetId || null}
-        onSelectAssetTo={(id) =>
-          setValue("toAssetId", id, { shouldValidate: true })
-        }
-        transactionType={transactionType}
-      />
+        <TransactionMoreDetails
+          isMoreDetailsOpen={isMoreDetailsOpen}
+          setIsMoreDetailsOpen={setIsMoreDetailsOpen}
+          displayDate={displayDate}
+          tempDate={tempDate}
+          setTempDate={setTempDate}
+          displayMonth={displayMonth}
+          setDisplayMonth={setDisplayMonth}
+          onPresetClick={handlePresetClick}
+          onConfirmDate={handleConfirmDate}
+          isCalendarOpen={isCalendarOpen}
+          setIsCalendarOpen={setIsCalendarOpen}
+          isPhotoMenuOpen={isPhotoMenuOpen}
+          setIsPhotoMenuOpen={setIsPhotoMenuOpen}
+          file={file}
+          attachmentUrl={removedAttachment ? null : existingTx?.attachmentUrl}
+          onRemoveFile={handleRemoveFile}
+          onTakeAPhoto={handleTakeAPhoto}
+          onSelectAPhoto={handleSelectAPhoto}
+          fileInputRef={fileInputRef}
+          cameraInputRef={cameraInputRef}
+          handleFileChange={handleFileChange}
+          register={register}
+        />
 
-      <TransactionMoreDetails
-        isMoreDetailsOpen={isMoreDetailsOpen}
-        setIsMoreDetailsOpen={setIsMoreDetailsOpen}
-        displayDate={displayDate}
-        tempDate={tempDate}
-        setTempDate={setTempDate}
-        displayMonth={displayMonth}
-        setDisplayMonth={setDisplayMonth}
-        onPresetClick={handlePresetClick}
-        onConfirmDate={handleConfirmDate}
-        isCalendarOpen={isCalendarOpen}
-        setIsCalendarOpen={setIsCalendarOpen}
-        isPhotoMenuOpen={isPhotoMenuOpen}
-        setIsPhotoMenuOpen={setIsPhotoMenuOpen}
-        file={file}
-        attachmentUrl={removedAttachment ? null : existingTx?.attachmentUrl}
-        onRemoveFile={handleRemoveFile}
-        onTakeAPhoto={handleTakeAPhoto}
-        onSelectAPhoto={handleSelectAPhoto}
-        fileInputRef={fileInputRef}
-        cameraInputRef={cameraInputRef}
-        handleFileChange={handleFileChange}
-        register={register}
-      />
-
-      <section className="fixed bottom-18 left-0 right-0 mx-4 bg-background pt-2">
-        <Button
-          variant="unstyled"
-          type="submit"
-          disabled={
-            createExpense.isPending ||
-            createIncome.isPending ||
-            createTransfer.isPending ||
-            createAdjustment.isPending ||
-            updateTransaction.isPending ||
-            deleteTransaction.isPending
-          }
-          className="flex items-center justify-center gap-2 bg-primary w-full text-white py-3 rounded-xl text-base font-bold capitalize disabled:opacity-50"
-        >
-          Save {transactionType.toLowerCase()}
-          <ArrowRight size={18} />
-        </Button>
-      </section>
+        <section className="fixed bottom-18 left-0 right-0 mx-4 bg-background pt-2">
+          <Button
+            variant="unstyled"
+            type="submit"
+            disabled={
+              createExpense.isPending ||
+              createIncome.isPending ||
+              createTransfer.isPending ||
+              createAdjustment.isPending ||
+              updateTransaction.isPending ||
+              deleteTransaction.isPending
+            }
+            className="flex items-center justify-center gap-2 bg-primary w-full text-white py-3 rounded-xl text-base font-bold capitalize disabled:opacity-50"
+          >
+            Save {transactionType.toLowerCase()}
+            <ArrowRight size={18} />
+          </Button>
+        </section>
+      </div>
 
       <ConfirmModal
         isOpen={isDeleteModalOpen}

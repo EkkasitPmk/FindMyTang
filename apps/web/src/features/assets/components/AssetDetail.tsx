@@ -105,7 +105,7 @@ export default function AssetDetail({
 
   return (
     <div className="flex flex-col h-[calc(100vh-110px)] space-y-4">
-      <div className="relative flex flex-col items-center justify-center mt-6">
+      <section className="relative flex flex-col items-center justify-center mt-6">
         <div
           className="px-3 py-1 rounded-full bg-opacity-10 mb-2"
           style={{ backgroundColor: `${asset.color || "#2563EB"}1A` }}
@@ -131,9 +131,9 @@ export default function AssetDetail({
             })}
           </p>
         </div>
-      </div>
+      </section>
 
-      <div className="mb-2">
+      <section className="mb-2 px-4">
         <DropdownSelect
           ref={viewOptionRef}
           options={viewOptionsList}
@@ -177,9 +177,9 @@ export default function AssetDetail({
             </div>
           </>
         )}
-      </div>
+      </section>
 
-      <div className="flex-1 overflow-y-auto relative">
+      <section className="flex-1 overflow-y-auto relative">
         {isLoadingTransactions ? (
           <div className="p-4 text-center text-gray-500">
             Loading transactions...
@@ -188,7 +188,7 @@ export default function AssetDetail({
           <div className="bg-white">
             {groupedTransactions.map((group) => (
               <div key={group.dateStr} className="relative">
-                <div className="sticky top-0 bg-white z-10 py-2 text-base font-medium px-2">
+                <div className="sticky top-0 bg-white z-10 py-2 text-base font-medium px-4">
                   <span>{group.dateStr}</span>
                 </div>
                 <div className="space-y-1">
@@ -213,10 +213,10 @@ export default function AssetDetail({
             )}
           </div>
         )}
-      </div>
+      </section>
 
       {/* nav action bottom */}
-      <div className="fixed bottom-0 right-0 left-0 py-2 px-4 border-t border-border bg-white z-50">
+      <section className="fixed bottom-0 right-0 left-0 py-2 px-4 border-t border-border bg-white z-50">
         <div className="flex gap-3">
           <Button
             variant="unstyled"
@@ -317,7 +317,7 @@ export default function AssetDetail({
             )}
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

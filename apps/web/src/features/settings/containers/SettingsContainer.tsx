@@ -37,7 +37,7 @@ export default function SettingsContainer({
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-300">
+    <div className="space-y-6 px-4 py-2 animate-in fade-in duration-300">
       {/* Profile Header */}
       <div className="space-y-2">
         <h5 className="text-[11px] font-semibold text-secondary-text/85 uppercase tracking-wider px-1">

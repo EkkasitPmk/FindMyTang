@@ -100,7 +100,7 @@ export default function ListAssetsContainer({
       {id === null ? (
         <div className="my-2">{renderAssetsList()}</div>
       ) : (
-        <div className="space-y-4">
+        <section className="space-y-4">
           <div className="flex items-center justify-between mb-2">
             <span className="text-lg font-medium">Assets</span>
             <Button
@@ -130,7 +130,7 @@ export default function ListAssetsContainer({
               </span>
             </div>
           </div>
-        </div>
+        </section>
       )}
     </>
   );

@@ -20,7 +20,7 @@ export function SegmentedControl<T extends string>({
   className,
 }: Readonly<SegmentedControlProps<T>>) {
   return (
-    <div
+    <section
       className={cn(
         "bg-primary-light flex rounded-lg text-xs font-medium p-1",
         className,
@@ -39,6 +39,6 @@ export function SegmentedControl<T extends string>({
           {option.label}
         </button>
       ))}
-    </div>
+    </section>
   );
 }

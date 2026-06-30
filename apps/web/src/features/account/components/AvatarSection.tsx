@@ -33,7 +33,7 @@ export default function AvatarSection({
   const { t } = useTranslation();
 
   return (
-    <div className="relative w-full flex flex-col items-center justify-center gap-4 my-6">
+    <section className="relative w-full flex flex-col items-center justify-center gap-4 my-6">
       <div className="relative">
         <Button
           variant="unstyled"
@@ -116,6 +116,6 @@ export default function AvatarSection({
         isOpen={isUpdating}
         message={t("updating") || "Updating..."}
       />
-    </div>
+    </section>
   );
 }

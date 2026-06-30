@@ -42,7 +42,7 @@ export default function PersonalInfoForm({
         {t("personalInfo")}
       </p>
 
-      <form onSubmit={handleSubmit(onUpdateProfile)}>
+      <form onSubmit={handleSubmit(onUpdateProfile)} className="m-0">
         <div className="bg-white rounded-b-none rounded-md border border-border p-4 m-0">
           <div className="space-y-1">
             <p className="text-xs text-secondary-text font-semibold uppercase">

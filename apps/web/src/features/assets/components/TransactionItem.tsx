@@ -1,6 +1,6 @@
 import React from "react";
 import { formatDisplayDate } from "../../transactions/helpers/date.helper";
-import { ArrowRightLeft, ChevronRight, SlidersHorizontal } from "lucide-react";
+import { ArrowRightLeft, ChevronDown, SlidersHorizontal } from "lucide-react";
 import { TransactionResponse } from "../../transactions/types/transaction.type";
 import { cn } from "@/shared/lib/utils/core.util";
 import { Button } from "@/shared/components/customs/Button";
@@ -100,7 +100,7 @@ export function TransactionItem({
   }
 
   return (
-    <div>
+    <div className="bg-surface-secondary">
       <Button
         variant="unstyled"
         type="button"
@@ -109,7 +109,7 @@ export function TransactionItem({
             expandedTransactionId === transaction.id ? null : transaction.id,
           )
         }
-        className="w-full text-left flex items-center justify-between px-3 py-2 cursor-pointer bg-surface-secondary hover:bg-gray-50 focus:outline-none focus:bg-gray-50 transition-colors"
+        className="w-full text-left flex items-center justify-between px-4 py-2 cursor-pointer bg-surface-secondary hover:bg-gray-50 focus:outline-none focus:bg-gray-50 transition-colors"
       >
         <div className="flex items-center gap-3">
           {iconElement}
@@ -126,28 +126,38 @@ export function TransactionItem({
               maximumFractionDigits: 2,
             })}
           </span>
-          <ChevronRight
+          <ChevronDown
             size={18}
             className={cn(
               "text-gray-400 transition-transform",
-              isExpanded && "rotate-90",
+              isExpanded && "-rotate-x-180",
             )}
           />
         </div>
       </Button>
 
       {/* Expandable Detail */}
-      {isExpanded && (
-        <TransactionItemDetails
-          transaction={transaction}
-          isIncomeOrExpense={isIncomeOrExpense}
-          isAdjustment={isAdjustment}
-          isTransfer={isTransfer}
-          onTransactionItemClick={onTransactionItemClick}
-          onRestoreClick={onRestoreClick}
-          onDeleteClick={onDeleteClick}
-        />
-      )}
+      <div
+        className={cn(
+          "grid transition-all duration-300 ease-in-out",
+          isExpanded
+            ? "grid-rows-[1fr] opacity-100"
+            : "grid-rows-[0fr] opacity-0",
+        )}
+      >
+        <div className="overflow-hidden">
+          <div className="w-[92%] h-px px-4 mx-auto my-2 bg-border" />
+          <TransactionItemDetails
+            transaction={transaction}
+            isIncomeOrExpense={isIncomeOrExpense}
+            isAdjustment={isAdjustment}
+            isTransfer={isTransfer}
+            onTransactionItemClick={onTransactionItemClick}
+            onRestoreClick={onRestoreClick}
+            onDeleteClick={onDeleteClick}
+          />
+        </div>
+      </div>
     </div>
   );
 }

@@ -2,7 +2,7 @@ import { BriefcaseBusiness, ChevronRight, Fuel, Utensils } from "lucide-react";
 
 export default function RecentJournalContainer() {
   return (
-    <div>
+    <section>
       <div className="flex items-center justify-between mb-2">
         <span className="text-lg font-medium">Recent Journal</span>
         {/* ปุ่มนี้ยังคงคิดอยู่ว่ามีดีไหม?? หรือใส่เป็นการสลับสับเปลี่ยน layout ใหม่ แบบ list หรือ grid *ห้ามเอาออกหรือลบทิ้ง*/}
@@ -77,6 +77,6 @@ export default function RecentJournalContainer() {
         </span>
       </div> */}
       {/* UI แบบไม่มีข้อมูล */}
-    </div>
+    </section>
   );
 }
