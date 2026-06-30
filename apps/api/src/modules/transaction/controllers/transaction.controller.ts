@@ -71,6 +71,7 @@ function toResponse(tx: TransactionWithRelations) {
       : undefined,
     createdAt: tx.createdAt,
     updatedAt: tx.updatedAt,
+    deletedAt: tx.deletedAt,
   };
 }
 
@@ -208,7 +209,14 @@ export class TransactionController {
 
   @Delete(":id")
   @UseGuards(JwtAuthGuard)
-  async delete(@Param("id") id: string, @CurrentUser() user: User) {
-    return toResponse(await this.transactionService.delete(id, user.id));
+  async delete(
+    @Param("id") id: string,
+    @CurrentUser() user: User,
+    @Query("hardDelete") hardDelete?: string,
+  ) {
+    const isHardDelete = hardDelete === "true";
+    return toResponse(
+      await this.transactionService.delete(id, user.id, isHardDelete),
+    );
   }
 }

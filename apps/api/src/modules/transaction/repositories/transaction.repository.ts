@@ -27,9 +27,12 @@ export class TransactionRepository {
     });
   }
 
-  async findById(id: string): Promise<Transaction | null> {
+  async findById(
+    id: string,
+    includeDeleted: boolean = false,
+  ): Promise<Transaction | null> {
     return this.prisma.transaction.findFirst({
-      where: { id, deletedAt: null },
+      where: { id, ...(includeDeleted ? {} : { deletedAt: null }) },
     });
   }
 
@@ -37,12 +40,21 @@ export class TransactionRepository {
     userId: string,
     query: TransactionQueryDto = {},
   ): Promise<{ items: Transaction[]; total: number }> {
-    const { page = 1, limit = 20, type, assetId, categoryId, from, to } = query;
+    const {
+      page = 1,
+      limit = 20,
+      type,
+      assetId,
+      categoryId,
+      from,
+      to,
+      isDeleted,
+    } = query;
     const skip = (page - 1) * limit;
 
     const where: Prisma.TransactionWhereInput = {
       userId,
-      deletedAt: null,
+      deletedAt: isDeleted ? { not: null } : null,
       ...(type && { type }),
       ...(assetId && { assetId }),
       ...(categoryId && { categoryId }),
@@ -75,20 +87,29 @@ export class TransactionRepository {
   async update(
     id: string,
     userId: string,
-    data: Partial<CreateTransactionData>,
+    data: Partial<CreateTransactionData> & { deletedAt?: Date | null },
   ): Promise<Transaction> {
     const tx = await this.prisma.transaction.findFirst({
-      where: { id, userId, deletedAt: null },
+      where: { id, userId },
     });
     if (!tx) throw new Error("Transaction not found or access denied");
     return this.prisma.transaction.update({ where: { id }, data });
   }
 
-  async delete(id: string, userId: string): Promise<Transaction> {
+  async delete(
+    id: string,
+    userId: string,
+    isHardDelete?: boolean,
+  ): Promise<Transaction> {
     const tx = await this.prisma.transaction.findFirst({
-      where: { id, userId, deletedAt: null },
+      where: { id, userId },
     });
     if (!tx) throw new Error("Transaction not found or access denied");
+
+    if (isHardDelete) {
+      return this.prisma.transaction.delete({ where: { id } });
+    }
+
     return this.prisma.transaction.update({
       where: { id },
       data: { deletedAt: new Date() },

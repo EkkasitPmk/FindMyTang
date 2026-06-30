@@ -266,7 +266,7 @@ export class TransactionService {
     dto: UpdateTransactionDto,
     file?: Express.Multer.File,
   ): Promise<Transaction> {
-    const tx = await this.transactionRepository.findById(id);
+    const tx = await this.transactionRepository.findById(id, true);
     if (!tx) throw new NotFoundException("Transaction not found");
     if (tx.userId !== userId)
       throw new ForbiddenException("You do not own this transaction");
@@ -310,13 +310,12 @@ export class TransactionService {
     return updatedTx;
   }
 
-  async delete(id: string, userId: string): Promise<Transaction> {
-    const tx = await this.transactionRepository.findById(id);
-    if (!tx) throw new NotFoundException("Transaction not found");
-    if (tx.userId !== userId)
-      throw new ForbiddenException("You do not own this transaction");
-
-    return this.transactionRepository.delete(id, userId);
+  async delete(
+    id: string,
+    userId: string,
+    isHardDelete?: boolean,
+  ): Promise<Transaction> {
+    return this.transactionRepository.delete(id, userId, isHardDelete);
   }
 
   // ponytail: skeletons — will wire into create/update/delete when POST /transactions is implemented.

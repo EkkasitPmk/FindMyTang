@@ -5,8 +5,9 @@ import {
   IsEnum,
   IsString,
   IsDateString,
+  IsBoolean,
 } from "class-validator";
-import { Type } from "class-transformer";
+import { Type, Transform } from "class-transformer";
 import { TransactionType } from "@prisma/client";
 
 export class TransactionQueryDto {
@@ -41,4 +42,9 @@ export class TransactionQueryDto {
   @IsOptional()
   @IsDateString()
   to?: string;
+
+  @IsOptional()
+  @Transform(({ value }) => value === "true" || value === true)
+  @IsBoolean()
+  isDeleted?: boolean;
 }
