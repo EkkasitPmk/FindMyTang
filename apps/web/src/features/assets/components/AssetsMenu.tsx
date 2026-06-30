@@ -12,6 +12,10 @@ interface AssetsMenuProps {
   menuRef: RefObject<HTMLDivElement | null>;
   assetName: string | null;
   onDelete: (isHardDelete?: boolean) => void;
+  isHardDelete?: boolean;
+  setIsHardDelete?: (value: boolean) => void;
+  inputValue?: string;
+  setInputValue?: (value: string) => void;
 }
 
 export default function AssetsMenu({
@@ -22,6 +26,10 @@ export default function AssetsMenu({
   menuRef,
   assetName,
   onDelete,
+  isHardDelete,
+  setIsHardDelete,
+  inputValue,
+  setInputValue,
 }: Readonly<AssetsMenuProps>) {
   return (
     <>
@@ -64,6 +72,10 @@ export default function AssetsMenu({
         withHardDeleteOption={true}
         hardDeleteCheckboxLabel="Delete permanently (Hard Delete)"
         expectedInputToConfirm={assetName || ""}
+        isHardDelete={isHardDelete}
+        onHardDeleteChange={setIsHardDelete}
+        inputValue={inputValue}
+        onInputChange={setInputValue}
       />
     </>
   );

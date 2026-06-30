@@ -1,5 +1,4 @@
 import { LucideIcon, Check } from "lucide-react";
-import { useState } from "react";
 
 interface ConfirmModalProps {
   isOpen: boolean;
@@ -13,6 +12,10 @@ interface ConfirmModalProps {
   hardDeleteCheckboxLabel?: string;
   expectedInputToConfirm?: string;
   variant?: "danger" | "success" | "primary";
+  isHardDelete?: boolean;
+  onHardDeleteChange?: (value: boolean) => void;
+  inputValue?: string;
+  onInputChange?: (value: string) => void;
 }
 
 export default function ConfirmModal({
@@ -27,19 +30,12 @@ export default function ConfirmModal({
   hardDeleteCheckboxLabel = "Delete permanently",
   expectedInputToConfirm,
   variant = "danger",
+  isHardDelete = false,
+  onHardDeleteChange,
+  inputValue = "",
+  onInputChange,
 }: Readonly<ConfirmModalProps>) {
-  const [isHardDelete, setIsHardDelete] = useState(false);
-  const [inputValue, setInputValue] = useState("");
-
-  const handleClose = () => {
-    setIsHardDelete(false);
-    setInputValue("");
-    onClose();
-  };
-
   if (!isOpen) {
-    if (isHardDelete) setIsHardDelete(false);
-    if (inputValue !== "") setInputValue("");
     return null;
   }
 
@@ -89,7 +85,7 @@ export default function ConfirmModal({
       {/* Click outside to close */}
       <div
         className="absolute inset-0 cursor-default"
-        onClick={handleClose}
+        onClick={onClose}
         aria-hidden="true"
       />
 
@@ -126,7 +122,7 @@ export default function ConfirmModal({
                   type="checkbox"
                   className="hidden"
                   checked={isHardDelete}
-                  onChange={(e) => setIsHardDelete(e.target.checked)}
+                  onChange={(e) => onHardDeleteChange?.(e.target.checked)}
                 />
                 <span className="text-xs font-medium text-primary-text">
                   {hardDeleteCheckboxLabel}
@@ -141,7 +137,7 @@ export default function ConfirmModal({
                   <input
                     type="text"
                     value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
+                    onChange={(e) => onInputChange?.(e.target.value)}
                     placeholder={expectedInputToConfirm}
                     className={`w-full px-3 py-2 text-xs border border-border rounded-md bg-surface-secondary focus:outline-none ${colors.focusBorder} focus:ring-1 ${colors.focusRing} transition-all`}
                   />
@@ -154,7 +150,7 @@ export default function ConfirmModal({
           <div className="flex gap-3 w-full mt-2">
             <button
               type="button"
-              onClick={handleClose}
+              onClick={onClose}
               className="flex-1 py-2.5 px-4 rounded-md border border-border hover:bg-surface-secondary text-secondary-text text-xs font-semibold active-press transition-colors cursor-pointer"
             >
               Cancel

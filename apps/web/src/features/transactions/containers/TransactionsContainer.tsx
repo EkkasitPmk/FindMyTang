@@ -24,9 +24,11 @@ import TransactionCategoryList from "../components/TransactionCategoryList";
 import TransactionAssetList from "../components/TransactionAssetList";
 import TransactionMoreDetails from "../components/TransactionMoreDetails";
 import ConfirmModal from "@/shared/components/customs/ConfirmModal";
+import { useConfirmModal } from "@/shared/lib/hooks/useConfirmModal.hook";
 import LoadingModal from "@/shared/components/customs/LoadingModal";
 import { SegmentedControl } from "@/shared/components/customs/SegmentedControl";
 import { CurrencyInput } from "@/shared/components/customs/CurrencyInput";
+import { useCurrencyInput } from "@/shared/lib/hooks/useCurrencyInput.hook";
 import { getFormattedAmount } from "../utils/currency.util";
 import { formatDisplayDate } from "../helpers/date.helper";
 import {
@@ -79,7 +81,16 @@ export default function TransactionsContainer() {
   const [amountDigits, setAmountDigits] = useState<string>("");
   const [removedAttachment, setRemovedAttachment] = useState(false);
   const [isMoreDetailsOpen, setIsMoreDetailsOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  const {
+    isOpen: isDeleteModalOpen,
+    open: openDeleteModal,
+    close: closeDeleteModal,
+    isHardDelete,
+    setIsHardDelete,
+    inputValue: confirmInput,
+    setInputValue: setConfirmInput,
+  } = useConfirmModal();
 
   const currentMonth = useMemo(
     () => new Date(new Date().getFullYear(), new Date().getMonth(), 1),
@@ -286,6 +297,9 @@ export default function TransactionsContainer() {
   const { displayAmount, numericAmount } = getFormattedAmount(amountDigits);
   const displayDate = formatDisplayDate(date);
 
+  const { inputRef: amountInputRef, handleChange: handleCurrencyInput } =
+    useCurrencyInput(displayAmount, handleAmountChange);
+
   const onSubmit = (
     data: CreateTransactionFormValues,
     e?: React.BaseSyntheticEvent,
@@ -376,7 +390,7 @@ export default function TransactionsContainer() {
               variant="unstyled"
               type="button"
               className="p-2 cursor-pointer hover:bg-gray-100 transition-colors text-red-500 rounded-full"
-              onClick={() => setIsDeleteModalOpen(true)}
+              onClick={openDeleteModal}
             >
               <Trash size={20} />
             </Button>
@@ -393,8 +407,9 @@ export default function TransactionsContainer() {
       <div className="flex flex-col items-center gap-1 relative">
         <CurrencyInput
           id="balance"
+          ref={amountInputRef}
           value={displayAmount}
-          onChange={handleAmountChange}
+          onChange={handleCurrencyInput}
         />
         <input type="hidden" name="amount" value={numericAmount} />
         {errors.amount && (
@@ -471,11 +486,14 @@ export default function TransactionsContainer() {
 
       <ConfirmModal
         isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        onConfirm={(isHardDelete) => {
+        onClose={closeDeleteModal}
+        onConfirm={() => {
           if (editId) {
-            deleteTransaction.mutate({ id: editId, isHardDelete });
-            setIsDeleteModalOpen(false);
+            deleteTransaction.mutate({
+              id: editId,
+              isHardDelete: Boolean(isHardDelete),
+            });
+            closeDeleteModal();
           }
         }}
         icon={Trash}
@@ -483,6 +501,10 @@ export default function TransactionsContainer() {
         des="Are you sure you want to delete this transaction? This action cannot be undone."
         confirmLabel="Delete"
         withHardDeleteOption={true}
+        isHardDelete={isHardDelete}
+        onHardDeleteChange={setIsHardDelete}
+        inputValue={confirmInput}
+        onInputChange={setConfirmInput}
       />
 
       <LoadingModal

@@ -9,12 +9,17 @@ import DesktopSidebar from "../components/DesktopSidebar";
 import MobileBottomNav from "../components/MobileBottomNav";
 import MobileDrawer from "../components/MobileDrawer";
 import ConfirmModal from "@/shared/components/customs/ConfirmModal";
+import { useConfirmModal } from "@/shared/lib/hooks/useConfirmModal.hook";
 
 export default function NavContainer() {
   const pathname = usePathname();
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
+  const {
+    isOpen: logoutConfirmOpen,
+    open: openLogoutConfirm,
+    close: closeLogoutConfirm,
+  } = useConfirmModal();
   const isGuest = useGuestStore((state) => state.isGuest);
   const setGuestMode = useGuestStore((state) => state.setGuestMode);
   const clearGuestData = useGuestStore((state) => state.clearGuestData);
@@ -34,7 +39,7 @@ export default function NavContainer() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        setLogoutConfirmOpen(false);
+        closeLogoutConfirm();
       }
     };
     if (logoutConfirmOpen) {
@@ -45,10 +50,10 @@ export default function NavContainer() {
       globalThis.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "";
     };
-  }, [logoutConfirmOpen]);
+  }, [logoutConfirmOpen, closeLogoutConfirm]);
 
   const handleLogout = () => {
-    setLogoutConfirmOpen(false);
+    closeLogoutConfirm();
     if (isGuest) {
       setGuestMode(false);
       clearGuestData();
@@ -66,7 +71,7 @@ export default function NavContainer() {
         pathname={pathname}
         user={user}
         isLoading={isLoading}
-        onLogout={() => setLogoutConfirmOpen(true)}
+        onLogout={openLogoutConfirm}
       />
 
       {/* Mobile Drawer Navigation overlay */}
@@ -76,7 +81,7 @@ export default function NavContainer() {
         pathname={pathname}
         user={user}
         isLoading={isLoading}
-        onLogout={() => setLogoutConfirmOpen(true)}
+        onLogout={openLogoutConfirm}
       />
 
       {/* Mobile Bottom Navigation Bar */}
@@ -94,7 +99,7 @@ export default function NavContainer() {
       {/* Logout Confirmation Modal */}
       <ConfirmModal
         isOpen={logoutConfirmOpen}
-        onClose={() => setLogoutConfirmOpen(false)}
+        onClose={closeLogoutConfirm}
         onConfirm={handleLogout}
         icon={LogOut}
         title="Log Out?"

@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAssets } from "../hooks/assets.hook";
 import {
@@ -10,6 +10,8 @@ import {
 import { formatDisplayDate } from "../../transactions/helpers/date.helper";
 import { toast } from "react-toastify";
 import ConfirmModal from "@/shared/components/customs/ConfirmModal";
+import { useConfirmModal } from "@/shared/lib/hooks/useConfirmModal.hook";
+import { useClickOutside } from "@/shared/lib/hooks/useClickOutside.hook";
 import LoadingModal from "@/shared/components/customs/LoadingModal";
 import { RotateCcw, Trash } from "lucide-react";
 import { TransactionResponse } from "../../transactions/types/transaction.type";
@@ -27,6 +29,12 @@ export default function AssetDetailContainer() {
   const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
   const [viewOption, setViewOption] = useState("Recent Transactions");
   const [isViewOptionOpen, setIsViewOptionOpen] = useState(false);
+  const viewOptionRef = useRef<HTMLDivElement>(null);
+  useClickOutside(
+    viewOptionRef,
+    () => setIsViewOptionOpen(false),
+    isViewOptionOpen,
+  );
 
   const asset = assets?.find((a) => a.id === id) || assets?.[0];
 
@@ -42,7 +50,13 @@ export default function AssetDetailContainer() {
     );
 
   const [isMonthOpen, setIsMonthOpen] = useState(false);
+  const monthRef = useRef<HTMLDivElement>(null);
+  useClickOutside(monthRef, () => setIsMonthOpen(false), isMonthOpen);
+
   const [isYearOpen, setIsYearOpen] = useState(false);
+  const yearRef = useRef<HTMLDivElement>(null);
+  useClickOutside(yearRef, () => setIsYearOpen(false), isYearOpen);
+
   const [selectedMonth, setSelectedMonth] = useState("Select");
   const [selectedYear, setSelectedYear] = useState("Select");
   const [expandedTransactionId, setExpandedTransactionId] = useState<
@@ -59,7 +73,16 @@ export default function AssetDetailContainer() {
     },
   });
 
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const {
+    isOpen: isDeleteModalOpen,
+    open: openDeleteModal,
+    close: closeDeleteModal,
+    isHardDelete,
+    setIsHardDelete,
+    inputValue: confirmInput,
+    setInputValue: setConfirmInput,
+  } = useConfirmModal();
+
   const [transactionToDelete, setTransactionToDelete] =
     useState<TransactionResponse | null>(null);
 
@@ -245,18 +268,21 @@ export default function AssetDetailContainer() {
             setExpandedTransactionId={setExpandedTransactionId}
             viewOption={viewOption}
             isViewOptionOpen={isViewOptionOpen}
+            viewOptionRef={viewOptionRef}
             onViewOptionToggle={() => setIsViewOptionOpen((prev) => !prev)}
             onViewOptionSelect={(option) => {
               setViewOption(option);
               setIsViewOptionOpen(false);
             }}
+            monthRef={monthRef}
+            yearRef={yearRef}
             onRestoreClick={(tx) => {
               setTransactionToRestore(tx);
               setIsRestoreModalOpen(true);
             }}
             onDeleteClick={(tx) => {
               setTransactionToDelete(tx);
-              setIsDeleteModalOpen(true);
+              openDeleteModal();
             }}
           />
           {isEditModalOpen && asset && (
@@ -298,17 +324,17 @@ export default function AssetDetailContainer() {
           <ConfirmModal
             isOpen={isDeleteModalOpen}
             onClose={() => {
-              setIsDeleteModalOpen(false);
+              closeDeleteModal();
               setTransactionToDelete(null);
             }}
-            onConfirm={(isHardDelete) => {
+            onConfirm={() => {
               if (transactionToDelete) {
                 deleteTransaction.mutate({
                   id: transactionToDelete.id,
                   isHardDelete:
                     Boolean(isHardDelete) || !!transactionToDelete.deletedAt,
                 });
-                setIsDeleteModalOpen(false);
+                closeDeleteModal();
                 setTransactionToDelete(null);
               }
             }}
@@ -325,6 +351,10 @@ export default function AssetDetailContainer() {
             }
             confirmLabel="Delete"
             withHardDeleteOption={!transactionToDelete?.deletedAt}
+            isHardDelete={isHardDelete}
+            onHardDeleteChange={setIsHardDelete}
+            inputValue={confirmInput}
+            onInputChange={setConfirmInput}
           />
 
           <LoadingModal

@@ -7,7 +7,7 @@ import {
 import { cn } from "@/shared/lib/utils/core.util";
 import { Button } from "@/shared/components/customs/Button";
 import { DropdownSelect } from "@/shared/components/customs/DropdownSelect";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, RefObject } from "react";
 import { TransactionItem } from "./TransactionItem";
 
 interface AssetDetailProps {
@@ -39,8 +39,11 @@ interface AssetDetailProps {
   setExpandedTransactionId: Dispatch<SetStateAction<string | null>>;
   viewOption: string;
   isViewOptionOpen: boolean;
+  viewOptionRef: RefObject<HTMLDivElement | null>;
   onViewOptionToggle: () => void;
   onViewOptionSelect: (option: string) => void;
+  monthRef: RefObject<HTMLDivElement | null>;
+  yearRef: RefObject<HTMLDivElement | null>;
   onRestoreClick?: (transaction: TransactionResponse) => void;
   onDeleteClick?: (transaction: TransactionResponse) => void;
 }
@@ -74,8 +77,11 @@ export default function AssetDetail({
   setExpandedTransactionId,
   viewOption,
   isViewOptionOpen,
+  viewOptionRef,
   onViewOptionToggle,
   onViewOptionSelect,
+  monthRef,
+  yearRef,
   onRestoreClick,
   onDeleteClick,
 }: Readonly<AssetDetailProps>) {
@@ -129,6 +135,7 @@ export default function AssetDetail({
 
       <div className="mb-2">
         <DropdownSelect
+          ref={viewOptionRef}
           options={viewOptionsList}
           selected={viewOption}
           isOpen={isViewOptionOpen}
@@ -144,6 +151,7 @@ export default function AssetDetail({
 
             <div className="flex items-center justify-between">
               <DropdownSelect
+                ref={monthRef}
                 options={months}
                 selected={selected}
                 isOpen={isMonthOpen}
@@ -155,6 +163,7 @@ export default function AssetDetail({
                 }}
               />
               <DropdownSelect
+                ref={yearRef}
                 options={years}
                 selected={selectedYear}
                 isOpen={isYearOpen}

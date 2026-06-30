@@ -19,12 +19,17 @@ import ChangePasswordModal from "../components/ChangePasswordModal";
 import AvatarSection from "../components/AvatarSection";
 import PersonalInfoForm from "../components/PersonalInfoForm";
 import ConfirmModal from "@/shared/components/customs/ConfirmModal";
+import { useConfirmModal } from "@/shared/lib/hooks/useConfirmModal.hook";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { Button } from "@/shared/components/customs/Button";
 
 export default function AccountContainer() {
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const {
+    isOpen: isDeleteModalOpen,
+    open: openDeleteModal,
+    close: closeDeleteModal,
+  } = useConfirmModal();
   const [isSelectingAvatar, setIsSelectingAvatar] = useState(false);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -150,7 +155,7 @@ export default function AccountContainer() {
   };
 
   const handleConfirmDeleteAccount = () => {
-    setIsDeleteModalOpen(false);
+    closeDeleteModal();
     toast.info(t("deleteAccountInfo"));
   };
 
@@ -219,7 +224,7 @@ export default function AccountContainer() {
         <div className="space-y-1">
           <Button
             variant="unstyled"
-            onClick={() => setIsDeleteModalOpen(true)}
+            onClick={openDeleteModal}
             className="w-full bg-white rounded-md border text-xs font-semibold text-expense uppercase border-expense/60 p-4 text-left hover:bg-expense-light/20 hover:border-expense transition-colors cursor-pointer"
           >
             {t("deleteAccountBtn")}
@@ -252,7 +257,7 @@ export default function AccountContainer() {
       {isDeleteModalOpen && (
         <ConfirmModal
           isOpen={isDeleteModalOpen}
-          onClose={() => setIsDeleteModalOpen(false)}
+          onClose={closeDeleteModal}
           onConfirm={handleConfirmDeleteAccount}
           icon={Trash2}
           title={t("deleteAccountTitle")}
