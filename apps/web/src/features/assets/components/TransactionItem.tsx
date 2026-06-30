@@ -1,17 +1,19 @@
 import React from "react";
-import Image from "next/image";
 import { formatDisplayDate } from "../../transactions/helpers/date.helper";
 import { ArrowRightLeft, ChevronRight, SlidersHorizontal } from "lucide-react";
 import { TransactionResponse } from "../../transactions/types/transaction.type";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/components/customs/Button";
 import { getCategoryIcon } from "@/shared/lib/configs/category-icons.config";
+import { TransactionItemDetails } from "./TransactionItemDetails";
 
 export interface TransactionItemProps {
   transaction: TransactionResponse;
   expandedTransactionId: string | null;
   setExpandedTransactionId: (id: string | null) => void;
   onTransactionItemClick: (transaction: TransactionResponse) => void;
+  onRestoreClick?: (transaction: TransactionResponse) => void;
+  onDeleteClick?: (transaction: TransactionResponse) => void;
 }
 
 export function TransactionItem({
@@ -19,6 +21,8 @@ export function TransactionItem({
   expandedTransactionId,
   setExpandedTransactionId,
   onTransactionItemClick,
+  onRestoreClick,
+  onDeleteClick,
 }: Readonly<TransactionItemProps>) {
   const isIncome = transaction.type === "INCOME";
   const isExpense = transaction.type === "EXPENSE";
@@ -134,105 +138,15 @@ export function TransactionItem({
 
       {/* Expandable Detail */}
       {isExpanded && (
-        <div className="px-4 py-3 bg-white rounded-bl-md rounded-br-md border-t-0 border border-border text-sm space-y-2">
-          {isIncomeOrExpense && (
-            <>
-              <div className="flex items-center justify-between">
-                <p className="text-gray-500 capitalize">Transaction Type</p>
-                <p className="capitalize font-medium">
-                  {transaction.type.toLowerCase()}
-                </p>
-              </div>
-              <div className="flex items-center justify-between">
-                <p className="text-gray-500 capitalize">Description</p>
-                <p className="font-medium text-right">
-                  {transaction.note || "-"}
-                </p>
-              </div>
-              <div className="flex items-center justify-between">
-                <p className="text-gray-500 capitalize">Category</p>
-                <p className="font-medium">
-                  {transaction.category?.name || "-"}
-                </p>
-              </div>
-            </>
-          )}
-
-          {isAdjustment && (
-            <>
-              <div className="flex items-center justify-between">
-                <p className="text-gray-500 capitalize">Adjustment</p>
-                <p className="font-medium">
-                  {transaction.amount >= 0 ? "+" : ""}
-                  {transaction.amount.toLocaleString("en-US", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </p>
-              </div>
-              <div className="flex items-center justify-between">
-                <p className="text-gray-500 capitalize">Description</p>
-                <p className="font-medium text-right">
-                  {transaction.note || "-"}
-                </p>
-              </div>
-            </>
-          )}
-
-          {isTransfer && (
-            <>
-              <div className="flex items-center justify-between">
-                <p className="text-gray-500 capitalize">Transfer (To)</p>
-                <p className="font-medium">
-                  {transaction.toAsset?.name || "-"}
-                </p>
-              </div>
-              <div className="flex items-center justify-between">
-                <p className="text-gray-500 capitalize">Description</p>
-                <p className="font-medium text-right">
-                  {transaction.note || "-"}
-                </p>
-              </div>
-            </>
-          )}
-
-          <div className="flex items-center justify-between">
-            <p className="text-gray-500 capitalize">Date</p>
-            <p className="font-medium">
-              {new Date(transaction.transactionDate).toLocaleDateString(
-                "en-GB",
-                {
-                  day: "numeric",
-                  month: "long",
-                  year: "2-digit",
-                },
-              )}
-            </p>
-          </div>
-
-          {transaction.attachmentUrl && (
-            <div className="pt-2">
-              <p className="text-gray-500 mb-2 capitalize">Attachment</p>
-              <Image
-                src={transaction.attachmentUrl}
-                alt="attachment"
-                width={64}
-                height={64}
-                className="h-16 w-16 object-cover rounded-md border border-gray-200"
-              />
-            </div>
-          )}
-
-          <Button
-            variant="unstyled"
-            className="w-full mt-2 py-2 text-center text-primary font-medium border border-border hover:bg-gray-100 rounded-md transition-colors"
-            onClick={() => onTransactionItemClick(transaction)}
-          >
-            Edit{" "}
-            {transaction.type.charAt(0) +
-              transaction.type.slice(1).toLowerCase()}
-          </Button>
-        </div>
+        <TransactionItemDetails
+          transaction={transaction}
+          isIncomeOrExpense={isIncomeOrExpense}
+          isAdjustment={isAdjustment}
+          isTransfer={isTransfer}
+          onTransactionItemClick={onTransactionItemClick}
+          onRestoreClick={onRestoreClick}
+          onDeleteClick={onDeleteClick}
+        />
       )}
     </div>
   );

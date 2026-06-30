@@ -1,9 +1,4 @@
-import {
-  ArrowRightLeft,
-  ChevronRight,
-  Pencil,
-  SlidersHorizontal,
-} from "lucide-react";
+import { ChevronRight, Pencil } from "lucide-react";
 import { Asset } from "../types/assets.type";
 import {
   TransactionResponse,
@@ -42,6 +37,12 @@ interface AssetDetailProps {
   setIsYearOpen: Dispatch<SetStateAction<boolean>>;
   expandedTransactionId: string | null;
   setExpandedTransactionId: Dispatch<SetStateAction<string | null>>;
+  viewOption: string;
+  isViewOptionOpen: boolean;
+  onViewOptionToggle: () => void;
+  onViewOptionSelect: (option: string) => void;
+  onRestoreClick?: (transaction: TransactionResponse) => void;
+  onDeleteClick?: (transaction: TransactionResponse) => void;
 }
 
 export default function AssetDetail({
@@ -71,7 +72,15 @@ export default function AssetDetail({
   setIsYearOpen,
   expandedTransactionId,
   setExpandedTransactionId,
+  viewOption,
+  isViewOptionOpen,
+  onViewOptionToggle,
+  onViewOptionSelect,
+  onRestoreClick,
+  onDeleteClick,
 }: Readonly<AssetDetailProps>) {
+  const viewOptionsList = ["Recent Transactions", "Show deleted items"];
+
   if (isLoading) {
     return (
       <div className="flex flex-col h-[calc(100dvh-100px)] items-center justify-center">
@@ -90,15 +99,7 @@ export default function AssetDetail({
 
   return (
     <div className="flex flex-col h-[calc(100vh-110px)] space-y-4">
-      <div className="relative flex flex-col items-center justify-center mt-6 mb-2">
-        <Button
-          variant="unstyled"
-          onClick={onEditClick}
-          className="absolute right-0 -top-2 p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-all cursor-pointer"
-          title="Edit Asset"
-        >
-          <Pencil size={18} />
-        </Button>
+      <div className="relative flex flex-col items-center justify-center mt-6">
         <div
           className="px-3 py-1 rounded-full bg-opacity-10 mb-2"
           style={{ backgroundColor: `${asset.color || "#2563EB"}1A` }}
@@ -127,8 +128,18 @@ export default function AssetDetail({
       </div>
 
       <div className="mb-2">
-        <p className="text-base text-primary-text">Recent Transactions</p>
+        <DropdownSelect
+          options={viewOptionsList}
+          selected={viewOption}
+          isOpen={isViewOptionOpen}
+          onToggle={onViewOptionToggle}
+          themeColor={asset.color}
+          onSelect={onViewOptionSelect}
+          className="w-full text-base font-medium"
+        />
+
         <span className="text-secondary-text text-sm">Period</span>
+
         <div className="flex items-center justify-between">
           <DropdownSelect
             options={months}
@@ -175,6 +186,8 @@ export default function AssetDetail({
                       expandedTransactionId={expandedTransactionId}
                       setExpandedTransactionId={setExpandedTransactionId}
                       onTransactionItemClick={onTransactionItemClick}
+                      onRestoreClick={onRestoreClick}
+                      onDeleteClick={onDeleteClick}
                     />
                   ))}
                 </div>
@@ -194,23 +207,15 @@ export default function AssetDetail({
         <div className="flex gap-3">
           <Button
             variant="unstyled"
-            onClick={onTransferClick}
+            onClick={onEditClick}
             className="w-[25%] flex flex-col items-center justify-center border border-border py-1.5 rounded-md hover:bg-gray-50 cursor-pointer"
           >
-            <ArrowRightLeft size={18} />
-            <span className="text-sm mt-px">Transfer</span>
-          </Button>
-          <Button
-            variant="unstyled"
-            onClick={onAdjustmentClick}
-            className="w-[25%] flex flex-col items-center justify-center border border-border py-1.5 rounded-md cursor-pointer hover:bg-gray-50"
-          >
-            <SlidersHorizontal size={18} />
-            <span className="text-sm mt-px">Adjust</span>
+            <Pencil size={18} />
+            <span className="text-sm mt-px">Edit</span>
           </Button>
           <div
             className={cn(
-              "relative w-[50%] flex items-center bg-primary text-white text-sm font-medium rounded-md cursor-pointer",
+              "relative w-[75%] flex items-center bg-primary text-white text-sm font-medium rounded-md cursor-pointer",
               isAddMenuOpen ? "rounded-tl-none rounded-tr-none" : "",
             )}
             style={{ backgroundColor: asset?.color || undefined }}
@@ -276,9 +281,23 @@ export default function AssetDetail({
                   <Button
                     variant="unstyled"
                     onClick={onAddIncomeClick}
-                    className="w-full py-2 text-sm hover:bg-black/10 font-medium"
+                    className="w-full py-2 text-sm hover:bg-black/10 border-b border-border/20 font-medium"
                   >
                     Income
+                  </Button>
+                  <Button
+                    variant="unstyled"
+                    onClick={onTransferClick}
+                    className="w-full py-2 text-sm hover:bg-black/10 border-b border-border/20 font-medium"
+                  >
+                    Transfer
+                  </Button>
+                  <Button
+                    variant="unstyled"
+                    onClick={onAdjustmentClick}
+                    className="w-full py-2 text-sm hover:bg-black/10 font-medium"
+                  >
+                    Adjustment
                   </Button>
                 </div>
               </>

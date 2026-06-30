@@ -1,6 +1,6 @@
 "use client";
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
-import { ArrowRight, ChevronLeft } from "lucide-react";
+import { ArrowRight, ChevronLeft, Trash } from "lucide-react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -13,6 +13,7 @@ import {
   useCreateAdjustmentMutation,
   useTransactionsQuery,
   useUpdateTransactionMutation,
+  useDeleteTransactionMutation,
 } from "../hooks/transaction.hook";
 import {
   createTransactionSchema,
@@ -22,6 +23,7 @@ import { toast } from "react-toastify";
 import TransactionCategoryList from "../components/TransactionCategoryList";
 import TransactionAssetList from "../components/TransactionAssetList";
 import TransactionMoreDetails from "../components/TransactionMoreDetails";
+import ConfirmModal from "@/shared/components/customs/ConfirmModal";
 import { SegmentedControl } from "@/shared/components/customs/SegmentedControl";
 import { CurrencyInput } from "@/shared/components/customs/CurrencyInput";
 import { getFormattedAmount } from "../utils/currency.util";
@@ -46,10 +48,15 @@ export default function TransactionsContainer() {
   const hasAssetId = searchParams.has("assetId");
   const defaultAssetId = searchParams.get("assetId") || null;
   const typeParam = searchParams.get("type");
+  const isDeletedParam = searchParams.get("isDeleted") === "true";
 
   const queryParams = useMemo(
-    () => (hasAssetId ? { assetId: defaultAssetId!, limit: 9999 } : { limit: 9999 }),
-    [hasAssetId, defaultAssetId],
+    () => ({
+      limit: 9999,
+      ...(hasAssetId && { assetId: defaultAssetId! }),
+      ...(isDeletedParam && { isDeleted: true }),
+    }),
+    [hasAssetId, defaultAssetId, isDeletedParam],
   );
   const { data: txData, isLoading } = useTransactionsQuery(queryParams);
 
@@ -71,6 +78,7 @@ export default function TransactionsContainer() {
   const [amountDigits, setAmountDigits] = useState<string>("");
   const [removedAttachment, setRemovedAttachment] = useState(false);
   const [isMoreDetailsOpen, setIsMoreDetailsOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const currentMonth = useMemo(
     () => new Date(new Date().getFullYear(), new Date().getMonth(), 1),
@@ -158,6 +166,13 @@ export default function TransactionsContainer() {
         setAmountDigits("");
         setFile(null);
       }
+    },
+  });
+
+  const deleteTransaction = useDeleteTransactionMutation({
+    onSuccess: () => {
+      toast.success("Transaction deleted successfully!");
+      router.back();
     },
   });
 
@@ -354,6 +369,18 @@ export default function TransactionsContainer() {
         >
           {editId ? "Edit Transaction" : "Add Transaction"}
         </p>
+        {editId && (
+          <div className="absolute right-0 flex items-center -mr-2">
+            <Button
+              variant="unstyled"
+              type="button"
+              className="p-2 cursor-pointer hover:bg-gray-100 transition-colors text-red-500 rounded-full"
+              onClick={() => setIsDeleteModalOpen(true)}
+            >
+              <Trash size={20} />
+            </Button>
+          </div>
+        )}
       </div>
 
       <SegmentedControl
@@ -431,7 +458,8 @@ export default function TransactionsContainer() {
             createIncome.isPending ||
             createTransfer.isPending ||
             createAdjustment.isPending ||
-            updateTransaction.isPending
+            updateTransaction.isPending ||
+            deleteTransaction.isPending
           }
           className="flex items-center justify-center gap-2 bg-primary w-full text-white py-3 rounded-xl text-base font-bold capitalize disabled:opacity-50"
         >
@@ -439,6 +467,22 @@ export default function TransactionsContainer() {
           <ArrowRight size={18} />
         </Button>
       </section>
+
+      <ConfirmModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={(isHardDelete) => {
+          if (editId) {
+            deleteTransaction.mutate({ id: editId, isHardDelete });
+            setIsDeleteModalOpen(false);
+          }
+        }}
+        icon={Trash}
+        title="Delete Transaction"
+        des="Are you sure you want to delete this transaction? This action cannot be undone."
+        confirmLabel="Delete"
+        withHardDeleteOption={true}
+      />
     </form>
   );
 }

@@ -11,6 +11,7 @@ import {
   createAdjustmentApi,
   getTransactionsApi,
   updateTransactionApi,
+  deleteTransactionApi,
 } from "../services/transaction.service";
 import {
   CreateExpenseRequest,
@@ -299,5 +300,36 @@ export const useTransactionsQuery = (params?: TransactionQuery) => {
           },
         }
       : undefined,
+  });
+};
+
+export const useDeleteTransactionMutation = (options?: {
+  onSuccess?: () => void;
+  onError?: (error: AxiosError<ApiErrorResponse>) => void;
+}) => {
+  const queryClient = useQueryClient();
+  const isGuest = useGuestStore((state) => state.isGuest);
+  const deleteTransaction = useGuestStore((state) => state.deleteTransaction);
+
+  return useMutation<
+    void,
+    AxiosError<ApiErrorResponse>,
+    { id: string; isHardDelete?: boolean }
+  >({
+    mutationFn: async ({ id, isHardDelete }) => {
+      if (isGuest) {
+        return;
+      }
+      return deleteTransactionApi(id, isHardDelete);
+    },
+    ...options,
+    onSuccess: (_, variables) => {
+      if (isGuest) {
+        deleteTransaction(variables.id);
+      } else {
+        invalidateQueries(queryClient);
+      }
+      options?.onSuccess?.();
+    },
   });
 };

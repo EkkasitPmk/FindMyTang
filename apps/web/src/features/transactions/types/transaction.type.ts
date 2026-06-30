@@ -47,6 +47,7 @@ export interface UpdateTransactionRequest {
   categoryId?: string;
   attachmentUrl?: string | null;
   file?: File | null;
+  deletedAt?: string | null;
 }
 
 export type TransactionType = "INCOME" | "EXPENSE" | "TRANSFER" | "ADJUSTMENT";
@@ -82,6 +83,7 @@ export interface TransactionResponse {
   };
   createdAt: string;
   updatedAt: string;
+  deletedAt?: string;
 }
 
 export interface TransactionQuery {
@@ -92,6 +94,7 @@ export interface TransactionQuery {
   categoryId?: string;
   from?: string;
   to?: string;
+  isDeleted?: boolean;
 }
 
 export interface PaginatedTransactionResponse {

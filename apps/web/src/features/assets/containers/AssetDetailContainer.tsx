@@ -2,8 +2,16 @@
 import { useState, useMemo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAssets } from "../hooks/assets.hook";
-import { useTransactionsQuery } from "../../transactions/hooks/transaction.hook";
+import {
+  useTransactionsQuery,
+  useUpdateTransactionMutation,
+  useDeleteTransactionMutation,
+} from "../../transactions/hooks/transaction.hook";
 import { formatDisplayDate } from "../../transactions/helpers/date.helper";
+import { toast } from "react-toastify";
+import ConfirmModal from "@/shared/components/customs/ConfirmModal";
+import { RotateCcw, Trash } from "lucide-react";
+import { TransactionResponse } from "../../transactions/types/transaction.type";
 import EditAssetsContainer from "./EditAssetsContainer";
 import AssetDetail from "../components/AssetDetail";
 import ListAssetsContainer from "./ListAssetsContainer";
@@ -16,12 +24,20 @@ export default function AssetDetailContainer() {
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
+  const [viewOption, setViewOption] = useState("Recent Transactions");
+  const [isViewOptionOpen, setIsViewOptionOpen] = useState(false);
 
   const asset = assets?.find((a) => a.id === id) || assets?.[0];
 
   const { data: transactionsData, isLoading: isLoadingTransactions } =
     useTransactionsQuery(
-      asset ? { assetId: asset.id, limit: 9999 } : undefined,
+      asset
+        ? {
+            assetId: asset.id,
+            limit: 9999,
+            isDeleted: viewOption === "Show deleted items",
+          }
+        : undefined,
     );
 
   const [isMonthOpen, setIsMonthOpen] = useState(false);
@@ -31,6 +47,26 @@ export default function AssetDetailContainer() {
   const [expandedTransactionId, setExpandedTransactionId] = useState<
     string | null
   >(null);
+
+  const [isRestoreModalOpen, setIsRestoreModalOpen] = useState(false);
+  const [transactionToRestore, setTransactionToRestore] =
+    useState<TransactionResponse | null>(null);
+
+  const restoreTransaction = useUpdateTransactionMutation({
+    onSuccess: () => {
+      toast.success("Transaction restored successfully!");
+    },
+  });
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [transactionToDelete, setTransactionToDelete] =
+    useState<TransactionResponse | null>(null);
+
+  const deleteTransaction = useDeleteTransactionMutation({
+    onSuccess: () => {
+      toast.success("Transaction deleted successfully!");
+    },
+  });
 
   const { months, years, groupedTransactions, effectiveYear, effectiveMonth } =
     useMemo(() => {
@@ -113,6 +149,8 @@ export default function AssetDetailContainer() {
         );
       }
 
+      // The backend now filters by isDeleted, so we don't need to filter by deletedAt here.
+
       const groupedTransactions = (() => {
         const groups: { dateStr: string; items: typeof filteredItems }[] = [];
         let currentGroup: {
@@ -180,11 +218,18 @@ export default function AssetDetailContainer() {
             onAddIncomeClick={() =>
               router.push(`/transaction?type=INCOME&assetId=${asset?.id}`)
             }
-            onTransactionItemClick={(transaction) =>
-              router.push(
-                `/transaction?type=${transaction.type}&id=${transaction.id}&assetId=${asset?.id}`,
-              )
-            }
+            onTransactionItemClick={(transaction) => {
+              const url = new URL("/transaction", globalThis.location.origin);
+              url.searchParams.set("type", transaction.type);
+              url.searchParams.set("id", transaction.id);
+              if (asset?.id) {
+                url.searchParams.set("assetId", asset.id);
+              }
+              if (transaction.deletedAt) {
+                url.searchParams.set("isDeleted", "true");
+              }
+              router.push(url.pathname + url.search);
+            }}
             selected={effectiveMonth}
             months={months}
             handleSelect={handleSelectMonth}
@@ -197,6 +242,21 @@ export default function AssetDetailContainer() {
             setIsYearOpen={setIsYearOpen}
             expandedTransactionId={expandedTransactionId}
             setExpandedTransactionId={setExpandedTransactionId}
+            viewOption={viewOption}
+            isViewOptionOpen={isViewOptionOpen}
+            onViewOptionToggle={() => setIsViewOptionOpen((prev) => !prev)}
+            onViewOptionSelect={(option) => {
+              setViewOption(option);
+              setIsViewOptionOpen(false);
+            }}
+            onRestoreClick={(tx) => {
+              setTransactionToRestore(tx);
+              setIsRestoreModalOpen(true);
+            }}
+            onDeleteClick={(tx) => {
+              setTransactionToDelete(tx);
+              setIsDeleteModalOpen(true);
+            }}
           />
           {isEditModalOpen && asset && (
             <EditAssetsContainer
@@ -204,6 +264,67 @@ export default function AssetDetailContainer() {
               onClose={() => setIsEditModalOpen(false)}
             />
           )}
+
+          <ConfirmModal
+            isOpen={isRestoreModalOpen}
+            onClose={() => {
+              setIsRestoreModalOpen(false);
+              setTransactionToRestore(null);
+            }}
+            onConfirm={() => {
+              if (transactionToRestore) {
+                restoreTransaction.mutate({
+                  id: transactionToRestore.id,
+                  data: {
+                    deletedAt: null,
+                    type: transactionToRestore.type,
+                    amount: transactionToRestore.amount,
+                    transactionDate: transactionToRestore.transactionDate,
+                    assetId: transactionToRestore.assetId,
+                  },
+                });
+                setIsRestoreModalOpen(false);
+                setTransactionToRestore(null);
+              }
+            }}
+            icon={RotateCcw}
+            title="Restore Transaction"
+            des="Are you sure you want to restore this transaction? It will be active again."
+            confirmLabel="Restore"
+            variant="success"
+          />
+
+          <ConfirmModal
+            isOpen={isDeleteModalOpen}
+            onClose={() => {
+              setIsDeleteModalOpen(false);
+              setTransactionToDelete(null);
+            }}
+            onConfirm={(isHardDelete) => {
+              if (transactionToDelete) {
+                deleteTransaction.mutate({
+                  id: transactionToDelete.id,
+                  isHardDelete:
+                    Boolean(isHardDelete) || !!transactionToDelete.deletedAt,
+                });
+                setIsDeleteModalOpen(false);
+                setTransactionToDelete(null);
+              }
+            }}
+            icon={Trash}
+            title={
+              transactionToDelete?.deletedAt
+                ? "Delete Permanently"
+                : "Delete Transaction"
+            }
+            des={
+              transactionToDelete?.deletedAt
+                ? "Are you sure you want to permanently delete this transaction? This action cannot be undone."
+                : "Are you sure you want to delete this transaction?"
+            }
+            confirmLabel="Delete"
+            withHardDeleteOption={!transactionToDelete?.deletedAt}
+          />
         </>
       )}
     </>

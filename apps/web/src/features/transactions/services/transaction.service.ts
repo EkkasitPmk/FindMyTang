@@ -125,6 +125,8 @@ export const updateTransactionApi = async (
   if (data.categoryId) formData.append("categoryId", data.categoryId);
   if (data.attachmentUrl === null) formData.append("attachmentUrl", "");
   if (data.file) formData.append("file", data.file);
+  if (data.deletedAt === null) formData.append("deletedAt", "null");
+  else if (data.deletedAt) formData.append("deletedAt", data.deletedAt);
 
   const response = await http.patch<TransactionResponse>(
     `/transactions/${id}`,
@@ -136,4 +138,13 @@ export const updateTransactionApi = async (
     },
   );
   return response.data;
+};
+
+export const deleteTransactionApi = async (
+  id: string,
+  isHardDelete?: boolean,
+): Promise<void> => {
+  await http.delete(`/transactions/${id}`, {
+    params: { hardDelete: isHardDelete },
+  });
 };

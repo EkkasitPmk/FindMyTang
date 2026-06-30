@@ -35,7 +35,7 @@ export default function AssetsMenu({
           <EllipsisVertical size={18} />
         </Button>
         {isOpen && (
-          <div className="absolute right-3 top-full flex flex-col items-start w-32 bg-white rounded-md py-2 shadow-md z-50 border border-gray-100">
+          <div className="absolute right-3 top-full flex flex-col items-start w-36 bg-white rounded-md py-2 shadow-md z-50 border border-gray-100">
             <MenuItem onClick={() => setIsOpen(false)}>Filter</MenuItem>
             <MenuItem onClick={() => setIsOpen(false)}>Search</MenuItem>
             <MenuItem onClick={() => setIsOpen(false)}>Sort</MenuItem>
