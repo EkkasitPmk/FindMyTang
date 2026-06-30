@@ -21,6 +21,7 @@ import { Category } from "../types/category.type";
 import { CircleX } from "lucide-react";
 import ConfirmModal from "@/shared/components/customs/ConfirmModal";
 import CUCategoryModal from "../components/CUCategoryModal";
+import LoadingModal from "@/shared/components/customs/LoadingModal";
 import CategoryGrid from "../components/CategoryGrid";
 import { AxiosError } from "axios";
 import { Button } from "@/shared/components/customs/Button";
@@ -232,21 +233,22 @@ export default function CategoryContainer() {
       },
     });
 
-  const { mutate: deleteCategory } = useDeleteCategoryMutation({
-    onSuccess: (data) => {
-      toast.success(`Category "${data.name}" deleted successfully!`);
-      if (editingCategory?.id === data.id) {
-        cancelEdit();
-      }
-    },
-    onError: (err) => {
-      const message = err.response?.data?.message;
-      const errorMsg = Array.isArray(message)
-        ? message[0]
-        : message || "Failed to delete category.";
-      toast.error(errorMsg);
-    },
-  });
+  const { mutate: deleteCategory, isPending: isDeleting } =
+    useDeleteCategoryMutation({
+      onSuccess: (data) => {
+        toast.success(`Category "${data.name}" deleted successfully!`);
+        if (editingCategory?.id === data.id) {
+          cancelEdit();
+        }
+      },
+      onError: (err) => {
+        const message = err.response?.data?.message;
+        const errorMsg = Array.isArray(message)
+          ? message[0]
+          : message || "Failed to delete category.";
+        toast.error(errorMsg);
+      },
+    });
 
   const handleDelete = (category: Category) => {
     // ponytail: Sets category state to open custom ConfirmModal.
@@ -418,6 +420,8 @@ export default function CategoryContainer() {
         des={`Are you sure you want to delete category "${categoryToDelete?.name}"?`}
         confirmLabel="Delete"
       />
+
+      <LoadingModal isOpen={isCreating || isUpdating || isDeleting} />
     </div>
   );
 }

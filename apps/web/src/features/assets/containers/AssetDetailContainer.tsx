@@ -10,6 +10,7 @@ import {
 import { formatDisplayDate } from "../../transactions/helpers/date.helper";
 import { toast } from "react-toastify";
 import ConfirmModal from "@/shared/components/customs/ConfirmModal";
+import LoadingModal from "@/shared/components/customs/LoadingModal";
 import { RotateCcw, Trash } from "lucide-react";
 import { TransactionResponse } from "../../transactions/types/transaction.type";
 import EditAssetsContainer from "./EditAssetsContainer";
@@ -324,6 +325,10 @@ export default function AssetDetailContainer() {
             }
             confirmLabel="Delete"
             withHardDeleteOption={!transactionToDelete?.deletedAt}
+          />
+
+          <LoadingModal
+            isOpen={restoreTransaction.isPending || deleteTransaction.isPending}
           />
         </>
       )}

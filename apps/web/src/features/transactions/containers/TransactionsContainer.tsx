@@ -24,6 +24,7 @@ import TransactionCategoryList from "../components/TransactionCategoryList";
 import TransactionAssetList from "../components/TransactionAssetList";
 import TransactionMoreDetails from "../components/TransactionMoreDetails";
 import ConfirmModal from "@/shared/components/customs/ConfirmModal";
+import LoadingModal from "@/shared/components/customs/LoadingModal";
 import { SegmentedControl } from "@/shared/components/customs/SegmentedControl";
 import { CurrencyInput } from "@/shared/components/customs/CurrencyInput";
 import { getFormattedAmount } from "../utils/currency.util";
@@ -482,6 +483,17 @@ export default function TransactionsContainer() {
         des="Are you sure you want to delete this transaction? This action cannot be undone."
         confirmLabel="Delete"
         withHardDeleteOption={true}
+      />
+
+      <LoadingModal
+        isOpen={
+          createExpense.isPending ||
+          createIncome.isPending ||
+          createTransfer.isPending ||
+          createAdjustment.isPending ||
+          updateTransaction.isPending ||
+          deleteTransaction.isPending
+        }
       />
     </form>
   );

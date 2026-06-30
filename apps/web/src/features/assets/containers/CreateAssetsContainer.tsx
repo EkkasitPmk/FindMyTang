@@ -10,6 +10,7 @@ import {
 import { useCreateAssetMutation } from "../hooks/assets.hook";
 import { AssetType } from "../types/assets.type";
 import AssetForm from "../components/AssetForm";
+import LoadingModal from "@/shared/components/customs/LoadingModal";
 
 interface CreateAssetsContainerProps {
   onClose?: () => void;
@@ -109,21 +110,24 @@ export default function CreateAssetsContainer({
   };
 
   return (
-    <AssetForm
-      register={register}
-      handleSubmit={handleSubmit}
-      onSubmit={onSubmit}
-      errors={errors}
-      isPending={isPending}
-      selected={selected}
-      isOpen={isSelectOpen}
-      setIsOpen={setIsSelectOpen}
-      assetTypeList={assetTypeList}
-      handleSelect={handleSelect}
-      onClose={onClose}
-      currentColor={currentColor}
-      onSelectColor={(color) => setValue("color", color)}
-      onBlurBalance={handleBlurBalance}
-    />
+    <>
+      <AssetForm
+        register={register}
+        handleSubmit={handleSubmit}
+        onSubmit={onSubmit}
+        errors={errors}
+        isPending={isPending}
+        selected={selected}
+        isOpen={isSelectOpen}
+        setIsOpen={setIsSelectOpen}
+        assetTypeList={assetTypeList}
+        handleSelect={handleSelect}
+        onClose={onClose}
+        currentColor={currentColor}
+        onSelectColor={(color) => setValue("color", color)}
+        onBlurBalance={handleBlurBalance}
+      />
+      <LoadingModal isOpen={isPending} />
+    </>
   );
 }

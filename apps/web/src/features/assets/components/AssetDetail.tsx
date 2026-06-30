@@ -138,32 +138,36 @@ export default function AssetDetail({
           className="w-full text-base font-medium"
         />
 
-        <span className="text-secondary-text text-sm">Period</span>
+        {groupedTransactions?.length > 0 && (
+          <>
+            <span className="text-secondary-text text-sm">Period</span>
 
-        <div className="flex items-center justify-between">
-          <DropdownSelect
-            options={months}
-            selected={selected}
-            isOpen={isMonthOpen}
-            onToggle={() => setIsMonthOpen(!isMonthOpen)}
-            themeColor={asset.color}
-            onSelect={(month) => {
-              handleSelect(month);
-              setIsMonthOpen(false);
-            }}
-          />
-          <DropdownSelect
-            options={years}
-            selected={selectedYear}
-            isOpen={isYearOpen}
-            onToggle={() => setIsYearOpen(!isYearOpen)}
-            themeColor={asset.color}
-            onSelect={(year) => {
-              handleSelectYear(year);
-              setIsYearOpen(false);
-            }}
-          />
-        </div>
+            <div className="flex items-center justify-between">
+              <DropdownSelect
+                options={months}
+                selected={selected}
+                isOpen={isMonthOpen}
+                onToggle={() => setIsMonthOpen(!isMonthOpen)}
+                themeColor={asset.color}
+                onSelect={(month) => {
+                  handleSelect(month);
+                  setIsMonthOpen(false);
+                }}
+              />
+              <DropdownSelect
+                options={years}
+                selected={selectedYear}
+                isOpen={isYearOpen}
+                onToggle={() => setIsYearOpen(!isYearOpen)}
+                themeColor={asset.color}
+                onSelect={(year) => {
+                  handleSelectYear(year);
+                  setIsYearOpen(false);
+                }}
+              />
+            </div>
+          </>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto relative">

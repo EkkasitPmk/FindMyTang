@@ -4,6 +4,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useDeleteAssetMutation } from "../hooks/assets.hook";
 import { toast } from "react-toastify";
 import AssetsMenu from "../components/AssetsMenu";
+import LoadingModal from "@/shared/components/customs/LoadingModal";
 
 export default function AssetsMenuContainer() {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,15 +15,16 @@ export default function AssetsMenuContainer() {
   const id = searchParams.get("id");
   const name = searchParams.get("name");
 
-  const { mutate: deleteAsset } = useDeleteAssetMutation({
-    onSuccess: () => {
-      toast.success("Asset deleted successfully!");
-      router.push("/");
-    },
-    onError: () => {
-      toast.error("Failed to delete asset.");
-    },
-  });
+  const { mutate: deleteAsset, isPending: isDeletingAsset } =
+    useDeleteAssetMutation({
+      onSuccess: () => {
+        toast.success("Asset deleted successfully!");
+        router.push("/");
+      },
+      onError: () => {
+        toast.error("Failed to delete asset.");
+      },
+    });
 
   const handleDelete = (isHardDelete?: boolean) => {
     if (id) {
@@ -41,14 +43,17 @@ export default function AssetsMenuContainer() {
   }, []);
 
   return (
-    <AssetsMenu
-      isOpen={isOpen}
-      setIsOpen={setIsOpen}
-      isDeleteModalOpen={isDeleteModalOpen}
-      setIsDeleteModalOpen={setIsDeleteModalOpen}
-      menuRef={menuRef}
-      assetName={name}
-      onDelete={handleDelete}
-    />
+    <>
+      <AssetsMenu
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        isDeleteModalOpen={isDeleteModalOpen}
+        setIsDeleteModalOpen={setIsDeleteModalOpen}
+        menuRef={menuRef}
+        assetName={name}
+        onDelete={handleDelete}
+      />
+      <LoadingModal isOpen={isDeletingAsset} />
+    </>
   );
 }
