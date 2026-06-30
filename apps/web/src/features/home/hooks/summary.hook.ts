@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { useIsGuest, useGuestStore } from "@/shared/lib/store/guest-store";
+import { useIsGuest, useGuestStore } from "@/shared/lib/storages/guest.storage";
 import { TodaySummary } from "../types/summary.type";
 import { getThisMonthSummaryApi } from "../services/summary.service";
 

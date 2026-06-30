@@ -4,7 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { LogOut } from "lucide-react";
 import { useMeQuery, useLogoutMutation } from "../hooks/auth.hook";
-import { useGuestStore } from "@/shared/lib/store/guest-store";
+import { useGuestStore } from "@/shared/lib/storages/guest.storage";
 import DesktopSidebar from "../components/DesktopSidebar";
 import MobileBottomNav from "../components/MobileBottomNav";
 import MobileDrawer from "../components/MobileDrawer";

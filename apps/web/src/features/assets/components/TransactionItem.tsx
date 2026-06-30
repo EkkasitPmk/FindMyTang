@@ -2,7 +2,7 @@ import React from "react";
 import { formatDisplayDate } from "../../transactions/helpers/date.helper";
 import { ArrowRightLeft, ChevronRight, SlidersHorizontal } from "lucide-react";
 import { TransactionResponse } from "../../transactions/types/transaction.type";
-import { cn } from "@/shared/lib/utils";
+import { cn } from "@/shared/lib/utils/core.util";
 import { Button } from "@/shared/components/customs/Button";
 import { getCategoryIcon } from "@/shared/lib/configs/category-icons.config";
 import { TransactionItemDetails } from "./TransactionItemDetails";

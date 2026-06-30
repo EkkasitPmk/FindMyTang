@@ -38,7 +38,7 @@ import {
   convertDigitsToAmount,
   convertAmountToDigits,
 } from "../helpers/transaction.helper";
-import { cn } from "@/shared/lib/utils";
+import { cn } from "@/shared/lib/utils/core.util";
 import { Button } from "@/shared/components/customs/Button";
 import { TransactionType } from "../types/transaction.type";
 

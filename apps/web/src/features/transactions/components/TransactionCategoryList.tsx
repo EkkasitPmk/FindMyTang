@@ -1,4 +1,4 @@
-import { cn } from "@/shared/lib/utils";
+import { cn } from "@/shared/lib/utils/core.util";
 import { getCategoryIcon } from "@/shared/lib/configs/category-icons.config";
 import { Plus } from "lucide-react";
 import Link from "next/link";

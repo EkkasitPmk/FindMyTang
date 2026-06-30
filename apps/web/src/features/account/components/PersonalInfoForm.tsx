@@ -5,7 +5,7 @@ import {
   FieldErrors,
 } from "react-hook-form";
 import { UpdateProfileFormValues } from "../schemas/account.schema";
-import { useTranslation } from "@/shared/lib/i18n/useTranslation";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { Input } from "@/shared/components/customs/Input";
 import { Button } from "@/shared/components/customs/Button";
 

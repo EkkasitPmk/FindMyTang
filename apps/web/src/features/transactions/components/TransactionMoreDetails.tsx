@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { cn } from "@/shared/lib/utils";
+import { cn } from "@/shared/lib/utils/core.util";
 import { ArrowDown, Calendar as CalendarLucide, Camera, X } from "lucide-react";
 import { UseFormRegister } from "react-hook-form";
 import { CreateTransactionFormValues } from "../schemas/transaction.schema";

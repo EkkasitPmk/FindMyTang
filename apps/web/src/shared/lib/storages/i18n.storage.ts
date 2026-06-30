@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { Language } from "./translations";
+import { Language } from "../configs/translations.config";
 
 interface I18nState {
   language: Language;

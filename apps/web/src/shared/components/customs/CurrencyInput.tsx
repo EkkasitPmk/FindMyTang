@@ -1,4 +1,4 @@
-import { cn } from "@/shared/lib/utils";
+import { cn } from "@/shared/lib/utils/core.util";
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 export interface CurrencyInputProps extends Omit<

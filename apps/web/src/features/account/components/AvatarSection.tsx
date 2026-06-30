@@ -1,8 +1,8 @@
 import { Check, CircleX, Pencil } from "lucide-react";
-import { cn } from "@/shared/lib/utils";
+import { cn } from "@/shared/lib/utils/core.util";
 import Avatar from "@/shared/components/customs/Avatar";
 import { AVATARS } from "../configs/account.config";
-import { useTranslation } from "@/shared/lib/i18n/useTranslation";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { Button } from "@/shared/components/customs/Button";
 import LoadingModal from "@/shared/components/customs/LoadingModal";
 

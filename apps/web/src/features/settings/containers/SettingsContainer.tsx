@@ -12,8 +12,8 @@ import {
   Tag,
   Wallet,
 } from "lucide-react";
-import { useTranslation } from "@/shared/lib/i18n/useTranslation";
-import { useIsGuest } from "@/shared/lib/store/guest-store";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { useIsGuest } from "@/shared/lib/storages/guest.storage";
 import { Button } from "@/shared/components/customs/Button";
 
 interface SettingsContainerProps {

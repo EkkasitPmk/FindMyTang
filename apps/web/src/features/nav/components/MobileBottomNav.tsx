@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { navItems } from "../configs/navigation.config";
-import { useTranslation } from "@/shared/lib/i18n/useTranslation";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/shared/components/customs/Button";
 

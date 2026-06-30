@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { authService } from "../services/auth.service";
 import { SyncGuestRequest, SyncGuestResponse } from "../types/auth.type";
-import { useGuestStore } from "@/shared/lib/store/guest-store";
+import { useGuestStore } from "@/shared/lib/storages/guest.storage";
 import { toast } from "react-toastify";
 
 export const useSyncGuestMutation = () => {

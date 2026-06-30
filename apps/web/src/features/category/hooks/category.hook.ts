@@ -9,7 +9,7 @@ import {
 } from "../services/category.service";
 import { Category, CreateCategoryRequest } from "../types/category.type";
 import { AxiosError } from "axios";
-import { useGuestStore, useIsGuest } from "@/shared/lib/store/guest-store";
+import { useGuestStore, useIsGuest } from "@/shared/lib/storages/guest.storage";
 
 export interface ApiErrorResponse {
   message: string | string[];

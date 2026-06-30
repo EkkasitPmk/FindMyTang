@@ -1,5 +1,5 @@
 import { Button } from "./Button";
-import { cn } from "@/shared/lib/utils";
+import { cn } from "@/shared/lib/utils/core.util";
 import { useEffect, useRef } from "react";
 
 interface DropdownSelectProps {

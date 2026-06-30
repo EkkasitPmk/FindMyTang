@@ -25,7 +25,7 @@ import {
   TransactionType,
 } from "../types/transaction.type";
 import { AxiosError } from "axios";
-import { useGuestStore, useIsGuest } from "@/shared/lib/store/guest-store";
+import { useGuestStore, useIsGuest } from "@/shared/lib/storages/guest.storage";
 
 export interface ApiErrorResponse {
   message: string | string[];

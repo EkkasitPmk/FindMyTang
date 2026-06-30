@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getMeApi, logoutApi } from "../services/auth.service";
 import { UserProfile } from "../types/auth.type";
-import { useIsGuest } from "@/shared/lib/store/guest-store";
+import { useIsGuest } from "@/shared/lib/storages/guest.storage";
 
 export const useMeQuery = (options?: { enabled?: boolean }) => {
   const isGuest = useIsGuest();

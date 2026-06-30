@@ -1,6 +1,6 @@
 import { X } from "lucide-react";
 import { Button } from "./Button";
-import { cn } from "@/shared/lib/utils";
+import { cn } from "@/shared/lib/utils/core.util";
 import React from "react";
 
 interface ModalFormProps extends Omit<

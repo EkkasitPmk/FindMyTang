@@ -5,8 +5,8 @@ import {
 } from "react-hook-form";
 import { CreateAssetFormValues } from "../schemas/assets.schema";
 import { Check, Tag } from "lucide-react";
-import { cn } from "@/shared/lib/utils";
-import { getAssetIcon } from "../utils/assets.util";
+import { cn } from "@/shared/lib/utils/core.util";
+import { getAssetIcon } from "../components/AssetIcon";
 import { AssetType } from "../types/assets.type";
 import { Input } from "@/shared/components/customs/Input";
 import { Button } from "@/shared/components/customs/Button";

@@ -1,4 +1,4 @@
-import { cn } from "@/shared/lib/utils";
+import { cn } from "@/shared/lib/utils/core.util";
 import React from "react";
 
 export interface SegmentedControlOption<T extends string> {

@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import { useLoginMutation } from "../hooks/login.hook";
 import { loginSchema, LoginFormValues } from "../schemas/login.schema";
 import LoginForm from "../components/LoginForm";
-import { useGuestStore } from "@/shared/lib/store/guest-store";
+import { useGuestStore } from "@/shared/lib/storages/guest.storage";
 
 export default function LoginContainer() {
   const router = useRouter();

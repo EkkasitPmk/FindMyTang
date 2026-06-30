@@ -6,7 +6,7 @@ import {
   type DayButton,
   type Locale,
 } from "react-day-picker";
-import { cn } from "@/shared/lib/utils";
+import { cn } from "@/shared/lib/utils/core.util";
 import { Button, buttonVariants } from "@/shared/components/ui/button";
 import {
   ChevronLeftIcon,

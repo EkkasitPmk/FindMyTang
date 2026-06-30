@@ -1,8 +1,12 @@
-import { useI18nStore } from "./i18n-store";
-import { translations, TranslationKey, Language } from "./translations";
+import { useI18nStore } from "../storages/i18n.storage";
+import {
+  translations,
+  TranslationKey,
+  Language,
+} from "../configs/translations.config";
 import { useMeQuery } from "@/features/nav/hooks/auth.hook";
 import { useUpdateProfileMutation } from "@/features/account/hooks/account.hook";
-import { useIsGuest } from "@/shared/lib/store/guest-store";
+import { useIsGuest } from "@/shared/lib/storages/guest.storage";
 import { useEffect, useState } from "react";
 
 export function useTranslation() {

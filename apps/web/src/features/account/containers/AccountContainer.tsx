@@ -19,7 +19,7 @@ import ChangePasswordModal from "../components/ChangePasswordModal";
 import AvatarSection from "../components/AvatarSection";
 import PersonalInfoForm from "../components/PersonalInfoForm";
 import ConfirmModal from "@/shared/components/customs/ConfirmModal";
-import { useTranslation } from "@/shared/lib/i18n/useTranslation";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { Button } from "@/shared/components/customs/Button";
 
 export default function AccountContainer() {

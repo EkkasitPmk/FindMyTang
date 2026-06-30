@@ -4,7 +4,7 @@ import {
   TransactionResponse,
   GroupedTransaction,
 } from "../../transactions/types/transaction.type";
-import { cn } from "@/shared/lib/utils";
+import { cn } from "@/shared/lib/utils/core.util";
 import { Button } from "@/shared/components/customs/Button";
 import { DropdownSelect } from "@/shared/components/customs/DropdownSelect";
 import { Dispatch, SetStateAction } from "react";

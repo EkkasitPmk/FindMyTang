@@ -1,7 +1,7 @@
 "use client";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { cn } from "@/shared/lib/utils";
+import { cn } from "@/shared/lib/utils/core.util";
 import Avatar from "@/shared/components/customs/Avatar";
 import { useMeQuery } from "@/features/nav/hooks/auth.hook";
 

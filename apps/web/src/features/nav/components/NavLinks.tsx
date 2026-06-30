@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { navItems } from "../configs/navigation.config";
-import { useTranslation } from "@/shared/lib/i18n/useTranslation";
-import { cn } from "@/shared/lib/utils";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { cn } from "@/shared/lib/utils/core.util";
 
 interface NavLinksProps {
   pathname: string;

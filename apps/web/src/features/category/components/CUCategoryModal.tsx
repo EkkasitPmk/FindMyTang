@@ -12,7 +12,7 @@ import {
   getCategoryIcon,
   SELECTABLE_ICONS,
 } from "@/shared/lib/configs/category-icons.config";
-import { cn } from "@/shared/lib/utils";
+import { cn } from "@/shared/lib/utils/core.util";
 import { Input } from "@/shared/components/customs/Input";
 import { Button } from "@/shared/components/customs/Button";
 import { ModalForm } from "@/shared/components/customs/ModalForm";

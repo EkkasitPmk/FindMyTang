@@ -1,4 +1,4 @@
-import { cn } from "@/shared/lib/utils";
+import { cn } from "@/shared/lib/utils/core.util";
 import { Coins, Landmark } from "lucide-react";
 import { Asset } from "@/features/assets/types/assets.type";
 import { Button } from "@/shared/components/customs/Button";
