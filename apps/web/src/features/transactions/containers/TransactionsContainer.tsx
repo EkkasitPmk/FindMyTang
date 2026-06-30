@@ -362,8 +362,9 @@ export default function TransactionsContainer() {
     >
       <header
         className={cn(
-          "flex items-center relative mb-2",
+          "flex items-center relative mb-2 px-4",
           hasAssetId ? "" : "mb-2 justify-center",
+          editId ? "justify-between" : "",
         )}
       >
         {hasAssetId && (
@@ -385,16 +386,14 @@ export default function TransactionsContainer() {
           {editId ? "Edit Transaction" : "Add Transaction"}
         </p>
         {editId && (
-          <div className="absolute right-0 flex items-center -mr-2">
-            <Button
-              variant="unstyled"
-              type="button"
-              className="p-2 cursor-pointer hover:bg-gray-100 transition-colors text-red-500 rounded-full"
-              onClick={openDeleteModal}
-            >
-              <Trash size={20} />
-            </Button>
-          </div>
+          <Button
+            variant="unstyled"
+            type="button"
+            className="p-1 cursor-pointer hover:bg-gray-100 transition-colors text-red-500 rounded-full"
+            onClick={openDeleteModal}
+          >
+            <Trash size={20} />
+          </Button>
         )}
       </header>
 
