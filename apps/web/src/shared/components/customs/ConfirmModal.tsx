@@ -12,6 +12,7 @@ interface ConfirmModalProps {
   withHardDeleteOption?: boolean;
   hardDeleteCheckboxLabel?: string;
   expectedInputToConfirm?: string;
+  variant?: "danger" | "success" | "primary";
 }
 
 export default function ConfirmModal({
@@ -25,6 +26,7 @@ export default function ConfirmModal({
   withHardDeleteOption,
   hardDeleteCheckboxLabel = "Delete permanently",
   expectedInputToConfirm,
+  variant = "danger",
 }: Readonly<ConfirmModalProps>) {
   const [isHardDelete, setIsHardDelete] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -47,6 +49,41 @@ export default function ConfirmModal({
     expectedInputToConfirm &&
     inputValue !== expectedInputToConfirm;
 
+  const colorMap = {
+    danger: {
+      bg: "bg-expense",
+      text: "text-expense",
+      bgLight: "bg-expense-light",
+      border: "border-expense",
+      hoverBg: "hover:bg-expense/95",
+      disabledBg: "bg-expense/50",
+      focusRing: "focus:ring-expense",
+      focusBorder: "focus:border-expense",
+    },
+    success: {
+      bg: "bg-income",
+      text: "text-income",
+      bgLight: "bg-income-light",
+      border: "border-income",
+      hoverBg: "hover:bg-income/95",
+      disabledBg: "bg-income/50",
+      focusRing: "focus:ring-income",
+      focusBorder: "focus:border-income",
+    },
+    primary: {
+      bg: "bg-primary",
+      text: "text-primary",
+      bgLight: "bg-primary-light",
+      border: "border-primary",
+      hoverBg: "hover:bg-primary/95",
+      disabledBg: "bg-primary/50",
+      focusRing: "focus:ring-primary",
+      focusBorder: "focus:border-primary",
+    },
+  };
+
+  const colors = colorMap[variant];
+
   return (
     <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-primary-text/20 backdrop-blur-xs transition-opacity duration-300">
       {/* Click outside to close */}
@@ -58,9 +95,11 @@ export default function ConfirmModal({
 
       {/* Modal Dialog Content */}
       <div className="relative bg-surface border border-border rounded-lg shadow-lg max-w-sm w-full p-6 animate-subtle-pop z-10">
-        <div className="flex flex-col items-center text-center gap-4">
-          {/* Accent red container for logout action */}
-          <div className="w-12 h-12 rounded-full bg-expense-light text-expense flex items-center justify-center mb-1">
+        <div className="flex flex-col items-center text-center gap-3">
+          {/* Accent container for action */}
+          <div
+            className={`w-12 h-12 rounded-full ${colors.bgLight} ${colors.text} flex items-center justify-center mb-1`}
+          >
             <Icon className="w-6 h-6" strokeWidth={1.5} />
           </div>
 
@@ -77,8 +116,8 @@ export default function ConfirmModal({
                 <div
                   className={`w-4 h-4 rounded-sm border flex items-center justify-center transition-colors ${
                     isHardDelete
-                      ? "bg-expense border-expense text-white"
-                      : "border-border bg-surface group-hover:border-expense"
+                      ? `${colors.bg} ${colors.border} text-white`
+                      : `border-border bg-surface group-hover:${colors.border}`
                   }`}
                 >
                   {isHardDelete && <Check size={12} strokeWidth={3} />}
@@ -104,7 +143,7 @@ export default function ConfirmModal({
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     placeholder={expectedInputToConfirm}
-                    className="w-full px-3 py-2 text-xs border border-border rounded-md bg-surface-secondary focus:outline-none focus:border-expense focus:ring-1 focus:ring-expense transition-all"
+                    className={`w-full px-3 py-2 text-xs border border-border rounded-md bg-surface-secondary focus:outline-none ${colors.focusBorder} focus:ring-1 ${colors.focusRing} transition-all`}
                   />
                 </div>
               )}
@@ -112,20 +151,22 @@ export default function ConfirmModal({
           )}
 
           {/* Action buttons */}
-          <div className="flex gap-3 w-full mt-4">
+          <div className="flex gap-3 w-full mt-2">
             <button
+              type="button"
               onClick={handleClose}
               className="flex-1 py-2.5 px-4 rounded-md border border-border hover:bg-surface-secondary text-secondary-text text-xs font-semibold active-press transition-colors cursor-pointer"
             >
               Cancel
             </button>
             <button
+              type="button"
               onClick={() => onConfirm(isHardDelete)}
               disabled={Boolean(isConfirmDisabled)}
               className={`flex-1 py-2.5 px-4 rounded-md text-xs font-semibold transition-colors ${
                 isConfirmDisabled
-                  ? "bg-expense/50 text-white/70 cursor-not-allowed"
-                  : "bg-expense hover:bg-expense/95 text-white active-press cursor-pointer"
+                  ? `${colors.disabledBg} text-white/70 cursor-not-allowed`
+                  : `${colors.bg} ${colors.hoverBg} text-white active-press cursor-pointer`
               }`}
             >
               {confirmLabel}
