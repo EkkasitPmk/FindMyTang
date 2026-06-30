@@ -112,7 +112,7 @@ export default function MainLayoutContainer({
               />
             )}
 
-            <div className="px-4">{children}</div>
+            {children}
           </main>
         </div>
       </div>

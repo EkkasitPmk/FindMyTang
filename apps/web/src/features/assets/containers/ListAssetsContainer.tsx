@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ChevronRight, Landmark, Link2, Plus } from "lucide-react";
 import { useAssets } from "../hooks/assets.hook";
 import { getAssetIcon } from "../utils/assets.util";
-import { useThisMonthSummary } from "../../financialSnapshot/hooks/summary.hook";
+import { useThisMonthSummary } from "@/features/home/hooks/summary.hook";
 import { Button } from "@/shared/components/customs/Button";
 
 interface ListAssetsContainerProps {

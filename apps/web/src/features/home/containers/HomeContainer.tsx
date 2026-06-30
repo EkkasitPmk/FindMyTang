@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import FinancialSnapshotContainer from "../../financialSnapshot/containers/FinancialSnapshotContainer";
+import FinancialSnapshotContainer from "./FinancialSnapshotContainer";
 import RecentJournalContainer from "@/features/journal/containers/RecentJournalContainer";
 import ListAssetsContainer from "../../assets/containers/ListAssetsContainer";
 import CreateAssetsContainer from "@/features/assets/containers/CreateAssetsContainer";

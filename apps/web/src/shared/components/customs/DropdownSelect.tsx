@@ -1,5 +1,6 @@
 import { Button } from "./Button";
 import { cn } from "@/shared/lib/utils";
+import { useEffect, useRef } from "react";
 
 interface DropdownSelectProps {
   options: string[];
@@ -7,6 +8,7 @@ interface DropdownSelectProps {
   onSelect: (option: string) => void;
   isOpen: boolean;
   onToggle: () => void;
+  onClose?: () => void;
   className?: string;
   themeColor?: string | null;
 }
@@ -17,15 +19,41 @@ export function DropdownSelect({
   onSelect,
   isOpen,
   onToggle,
+  onClose,
   className,
   themeColor,
 }: Readonly<DropdownSelectProps>) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        if (isOpen) {
+          if (onClose) {
+            onClose();
+          } else {
+            onToggle();
+          }
+        }
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen, onClose, onToggle]);
+
   const customStyle = themeColor
     ? ({ "--dropdown-theme": themeColor } as React.CSSProperties)
     : undefined;
 
   return (
     <div
+      ref={containerRef}
       className={cn("flex flex-col w-34 text-sm relative", className)}
       style={customStyle}
     >

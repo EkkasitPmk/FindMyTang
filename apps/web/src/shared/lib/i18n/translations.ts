@@ -50,6 +50,7 @@ export const translations = {
     saveError: "ไม่สามารถบันทึกการตั้งค่าได้",
     save: "บันทึก",
     saving: "กำลังบันทึก...",
+    updating: "กำลังอัปเดต...",
     
     // Additional settings / account layout
     done: "เสร็จสิ้น",
@@ -132,6 +133,7 @@ export const translations = {
     saveError: "Failed to save settings",
     save: "Save",
     saving: "Saving...",
+    updating: "Updating...",
 
     // Additional settings / account layout
     done: "Done",

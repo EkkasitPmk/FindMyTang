@@ -21,7 +21,7 @@ export default function TransactionCategoryList({
       <p className="uppercase text-sm text-secondary-text font-medium">
         CATEGORY
       </p>
-      <div className="grid grid-cols-5 gap-y-2 overflow-auto max-h-[24vh] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
+      <div className="grid grid-cols-4 gap-y-2 overflow-auto max-h-[24vh] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
         {categories.map((category) => {
           const Icon = getCategoryIcon(category.icon, category.type);
           const isSelected = activeCategoryId === category.id;
@@ -38,17 +38,22 @@ export default function TransactionCategoryList({
                 className={cn(
                   "p-3 rounded-xl transition-all",
                   isSelected
-                    ? "bg-primary-light text-primary-text"
+                    ? "text-primary-text"
                     : "bg-surface-secondary text-secondary-text",
                 )}
-                style={{ color: isSelected ? category.color : undefined }}
+                style={{
+                  color: isSelected ? category.color : undefined,
+                  backgroundColor: isSelected
+                    ? `${category.color}33`
+                    : undefined,
+                }}
               >
                 <Icon size={18} />
               </span>
               <span
                 className={cn(
-                  "uppercase text-xs font-medium truncate w-full px-1 text-center",
-                  isSelected ? "text-text-primary-text" : "text-secondary-text",
+                  "uppercase text-xs truncate font-medium w-full text-center ",
+                  isSelected ? "text-primary-text" : "text-secondary-text",
                 )}
               >
                 {category.name}
@@ -61,10 +66,10 @@ export default function TransactionCategoryList({
           href="/categories"
           className="flex flex-col items-center justify-center gap-1"
         >
-          <span className="p-3 rounded-xl bg-surface-secondary text-secondary-text">
+          <span className="p-3 rounded-xl bg-primary-light text-primary">
             <Plus size={18} />
           </span>
-          <span className="uppercase text-secondary-text text-xs font-medium truncate">
+          <span className="uppercase text-primary text-xs font-medium truncate">
             Edit
           </span>
         </Link>

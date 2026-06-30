@@ -4,7 +4,6 @@ import Link from "next/link";
 import { cn } from "@/shared/lib/utils";
 import Avatar from "@/shared/components/customs/Avatar";
 import { useMeQuery } from "@/features/nav/hooks/auth.hook";
-import { Button } from "@/shared/components/customs/Button";
 
 export default function ShowProfileContainer() {
   const pathname = usePathname();

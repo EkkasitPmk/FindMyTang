@@ -220,6 +220,7 @@ export default function AssetForm({
             <Input
               id="balance"
               type="number"
+              inputMode="decimal"
               step="any"
               placeholder="0.00"
               className="pl-9 font-medium [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"

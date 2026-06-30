@@ -1,28 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import {
-  getThisMonthSummaryApi,
-  getTodaySummaryApi,
-} from "../services/summary.service";
-import { TodaySummary } from "../types/summary.type";
 import { AxiosError } from "axios";
 import { useIsGuest, useGuestStore } from "@/shared/lib/store/guest-store";
-
-export const useTodaySummary = () => {
-  const isGuest = useIsGuest();
-
-  return useQuery<TodaySummary, AxiosError>({
-    queryKey: ["summary", "today"],
-    queryFn: getTodaySummaryApi,
-    enabled: !isGuest,
-    initialData: isGuest
-      ? {
-          income: 0,
-          expense: 0,
-          net: 0,
-        }
-      : undefined,
-  });
-};
+import { TodaySummary } from "../types/summary.type";
+import { getThisMonthSummaryApi } from "../services/summary.service";
 
 export const useThisMonthSummary = () => {
   const isGuest = useIsGuest();
