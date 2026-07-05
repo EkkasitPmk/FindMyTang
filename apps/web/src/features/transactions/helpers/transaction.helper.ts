@@ -171,3 +171,29 @@ export const convertDigitsToAmount = (digits: string): number => {
 export const convertAmountToDigits = (amount: number): string => {
   return Math.round(Math.abs(amount) * 100).toString();
 };
+
+export const getTransactionTypeOptions = (
+  editId: string | null | undefined,
+  existingType: TransactionType | undefined,
+) => {
+  if (editId) {
+    if (existingType === "TRANSFER") {
+      return [{ label: "Transfer", value: "TRANSFER" }];
+    }
+    if (existingType === "ADJUSTMENT") {
+      return [{ label: "Adjustment", value: "ADJUSTMENT" }];
+    }
+    if (existingType === "EXPENSE" || existingType === "INCOME") {
+      return [
+        { label: "Expense", value: "EXPENSE" },
+        { label: "Income", value: "INCOME" },
+      ];
+    }
+  }
+  return [
+    { label: "Expense", value: "EXPENSE" },
+    { label: "Income", value: "INCOME" },
+    { label: "Transfer", value: "TRANSFER" },
+    { label: "Adjustment", value: "ADJUSTMENT" },
+  ];
+};

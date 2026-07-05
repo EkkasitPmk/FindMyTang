@@ -1,4 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { authService } from "../services/auth.service";
 import { SyncGuestRequest, SyncGuestResponse } from "../types/auth.type";
 import { useGuestStore } from "@/shared/lib/storages/guest.storage";
@@ -10,7 +11,11 @@ export const useSyncGuestMutation = () => {
   const categories = useGuestStore((state) => state.categories);
   const transactions = useGuestStore((state) => state.transactions);
 
-  return useMutation<SyncGuestResponse, Error, void>({
+  return useMutation<
+    SyncGuestResponse,
+    AxiosError<{ message: string | string[] }>,
+    void
+  >({
     mutationFn: async () => {
       // แปลงข้อมูลจาก Local Guest Store ให้เข้าคู่กับ SyncGuestRequest (API Dto)
       const requestData: SyncGuestRequest = {
@@ -48,8 +53,11 @@ export const useSyncGuestMutation = () => {
         clearGuestData(); // ล้างข้อมูล local หลังจากซิงค์สำเร็จ
       }
     },
-    onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || error.message;
+    onError: (error: AxiosError<{ message: string | string[] }>) => {
+      const responseMessage = error?.response?.data?.message;
+      const errorMessage = Array.isArray(responseMessage)
+        ? responseMessage[0]
+        : responseMessage || error.message;
       toast.error(`เกิดข้อผิดพลาดในการซิงค์ข้อมูล: ${errorMessage}`);
     },
   });

@@ -9,6 +9,9 @@ import { Button } from "@/shared/components/customs/Button";
 import { DropdownSelect } from "@/shared/components/customs/DropdownSelect";
 import { Dispatch, SetStateAction, RefObject } from "react";
 import { TransactionItem } from "./TransactionItem";
+import { Skeleton } from "@/shared/components/ui/skeleton";
+
+const SKELETON_GROUPS = Array.from({ length: 3 }, (_, i) => i);
 
 interface AssetDetailProps {
   asset?: Asset;
@@ -89,16 +92,30 @@ export default function AssetDetail({
 
   if (isLoading) {
     return (
-      <div className="flex flex-col h-[calc(100dvh-100px)] items-center justify-center">
-        <p className="text-gray-500">Loading asset...</p>
-      </div>
-    );
-  }
+      <div className="flex flex-col h-[calc(100vh-110px)] space-y-4">
+        <section className="relative flex flex-col items-center justify-center mt-6">
+          <Skeleton className="h-9 w-30 rounded-full mb-2" />
+          <Skeleton className="h-10 w-48" />
+        </section>
 
-  if (!asset) {
-    return (
-      <div className="flex flex-col h-[calc(100dvh-100px)] items-center justify-center">
-        <p className="text-gray-500">No asset found.</p>
+        <section className="mb-2 px-4">
+          <Skeleton className="h-10 w-full rounded-md mb-1" />
+          <Skeleton className="h-4 w-14 mb-1" />
+          <div className="flex items-center justify-between gap-4">
+            <Skeleton className="h-8 w-1/2 rounded-md" />
+            <Skeleton className="h-8 w-1/2 rounded-md" />
+          </div>
+        </section>
+
+        <section className="flex-1 space-y-4 overflow-hidden">
+          {SKELETON_GROUPS.map((i) => (
+            <div key={`skeleton-group-${i}`} className="space-y-1 my-2">
+              <Skeleton className="h-5 w-32 mx-4 mb-3" />
+              <Skeleton className="h-13 w-full rounded-none" />
+              <Skeleton className="h-13 w-full rounded-none" />
+            </div>
+          ))}
+        </section>
       </div>
     );
   }
@@ -108,11 +125,11 @@ export default function AssetDetail({
       <section className="relative flex flex-col items-center justify-center mt-6">
         <div
           className="px-3 py-1 rounded-full bg-opacity-10 mb-2"
-          style={{ backgroundColor: `${asset.color || "#2563EB"}1A` }}
+          style={{ backgroundColor: `${asset!.color || "#2563EB"}1A` }}
         >
           <p
             className="font-semibold text-lg tracking-widest uppercase"
-            style={{ color: asset.color || undefined }}
+            style={{ color: asset!.color || undefined }}
           >
             balance
           </p>
@@ -120,12 +137,12 @@ export default function AssetDetail({
         <div className="flex items-center gap-1.5">
           <span
             className="text-3xl font-bold opacity-80"
-            style={{ color: asset.color || undefined }}
+            style={{ color: asset!.color || undefined }}
           >
             ฿
           </span>
           <p className="text-3xl font-extrabold tracking-tight text-gray-900">
-            {asset.balance.toLocaleString("en-US", {
+            {asset!.balance.toLocaleString("en-US", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}
@@ -140,7 +157,7 @@ export default function AssetDetail({
           selected={viewOption}
           isOpen={isViewOptionOpen}
           onToggle={onViewOptionToggle}
-          themeColor={asset.color}
+          themeColor={asset!.color}
           onSelect={onViewOptionSelect}
           className="w-full text-base font-medium"
         />
@@ -149,18 +166,19 @@ export default function AssetDetail({
           <>
             <span className="text-secondary-text text-sm">Period</span>
 
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-4">
               <DropdownSelect
                 ref={monthRef}
                 options={months}
                 selected={selected}
                 isOpen={isMonthOpen}
                 onToggle={() => setIsMonthOpen(!isMonthOpen)}
-                themeColor={asset.color}
+                themeColor={asset!.color}
                 onSelect={(month) => {
                   handleSelect(month);
                   setIsMonthOpen(false);
                 }}
+                className="grow"
               />
               <DropdownSelect
                 ref={yearRef}
@@ -168,11 +186,12 @@ export default function AssetDetail({
                 selected={selectedYear}
                 isOpen={isYearOpen}
                 onToggle={() => setIsYearOpen(!isYearOpen)}
-                themeColor={asset.color}
+                themeColor={asset!.color}
                 onSelect={(year) => {
                   handleSelectYear(year);
                   setIsYearOpen(false);
                 }}
+                className="grow"
               />
             </div>
           </>
@@ -181,9 +200,24 @@ export default function AssetDetail({
 
       <section className="flex-1 overflow-y-auto relative">
         {isLoadingTransactions ? (
-          <div className="p-4 text-center text-gray-500">
-            Loading transactions...
-          </div>
+          <>
+            <section className="mb-4 px-4">
+              <Skeleton className="h-4 w-14 mb-1" />
+              <div className="flex items-center justify-between gap-4">
+                <Skeleton className="h-8 w-1/2 rounded-md" />
+                <Skeleton className="h-8 w-1/2 rounded-md" />
+              </div>
+            </section>
+            <div className="space-y-4">
+              {SKELETON_GROUPS.map((i) => (
+                <div key={`skeleton-group-tx-${i}`} className="space-y-1 my-2">
+                  <Skeleton className="h-5 w-32 mx-4 mb-3" />
+                  <Skeleton className="h-13 w-full rounded-none" />
+                  <Skeleton className="h-13 w-full rounded-none" />
+                </div>
+              ))}
+            </div>
+          </>
         ) : (
           <div className="bg-white">
             {groupedTransactions.map((group) => (

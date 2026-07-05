@@ -4,6 +4,10 @@ import { useAssets } from "../hooks/assets.hook";
 import { getAssetIcon } from "../components/AssetIcon";
 import { useThisMonthSummary } from "@/features/home/hooks/summary.hook";
 import { Button } from "@/shared/components/customs/Button";
+import { Skeleton } from "@/shared/components/ui/skeleton";
+import { useState, useEffect } from "react";
+
+const SKELETON_ASSETS = Array.from({ length: 3 }, (_, i) => i);
 
 interface ListAssetsContainerProps {
   onAddAsset?: () => void;
@@ -14,14 +18,40 @@ export default function ListAssetsContainer({
   onAddAsset,
   id,
 }: Readonly<ListAssetsContainerProps>) {
-  const { data: assets, isLoading } = useAssets();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  const {
+    data: assets,
+    isPending: isAssetsPending,
+    isFetching: isAssetsFetching,
+  } = useAssets();
   const { data: summary } = useThisMonthSummary();
+
+  const isLoading = !mounted || isAssetsPending || isAssetsFetching;
 
   const renderAssetsList = () => {
     if (isLoading) {
       return (
-        <div className="py-8 text-center text-gray-500 text-sm">
-          Loading assets...
+        <div className="space-y-1">
+          {SKELETON_ASSETS.map((i) => (
+            <div
+              key={`asset-skeleton-${i}`}
+              className="flex items-center justify-between bg-white px-3 py-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors border-l-4 border-gray-200"
+            >
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-9.5 w-9.5 rounded-full" />
+                <Skeleton className="h-5 w-24" />
+              </div>
+              <div className="flex items-center gap-1">
+                <Skeleton className="h-5 w-20" />
+                <ChevronRight size={18} className="text-gray-200" />
+              </div>
+            </div>
+          ))}
         </div>
       );
     }
@@ -117,17 +147,25 @@ export default function ListAssetsContainer({
           {renderAssetsList()}
 
           <div className="flex gap-4">
-            <div className="flex flex-col grow px-4 py-3 rounded-md bg-white border border-outline-variant/30">
+            <div className="flex flex-col grow w-full px-4 py-3 rounded-md bg-white border border-outline-variant/30">
               <span className="text-sm font-medium">Income</span>
-              <span className="text-base font-bold">
-                ฿ {summary?.income?.toLocaleString() ?? 0}
-              </span>
+              {isLoading ? (
+                <Skeleton className="h-6 w-24" />
+              ) : (
+                <span className="text-base font-bold">
+                  ฿ {summary?.income?.toLocaleString() ?? 0}
+                </span>
+              )}
             </div>
-            <div className="flex flex-col grow px-4 py-3 rounded-md bg-white border border-outline-variant/30">
+            <div className="flex flex-col grow w-full px-4 py-3 rounded-md bg-white border border-outline-variant/30">
               <span className="text-sm font-medium">Expense</span>
-              <span className="text-base font-bold">
-                ฿ {summary?.expense?.toLocaleString() ?? 0}
-              </span>
+              {isLoading ? (
+                <Skeleton className="h-6 w-24" />
+              ) : (
+                <span className="text-base font-bold">
+                  ฿ {summary?.expense?.toLocaleString() ?? 0}
+                </span>
+              )}
             </div>
           </div>
         </section>

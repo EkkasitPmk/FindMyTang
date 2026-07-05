@@ -23,6 +23,10 @@ import { toast } from "react-toastify";
 import TransactionCategoryList from "../components/TransactionCategoryList";
 import TransactionAssetList from "../components/TransactionAssetList";
 import TransactionMoreDetails from "../components/TransactionMoreDetails";
+import {
+  useTransactionFormSync,
+  useTransactionInitialization,
+} from "../hooks/transaction-form.hook";
 import ConfirmModal from "@/shared/components/customs/ConfirmModal";
 import { useConfirmModal } from "@/shared/lib/hooks/useConfirmModal.hook";
 import LoadingModal from "@/shared/components/customs/LoadingModal";
@@ -39,10 +43,12 @@ import {
   parseAmountDigits,
   convertDigitsToAmount,
   convertAmountToDigits,
+  getTransactionTypeOptions,
 } from "../helpers/transaction.helper";
 import { cn } from "@/shared/lib/utils/core.util";
 import { Button } from "@/shared/components/customs/Button";
 import { TransactionType } from "../types/transaction.type";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 
 export default function TransactionsContainer() {
   const router = useRouter();
@@ -61,7 +67,12 @@ export default function TransactionsContainer() {
     }),
     [hasAssetId, defaultAssetId, isDeletedParam],
   );
-  const { data: txData, isLoading } = useTransactionsQuery(queryParams);
+  const {
+    data: txData,
+    isPending: isTxPending,
+    isFetching: isTxFetching,
+  } = useTransactionsQuery(queryParams);
+  const isLoadingTx = isTxPending || isTxFetching;
 
   const existingTx = useMemo(
     () => txData?.items.find((t) => t.id === editId),
@@ -101,17 +112,27 @@ export default function TransactionsContainer() {
     currentMonth,
   );
 
-  if (existingTx && existingTx.id !== prevTxId) {
-    setPrevTxId(existingTx.id);
-    setTransactionType(existingTx.type);
-    setAmountDigits(convertAmountToDigits(existingTx.amount));
-    setDisplayMonth(new Date(existingTx.transactionDate));
-    setRemovedAttachment(false);
-    if (existingTx.note || existingTx.attachmentUrl) setIsMoreDetailsOpen(true);
-  } else if (!existingTx && typeParam !== prevTypeParam) {
-    setPrevTypeParam(typeParam);
-    setTransactionType(resolveDefaultTransactionType(undefined, typeParam));
-  }
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  useTransactionInitialization({
+    existingTx,
+    prevTxId,
+    setPrevTxId,
+    setTransactionType,
+    setAmountDigits,
+    setDisplayMonth,
+    setRemovedAttachment,
+    setIsMoreDetailsOpen,
+    typeParam,
+    prevTypeParam,
+    setPrevTypeParam,
+    resolveDefaultTransactionType,
+    convertAmountToDigits,
+  });
 
   const defaultValues = useMemo(
     () => createDefaultFormValues(existingTx, defaultAssetId),
@@ -235,14 +256,25 @@ export default function TransactionsContainer() {
     fileInputRef.current?.click();
   };
 
-  const { data: categories } = useCategories();
+  const {
+    data: categories,
+    isPending: isCategoryPending,
+    isFetching: isCategoryFetching,
+  } = useCategories();
+  const isLoadingCategoryList =
+    !mounted || isCategoryPending || isCategoryFetching;
   const filteredCategories = useMemo(
     () =>
       categories?.filter((c) => c.type === (transactionType as string)) || [],
     [categories, transactionType],
   );
 
-  const { data: assets } = useAssets();
+  const {
+    data: assets,
+    isPending: isAssetPending,
+    isFetching: isAssetFetching,
+  } = useAssets();
+  const isLoadingAssetList = !mounted || isAssetPending || isAssetFetching;
   const safeAssets = useMemo(() => assets ?? [], [assets]);
 
   const activeCategoryId = getActiveItemId(watchCategoryId, filteredCategories);
@@ -254,33 +286,16 @@ export default function TransactionsContainer() {
   );
   const activeAssetToId = getActiveItemId(watchToAssetId, availableToAssets);
 
-  useEffect(() => {
-    const isCategoryType =
-      transactionType === "EXPENSE" || transactionType === "INCOME";
-    if (
-      activeCategoryId &&
-      activeCategoryId !== watchCategoryId &&
-      isCategoryType
-    ) {
-      setValue("categoryId", activeCategoryId, { shouldValidate: true });
-    }
-  }, [activeCategoryId, watchCategoryId, setValue, transactionType]);
-
-  useEffect(() => {
-    if (activeAssetId && activeAssetId !== watchAssetId) {
-      setValue("assetId", activeAssetId, { shouldValidate: true });
-    }
-  }, [activeAssetId, watchAssetId, setValue]);
-
-  useEffect(() => {
-    if (
-      activeAssetToId &&
-      activeAssetToId !== watchToAssetId &&
-      transactionType === "TRANSFER"
-    ) {
-      setValue("toAssetId", activeAssetToId, { shouldValidate: true });
-    }
-  }, [activeAssetToId, watchToAssetId, setValue, transactionType]);
+  useTransactionFormSync({
+    transactionType,
+    activeCategoryId,
+    watchCategoryId,
+    activeAssetId,
+    watchAssetId,
+    activeAssetToId,
+    watchToAssetId,
+    setValue,
+  });
 
   const handleResetForm = () => {
     reset(defaultValues);
@@ -323,36 +338,10 @@ export default function TransactionsContainer() {
     });
   };
 
-  const transactionTypeOptions = useMemo(() => {
-    if (editId) {
-      if (existingTx?.type === "TRANSFER") {
-        return [{ label: "Transfer", value: "TRANSFER" }];
-      }
-      if (existingTx?.type === "ADJUSTMENT") {
-        return [{ label: "Adjustment", value: "ADJUSTMENT" }];
-      }
-      if (existingTx?.type === "EXPENSE" || existingTx?.type === "INCOME") {
-        return [
-          { label: "Expense", value: "EXPENSE" },
-          { label: "Income", value: "INCOME" },
-        ];
-      }
-    }
-    return [
-      { label: "Expense", value: "EXPENSE" },
-      { label: "Income", value: "INCOME" },
-      { label: "Transfer", value: "TRANSFER" },
-      { label: "Adjustment", value: "ADJUSTMENT" },
-    ];
-  }, [editId, existingTx?.type]);
-
-  if (editId && isLoading) {
-    return (
-      <div className="flex flex-col h-[calc(100dvh-100px)] items-center justify-center">
-        <p className="text-gray-500">Loading transaction...</p>
-      </div>
-    );
-  }
+  const transactionTypeOptions = useMemo(
+    () => getTransactionTypeOptions(editId, existingTx?.type),
+    [editId, existingTx?.type],
+  );
 
   return (
     <form
@@ -398,22 +387,32 @@ export default function TransactionsContainer() {
       </header>
 
       <div className="space-y-4 px-4">
-        <SegmentedControl
-          value={transactionType}
-          onChange={(val) => setTransactionType(val as TransactionType)}
-          options={transactionTypeOptions}
-        />
-
-        <section className="flex flex-col items-center gap-1 relative">
-          <CurrencyInput
-            id="balance"
-            ref={amountInputRef}
-            value={displayAmount}
-            onChange={handleCurrencyInput}
+        {editId && (!mounted || isLoadingTx) ? (
+          <Skeleton className="w-full h-10 rounded-lg" />
+        ) : (
+          <SegmentedControl
+            value={transactionType}
+            onChange={(val) => setTransactionType(val as TransactionType)}
+            options={transactionTypeOptions}
           />
-          <input type="hidden" name="amount" value={numericAmount} />
-          {errors.amount && (
-            <p className="text-red-500 text-xs">{errors.amount.message}</p>
+        )}
+
+        <section className="flex flex-col items-center gap-1 relative min-h-10 justify-center">
+          {editId && (!mounted || isLoadingTx) ? (
+            <Skeleton className="w-60 h-10 rounded-lg" />
+          ) : (
+            <>
+              <CurrencyInput
+                id="balance"
+                ref={amountInputRef}
+                value={displayAmount}
+                onChange={handleCurrencyInput}
+              />
+              <input type="hidden" name="amount" value={numericAmount} />
+              {errors.amount && (
+                <p className="text-red-500 text-xs">{errors.amount.message}</p>
+              )}
+            </>
           )}
         </section>
 
@@ -424,6 +423,7 @@ export default function TransactionsContainer() {
             onSelectCategory={(id) =>
               setValue("categoryId", id, { shouldValidate: true })
             }
+            isLoadingCategoryList={isLoadingCategoryList}
           />
         )}
 
@@ -438,6 +438,7 @@ export default function TransactionsContainer() {
             setValue("toAssetId", id, { shouldValidate: true })
           }
           transactionType={transactionType}
+          isLoadingAssetList={isLoadingAssetList}
         />
 
         <TransactionMoreDetails
@@ -463,6 +464,7 @@ export default function TransactionsContainer() {
           cameraInputRef={cameraInputRef}
           handleFileChange={handleFileChange}
           register={register}
+          isLoadingTx={!!(editId && (!mounted || isLoadingTx))}
         />
 
         <section className="fixed bottom-18 left-0 right-0 mx-4 bg-background pt-2">

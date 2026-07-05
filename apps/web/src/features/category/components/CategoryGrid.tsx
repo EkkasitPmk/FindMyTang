@@ -2,10 +2,14 @@ import { Category } from "../types/category.type";
 import { CircleX, Grip, Plus } from "lucide-react";
 import { getCategoryIcon } from "@/shared/lib/configs/category-icons.config";
 import { Button } from "@/shared/components/customs/Button";
+import { Skeleton } from "@/shared/components/ui/skeleton";
+
+const SKELETON_CATEGORIES = Array.from({ length: 12 }, (_, i) => i);
 
 interface CategoryGridProps {
   categories: Category[];
   isEditingList: boolean;
+  isLoading?: boolean;
   draggedIndex: number | null;
   onNewCategoryClick: () => void;
   onCategoryClick: (category: Category) => void;
@@ -21,6 +25,7 @@ interface CategoryGridProps {
 export default function CategoryGrid({
   categories,
   isEditingList,
+  isLoading,
   draggedIndex,
   onNewCategoryClick,
   onCategoryClick,
@@ -32,6 +37,22 @@ export default function CategoryGrid({
   onTouchMove,
   onTouchEnd,
 }: Readonly<CategoryGridProps>) {
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-3 gap-2 overflow-auto max-h-[70vh]">
+        {SKELETON_CATEGORIES.map((id) => (
+          <div
+            key={`skeleton-${id}`}
+            className="w-full flex flex-col items-center justify-center gap-3 border border-border p-4 rounded-lg"
+          >
+            <Skeleton className="h-8 w-8 rounded-lg" />
+            <Skeleton className="h-4 w-16 rounded" />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-3 gap-2 overflow-auto max-h-[70vh]">
       {/* New Category */}

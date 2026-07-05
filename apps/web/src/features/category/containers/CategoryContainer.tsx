@@ -106,7 +106,14 @@ export default function CategoryContainer() {
     };
   }, [setEditingList]);
 
-  const { data: categories } = useCategories();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  const { data: categories, isPending, isFetching } = useCategories();
+  const isCategoriesLoading = !mounted || isPending || isFetching;
 
   const [localCategories, setLocalCategories] = useState<Category[]>([]);
   const [prevCategories, setPrevCategories] = useState<Category[] | undefined>(
@@ -333,7 +340,7 @@ export default function CategoryContainer() {
     localCategories.filter((category) => category.type === activeTab) || [];
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 px-4">
       <div className="mb-2">
         <h2 className="text-xl font-bold">Category Management</h2>
         <p className="text-sm">Organize your financial flows with precision.</p>
@@ -371,6 +378,7 @@ export default function CategoryContainer() {
       {/* Categories Grid */}
       <CategoryGrid
         categories={filteredCategories}
+        isLoading={isCategoriesLoading}
         isEditingList={isEditingList}
         draggedIndex={draggedIndex}
         onNewCategoryClick={() => {

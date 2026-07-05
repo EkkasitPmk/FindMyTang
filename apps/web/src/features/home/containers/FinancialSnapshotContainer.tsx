@@ -1,16 +1,37 @@
-import { ArrowUp, ArrowDown, Loader2 } from "lucide-react";
+import { ArrowUp, ArrowDown } from "lucide-react";
 import { useAssets } from "../../assets/hooks/assets.hook";
 import { useThisMonthSummary } from "../hooks/summary.hook";
+import { Skeleton } from "@/shared/components/ui/skeleton";
+import { useState, useEffect } from "react";
 
 export default function FinancialSnapshotContainer() {
-  const { data: assets, isLoading: isLoadingAssets } = useAssets();
-  const { data: summary, isLoading: isLoadingSummary } = useThisMonthSummary();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  const {
+    data: assets,
+    isPending: isAssetsPending,
+    isFetching: isAssetsFetching,
+  } = useAssets();
+  const {
+    data: summary,
+    isPending: isSummaryPending,
+    isFetching: isSummaryFetching,
+  } = useThisMonthSummary();
 
   const netWorth =
     assets?.reduce((sum, asset) => sum + Number(asset.balance), 0) || 0;
   const netChange = summary?.net || 0;
 
-  const isLoading = isLoadingAssets || isLoadingSummary;
+  const isLoading =
+    !mounted ||
+    isAssetsPending ||
+    isAssetsFetching ||
+    isSummaryPending ||
+    isSummaryFetching;
 
   if (isLoading) {
     return (
@@ -18,10 +39,8 @@ export default function FinancialSnapshotContainer() {
         <span className="text-xs font-medium uppercase tracking-widest text-gray-500">
           FINANCIAL SNAPSHOT
         </span>
-        <div className="flex items-center gap-2 text-gray-400">
-          <Loader2 className="animate-spin" size={20} />
-          <span className="text-sm font-medium">Calculating...</span>
-        </div>
+        <Skeleton className="h-8 w-48 mb-1" />
+        <Skeleton className="h-5 w-40" />
       </div>
     );
   }

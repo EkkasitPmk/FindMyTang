@@ -5,6 +5,7 @@ import { UseFormRegister } from "react-hook-form";
 import { CreateTransactionFormValues } from "../schemas/transaction.schema";
 import ChooseADate from "./ChooseADate";
 import { Button } from "@/shared/components/customs/Button";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 
 interface TransactionMoreDetailsProps {
   isMoreDetailsOpen: boolean;
@@ -29,6 +30,7 @@ interface TransactionMoreDetailsProps {
   cameraInputRef: React.RefObject<HTMLInputElement | null>;
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   register: UseFormRegister<CreateTransactionFormValues>;
+  isLoadingTx?: boolean;
 }
 
 export default function TransactionMoreDetails({
@@ -54,11 +56,12 @@ export default function TransactionMoreDetails({
   cameraInputRef,
   handleFileChange,
   register,
+  isLoadingTx,
 }: Readonly<TransactionMoreDetailsProps>) {
   const renderAttachment = () => {
     if (file) {
       return (
-        <div className="w-full flex flex-col items-center justify-center rounded-md border-2 border-border relative overflow-hidden">
+        <div className="w-full min-h-113 flex flex-col items-center justify-center rounded-md border-2 border-border relative overflow-hidden bg-gray-50/50">
           <Image
             src={URL.createObjectURL(file)}
             alt="attachment preview"
@@ -85,7 +88,7 @@ export default function TransactionMoreDetails({
 
     if (attachmentUrl) {
       return (
-        <div className="w-full flex flex-col items-center justify-center rounded-md border-2 border-border relative overflow-hidden">
+        <div className="w-full min-h-113 flex flex-col items-center justify-center rounded-md border-2 border-border relative overflow-hidden bg-gray-50/50">
           <Image
             src={attachmentUrl}
             alt="existing attachment"
@@ -113,7 +116,7 @@ export default function TransactionMoreDetails({
     return (
       <div className="relative w-full">
         {isPhotoMenuOpen ? (
-          <div className="relative w-full h-44 flex flex-col items-center justify-center gap-2 rounded-md border-2 border-primary/40 border-dashed bg-primary/5">
+          <div className="relative w-full h-113 flex flex-col items-center justify-center gap-2 rounded-md border-2 border-primary/40 border-dashed bg-primary/5">
             <Button
               variant="unstyled"
               type="button"
@@ -150,7 +153,7 @@ export default function TransactionMoreDetails({
             variant="unstyled"
             type="button"
             onClick={() => setIsPhotoMenuOpen(true)}
-            className="w-full h-44 flex flex-col items-center justify-center gap-1 rounded-md border-2 border-border border-dashed hover:bg-gray-50/50 transition-colors cursor-pointer"
+            className="w-full h-113 flex flex-col items-center justify-center gap-1 rounded-md border-2 border-border border-dashed hover:bg-gray-50/50 transition-colors cursor-pointer"
           >
             <Camera size={24} className="text-secondary-text" />
             <p className="text-sm font-medium text-secondary-text">Add Photo</p>
@@ -186,79 +189,91 @@ export default function TransactionMoreDetails({
             DETAILS
           </p>
           <div className="space-y-3">
-            <div className="relative w-full flex items-center gap-2 bg-white rounded-md border border-border px-4 py-3">
-              <CalendarLucide size={18} className="text-secondary-text" />
-              <Button
-                variant="unstyled"
-                type="button"
-                onClick={() => setIsCalendarOpen(!isCalendarOpen)}
-                className="flex flex-col flex-1 text-left"
-              >
-                <span className="text-secondary-text text-xs font-medium">
-                  DATE
-                </span>
-                <span className="text-sm font-medium">{displayDate}</span>
-              </Button>
-              {isCalendarOpen && (
-                <>
-                  <Button
-                    variant="unstyled"
-                    type="button"
-                    aria-label="Close calendar"
-                    className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm transition-opacity border-none outline-none"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setIsCalendarOpen(false);
-                    }}
-                  />
-                  <ChooseADate
-                    selectedDate={tempDate}
-                    onSelectDate={setTempDate}
-                    displayMonth={displayMonth}
-                    onMonthChange={setDisplayMonth}
-                    onConfirm={onConfirmDate}
-                    onPresetClick={onPresetClick}
-                  />
-                </>
-              )}
-            </div>
-
-            <div className="w-full bg-white rounded-md border border-border px-4 py-3 space-y-1">
-              <div className="flex items-center gap-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="18"
-                  height="18"
-                  viewBox="0   0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="lucide lucide-list-sort-descending-icon lucide-list-sort-descending text-secondary-text"
+            {isLoadingTx ? (
+              <Skeleton className="w-full h-15 rounded-md" />
+            ) : (
+              <div className="relative w-full flex items-center gap-2 bg-white rounded-md border border-border px-4 py-3">
+                <CalendarLucide size={18} className="text-secondary-text" />
+                <Button
+                  variant="unstyled"
+                  type="button"
+                  onClick={() => setIsCalendarOpen(!isCalendarOpen)}
+                  className="flex flex-col flex-1 text-left"
                 >
-                  <path d="M15 12H3" />
-                  <path d="M3 5h18" />
-                  <path d="M9 19H3" />
-                </svg>
-                <span className="text-secondary-text text-xs font-medium">
-                  DESCRIPTION
-                </span>
+                  <span className="text-secondary-text text-xs font-medium">
+                    DATE
+                  </span>
+                  <span className="text-sm font-medium">{displayDate}</span>
+                </Button>
+                {isCalendarOpen && (
+                  <>
+                    <Button
+                      variant="unstyled"
+                      type="button"
+                      aria-label="Close calendar"
+                      className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm transition-opacity border-none outline-none"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsCalendarOpen(false);
+                      }}
+                    />
+                    <ChooseADate
+                      selectedDate={tempDate}
+                      onSelectDate={setTempDate}
+                      displayMonth={displayMonth}
+                      onMonthChange={setDisplayMonth}
+                      onConfirm={onConfirmDate}
+                      onPresetClick={onPresetClick}
+                    />
+                  </>
+                )}
               </div>
+            )}
 
-              <textarea
-                id="note"
-                placeholder="Add a note..."
-                className="w-full min-h-15 max-h-30 placeholder:text-secondary-text outline-none transition-all bg-white"
-                {...register("note")}
-              ></textarea>
-            </div>
+            {isLoadingTx ? (
+              <Skeleton className="w-full h-27.5 rounded-md" />
+            ) : (
+              <div className="w-full bg-white rounded-md border border-border px-4 py-3 space-y-1">
+                <div className="flex items-center gap-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0   0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="lucide lucide-list-sort-descending-icon lucide-list-sort-descending text-secondary-text"
+                  >
+                    <path d="M15 12H3" />
+                    <path d="M3 5h18" />
+                    <path d="M9 19H3" />
+                  </svg>
+                  <span className="text-secondary-text text-xs font-medium">
+                    DESCRIPTION
+                  </span>
+                </div>
+
+                <textarea
+                  id="note"
+                  placeholder="Add a note..."
+                  className="w-full min-h-15 max-h-30 placeholder:text-secondary-text outline-none transition-all bg-white"
+                  {...register("note")}
+                ></textarea>
+              </div>
+            )}
 
             <div className="space-y-2">
               <p className="uppercase text-xs text-secondary-text font-medium">
                 ATTACHMENT
               </p>
-              {renderAttachment()}
+              {isLoadingTx ? (
+                <Skeleton className="w-full h-113 rounded-md" />
+              ) : (
+                renderAttachment()
+              )}
               <input
                 type="file"
                 accept="image/*"

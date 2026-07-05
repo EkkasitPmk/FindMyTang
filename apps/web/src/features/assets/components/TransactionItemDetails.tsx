@@ -24,7 +24,7 @@ export function TransactionItemDetails({
   onDeleteClick,
 }: Readonly<TransactionItemDetailsProps>) {
   return (
-    <div className="px-4 pb-3 bg-surface-secondary rounded-bl-md rounded-br-md border-t-0 border border-border text-sm space-y-px">
+    <div className="px-4 pb-3 bg-surface-secondary text-sm space-y-px">
       {isIncomeOrExpense && (
         <>
           <div className="flex items-center justify-between">
@@ -88,8 +88,8 @@ export function TransactionItemDetails({
       </div>
 
       {transaction.attachmentUrl && (
-        <div className="pt-2">
-          <p className="text-gray-500 mb-2 capitalize">Attachment:</p>
+        <div className="mt-2 flex items-center justify-between">
+          <p className="text-gray-500 capitalize">Attachment:</p>
           <Image
             src={transaction.attachmentUrl}
             alt="attachment"
