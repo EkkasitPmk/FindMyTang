@@ -315,6 +315,16 @@ export class TransactionService {
     userId: string,
     isHardDelete?: boolean,
   ): Promise<Transaction> {
+    const tx = await this.transactionRepository.findById(id, true); // Include soft-deleted if we are hard deleting
+    if (!tx) throw new NotFoundException("Transaction not found");
+    if (tx.userId !== userId)
+      throw new ForbiddenException("You do not own this transaction");
+
+    // ponytail: if hard deleting, clean up the storage file too so we don't leak space
+    if (isHardDelete && tx.attachmentUrl) {
+      await this.removeAttachmentFromSupabase(tx.attachmentUrl);
+    }
+
     return this.transactionRepository.delete(id, userId, isHardDelete);
   }
 
