@@ -114,7 +114,4 @@ apps/web/AGENTS.md
 apps/web/CLAUDE.md
 
 # Ignore specific paths
-apps/web/data
-apps/web/public/transactions.json
-apps/web/scripts
 apps/api/scripts
