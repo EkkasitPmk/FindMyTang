@@ -23,8 +23,8 @@ export function useTranslation() {
     return () => cancelAnimationFrame(id);
   }, []);
 
-  // Determine current language: DB preference > LocalStorage persistence > default "th"
-  let currentLanguage: Language = "th";
+  // Determine current language: DB preference > LocalStorage persistence > default "en"
+  let currentLanguage: Language = "en";
   if (mounted) {
     if (!isGuest && user?.language) {
       currentLanguage = user.language === "en" ? "en" : "th";
@@ -34,7 +34,7 @@ export function useTranslation() {
   }
 
   const t = (key: TranslationKey): string => {
-    const translationSet = translations[currentLanguage] || translations.th;
+    const translationSet = translations[currentLanguage] || translations.en;
     return translationSet[key] || translations.en[key] || String(key);
   };
 

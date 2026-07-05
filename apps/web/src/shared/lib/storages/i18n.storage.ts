@@ -10,7 +10,7 @@ interface I18nState {
 export const useI18nStore = create<I18nState>()(
   persist(
     (set) => ({
-      language: "th", // default language is Thai
+      language: "en", // default language is English
       setLanguage: (language) => set({ language }),
     }),
     {
