@@ -91,7 +91,7 @@ export const useUpdateCategoryMutation = (options?: {
     ...options,
     onSuccess: (data) => {
       if (isGuest) {
-        updateCategoryStore(data.id, data as Partial<Category>);
+        updateCategoryStore(data.id, data);
       } else {
         void queryClient.invalidateQueries({ queryKey: ["categories"] });
       }
