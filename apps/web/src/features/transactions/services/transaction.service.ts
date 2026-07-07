@@ -8,89 +8,36 @@ import {
   TransactionQuery,
   PaginatedTransactionResponse,
   UpdateTransactionRequest,
+  TransactionType,
 } from "../types/transaction.type";
 
-export const createExpenseApi = async (
-  data: CreateExpenseRequest,
+export const createTransactionApi = async (
+  data:
+    | CreateExpenseRequest
+    | CreateIncomeRequest
+    | CreateTransferRequest
+    | CreateAdjustmentRequest,
+  type: TransactionType,
 ): Promise<TransactionResponse> => {
   const formData = new FormData();
-  formData.append("assetId", data.assetId);
-  formData.append("categoryId", data.categoryId);
-  formData.append("amount", data.amount.toString());
-  if (data.note) formData.append("note", data.note);
-  formData.append("transactionDate", data.transactionDate);
-  if (data.file) formData.append("file", data.file);
-
-  const response = await http.post<TransactionResponse>(
-    "/transactions/expense",
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    },
-  );
-  return response.data;
-};
-
-export const createIncomeApi = async (
-  data: CreateIncomeRequest,
-): Promise<TransactionResponse> => {
-  const formData = new FormData();
-  formData.append("assetId", data.assetId);
-  formData.append("categoryId", data.categoryId);
-  formData.append("amount", data.amount.toString());
-  if (data.note) formData.append("note", data.note);
-  formData.append("transactionDate", data.transactionDate);
-  if (data.file) formData.append("file", data.file);
-
-  const response = await http.post<TransactionResponse>(
-    "/transactions/income",
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    },
-  );
-  return response.data;
-};
-
-export const createTransferApi = async (
-  data: CreateTransferRequest,
-): Promise<TransactionResponse> => {
-  const formData = new FormData();
-  formData.append("assetId", data.assetId);
-  formData.append("toAssetId", data.toAssetId);
-  formData.append("amount", data.amount.toString());
-  if (data.note) formData.append("note", data.note);
-  formData.append("transactionDate", data.transactionDate);
-  if (data.file) formData.append("file", data.file);
-
-  const response = await http.post<TransactionResponse>(
-    "/transactions/transfer",
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    },
-  );
-  return response.data;
-};
-
-export const createAdjustmentApi = async (
-  data: CreateAdjustmentRequest,
-): Promise<TransactionResponse> => {
-  const formData = new FormData();
+  formData.append("type", type);
   formData.append("assetId", data.assetId);
   formData.append("amount", data.amount.toString());
   if (data.note) formData.append("note", data.note);
-  formData.append("transactionDate", data.transactionDate);
-  if (data.file) formData.append("file", data.file);
+  formData.append("date", data.transactionDate);
+
+  if ("categoryId" in data && data.categoryId) {
+    formData.append("categoryId", data.categoryId);
+  }
+  if ("toAssetId" in data && data.toAssetId) {
+    formData.append("toAssetId", data.toAssetId);
+  }
+  if (data.file) {
+    formData.append("file", data.file);
+  }
 
   const response = await http.post<TransactionResponse>(
-    "/transactions/adjustment",
+    "/transactions",
     formData,
     {
       headers: {

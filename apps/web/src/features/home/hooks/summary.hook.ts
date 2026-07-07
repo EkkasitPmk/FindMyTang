@@ -7,6 +7,7 @@ import { getThisMonthSummaryApi } from "../services/summary.service";
 export const useThisMonthSummary = () => {
   const isGuest = useIsGuest();
   const guestTransactions = useGuestStore((state) => state.transactions);
+  const guestAssets = useGuestStore((state) => state.assets);
 
   return useQuery<TodaySummary, AxiosError>({
     queryKey: ["summary", "monthly"],
@@ -29,10 +30,15 @@ export const useThisMonthSummary = () => {
               if (t.type === "EXPENSE") expense += t.amount;
             }
           });
+          const totalNetWorth = guestAssets.reduce(
+            (sum, asset) => sum + Number(asset.balance),
+            0,
+          );
           return {
             income,
             expense,
             net: income - expense,
+            totalNetWorth,
           };
         })()
       : undefined,
