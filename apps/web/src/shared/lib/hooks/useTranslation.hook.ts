@@ -8,6 +8,7 @@ import { useMeQuery } from "@/features/nav/hooks/auth.hook";
 import { useUpdateProfileMutation } from "@/features/account/hooks/account.hook";
 import { useIsGuest } from "@/shared/lib/storages/guest.storage";
 import { useEffect, useState } from "react";
+import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 
 export function useTranslation() {
   const isGuest = useIsGuest();
@@ -15,13 +16,7 @@ export function useTranslation() {
   const storeLanguage = useI18nStore((state) => state.language);
   const setStoreLanguage = useI18nStore((state) => state.setLanguage);
   const updateProfile = useUpdateProfileMutation();
-  const [mounted, setMounted] = useState(false);
-
-  // Prevent SSR Hydration Mismatch by using requestAnimationFrame (avoiding cascading sync renders)
-  useEffect(() => {
-    const id = requestAnimationFrame(() => setMounted(true));
-    return () => cancelAnimationFrame(id);
-  }, []);
+  const mounted = useMounted();
 
   // Determine current language: DB preference > LocalStorage persistence > default "en"
   let currentLanguage: Language = "en";

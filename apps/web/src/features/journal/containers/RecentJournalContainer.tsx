@@ -1,15 +1,12 @@
 import { BriefcaseBusiness, ChevronRight, Fuel, Utensils } from "lucide-react";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useState, useEffect } from "react";
+import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 
 const SKELETON_JOURNALS = Array.from({ length: 4 }, (_, i) => i);
 
 export default function RecentJournalContainer() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    const id = requestAnimationFrame(() => setMounted(true));
-    return () => cancelAnimationFrame(id);
-  }, []);
+  const mounted = useMounted();
 
   const isLoading = !mounted; // Future: add data hook loading state here
 

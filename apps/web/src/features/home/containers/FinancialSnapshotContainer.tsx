@@ -3,13 +3,10 @@ import { useAssets } from "../../assets/hooks/assets.hook";
 import { useThisMonthSummary } from "../hooks/summary.hook";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useState, useEffect } from "react";
+import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 
 export default function FinancialSnapshotContainer() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    const id = requestAnimationFrame(() => setMounted(true));
-    return () => cancelAnimationFrame(id);
-  }, []);
+  const mounted = useMounted();
 
   const {
     data: assets,

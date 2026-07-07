@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { Asset } from "@/features/assets/types/assets.type";
@@ -93,13 +94,8 @@ export const useGuestStore = create<GuestState>()(
 );
 
 export function useIsGuest() {
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMounted();
   const isGuest = useGuestStore((state) => state.isGuest);
-
-  useEffect(() => {
-    const id = requestAnimationFrame(() => setMounted(true));
-    return () => cancelAnimationFrame(id);
-  }, []);
 
   return mounted ? isGuest : true;
 }

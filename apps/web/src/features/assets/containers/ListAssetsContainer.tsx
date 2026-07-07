@@ -5,7 +5,8 @@ import { getAssetIcon } from "../components/AssetIcon";
 import { useThisMonthSummary } from "@/features/home/hooks/summary.hook";
 import { Button } from "@/shared/components/customs/Button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
-import { useState, useEffect } from "react";
+import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
+import { usePathname } from "next/navigation";
 
 const SKELETON_ASSETS = Array.from({ length: 3 }, (_, i) => i);
 
@@ -18,11 +19,9 @@ export default function ListAssetsContainer({
   onAddAsset,
   id,
 }: Readonly<ListAssetsContainerProps>) {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    const id = requestAnimationFrame(() => setMounted(true));
-    return () => cancelAnimationFrame(id);
-  }, []);
+  const pathname = usePathname();
+
+  const mounted = useMounted();
 
   const {
     data: assets,
@@ -127,8 +126,8 @@ export default function ListAssetsContainer({
 
   return (
     <>
-      {id === null ? (
-        <div className="my-2">{renderAssetsList()}</div>
+      {id === undefined && pathname === "/assets" ? (
+        <section className="px-4 my-2">{renderAssetsList()}</section>
       ) : (
         <section className="space-y-4">
           <div className="flex items-center justify-between mb-2">

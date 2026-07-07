@@ -1,5 +1,6 @@
 "use client";
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
+import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import { ArrowRight, ChevronLeft, Trash } from "lucide-react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -112,11 +113,7 @@ export default function TransactionsContainer() {
     currentMonth,
   );
 
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    const id = requestAnimationFrame(() => setMounted(true));
-    return () => cancelAnimationFrame(id);
-  }, []);
+  const mounted = useMounted();
 
   useTransactionInitialization({
     existingTx,

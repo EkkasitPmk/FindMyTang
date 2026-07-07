@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import { toast } from "react-toastify";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -106,11 +107,7 @@ export default function CategoryContainer() {
     };
   }, [setEditingList]);
 
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    const id = requestAnimationFrame(() => setMounted(true));
-    return () => cancelAnimationFrame(id);
-  }, []);
+  const mounted = useMounted();
 
   const { data: categories, isPending, isFetching } = useCategories();
   const isCategoriesLoading = !mounted || isPending || isFetching;
