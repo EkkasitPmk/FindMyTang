@@ -1,5 +1,5 @@
 import React from "react";
-import { formatDisplayDate } from "../../transactions/helpers/date.helper";
+import { formatDisplayDate } from "@/shared/lib/helpers/date.helper";
 import { ArrowRightLeft, ChevronDown, SlidersHorizontal } from "lucide-react";
 import { TransactionResponse } from "../../transactions/types/transaction.type";
 import { cn } from "@/shared/lib/utils/core.util";

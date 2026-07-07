@@ -8,10 +8,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useCategories } from "@/features/category/hooks/category.hook";
 import { useAssets } from "@/features/assets/hooks/assets.hook";
 import {
-  useCreateExpenseMutation,
-  useCreateIncomeMutation,
-  useCreateTransferMutation,
-  useCreateAdjustmentMutation,
+  useCreateTransactionMutation,
   useTransactionsQuery,
   useUpdateTransactionMutation,
   useDeleteTransactionMutation,
@@ -34,16 +31,18 @@ import LoadingModal from "@/shared/components/customs/LoadingModal";
 import { SegmentedControl } from "@/shared/components/customs/SegmentedControl";
 import { CurrencyInput } from "@/shared/components/customs/CurrencyInput";
 import { useCurrencyInput } from "@/shared/lib/hooks/useCurrencyInput.hook";
-import { getFormattedAmount } from "../utils/currency.util";
-import { formatDisplayDate } from "../helpers/date.helper";
+import {
+  getFormattedAmount,
+  parseAmountDigits,
+  convertDigitsToAmount,
+  convertAmountToDigits,
+} from "@/shared/lib/utils/currency.util";
+import { formatDisplayDate } from "@/shared/lib/helpers/date.helper";
 import {
   submitTransaction,
   resolveDefaultTransactionType,
   createDefaultFormValues,
   getActiveItemId,
-  parseAmountDigits,
-  convertDigitsToAmount,
-  convertAmountToDigits,
   getTransactionTypeOptions,
 } from "../helpers/transaction.helper";
 import { cn } from "@/shared/lib/utils/core.util";
@@ -174,17 +173,13 @@ export default function TransactionsContainer() {
     [reset, defaultValues],
   );
 
-  const createExpense = useCreateExpenseMutation({
-    onSuccess: () => handleSuccess("Expense saved successfully!"),
-  });
-  const createIncome = useCreateIncomeMutation({
-    onSuccess: () => handleSuccess("Income saved successfully!"),
-  });
-  const createTransfer = useCreateTransferMutation({
-    onSuccess: () => handleSuccess("Transfer saved successfully!"),
-  });
-  const createAdjustment = useCreateAdjustmentMutation({
-    onSuccess: () => handleSuccess("Adjustment saved successfully!"),
+  const createTransaction = useCreateTransactionMutation({
+    onSuccess: (data, variables) => {
+      const typeStr = variables.type.toLowerCase();
+      handleSuccess(
+        `${typeStr.charAt(0).toUpperCase() + typeStr.slice(1)} saved successfully!`,
+      );
+    },
   });
   const updateTransaction = useUpdateTransactionMutation({
     onSuccess: () => {
@@ -323,11 +318,7 @@ export default function TransactionsContainer() {
       transactionType,
       data: { ...data, note },
       file,
-      assets: safeAssets,
-      createExpense,
-      createIncome,
-      createTransfer,
-      createAdjustment,
+      createTransaction,
       updateTransaction,
       editId,
       removedAttachment,
@@ -469,10 +460,7 @@ export default function TransactionsContainer() {
             variant="unstyled"
             type="submit"
             disabled={
-              createExpense.isPending ||
-              createIncome.isPending ||
-              createTransfer.isPending ||
-              createAdjustment.isPending ||
+              createTransaction.isPending ||
               updateTransaction.isPending ||
               deleteTransaction.isPending
             }
@@ -509,10 +497,7 @@ export default function TransactionsContainer() {
 
       <LoadingModal
         isOpen={
-          createExpense.isPending ||
-          createIncome.isPending ||
-          createTransfer.isPending ||
-          createAdjustment.isPending ||
+          createTransaction.isPending ||
           updateTransaction.isPending ||
           deleteTransaction.isPending
         }
