@@ -115,3 +115,4 @@ apps/web/CLAUDE.md
 
 # Ignore specific paths
 apps/api/scripts
+.scannerwork/
