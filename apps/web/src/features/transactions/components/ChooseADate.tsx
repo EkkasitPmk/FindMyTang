@@ -1,7 +1,7 @@
 import { Card, CardContent, CardFooter } from "@/shared/components/ui/card";
 import { Calendar } from "@/shared/components/ui/calendar";
 import { Button } from "@/shared/components/ui/button";
-import { getDiffDays } from "../helpers/date.helper";
+import { getDiffDays } from "@/shared/lib/helpers/date.helper";
 import { cn } from "@/shared/lib/utils/core.util";
 
 interface ChooseADateProps {

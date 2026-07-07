@@ -8,7 +8,7 @@ import {
   useUpdateTransactionMutation,
   useDeleteTransactionMutation,
 } from "../../transactions/hooks/transaction.hook";
-import { formatDisplayDate } from "../../transactions/helpers/date.helper";
+import { processAssetTransactions } from "../helpers/asset.helper";
 import { toast } from "react-toastify";
 import ConfirmModal from "@/shared/components/customs/ConfirmModal";
 import { useConfirmModal } from "@/shared/lib/hooks/useConfirmModal.hook";
@@ -108,117 +108,31 @@ export default function AssetDetailContainer() {
 
   const { months, years, groupedTransactions, effectiveYear, effectiveMonth } =
     useMemo(() => {
-      if (!transactionsData?.items?.length) {
-        return {
-          months: [] as string[],
-          years: [] as string[],
-          effectiveYear: "Select",
-          effectiveMonth: "Select",
-          groupedTransactions: [],
-          filteredTransactionsData: {
-            ...transactionsData,
-            items: [],
-          } as typeof transactionsData,
-        };
-      }
-
-      // 1. Get all available years
-      const yearsSet = new Set<string>();
-      transactionsData.items.forEach((tx) => {
-        yearsSet.add(new Date(tx.transactionDate).getFullYear().toString());
-      });
-      const availableYears = Array.from(yearsSet).sort((a, b) =>
-        b.localeCompare(a),
-      );
-
-      // Determine effective year to filter by
-      const effectiveYear = availableYears.includes(selectedYear)
-        ? selectedYear
-        : availableYears[0];
-
-      // 2. Filter transactions by effective year
-      let filteredItems = transactionsData.items.filter(
-        (tx) =>
-          new Date(tx.transactionDate).getFullYear().toString() ===
-          effectiveYear,
-      );
-
-      // 3. Get all available months for the effective year
-      const monthsSet = new Set<string>();
-      filteredItems.forEach((tx) => {
-        monthsSet.add(
-          new Date(tx.transactionDate).toLocaleString("en-US", {
-            month: "long",
-          }),
-        );
-      });
-
-      // Sort months descending (latest month to earliest month)
-      const monthNames = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-      ];
-      const availableMonths = Array.from(monthsSet).sort(
-        (a, b) => monthNames.indexOf(b) - monthNames.indexOf(a),
-      );
-
-      // Determine effective month
-      const effectiveMonth = availableMonths.includes(selectedMonth)
-        ? selectedMonth
-        : availableMonths[0] || "Select";
-
-      // 4. Filter transactions by effective month
-      if (effectiveMonth !== "Select") {
-        filteredItems = filteredItems.filter(
-          (tx) =>
-            new Date(tx.transactionDate).toLocaleString("en-US", {
-              month: "long",
-            }) === effectiveMonth,
-        );
-      }
-
-      // The backend now filters by isDeleted, so we don't need to filter by deletedAt here.
-
-      const groupedTransactions = (() => {
-        const groups: { dateStr: string; items: typeof filteredItems }[] = [];
-        let currentGroup: {
-          dateStr: string;
-          items: typeof filteredItems;
-        } | null = null;
-
-        filteredItems.forEach((tx) => {
-          const txDate = new Date(tx.transactionDate);
-          const dateStr = formatDisplayDate(txDate);
-
-          if (currentGroup?.dateStr !== dateStr) {
-            currentGroup = { dateStr, items: [] as typeof filteredItems };
-            groups.push(currentGroup);
-          }
-          currentGroup.items.push(tx);
-        });
-        return groups;
-      })();
-
-      return {
-        months: availableMonths,
-        years: availableYears,
+      const {
+        months,
+        years,
         effectiveYear,
         effectiveMonth,
         groupedTransactions,
-        filteredTransactionsData: {
-          ...transactionsData,
-          items: filteredItems,
-        },
+        filteredItems,
+      } = processAssetTransactions({
+        transactions: transactionsData?.items,
+        selectedYear,
+        selectedMonth,
+      });
+
+      return {
+        months,
+        years,
+        effectiveYear,
+        effectiveMonth,
+        groupedTransactions,
+        filteredTransactionsData: transactionsData
+          ? {
+              ...transactionsData,
+              items: filteredItems,
+            }
+          : undefined,
       };
     }, [transactionsData, selectedYear, selectedMonth]);
 

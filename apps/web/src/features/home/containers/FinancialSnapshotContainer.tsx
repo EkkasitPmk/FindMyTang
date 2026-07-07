@@ -2,7 +2,6 @@ import { ArrowUp, ArrowDown } from "lucide-react";
 import { useAssets } from "../../assets/hooks/assets.hook";
 import { useThisMonthSummary } from "../hooks/summary.hook";
 import { Skeleton } from "@/shared/components/ui/skeleton";
-import { useState, useEffect } from "react";
 import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 
 export default function FinancialSnapshotContainer() {
@@ -19,8 +18,8 @@ export default function FinancialSnapshotContainer() {
     isFetching: isSummaryFetching,
   } = useThisMonthSummary();
 
-  const netWorth =
-    assets?.reduce((sum, asset) => sum + Number(asset.balance), 0) || 0;
+  // ponytail: The backend now provides totalNetWorth directly, avoiding frontend calculations.
+  const netWorth = summary?.totalNetWorth || 0;
   const netChange = summary?.net || 0;
 
   const isLoading =

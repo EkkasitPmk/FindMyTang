@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { useRegisterMutation } from "../hooks/register.hook";
 import { registerSchema, RegisterFormValues } from "../schemas/register.schema";
 import RegisterForm from "../components/RegisterForm";
+import { handleFormError } from "@/shared/lib/helpers/form.helper";
 
 export default function RegisterContainer() {
   const router = useRouter();
@@ -36,40 +37,19 @@ export default function RegisterContainer() {
       router.push("/login");
     },
     onError: (error) => {
-      // Handle API errors
-      const message = error.response?.data?.message;
-      let errorList: string[] = [];
-      if (Array.isArray(message)) {
-        errorList = message;
-      } else if (message) {
-        errorList = [message];
-      }
-
-      if (errorList.length === 0) {
-        toast.error("Registration failed. Please try again.");
-        return;
-      }
-
-      errorList.forEach((msg) => {
-        const lowerMsg = msg.toLowerCase();
-        if (lowerMsg.includes("email")) {
-          setError("email", { type: "server", message: msg });
-        } else if (
-          lowerMsg.includes("display name") ||
-          lowerMsg.includes("displayname")
-        ) {
-          setError("displayName", { type: "server", message: msg });
-        } else if (
-          lowerMsg.includes("confirm password") ||
-          lowerMsg.includes("confirmpassword")
-        ) {
-          setError("confirmPassword", { type: "server", message: msg });
-        } else if (lowerMsg.includes("password")) {
-          setError("password", { type: "server", message: msg });
-        } else {
-          toast.error(msg);
-        }
-      });
+      handleFormError(
+        error,
+        setError,
+        "Registration failed. Please try again.",
+        {
+          email: "email",
+          "display name": "displayName",
+          displayname: "displayName",
+          "confirm password": "confirmPassword", // NOSONAR
+          confirmpassword: "confirmPassword", // NOSONAR
+          password: "password", // NOSONAR
+        },
+      );
     },
   });
 
@@ -92,7 +72,9 @@ export default function RegisterContainer() {
       showPassword={showPassword}
       showConfirmPassword={showConfirmPassword}
       onToggleShowPassword={() => setShowPassword(!showPassword)}
-      onToggleShowConfirmPassword={() => setShowConfirmPassword(!showConfirmPassword)}
+      onToggleShowConfirmPassword={() =>
+        setShowConfirmPassword(!showConfirmPassword)
+      }
     />
   );
 }

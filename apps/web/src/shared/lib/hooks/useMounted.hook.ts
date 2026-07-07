@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 export const useMounted = () => {
   const [mounted, setMounted] = useState(false);
-  
+
   useEffect(() => {
     const id = requestAnimationFrame(() => setMounted(true));
     return () => cancelAnimationFrame(id);

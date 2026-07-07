@@ -11,6 +11,7 @@ import { useUpdateAssetMutation } from "../hooks/assets.hook";
 import { Asset, AssetType } from "../types/assets.type";
 import AssetForm from "../components/AssetForm";
 import LoadingModal from "@/shared/components/customs/LoadingModal";
+import { handleFormError } from "@/shared/lib/helpers/form.helper";
 
 interface EditAssetsContainerProps {
   asset: Asset;
@@ -66,31 +67,16 @@ export default function EditAssetsContainer({
       if (onClose) onClose();
     },
     onError: (error) => {
-      const message = error.response?.data?.message;
-      let errorList: string[] = [];
-      if (Array.isArray(message)) {
-        errorList = message;
-      } else if (message) {
-        errorList = [message];
-      }
-
-      if (errorList.length === 0) {
-        toast.error("Failed to update asset. Please check validation rules.");
-        return;
-      }
-
-      errorList.forEach((msg) => {
-        const lowerMsg = msg.toLowerCase();
-        if (lowerMsg.includes("name")) {
-          setError("name", { type: "server", message: msg });
-        } else if (lowerMsg.includes("type")) {
-          setError("type", { type: "server", message: msg });
-        } else if (lowerMsg.includes("balance")) {
-          setError("balance", { type: "server", message: msg });
-        } else {
-          toast.error(msg);
-        }
-      });
+      handleFormError(
+        error,
+        setError,
+        "Failed to update asset. Please check validation rules.",
+        {
+          name: "name",
+          type: "type",
+          balance: "balance",
+        },
+      );
     },
   });
 

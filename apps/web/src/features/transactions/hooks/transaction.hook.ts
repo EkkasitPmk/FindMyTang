@@ -5,24 +5,18 @@ import {
   QueryClient,
 } from "@tanstack/react-query";
 import {
-  createExpenseApi,
-  createIncomeApi,
-  createTransferApi,
-  createAdjustmentApi,
+  createTransactionApi,
   getTransactionsApi,
   updateTransactionApi,
   deleteTransactionApi,
 } from "../services/transaction.service";
 import {
-  CreateExpenseRequest,
-  CreateIncomeRequest,
-  CreateTransferRequest,
-  CreateAdjustmentRequest,
   TransactionResponse,
   TransactionQuery,
   PaginatedTransactionResponse,
   UpdateTransactionRequest,
   TransactionType,
+  CreateTransactionPayload,
 } from "../types/transaction.type";
 import { AxiosError } from "axios";
 import { useGuestStore, useIsGuest } from "@/shared/lib/storages/guest.storage";
@@ -79,8 +73,48 @@ const createMockTransaction = (
   };
 };
 
-export const useCreateExpenseMutation = (options?: {
-  onSuccess?: (data: TransactionResponse) => void;
+const handleGuestAssetBalanceUpdate = (
+  data: TransactionResponse,
+  variables: {
+    type: TransactionType;
+    data: CreateTransactionPayload;
+  },
+  state: ReturnType<typeof useGuestStore.getState>,
+) => {
+  if (variables.type === "INCOME" || variables.type === "ADJUSTMENT") {
+    const asset = state.assets.find((a) => a.id === data.assetId);
+    if (asset) {
+      state.updateAsset(asset.id, { balance: asset.balance + data.amount });
+    }
+  } else if (variables.type === "EXPENSE") {
+    const asset = state.assets.find((a) => a.id === data.assetId);
+    if (asset) {
+      state.updateAsset(asset.id, { balance: asset.balance - data.amount });
+    }
+  } else if (variables.type === "TRANSFER") {
+    const fromAsset = state.assets.find((a) => a.id === data.assetId);
+    const toAsset = state.assets.find((a) => a.id === data.toAssetId);
+    if (fromAsset) {
+      state.updateAsset(fromAsset.id, {
+        balance: fromAsset.balance - data.amount,
+      });
+    }
+    if (toAsset) {
+      state.updateAsset(toAsset.id, {
+        balance: toAsset.balance + data.amount,
+      });
+    }
+  }
+};
+
+export const useCreateTransactionMutation = (options?: {
+  onSuccess?: (
+    data: TransactionResponse,
+    variables: {
+      type: TransactionType;
+      data: CreateTransactionPayload;
+    },
+  ) => void;
   onError?: (error: AxiosError<ApiErrorResponse>) => void;
 }) => {
   const queryClient = useQueryClient();
@@ -90,144 +124,37 @@ export const useCreateExpenseMutation = (options?: {
   return useMutation<
     TransactionResponse,
     AxiosError<ApiErrorResponse>,
-    CreateExpenseRequest
+    {
+      type: TransactionType;
+      data: CreateTransactionPayload;
+    }
   >({
-    mutationFn: async (data) => {
-      if (isGuest)
-        return createMockTransaction("EXPENSE", data, useGuestStore.getState());
-      return createExpenseApi(data);
-    },
-    ...options,
-    onSuccess: (data) => {
+    mutationFn: async ({ type, data }) => {
       if (isGuest) {
-        addTransaction(data);
         const state = useGuestStore.getState();
-        const asset = state.assets.find((a) => a.id === data.assetId);
-        if (asset) {
-          state.updateAsset(asset.id, { balance: asset.balance - data.amount });
+        if (type === "ADJUSTMENT") {
+          const asset = state.assets.find((a) => a.id === data.assetId);
+          const difference = data.amount - (asset?.balance || 0);
+          return createMockTransaction(
+            type,
+            { ...data, amount: difference },
+            state,
+          );
         }
-      } else {
-        invalidateQueries(queryClient);
+        return createMockTransaction(type, data, state);
       }
-      options?.onSuccess?.(data);
-    },
-  });
-};
-
-export const useCreateIncomeMutation = (options?: {
-  onSuccess?: (data: TransactionResponse) => void;
-  onError?: (error: AxiosError<ApiErrorResponse>) => void;
-}) => {
-  const queryClient = useQueryClient();
-  const isGuest = useGuestStore((state) => state.isGuest);
-  const addTransaction = useGuestStore((state) => state.addTransaction);
-
-  return useMutation<
-    TransactionResponse,
-    AxiosError<ApiErrorResponse>,
-    CreateIncomeRequest
-  >({
-    mutationFn: async (data) => {
-      if (isGuest)
-        return createMockTransaction("INCOME", data, useGuestStore.getState());
-      return createIncomeApi(data);
+      return createTransactionApi(data, type);
     },
     ...options,
-    onSuccess: (data) => {
+    onSuccess: (data, variables) => {
       if (isGuest) {
         addTransaction(data);
         const state = useGuestStore.getState();
-        const asset = state.assets.find((a) => a.id === data.assetId);
-        if (asset) {
-          state.updateAsset(asset.id, { balance: asset.balance + data.amount });
-        }
+        handleGuestAssetBalanceUpdate(data, variables, state);
       } else {
         invalidateQueries(queryClient);
       }
-      options?.onSuccess?.(data);
-    },
-  });
-};
-
-export const useCreateTransferMutation = (options?: {
-  onSuccess?: (data: TransactionResponse) => void;
-  onError?: (error: AxiosError<ApiErrorResponse>) => void;
-}) => {
-  const queryClient = useQueryClient();
-  const isGuest = useGuestStore((state) => state.isGuest);
-  const addTransaction = useGuestStore((state) => state.addTransaction);
-
-  return useMutation<
-    TransactionResponse,
-    AxiosError<ApiErrorResponse>,
-    CreateTransferRequest
-  >({
-    mutationFn: async (data) => {
-      if (isGuest)
-        return createMockTransaction(
-          "TRANSFER",
-          data,
-          useGuestStore.getState(),
-        );
-      return createTransferApi(data);
-    },
-    ...options,
-    onSuccess: (data) => {
-      if (isGuest) {
-        addTransaction(data);
-        const state = useGuestStore.getState();
-        const fromAsset = state.assets.find((a) => a.id === data.assetId);
-        const toAsset = state.assets.find((a) => a.id === data.toAssetId);
-        if (fromAsset)
-          state.updateAsset(fromAsset.id, {
-            balance: fromAsset.balance - data.amount,
-          });
-        if (toAsset)
-          state.updateAsset(toAsset.id, {
-            balance: toAsset.balance + data.amount,
-          });
-      } else {
-        invalidateQueries(queryClient);
-      }
-      options?.onSuccess?.(data);
-    },
-  });
-};
-
-export const useCreateAdjustmentMutation = (options?: {
-  onSuccess?: (data: TransactionResponse) => void;
-  onError?: (error: AxiosError<ApiErrorResponse>) => void;
-}) => {
-  const queryClient = useQueryClient();
-  const isGuest = useGuestStore((state) => state.isGuest);
-  const addTransaction = useGuestStore((state) => state.addTransaction);
-
-  return useMutation<
-    TransactionResponse,
-    AxiosError<ApiErrorResponse>,
-    CreateAdjustmentRequest
-  >({
-    mutationFn: async (data) => {
-      if (isGuest)
-        return createMockTransaction(
-          "ADJUSTMENT",
-          data,
-          useGuestStore.getState(),
-        );
-      return createAdjustmentApi(data);
-    },
-    ...options,
-    onSuccess: (data) => {
-      if (isGuest) {
-        addTransaction(data);
-        const state = useGuestStore.getState();
-        const asset = state.assets.find((a) => a.id === data.assetId);
-        if (asset)
-          state.updateAsset(asset.id, { balance: asset.balance + data.amount });
-      } else {
-        invalidateQueries(queryClient);
-      }
-      options?.onSuccess?.(data);
+      options?.onSuccess?.(data, variables);
     },
   });
 };

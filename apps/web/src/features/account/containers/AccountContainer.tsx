@@ -22,6 +22,7 @@ import ConfirmModal from "@/shared/components/customs/ConfirmModal";
 import { useConfirmModal } from "@/shared/lib/hooks/useConfirmModal.hook";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { Button } from "@/shared/components/customs/Button";
+import { handleFormError } from "@/shared/lib/helpers/form.helper";
 
 export default function AccountContainer() {
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
@@ -80,43 +81,16 @@ export default function AccountContainer() {
         handleClosePasswordModal();
       },
       onError: (error) => {
-        const errorMsg =
-          error.response?.data?.message || "Failed to change password";
-        let errorList: string[] = [];
-        if (Array.isArray(errorMsg)) {
-          errorList = errorMsg;
-        } else if (errorMsg) {
-          errorList = [errorMsg];
-        }
-
-        if (errorList.length === 0) {
-          toast.error("Failed to change password");
-          return;
-        }
-
-        errorList.forEach((msg) => {
-          const lowerMsg = msg.toLowerCase();
-          if (lowerMsg.includes("current")) {
-            changePasswordForm.setError("currentPassword", {
-              type: "server",
-              message: msg,
-            });
-          } else if (
-            lowerMsg.includes("new password") ||
-            lowerMsg.includes("match")
-          ) {
-            changePasswordForm.setError("newPassword", {
-              type: "server",
-              message: msg,
-            });
-            changePasswordForm.setError("confirmNewPassword", {
-              type: "server",
-              message: msg,
-            });
-          } else {
-            toast.error(msg);
-          }
-        });
+        handleFormError(
+          error,
+          changePasswordForm.setError,
+          "Failed to change password",
+          {
+            current: "currentPassword",
+            "new password": ["newPassword", "confirmNewPassword"], // NOSONAR
+            match: ["newPassword", "confirmNewPassword"],
+          },
+        );
       },
     });
 

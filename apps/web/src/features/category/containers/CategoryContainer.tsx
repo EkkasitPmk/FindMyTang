@@ -24,6 +24,8 @@ import ConfirmModal from "@/shared/components/customs/ConfirmModal";
 import CUCategoryModal from "../components/CUCategoryModal";
 import LoadingModal from "@/shared/components/customs/LoadingModal";
 import CategoryGrid from "../components/CategoryGrid";
+import { reorderCategoriesList } from "../helpers/category.helper";
+import { handleFormError } from "@/shared/lib/helpers/form.helper";
 import { AxiosError } from "axios";
 import { Button } from "@/shared/components/customs/Button";
 
@@ -121,17 +123,7 @@ export default function CategoryContainer() {
   if (categories !== prevCategories) {
     setPrevCategories(categories);
     if (categories) {
-      const sorted = [...categories].sort((a, b) => {
-        const orderA = a.displayOrder ?? 0;
-        const orderB = b.displayOrder ?? 0;
-        if (orderA !== orderB) {
-          return orderA - orderB;
-        }
-        return (
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-        );
-      });
-      setLocalCategories(sorted);
+      setLocalCategories(categories);
     } else {
       setLocalCategories([]);
     }
@@ -152,17 +144,9 @@ export default function CategoryContainer() {
     e.preventDefault();
     if (draggedIndex === null || draggedIndex === index) return;
 
-    const currentTabCategories = localCategories.filter(
-      (c) => c.type === activeTab,
+    setLocalCategories(
+      reorderCategoriesList(localCategories, activeTab, draggedIndex, index),
     );
-    const updatedTabCategories = [...currentTabCategories];
-    const [draggedItem] = updatedTabCategories.splice(draggedIndex, 1);
-    updatedTabCategories.splice(index, 0, draggedItem);
-
-    const otherTabCategories = localCategories.filter(
-      (c) => c.type !== activeTab,
-    );
-    setLocalCategories([...updatedTabCategories, ...otherTabCategories]);
     setDraggedIndex(index);
   };
 
@@ -201,17 +185,14 @@ export default function CategoryContainer() {
     const targetIndex = Number.parseInt(targetIndexAttr, 10);
     if (Number.isNaN(targetIndex) || draggedIndex === targetIndex) return;
 
-    const currentTabCategories = localCategories.filter(
-      (c) => c.type === activeTab,
+    setLocalCategories(
+      reorderCategoriesList(
+        localCategories,
+        activeTab,
+        draggedIndex,
+        targetIndex,
+      ),
     );
-    const updatedTabCategories = [...currentTabCategories];
-    const [draggedItem] = updatedTabCategories.splice(draggedIndex, 1);
-    updatedTabCategories.splice(targetIndex, 0, draggedItem);
-
-    const otherTabCategories = localCategories.filter(
-      (c) => c.type !== activeTab,
-    );
-    setLocalCategories([...updatedTabCategories, ...otherTabCategories]);
     setDraggedIndex(targetIndex);
   };
 
@@ -269,33 +250,17 @@ export default function CategoryContainer() {
   const onSubmit = (values: CreateCategoryFormValues) => {
     const mutationOptions = {
       onError: (err: AxiosError<ApiErrorResponse>) => {
-        const message = err.response?.data?.message;
-        let errorList: string[] = [];
-        if (Array.isArray(message)) {
-          errorList = message;
-        } else if (message) {
-          errorList = [message];
-        }
-
-        if (errorList.length === 0) {
-          toast.error("Failed to save category. Please check your inputs.");
-          return;
-        }
-
-        errorList.forEach((msg) => {
-          const lowerMsg = msg.toLowerCase();
-          if (lowerMsg.includes("name")) {
-            setError("name", { type: "server", message: msg });
-          } else if (lowerMsg.includes("type")) {
-            setError("type", { type: "server", message: msg });
-          } else if (lowerMsg.includes("color")) {
-            setError("color", { type: "server", message: msg });
-          } else if (lowerMsg.includes("icon")) {
-            setError("icon", { type: "server", message: msg });
-          } else {
-            toast.error(msg);
-          }
-        });
+        handleFormError(
+          err,
+          setError,
+          "Failed to save category. Please check your inputs.",
+          {
+            name: "name",
+            type: "type",
+            color: "color",
+            icon: "icon",
+          },
+        );
       },
     };
 

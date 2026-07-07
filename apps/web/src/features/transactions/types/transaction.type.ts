@@ -36,6 +36,11 @@ export interface CreateAdjustmentRequest {
   attachmentUrl?: string;
   file?: File;
 }
+export type CreateTransactionPayload =
+  | CreateExpenseRequest
+  | CreateIncomeRequest
+  | CreateTransferRequest
+  | CreateAdjustmentRequest;
 
 export interface UpdateTransactionRequest {
   type: TransactionType;

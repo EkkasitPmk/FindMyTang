@@ -4,6 +4,7 @@ import {
   ForbiddenException,
   BadRequestException,
 } from "@nestjs/common";
+import * as crypto from "node:crypto";
 import "multer";
 import { TransactionRepository } from "../repositories/transaction.repository";
 import { AssetRepository } from "../../asset/repositories/asset.repository";
@@ -36,7 +37,8 @@ export class TransactionService {
     try {
       const bucketName = process.env.SUPABASE_BUCKET || "attachments";
       const fileExtension = file.originalname.split(".").pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExtension}`;
+      const secureRandom = crypto.randomBytes(4).toString("hex");
+      const fileName = `${Date.now()}-${secureRandom}.${fileExtension}`;
       const { data, error } = await this.supabase.storage
         .from(bucketName)
         .upload(fileName, file.buffer, {
@@ -139,10 +141,16 @@ export class TransactionService {
     dto: CreateTransactionDto,
     attachmentUrl?: string | null,
   ): Promise<Transaction> {
+    const asset = await tx.asset.findUnique({ where: { id: dto.assetId } });
+    if (!asset) throw new NotFoundException("Asset not found");
+
+    // dto.amount is the target balance sent by frontend
+    const difference = dto.amount - Number(asset.balance);
+
     const transaction = await tx.transaction.create({
       data: {
         type: TransactionType.ADJUSTMENT,
-        amount: dto.amount,
+        amount: difference,
         note: dto.note,
         date: new Date(dto.date),
         userId,
@@ -152,7 +160,7 @@ export class TransactionService {
     });
     await tx.asset.update({
       where: { id: dto.assetId },
-      data: { balance: { increment: dto.amount } },
+      data: { balance: dto.amount },
     });
     return transaction;
   }

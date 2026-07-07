@@ -119,4 +119,19 @@ export class SummaryRepository {
 
     return Number(result._sum.amount || 0);
   }
+
+  // ponytail: Calculates the total net worth of the user by summing the balance of all non-deleted assets.
+  async getTotalNetWorth(userId: string): Promise<number> {
+    const result = await this.prisma.asset.aggregate({
+      where: {
+        userId,
+        deletedAt: null,
+      },
+      _sum: {
+        balance: true,
+      },
+    });
+
+    return Number(result._sum.balance || 0);
+  }
 }
