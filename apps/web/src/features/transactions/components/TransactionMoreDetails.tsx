@@ -4,6 +4,7 @@ import { ArrowDown, Calendar as CalendarLucide, Camera, X } from "lucide-react";
 import { UseFormRegister } from "react-hook-form";
 import { CreateTransactionFormValues } from "../schemas/transaction.schema";
 import ChooseADate from "./ChooseADate";
+import { useImagePreview } from "@/shared/lib/hooks/useImagePreview.hook";
 import { Button } from "@/shared/components/customs/Button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 
@@ -58,12 +59,14 @@ export default function TransactionMoreDetails({
   register,
   isLoadingTx,
 }: Readonly<TransactionMoreDetailsProps>) {
+  const filePreview = useImagePreview(file);
+
   const renderAttachment = () => {
-    if (file) {
+    if (file && filePreview) {
       return (
         <div className="w-full min-h-113 flex flex-col items-center justify-center rounded-md border-2 border-border relative overflow-hidden bg-gray-50/50">
           <Image
-            src={URL.createObjectURL(file)}
+            src={filePreview}
             alt="attachment preview"
             width={0}
             height={0}
