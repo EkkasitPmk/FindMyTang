@@ -19,31 +19,37 @@ export const createTransactionApi = async (
     | CreateAdjustmentRequest,
   type: TransactionType,
 ): Promise<TransactionResponse> => {
-  const formData = new FormData();
-  formData.append("type", type);
-  formData.append("assetId", data.assetId);
-  formData.append("amount", data.amount.toString());
-  if (data.note) formData.append("note", data.note);
-  formData.append("date", data.transactionDate);
+  const payload: Record<string, unknown> = {
+    type,
+    assetId: data.assetId,
+    amount: data.amount,
+    date: data.transactionDate,
+  };
 
-  if ("categoryId" in data && data.categoryId) {
-    formData.append("categoryId", data.categoryId);
-  }
-  if ("toAssetId" in data && data.toAssetId) {
-    formData.append("toAssetId", data.toAssetId);
-  }
+  if (data.note) payload.note = data.note;
+  if ("categoryId" in data && data.categoryId)
+    payload.categoryId = data.categoryId;
+  if ("toAssetId" in data && data.toAssetId) payload.toAssetId = data.toAssetId;
+
   if (data.file) {
-    formData.append("file", data.file);
+    const formData = new FormData();
+    Object.entries(payload).forEach(([key, value]) => {
+      formData.append(key, String(value));
+    });
+    
+    // Force Safari to load the file into memory to avoid DOM detachment bugs
+    const arrayBuffer = await data.file.arrayBuffer();
+    const safeBlob = new Blob([arrayBuffer], { type: data.file.type });
+    formData.append("file", safeBlob, data.file.name);
+    
+    const response = await http.post<TransactionResponse>("/transactions", formData);
+    
+    return response.data;
   }
 
   const response = await http.post<TransactionResponse>(
     "/transactions",
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    },
+    payload,
   );
   return response.data;
 };
@@ -62,28 +68,37 @@ export const updateTransactionApi = async (
   id: string,
   data: UpdateTransactionRequest,
 ): Promise<TransactionResponse> => {
-  const formData = new FormData();
-  formData.append("type", data.type);
-  formData.append("assetId", data.assetId);
-  formData.append("amount", data.amount.toString());
-  if (data.note) formData.append("note", data.note);
-  formData.append("date", data.transactionDate);
-  if (data.toAssetId) formData.append("toAssetId", data.toAssetId);
-  if (data.categoryId) formData.append("categoryId", data.categoryId);
-  if (data.attachmentUrl === null) formData.append("attachmentUrl", "");
-  if (data.file) formData.append("file", data.file);
-  if (data.deletedAt === null) formData.append("deletedAt", "null");
-  else if (data.deletedAt) formData.append("deletedAt", data.deletedAt);
+  const payload: Record<string, unknown> = {
+    type: data.type,
+    assetId: data.assetId,
+    amount: data.amount,
+    date: data.transactionDate,
+  };
 
-  const response = await http.patch<TransactionResponse>(
-    `/transactions/${id}`,
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    },
-  );
+  if (data.note) payload.note = data.note;
+  if (data.toAssetId) payload.toAssetId = data.toAssetId;
+  if (data.categoryId) payload.categoryId = data.categoryId;
+  if (data.attachmentUrl === null) payload.attachmentUrl = "";
+  if (data.deletedAt === null) payload.deletedAt = "null";
+  else if (data.deletedAt) payload.deletedAt = data.deletedAt;
+
+  if (data.file) {
+    const formData = new FormData();
+    Object.entries(payload).forEach(([key, value]) => {
+      formData.append(key, String(value));
+    });
+    
+    // Force Safari to load the file into memory to avoid DOM detachment bugs
+    const arrayBuffer = await data.file.arrayBuffer();
+    const safeBlob = new Blob([arrayBuffer], { type: data.file.type });
+    formData.append("file", safeBlob, data.file.name);
+    
+    const response = await http.patch<TransactionResponse>(`/transactions/${id}`, formData);
+    
+    return response.data;
+  }
+
+  const response = await http.patch<TransactionResponse>(`/transactions/${id}`, payload);
   return response.data;
 };
 
