@@ -9,7 +9,7 @@ import {
   MaxLength,
 } from "class-validator";
 import { TransactionType } from "@prisma/client";
-import { Type } from "class-transformer";
+import { Transform } from "class-transformer";
 
 export class CreateTransactionDto {
   @ApiProperty({
@@ -22,7 +22,9 @@ export class CreateTransactionDto {
   type!: TransactionType;
 
   @ApiProperty({ description: "Transaction amount", example: 150.5 })
-  @Type(() => Number)
+  @Transform(({ value }) =>
+    typeof value === "string" ? Number.parseFloat(value) : Number(value),
+  )
   @IsNumber()
   @IsNotEmpty()
   amount!: number;
