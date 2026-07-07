@@ -7,7 +7,6 @@ import {
 import { useMeQuery } from "@/features/nav/hooks/auth.hook";
 import { useUpdateProfileMutation } from "@/features/account/hooks/account.hook";
 import { useIsGuest } from "@/shared/lib/storages/guest.storage";
-import { useEffect, useState } from "react";
 import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 
 export function useTranslation() {

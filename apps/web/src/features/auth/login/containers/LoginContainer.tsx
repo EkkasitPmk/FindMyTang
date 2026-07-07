@@ -8,6 +8,7 @@ import { useLoginMutation } from "../hooks/login.hook";
 import { loginSchema, LoginFormValues } from "../schemas/login.schema";
 import LoginForm from "../components/LoginForm";
 import { useGuestStore } from "@/shared/lib/storages/guest.storage";
+import { handleFormError } from "@/shared/lib/helpers/form.helper";
 
 export default function LoginContainer() {
   const router = useRouter();
@@ -34,29 +35,15 @@ export default function LoginContainer() {
       router.push("/home");
     },
     onError: (error) => {
-      const message = error.response?.data?.message;
-      let errorList: string[] = [];
-      if (Array.isArray(message)) {
-        errorList = message;
-      } else if (message) {
-        errorList = [message];
-      }
-
-      if (errorList.length === 0) {
-        toast.error("Login failed. Please check your credentials.");
-        return;
-      }
-
-      errorList.forEach((msg) => {
-        const lowerMsg = msg.toLowerCase();
-        if (lowerMsg.includes("email")) {
-          setError("email", { type: "server", message: msg });
-        } else if (lowerMsg.includes("password")) {
-          setError("password", { type: "server", message: msg });
-        } else {
-          toast.error(msg);
-        }
-      });
+      handleFormError(
+        error,
+        setError,
+        "Login failed. Please check your credentials.",
+        {
+          email: "email",
+          password: "password", // NOSONAR
+        },
+      );
     },
   });
 
