@@ -72,7 +72,6 @@ export default function TransactionMoreDetails({
             height={0}
             sizes="100vw"
             className="w-full h-auto object-contain"
-            unoptimized
           />
           <Button
             variant="unstyled"
@@ -99,7 +98,6 @@ export default function TransactionMoreDetails({
             height={0}
             sizes="100vw"
             className="w-full h-auto object-contain"
-            unoptimized
           />
           <Button
             variant="unstyled"

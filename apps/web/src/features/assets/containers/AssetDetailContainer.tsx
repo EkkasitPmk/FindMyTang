@@ -19,6 +19,7 @@ import { TransactionResponse } from "../../transactions/types/transaction.type";
 import EditAssetsContainer from "./EditAssetsContainer";
 import AssetDetail from "../components/AssetDetail";
 import ManageAssetsContainer from "./ManageAssetsContainer";
+import ImagePreviewModal from "@/shared/components/customs/ImagePreviewModal";
 
 export default function AssetDetailContainer() {
   const searchParams = useSearchParams();
@@ -27,12 +28,8 @@ export default function AssetDetailContainer() {
 
   const mounted = useMounted();
 
-  const {
-    data: assets,
-    isPending: isAssetsPending,
-    isFetching: isAssetsFetching,
-  } = useAssets();
-  const isLoading = !mounted || isAssetsPending || isAssetsFetching;
+  const { data: assets, isPending: isAssetsPending } = useAssets();
+  const isLoading = !mounted || isAssetsPending;
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
@@ -47,21 +44,17 @@ export default function AssetDetailContainer() {
 
   const asset = assets?.find((a) => a.id === id) || assets?.[0];
 
-  const {
-    data: transactionsData,
-    isPending: isTransactionsPending,
-    isFetching: isTransactionsFetching,
-  } = useTransactionsQuery(
-    asset
-      ? {
-          assetId: asset.id,
-          limit: 9999,
-          isDeleted: viewOption === "Show deleted items",
-        }
-      : undefined,
-  );
-  const isLoadingTransactions =
-    !mounted || isTransactionsPending || isTransactionsFetching;
+  const { data: transactionsData, isPending: isTransactionsPending } =
+    useTransactionsQuery(
+      asset
+        ? {
+            assetId: asset.id,
+            limit: 9999,
+            isDeleted: viewOption === "Show deleted items",
+          }
+        : undefined,
+    );
+  const isLoadingTransactions = !mounted || isTransactionsPending;
 
   const [isMonthOpen, setIsMonthOpen] = useState(false);
   const monthRef = useRef<HTMLDivElement>(null);
@@ -80,6 +73,7 @@ export default function AssetDetailContainer() {
   const [isRestoreModalOpen, setIsRestoreModalOpen] = useState(false);
   const [transactionToRestore, setTransactionToRestore] =
     useState<TransactionResponse | null>(null);
+  const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
 
   const restoreTransaction = useUpdateTransactionMutation({
     onSuccess: () => {
@@ -212,6 +206,7 @@ export default function AssetDetailContainer() {
               setTransactionToDelete(tx);
               openDeleteModal();
             }}
+            onAttachmentClick={(url) => setPreviewImageUrl(url)}
           />
           {isEditModalOpen && asset && (
             <EditAssetsContainer
@@ -284,6 +279,11 @@ export default function AssetDetailContainer() {
           />
           <LoadingModal
             isOpen={restoreTransaction.isPending || deleteTransaction.isPending}
+          />
+          <ImagePreviewModal
+            isOpen={!!previewImageUrl}
+            onClose={() => setPreviewImageUrl(null)}
+            imageUrl={previewImageUrl || ""}
           />
         </>
       )}

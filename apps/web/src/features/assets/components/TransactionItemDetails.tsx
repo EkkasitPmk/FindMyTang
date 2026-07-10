@@ -3,6 +3,7 @@ import { TransactionResponse } from "../../transactions/types/transaction.type";
 import { cn } from "@/shared/lib/utils/core.util";
 import { Button } from "@/shared/components/customs/Button";
 import { RotateCcw, Trash } from "lucide-react";
+import { useCachedImageUrl } from "@/shared/lib/hooks/useCachedImageUrl.hook";
 
 export interface TransactionItemDetailsProps {
   transaction: TransactionResponse;
@@ -12,6 +13,8 @@ export interface TransactionItemDetailsProps {
   onTransactionItemClick: (transaction: TransactionResponse) => void;
   onRestoreClick?: (transaction: TransactionResponse) => void;
   onDeleteClick?: (transaction: TransactionResponse) => void;
+  onAttachmentClick?: (url: string) => void;
+  currentAssetId?: string;
 }
 
 export function TransactionItemDetails({
@@ -22,7 +25,11 @@ export function TransactionItemDetails({
   onTransactionItemClick,
   onRestoreClick,
   onDeleteClick,
+  onAttachmentClick,
+  currentAssetId,
 }: Readonly<TransactionItemDetailsProps>) {
+  const cachedAttachmentUrl = useCachedImageUrl(transaction.attachmentUrl);
+
   return (
     <div className="px-4 pb-3 bg-surface-secondary text-sm space-y-px">
       {isIncomeOrExpense && (
@@ -66,8 +73,16 @@ export function TransactionItemDetails({
       {isTransfer && (
         <>
           <div className="flex items-center justify-between">
-            <p className="text-gray-500 capitalize">Transfer (To):</p>
-            <p className="font-medium">{transaction.toAsset?.name || "-"}</p>
+            <p className="text-gray-500 capitalize">
+              {currentAssetId === transaction.toAssetId
+                ? "Transfer (From):"
+                : "Transfer (To):"}
+            </p>
+            <p className="font-medium">
+              {currentAssetId === transaction.toAssetId
+                ? transaction.asset?.name || "-"
+                : transaction.toAsset?.name || "-"}
+            </p>
           </div>
           <div className="flex items-center justify-between">
             <p className="text-gray-500 capitalize">Description:</p>
@@ -87,16 +102,30 @@ export function TransactionItemDetails({
         </p>
       </div>
 
-      {transaction.attachmentUrl && (
+      {cachedAttachmentUrl && (
         <div className="mt-2 flex items-center justify-between">
           <p className="text-gray-500 capitalize">Attachment:</p>
-          <Image
-            src={transaction.attachmentUrl}
-            alt="attachment"
-            width={64}
-            height={64}
-            className="h-16 w-16 object-cover rounded-md border border-gray-200"
-          />
+          <button
+            type="button"
+            className={cn(
+              "relative h-16 w-16 overflow-hidden rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary",
+              onAttachmentClick &&
+                "cursor-pointer hover:opacity-80 transition-opacity",
+            )}
+            onClick={() => {
+              if (onAttachmentClick) {
+                onAttachmentClick(cachedAttachmentUrl);
+              }
+            }}
+          >
+            <Image
+              src={cachedAttachmentUrl}
+              alt="attachment"
+              fill
+              className="object-cover"
+              sizes="64px"
+            />
+          </button>
         </div>
       )}
 
