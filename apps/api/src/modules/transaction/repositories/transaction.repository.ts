@@ -56,7 +56,9 @@ export class TransactionRepository {
       userId,
       deletedAt: isDeleted ? { not: null } : null,
       ...(type && { type }),
-      ...(assetId && { assetId }),
+      ...(assetId && {
+        OR: [{ assetId }, { toAssetId: assetId }],
+      }),
       ...(categoryId && { categoryId }),
       ...((from || to) && {
         date: {
