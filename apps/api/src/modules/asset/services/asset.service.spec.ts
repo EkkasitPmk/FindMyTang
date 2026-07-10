@@ -15,10 +15,12 @@ describe("AssetService", () => {
 
   const mockAssetRepository = {
     create: jest.fn(),
-    findAllByUserId: jest.fn(),
     findById: jest.fn(),
+    findAllByUserId: jest.fn(),
     update: jest.fn(),
-    delete: jest.fn(),
+    softDelete: jest.fn(),
+    hardDelete: jest.fn(),
+    restore: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -177,8 +179,8 @@ describe("AssetService", () => {
     });
   });
 
-  describe("delete", () => {
-    it("should successfully delete an asset matching id and userId", async () => {
+  describe("softDelete", () => {
+    it("should successfully soft delete an asset matching id and userId", async () => {
       const asset = {
         id: "asset-123",
         name: "Cash",
@@ -186,22 +188,25 @@ describe("AssetService", () => {
       } as any;
 
       mockAssetRepository.findById.mockResolvedValue(asset);
-      mockAssetRepository.delete.mockResolvedValue(asset);
+      mockAssetRepository.softDelete.mockResolvedValue(asset);
 
-      const result = await service.delete("asset-123", "user-123");
+      const result = await service.softDelete("asset-123", "user-123");
 
       expect(result).toEqual(asset);
       expect(repository.findById).toHaveBeenCalledWith("asset-123");
-      expect(repository.delete).toHaveBeenCalledWith("asset-123", "user-123");
+      expect(repository.softDelete).toHaveBeenCalledWith(
+        "asset-123",
+        "user-123",
+      );
     });
 
     it("should throw NotFoundException if asset does not exist", async () => {
       mockAssetRepository.findById.mockResolvedValue(null);
 
-      await expect(service.delete("invalid-id", "user-123")).rejects.toThrow(
-        NotFoundException,
-      );
-      expect(repository.delete).not.toHaveBeenCalled();
+      await expect(
+        service.softDelete("invalid-id", "user-123"),
+      ).rejects.toThrow(NotFoundException);
+      expect(repository.softDelete).not.toHaveBeenCalled();
     });
 
     it("should throw ForbiddenException if asset belongs to another user", async () => {
@@ -213,10 +218,10 @@ describe("AssetService", () => {
 
       mockAssetRepository.findById.mockResolvedValue(asset);
 
-      await expect(service.delete("asset-123", "user-123")).rejects.toThrow(
+      await expect(service.softDelete("asset-123", "user-123")).rejects.toThrow(
         ForbiddenException,
       );
-      expect(repository.delete).not.toHaveBeenCalled();
+      expect(repository.softDelete).not.toHaveBeenCalled();
     });
   });
 });

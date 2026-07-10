@@ -14,7 +14,22 @@ import { CreateAssetDto } from "../dto/create-asset.dto";
 import { UpdateAssetDto } from "../dto/update-asset.dto";
 import { JwtAuthGuard } from "../../auth/guards/jwt-auth.guard";
 import { CurrentUser } from "../../auth/decorators/current-user.decorator";
-import type { User } from "@prisma/client";
+import type { Asset, User } from "@prisma/client";
+
+// ponytail: DRY response mapper. Converts Prisma Decimal to number and includes all fields the frontend needs.
+function toResponse(asset: Asset) {
+  return {
+    id: asset.id,
+    name: asset.name,
+    type: asset.type,
+    balance: Number(asset.balance),
+    color: asset.color,
+    isArchived: asset.isArchived,
+    deletedAt: asset.deletedAt?.toISOString() ?? null,
+    createdAt: asset.createdAt.toISOString(),
+    updatedAt: asset.updatedAt.toISOString(),
+  };
+}
 
 @Controller("assets")
 export class AssetController {
@@ -26,29 +41,27 @@ export class AssetController {
     @CurrentUser() user: User,
     @Body() createAssetDto: CreateAssetDto,
   ) {
-    // ponytail: Create asset endpoint, mapping Prisma Decimal to number in the response.
-    const asset = await this.assetService.create(user.id, createAssetDto);
-    return {
-      id: asset.id,
-      name: asset.name,
-      type: asset.type,
-      balance: Number(asset.balance),
-      color: asset.color,
-    };
+    return toResponse(await this.assetService.create(user.id, createAssetDto));
   }
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  async findAll(@CurrentUser() user: User) {
-    // ponytail: Get assets endpoint, mapping Prisma Decimal balance to number.
-    const assets = await this.assetService.findAll(user.id);
-    return assets.map((asset) => ({
-      id: asset.id,
-      name: asset.name,
-      type: asset.type,
-      balance: Number(asset.balance),
-      color: asset.color,
-    }));
+  async findAll(
+    @CurrentUser() user: User,
+    @Query("includeDeleted") includeDeleted?: string,
+  ) {
+    const assets = await this.assetService.findAll(
+      user.id,
+      includeDeleted === "true",
+    );
+    return assets.map(toResponse);
+  }
+
+  @Patch("reorder")
+  @UseGuards(JwtAuthGuard)
+  async reorder(@CurrentUser() user: User, @Body() body: { ids: string[] }) {
+    await this.assetService.reorder(user.id, body.ids);
+    return { success: true };
   }
 
   @Patch(":id")
@@ -58,15 +71,15 @@ export class AssetController {
     @CurrentUser() user: User,
     @Body() updateAssetDto: UpdateAssetDto,
   ) {
-    // ponytail: Update asset endpoint, mapping Prisma Decimal to number in response.
-    const asset = await this.assetService.update(id, user.id, updateAssetDto);
-    return {
-      id: asset.id,
-      name: asset.name,
-      type: asset.type,
-      balance: Number(asset.balance),
-      color: asset.color,
-    };
+    return toResponse(
+      await this.assetService.update(id, user.id, updateAssetDto),
+    );
+  }
+
+  @Patch(":id/restore")
+  @UseGuards(JwtAuthGuard)
+  async restore(@Param("id") id: string, @CurrentUser() user: User) {
+    return toResponse(await this.assetService.restore(id, user.id));
   }
 
   @Delete(":id")
@@ -76,15 +89,44 @@ export class AssetController {
     @CurrentUser() user: User,
     @Query("hard") hard?: string,
   ) {
-    // ponytail: Delete asset endpoint, mapping Prisma Decimal to number in response. Supports hard delete.
-    const isHard = hard === "true";
-    const asset = await this.assetService.delete(id, user.id, isHard);
-    return {
-      id: asset.id,
-      name: asset.name,
-      type: asset.type,
-      balance: Number(asset.balance),
-      color: asset.color,
-    };
+    if (hard === "true") {
+      return toResponse(await this.assetService.hardDelete(id, user.id));
+    }
+    return toResponse(await this.assetService.softDelete(id, user.id));
+  }
+
+  @Post("bulk-delete")
+  @UseGuards(JwtAuthGuard)
+  async bulkDelete(
+    @CurrentUser() user: User,
+    @Body() body: { ids: string[] },
+    @Query("hard") hard?: string,
+  ) {
+    if (hard === "true") {
+      await this.assetService.bulkHardDelete(user.id, body.ids);
+    } else {
+      await this.assetService.bulkSoftDelete(user.id, body.ids);
+    }
+    return { success: true };
+  }
+
+  @Post("bulk-archive")
+  @UseGuards(JwtAuthGuard)
+  async bulkArchive(
+    @CurrentUser() user: User,
+    @Body() body: { ids: string[] },
+  ) {
+    await this.assetService.bulkArchive(user.id, body.ids);
+    return { success: true };
+  }
+
+  @Post("bulk-restore")
+  @UseGuards(JwtAuthGuard)
+  async bulkRestore(
+    @CurrentUser() user: User,
+    @Body() body: { ids: string[] },
+  ) {
+    await this.assetService.bulkRestore(user.id, body.ids);
+    return { success: true };
   }
 }

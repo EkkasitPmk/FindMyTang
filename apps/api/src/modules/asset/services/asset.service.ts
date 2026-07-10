@@ -57,9 +57,9 @@ export class AssetService {
     });
   }
 
-  async findAll(userId: string): Promise<Asset[]> {
-    // ponytail: Retrieves all assets belonging to the specified user.
-    return this.assetRepository.findAllByUserId(userId);
+  async findAll(userId: string, includeDeleted = false): Promise<Asset[]> {
+    // ponytail: Retrieves assets belonging to the specified user, optionally including soft-deleted.
+    return this.assetRepository.findAllByUserId(userId, includeDeleted);
   }
 
   async update(
@@ -96,31 +96,79 @@ export class AssetService {
     });
   }
 
-  async delete(
-    id: string,
-    userId: string,
-    hard: boolean = false,
-  ): Promise<Asset> {
-    // ponytail: Deletes an asset by checking existence and ownership first. Also cleans up attachments if hard delete.
+  async softDelete(id: string, userId: string): Promise<Asset> {
     const asset = await this.assetRepository.findById(id);
     if (!asset) {
       throw new NotFoundException("Asset not found");
     }
+    if (asset.userId !== userId) {
+      throw new ForbiddenException("You do not own this asset");
+    }
+    return this.assetRepository.softDelete(id, userId);
+  }
 
+  async hardDelete(id: string, userId: string): Promise<Asset> {
+    const asset = await this.assetRepository.findByIdAny(id);
+    if (!asset) {
+      throw new NotFoundException("Asset not found");
+    }
     if (asset.userId !== userId) {
       throw new ForbiddenException("You do not own this asset");
     }
 
-    if (hard) {
-      const attachments = await this.assetRepository.findAttachmentsByAssetId(
-        id,
-        userId,
-      );
-      await Promise.all(
-        attachments.map((url) => this.removeAttachmentFromSupabase(url)),
-      );
-    }
+    const attachments = await this.assetRepository.findAttachmentsByAssetId(
+      id,
+      userId,
+    );
+    await Promise.all(
+      attachments.map((url) => this.removeAttachmentFromSupabase(url)),
+    );
 
-    return this.assetRepository.delete(id, userId, hard);
+    return this.assetRepository.hardDelete(id, userId);
+  }
+
+  async restore(id: string, userId: string): Promise<Asset> {
+    // ponytail: Restores a soft-deleted asset. Validates ownership.
+    const asset = await this.assetRepository.findByIdAny(id);
+    if (!asset) {
+      throw new NotFoundException("Asset not found");
+    }
+    if (asset.userId !== userId) {
+      throw new ForbiddenException("You do not own this asset");
+    }
+    if (!asset.deletedAt) {
+      throw new BadRequestException("Asset is not deleted");
+    }
+    return this.assetRepository.restore(id, userId);
+  }
+
+  async reorder(userId: string, ids: string[]): Promise<void> {
+    // ponytail: Triggers bulk update for asset ordering.
+    await this.assetRepository.reorder(userId, ids);
+  }
+
+  async bulkSoftDelete(userId: string, ids: string[]): Promise<void> {
+    return this.assetRepository.bulkSoftDelete(userId, ids);
+  }
+
+  async bulkHardDelete(userId: string, ids: string[]): Promise<void> {
+    const attachments = await Promise.all(
+      ids.map((id) =>
+        this.assetRepository.findAttachmentsByAssetId(id, userId),
+      ),
+    );
+    const allAttachments = attachments.flat();
+    await Promise.all(
+      allAttachments.map((url) => this.removeAttachmentFromSupabase(url)),
+    );
+    return this.assetRepository.bulkHardDelete(userId, ids);
+  }
+
+  async bulkArchive(userId: string, ids: string[]): Promise<void> {
+    return this.assetRepository.bulkArchive(userId, ids);
+  }
+
+  async bulkRestore(userId: string, ids: string[]): Promise<void> {
+    return this.assetRepository.bulkRestore(userId, ids);
   }
 }
