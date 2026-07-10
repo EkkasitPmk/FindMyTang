@@ -49,6 +49,7 @@ interface AssetDetailProps {
   yearRef: RefObject<HTMLDivElement | null>;
   onRestoreClick?: (transaction: TransactionResponse) => void;
   onDeleteClick?: (transaction: TransactionResponse) => void;
+  onAttachmentClick?: (url: string) => void;
 }
 
 export default function AssetDetail({
@@ -87,6 +88,7 @@ export default function AssetDetail({
   yearRef,
   onRestoreClick,
   onDeleteClick,
+  onAttachmentClick,
 }: Readonly<AssetDetailProps>) {
   const viewOptionsList = ["Recent Transactions", "Show deleted items"];
 
@@ -125,11 +127,11 @@ export default function AssetDetail({
       <section className="relative flex flex-col items-center justify-center mt-6">
         <div
           className="px-3 py-1 rounded-full bg-opacity-10 mb-2"
-          style={{ backgroundColor: `${asset!.color || "#2563EB"}1A` }}
+          style={{ backgroundColor: `${asset?.color || "#2563EB"}1A` }}
         >
           <p
             className="font-semibold text-lg tracking-widest uppercase"
-            style={{ color: asset!.color || undefined }}
+            style={{ color: asset?.color || undefined }}
           >
             balance
           </p>
@@ -137,12 +139,12 @@ export default function AssetDetail({
         <div className="flex items-center gap-1.5">
           <span
             className="text-3xl font-bold opacity-80"
-            style={{ color: asset!.color || undefined }}
+            style={{ color: asset?.color || undefined }}
           >
             ฿
           </span>
           <p className="text-3xl font-extrabold tracking-tight text-gray-900">
-            {asset!.balance.toLocaleString("en-US", {
+            {(asset?.balance ?? 0).toLocaleString("en-US", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}
@@ -157,7 +159,7 @@ export default function AssetDetail({
           selected={viewOption}
           isOpen={isViewOptionOpen}
           onToggle={onViewOptionToggle}
-          themeColor={asset!.color}
+          themeColor={asset?.color}
           onSelect={onViewOptionSelect}
           className="w-full text-base font-medium"
         />
@@ -173,7 +175,7 @@ export default function AssetDetail({
                 selected={selected}
                 isOpen={isMonthOpen}
                 onToggle={() => setIsMonthOpen(!isMonthOpen)}
-                themeColor={asset!.color}
+                themeColor={asset?.color}
                 onSelect={(month) => {
                   handleSelect(month);
                   setIsMonthOpen(false);
@@ -186,7 +188,7 @@ export default function AssetDetail({
                 selected={selectedYear}
                 isOpen={isYearOpen}
                 onToggle={() => setIsYearOpen(!isYearOpen)}
-                themeColor={asset!.color}
+                themeColor={asset?.color}
                 onSelect={(year) => {
                   handleSelectYear(year);
                   setIsYearOpen(false);
@@ -230,11 +232,13 @@ export default function AssetDetail({
                     <TransactionItem
                       key={transaction.id}
                       transaction={transaction}
+                      currentAssetId={asset?.id}
                       expandedTransactionId={expandedTransactionId}
                       setExpandedTransactionId={setExpandedTransactionId}
                       onTransactionItemClick={onTransactionItemClick}
                       onRestoreClick={onRestoreClick}
                       onDeleteClick={onDeleteClick}
+                      onAttachmentClick={onAttachmentClick}
                     />
                   ))}
                 </div>
