@@ -14,12 +14,19 @@ export interface CreateAssetRequest {
   color?: string;
 }
 
+export interface UpdateAssetRequest extends Partial<CreateAssetRequest> {
+  isArchived?: boolean;
+}
+
 export interface CreateAssetResponse {
   id: string;
   name: string;
   type: AssetType;
   balance: number;
   color?: string | null;
+  isArchived: boolean;
+  deletedAt: string | null;
+  displayOrder?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -30,6 +37,9 @@ export interface Asset {
   type: AssetType;
   balance: number;
   color?: string | null;
+  isArchived: boolean;
+  deletedAt: string | null;
+  displayOrder?: number;
   createdAt: string;
   updatedAt: string;
 }

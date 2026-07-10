@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
