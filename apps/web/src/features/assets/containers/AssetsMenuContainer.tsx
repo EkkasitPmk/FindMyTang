@@ -1,7 +1,10 @@
 "use client";
 import { useState, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useDeleteAssetMutation } from "../hooks/assets.hook";
+import {
+  useDeleteAssetMutation,
+  useUpdateAssetMutation,
+} from "../hooks/assets.hook";
 import { toast } from "react-toastify";
 import { useClickOutside } from "@/shared/lib/hooks/useClickOutside.hook";
 import { useConfirmModal } from "@/shared/lib/hooks/useConfirmModal.hook";
@@ -19,6 +22,13 @@ export default function AssetsMenuContainer() {
     inputValue,
     setInputValue,
   } = useConfirmModal();
+
+  const {
+    isOpen: isArchiveModalOpen,
+    open: openArchiveModal,
+    close: closeArchiveModal,
+  } = useConfirmModal();
+
   const menuRef = useRef<HTMLDivElement>(null);
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -36,9 +46,26 @@ export default function AssetsMenuContainer() {
       },
     });
 
+  const { mutate: updateAsset, isPending: isUpdatingAsset } =
+    useUpdateAssetMutation({
+      onSuccess: () => {
+        toast.success("Asset archived successfully!");
+        router.push("/");
+      },
+      onError: () => {
+        toast.error("Failed to archive asset.");
+      },
+    });
+
   const handleDelete = (isHardDelete?: boolean) => {
     if (id) {
       deleteAsset({ id, hardDelete: isHardDelete });
+    }
+  };
+
+  const handleArchive = () => {
+    if (id) {
+      updateAsset({ id, data: { isArchived: true } });
     }
   };
 
@@ -53,6 +80,10 @@ export default function AssetsMenuContainer() {
         setIsDeleteModalOpen={(open) =>
           open ? openDeleteModal() : closeDeleteModal()
         }
+        isArchiveModalOpen={isArchiveModalOpen}
+        setIsArchiveModalOpen={(open) =>
+          open ? openArchiveModal() : closeArchiveModal()
+        }
         isHardDelete={isHardDelete}
         setIsHardDelete={setIsHardDelete}
         inputValue={inputValue}
@@ -60,8 +91,9 @@ export default function AssetsMenuContainer() {
         menuRef={menuRef}
         assetName={name}
         onDelete={handleDelete}
+        onArchive={handleArchive}
       />
-      <LoadingModal isOpen={isDeletingAsset} />
+      <LoadingModal isOpen={isDeletingAsset || isUpdatingAsset} />
     </>
   );
 }

@@ -8,6 +8,7 @@ import { useCategoryUIStore } from "@/features/category/hooks/category.hook";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { cn } from "@/shared/lib/utils/core.util";
 import AssetsMenuContainer from "@/features/assets/containers/AssetsMenuContainer";
+import { useAssetUIStore } from "@/features/assets/hooks/assets.hook";
 import { Button } from "@/shared/components/customs/Button";
 
 export default function MainLayoutContainer({
@@ -21,6 +22,12 @@ export default function MainLayoutContainer({
   const toggleEditingList = useCategoryUIStore(
     (state) => state.toggleEditingList,
   );
+
+  const isEditingAssets = useAssetUIStore((state) => state.isEditingList);
+  const toggleEditingAssets = useAssetUIStore(
+    (state) => state.toggleEditingList,
+  );
+
   const { t } = useTranslation();
 
   const isMainTab = [
@@ -66,8 +73,20 @@ export default function MainLayoutContainer({
         </Button>
       );
     }
-    if (pathname === "/assets" && mobileTitle === assetName) {
-      return <AssetsMenuContainer />;
+    if (pathname === "/assets") {
+      if (mobileTitle === assetName) {
+        return <AssetsMenuContainer />;
+      }
+      return (
+        <Button
+          variant="unstyled"
+          type="button"
+          onClick={toggleEditingAssets}
+          className="text-sm mr-4 text-primary hover:text-primary-dark font-medium transition-colors cursor-pointer"
+        >
+          {isEditingAssets ? t("done") : t("edit")}
+        </Button>
+      );
     }
     return null;
   };

@@ -55,50 +55,53 @@ export default function ListAssetsContainer({
       );
     }
 
-    if (assets && assets.length > 0) {
-      return (
-        <div className="space-y-1">
-          {assets.map((asset) => (
-            <Link
-              href={`/assets?id=${asset.id}&name=${encodeURIComponent(asset.name)}`}
-              key={asset.id}
-              className="flex items-center justify-between bg-white px-3 py-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors border-l-4"
-              style={{
-                borderLeftColor: asset.color || "transparent",
-              }}
-            >
-              <div className="flex items-center gap-3">
-                <span
-                  className={
-                    asset.color
-                      ? "p-2.5 rounded-full"
-                      : "bg-gray-100 p-2.5 rounded-full"
-                  }
-                  style={
-                    asset.color
-                      ? {
-                          backgroundColor: `${asset.color}1a`,
-                          color: asset.color,
-                        }
-                      : undefined
-                  }
-                >
-                  {getAssetIcon(asset.type, asset.color)}
-                </span>
-                <span className="text-base font-semibold text-gray-800">
-                  {asset.name}
-                </span>
-              </div>
-              <div className="flex items-center gap-1">
-                <span className="font-semibold text-base text-gray-900">
-                  ฿ {asset.balance.toLocaleString()}
-                </span>
-                <ChevronRight size={18} className="text-gray-400" />
-              </div>
-            </Link>
-          ))}
-        </div>
-      );
+    if (assets) {
+      const activeAssets = assets.filter((a) => !a.isArchived);
+      if (activeAssets.length > 0) {
+        return (
+          <div className="space-y-1">
+            {activeAssets.map((asset) => (
+              <Link
+                href={`/assets?id=${asset.id}&name=${encodeURIComponent(asset.name)}`}
+                key={asset.id}
+                className="flex items-center justify-between bg-white px-3 py-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors border-l-4"
+                style={{
+                  borderLeftColor: asset.color || "transparent",
+                }}
+              >
+                <div className="flex items-center gap-3">
+                  <span
+                    className={
+                      asset.color
+                        ? "p-2.5 rounded-full"
+                        : "bg-gray-100 p-2.5 rounded-full"
+                    }
+                    style={
+                      asset.color
+                        ? {
+                            backgroundColor: `${asset.color}1a`,
+                            color: asset.color,
+                          }
+                        : undefined
+                    }
+                  >
+                    {getAssetIcon(asset.type, asset.color)}
+                  </span>
+                  <span className="text-base font-semibold text-gray-800">
+                    {asset.name}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="font-semibold text-base text-gray-900">
+                    ฿ {asset.balance.toLocaleString()}
+                  </span>
+                  <ChevronRight size={18} className="text-gray-400" />
+                </div>
+              </Link>
+            ))}
+          </div>
+        );
+      }
     }
 
     return (
@@ -131,7 +134,16 @@ export default function ListAssetsContainer({
       ) : (
         <section className="space-y-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-lg font-medium">Assets</span>
+            <Link
+              href="/assets"
+              className="text-lg font-medium hover:text-primary transition-colors cursor-pointer flex items-center gap-1 group"
+            >
+              Assets
+              <ChevronRight
+                size={18}
+                className="text-gray-400 group-hover:text-primary transition-colors"
+              />
+            </Link>
             <Button
               variant="unstyled"
               type="button"

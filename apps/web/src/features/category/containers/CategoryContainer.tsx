@@ -111,8 +111,8 @@ export default function CategoryContainer() {
 
   const mounted = useMounted();
 
-  const { data: categories, isPending, isFetching } = useCategories();
-  const isCategoriesLoading = !mounted || isPending || isFetching;
+  const { data: categories, isPending } = useCategories();
+  const isCategoriesLoading = !mounted || isPending;
 
   const [localCategories, setLocalCategories] = useState<Category[]>([]);
   const [prevCategories, setPrevCategories] = useState<Category[] | undefined>(

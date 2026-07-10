@@ -1,4 +1,4 @@
-import { EllipsisVertical, Trash2 } from "lucide-react";
+import { EllipsisVertical, Trash2, Archive } from "lucide-react";
 import ConfirmModal from "@/shared/components/customs/ConfirmModal";
 import MenuItem from "@/shared/components/customs/MenuItem";
 import { RefObject } from "react";
@@ -9,9 +9,12 @@ interface AssetsMenuProps {
   setIsOpen: (isOpen: boolean) => void;
   isDeleteModalOpen: boolean;
   setIsDeleteModalOpen: (isOpen: boolean) => void;
+  isArchiveModalOpen: boolean;
+  setIsArchiveModalOpen: (isOpen: boolean) => void;
   menuRef: RefObject<HTMLDivElement | null>;
   assetName: string | null;
   onDelete: (isHardDelete?: boolean) => void;
+  onArchive: () => void;
   isHardDelete?: boolean;
   setIsHardDelete?: (value: boolean) => void;
   inputValue?: string;
@@ -23,9 +26,12 @@ export default function AssetsMenu({
   setIsOpen,
   isDeleteModalOpen,
   setIsDeleteModalOpen,
+  isArchiveModalOpen,
+  setIsArchiveModalOpen,
   menuRef,
   assetName,
   onDelete,
+  onArchive,
   isHardDelete,
   setIsHardDelete,
   inputValue,
@@ -47,7 +53,14 @@ export default function AssetsMenu({
             <MenuItem onClick={() => setIsOpen(false)}>Filter</MenuItem>
             <MenuItem onClick={() => setIsOpen(false)}>Search</MenuItem>
             <MenuItem onClick={() => setIsOpen(false)}>Sort</MenuItem>
-            <MenuItem onClick={() => setIsOpen(false)}>Archive Asset</MenuItem>
+            <MenuItem
+              onClick={() => {
+                setIsOpen(false);
+                setIsArchiveModalOpen(true);
+              }}
+            >
+              Archive Asset
+            </MenuItem>
             <MenuItem
               onClick={() => {
                 setIsOpen(false);
@@ -60,6 +73,17 @@ export default function AssetsMenu({
           </div>
         )}
       </div>
+
+      <ConfirmModal
+        isOpen={isArchiveModalOpen}
+        onClose={() => setIsArchiveModalOpen(false)}
+        onConfirm={onArchive}
+        icon={Archive}
+        title="Archive Asset"
+        des={`Are you sure you want to archive "${assetName || "this asset"}"? You can restore it later.`}
+        confirmLabel="Archive"
+        variant="warning"
+      />
 
       <ConfirmModal
         isOpen={isDeleteModalOpen}

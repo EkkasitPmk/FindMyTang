@@ -18,7 +18,7 @@ import { RotateCcw, Trash } from "lucide-react";
 import { TransactionResponse } from "../../transactions/types/transaction.type";
 import EditAssetsContainer from "./EditAssetsContainer";
 import AssetDetail from "../components/AssetDetail";
-import ListAssetsContainer from "./ListAssetsContainer";
+import ManageAssetsContainer from "./ManageAssetsContainer";
 
 export default function AssetDetailContainer() {
   const searchParams = useSearchParams();
@@ -143,7 +143,7 @@ export default function AssetDetailContainer() {
   return (
     <>
       {id === null ? (
-        <ListAssetsContainer />
+        <ManageAssetsContainer />
       ) : (
         <>
           <AssetDetail

@@ -11,7 +11,7 @@ interface ConfirmModalProps {
   withHardDeleteOption?: boolean;
   hardDeleteCheckboxLabel?: string;
   expectedInputToConfirm?: string;
-  variant?: "danger" | "success" | "primary";
+  variant?: "danger" | "success" | "primary" | "warning";
   isHardDelete?: boolean;
   onHardDeleteChange?: (value: boolean) => void;
   inputValue?: string;
@@ -75,6 +75,16 @@ export default function ConfirmModal({
       disabledBg: "bg-primary/50",
       focusRing: "focus:ring-primary",
       focusBorder: "focus:border-primary",
+    },
+    warning: {
+      bg: "bg-amber-500",
+      text: "text-amber-500",
+      bgLight: "bg-amber-100",
+      border: "border-amber-500",
+      hoverBg: "hover:bg-amber-600",
+      disabledBg: "bg-amber-500/50",
+      focusRing: "focus:ring-amber-500",
+      focusBorder: "focus:border-amber-500",
     },
   };
 
