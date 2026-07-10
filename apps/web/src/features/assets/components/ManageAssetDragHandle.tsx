@@ -30,7 +30,10 @@ export default function ManageAssetDragHandle({
         onTouchEnd?.();
       }}
     >
-      <GripVertical size={16} className="text-gray-400 cursor-grab active:cursor-grabbing" />
+      <GripVertical
+        size={16}
+        className="text-gray-400 cursor-grab active:cursor-grabbing"
+      />
     </div>
   );
 }

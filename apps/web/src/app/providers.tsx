@@ -14,7 +14,7 @@ export default function Providers({ children }: Readonly<ProvidersProps>) {
     <QueryClientProvider client={queryClient}>
       {children}
       <ToastContainer position="top-center" autoClose={2000} />
-      <ReactQueryDevtools buttonPosition="bottom-right" />
+      <ReactQueryDevtools buttonPosition="bottom-left" />
     </QueryClientProvider>
   );
 }

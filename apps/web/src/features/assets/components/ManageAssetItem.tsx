@@ -122,8 +122,8 @@ export default function ManageAssetItem({
         <ChevronDown
           size={16}
           className={cn(
-            "text-gray-400 transition-transform duration-200",
-            isExpanded && "-rotate-180",
+            "text-gray-400 transition-transform",
+            isExpanded && "-rotate-x-180",
           )}
         />
       )}
