@@ -1,13 +1,15 @@
 "use client";
+import { useState } from "react";
 import ShowProfileContainer from "@/features/account/containers/ShowProfileContainer";
 import NavContainer from "@/features/nav/containers/NavContainer";
 import TopAppBarMobile from "@/shared/components/customs/TopAppBarMobile";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { X } from "lucide-react";
+import { X, Plus } from "lucide-react";
 import { useCategoryUIStore } from "@/features/category/hooks/category.hook";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { cn } from "@/shared/lib/utils/core.util";
 import AssetsMenuContainer from "@/features/assets/containers/AssetsMenuContainer";
+import CreateAssetsContainer from "@/features/assets/containers/CreateAssetsContainer";
 import { useAssetUIStore } from "@/features/assets/hooks/assets.hook";
 import { Button } from "@/shared/components/customs/Button";
 
@@ -27,6 +29,8 @@ export default function MainLayoutContainer({
   const toggleEditingAssets = useAssetUIStore(
     (state) => state.toggleEditingList,
   );
+  const hasAssets = useAssetUIStore((state) => state.hasAssets);
+  const [isCreateAssetModalOpen, setIsCreateAssetModalOpen] = useState(false);
 
   const { t } = useTranslation();
 
@@ -77,12 +81,26 @@ export default function MainLayoutContainer({
       if (mobileTitle === assetName) {
         return <AssetsMenuContainer />;
       }
+
+      if (!hasAssets) {
+        return (
+          <Button
+            variant="unstyled"
+            type="button"
+            onClick={() => setIsCreateAssetModalOpen(true)}
+            className="p-1 mr-2 text-primary hover:text-primary-dark cursor-pointer"
+          >
+            <Plus size={20} />
+          </Button>
+        );
+      }
+
       return (
         <Button
           variant="unstyled"
           type="button"
           onClick={toggleEditingAssets}
-          className="text-sm mr-4 text-primary hover:text-primary-dark font-medium transition-colors cursor-pointer"
+          className="text-sm mr-3 text-primary hover:text-primary-dark font-medium transition-colors cursor-pointer"
         >
           {isEditingAssets ? t("done") : t("edit")}
         </Button>
@@ -132,6 +150,12 @@ export default function MainLayoutContainer({
             )}
 
             {children}
+
+            {isCreateAssetModalOpen && (
+              <CreateAssetsContainer
+                onClose={() => setIsCreateAssetModalOpen(false)}
+              />
+            )}
           </main>
         </div>
       </div>
