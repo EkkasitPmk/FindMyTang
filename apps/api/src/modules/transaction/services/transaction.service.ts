@@ -205,6 +205,43 @@ export class TransactionService {
     return transaction;
   }
 
+  private async updateBalances(
+    tx: Prisma.TransactionClient,
+    type: TransactionType,
+    amount: number | Prisma.Decimal,
+    assetId: string,
+    toAssetId?: string | null,
+    isRevert: boolean = false,
+  ) {
+    const numericAmount = typeof amount === "number" ? amount : Number(amount);
+    const multiplier = isRevert ? -1 : 1;
+    if (
+      type === TransactionType.INCOME ||
+      type === TransactionType.ADJUSTMENT
+    ) {
+      await tx.asset.update({
+        where: { id: assetId },
+        data: { balance: { increment: numericAmount * multiplier } },
+      });
+    } else if (type === TransactionType.EXPENSE) {
+      await tx.asset.update({
+        where: { id: assetId },
+        data: { balance: { decrement: numericAmount * multiplier } },
+      });
+    } else if (type === TransactionType.TRANSFER) {
+      await tx.asset.update({
+        where: { id: assetId },
+        data: { balance: { decrement: numericAmount * multiplier } },
+      });
+      if (toAssetId) {
+        await tx.asset.update({
+          where: { id: toAssetId },
+          data: { balance: { increment: numericAmount * multiplier } },
+        });
+      }
+    }
+  }
+
   async create(
     userId: string,
     dto: CreateTransactionDto,
@@ -302,10 +339,40 @@ export class TransactionService {
       }
     }
 
-    const updatedTx = await this.transactionRepository.update(id, userId, {
-      ...dto,
-      attachmentUrl: newAttachmentUrl,
-      date: dto.date ? new Date(dto.date) : undefined,
+    const updatedTx = await this.prisma.$transaction(async (prismaTx) => {
+      // Revert old transaction balances
+      await this.updateBalances(
+        prismaTx,
+        tx.type,
+        tx.amount,
+        tx.assetId,
+        tx.toAssetId,
+        true,
+      );
+
+      const newType = dto.type ?? tx.type;
+      const newAmount = dto.amount ?? tx.amount;
+      const newAssetId = dto.assetId ?? tx.assetId;
+      const newToAssetId = dto.toAssetId ?? tx.toAssetId;
+
+      // Apply new transaction balances
+      await this.updateBalances(
+        prismaTx,
+        newType,
+        newAmount,
+        newAssetId,
+        newToAssetId,
+        false,
+      );
+
+      return prismaTx.transaction.update({
+        where: { id },
+        data: {
+          ...dto,
+          attachmentUrl: newAttachmentUrl,
+          date: dto.date ? new Date(dto.date) : undefined,
+        },
+      });
     });
 
     if (updatedTx.attachmentUrl) {
@@ -333,7 +400,28 @@ export class TransactionService {
       await this.removeAttachmentFromSupabase(tx.attachmentUrl);
     }
 
-    return this.transactionRepository.delete(id, userId, isHardDelete);
+    return this.prisma.$transaction(async (prismaTx) => {
+      // If it's not already soft deleted, revert its balances
+      if (!tx.deletedAt) {
+        await this.updateBalances(
+          prismaTx,
+          tx.type,
+          tx.amount,
+          tx.assetId,
+          tx.toAssetId,
+          true,
+        );
+      }
+
+      if (isHardDelete) {
+        return prismaTx.transaction.delete({ where: { id } });
+      }
+
+      return prismaTx.transaction.update({
+        where: { id },
+        data: { deletedAt: new Date() },
+      });
+    });
   }
 
   // ponytail: skeletons — will wire into create/update/delete when POST /transactions is implemented.

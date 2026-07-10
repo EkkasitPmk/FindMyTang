@@ -43,7 +43,10 @@ export default function ListAssetsContainer({
             >
               <div className="flex items-center gap-3">
                 <Skeleton className="h-9.5 w-9.5 rounded-full" />
-                <Skeleton className="h-5 w-24" />
+                <div className="space-y-1">
+                  <Skeleton className="h-5 w-24" />
+                  <Skeleton className="h-3 w-16" />
+                </div>
               </div>
               <div className="flex items-center gap-1">
                 <Skeleton className="h-5 w-20" />
@@ -87,9 +90,12 @@ export default function ListAssetsContainer({
                   >
                     {getAssetIcon(asset.type, asset.color)}
                   </span>
-                  <span className="text-base font-semibold text-gray-800">
-                    {asset.name}
-                  </span>
+                  <div className="flex flex-col text-gray-800">
+                    <span className="text-base font-semibold">
+                      {asset.name}
+                    </span>
+                    <span className="text-xs">{asset.type}</span>
+                  </div>
                 </div>
                 <div className="flex items-center gap-1">
                   <span className="font-semibold text-base text-gray-900">
