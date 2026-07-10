@@ -23,6 +23,7 @@ import { RotateCcw, Trash2, Archive } from "lucide-react";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { Button } from "@/shared/components/customs/Button";
 import { reorderList } from "../helpers/asset.helper";
+import { cn } from "@/shared/lib/utils/core.util";
 
 const SKELETON_ITEMS = Array.from({ length: 4 }, (_, i) => i);
 
@@ -37,6 +38,7 @@ export default function ManageAssetsContainer() {
 
   const isEditingList = useAssetUIStore((state) => state.isEditingList);
   const setEditingList = useAssetUIStore((state) => state.setEditingList);
+  const setHasAssets = useAssetUIStore((state) => state.setHasAssets);
 
   // Local state for drag and drop
   const [localActiveAssets, setLocalActiveAssets] = useState<Asset[]>([]);
@@ -52,6 +54,12 @@ export default function ManageAssetsContainer() {
       setSelectedIds(new Set());
     };
   }, [setEditingList]);
+
+  useEffect(() => {
+    if (assets) {
+      setHasAssets(assets.length > 0);
+    }
+  }, [assets, setHasAssets]);
 
   const [prevIsEditingList, setPrevIsEditingList] = useState(isEditingList);
   if (isEditingList !== prevIsEditingList) {
@@ -251,7 +259,14 @@ export default function ManageAssetsContainer() {
 
   return (
     <>
-      <section className="px-4 my-2 space-y-4 pb-24">
+      <section
+        className={cn(
+          "px-4 space-y-4",
+          localActiveAssets.length === 0 && deletedAssets.length === 0
+            ? ""
+            : "my-2 pb-24",
+        )}
+      >
         {/* Active Assets */}
         {localActiveAssets.length > 0 && (
           <div className="space-y-1">
@@ -325,8 +340,8 @@ export default function ManageAssetsContainer() {
 
         {/* Empty state */}
         {localActiveAssets.length === 0 && deletedAssets.length === 0 && (
-          <div className="text-center py-8 text-gray-500 text-sm">
-            No assets found
+          <div className="flex flex-col items-center justify-center h-[70vh] text-gray-500 text-base">
+            No assets found.
           </div>
         )}
       </section>

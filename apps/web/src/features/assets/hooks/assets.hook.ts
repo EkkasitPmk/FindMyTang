@@ -354,6 +354,8 @@ interface AssetUIStore {
   isEditingList: boolean;
   toggleEditingList: () => void;
   setEditingList: (value: boolean) => void;
+  hasAssets: boolean;
+  setHasAssets: (value: boolean) => void;
 }
 
 export const useAssetUIStore = create<AssetUIStore>((set) => ({
@@ -361,4 +363,6 @@ export const useAssetUIStore = create<AssetUIStore>((set) => ({
   toggleEditingList: () =>
     set((state) => ({ isEditingList: !state.isEditingList })),
   setEditingList: (value) => set({ isEditingList: value }),
+  hasAssets: true,
+  setHasAssets: (value) => set({ hasAssets: value }),
 }));
