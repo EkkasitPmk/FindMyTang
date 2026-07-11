@@ -12,7 +12,7 @@ export default function MenuItem({
   return (
     <button
       type="button"
-      className={`text-base py-1 px-3 w-full text-left ${className}`}
+      className={`py-2 px-3 w-full text-left ${className}`}
       {...props}
     >
       {children}
