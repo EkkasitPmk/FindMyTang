@@ -1,17 +1,32 @@
 import { TransactionResponse } from "../../transactions/types/transaction.type";
-import { formatDisplayDate } from "@/shared/lib/helpers/date.helper";
 import { Asset } from "../types/assets.type";
+import {
+  getAvailableYears,
+  applyTypeFilter,
+  applySorting,
+  handleSearchMode,
+  handleDateMode,
+  groupTransactionsByDate,
+} from "./asset-transactions.helper";
 
 interface ProcessTransactionsParams {
   transactions: TransactionResponse[] | undefined;
   selectedYear: string;
   selectedMonth: string;
+  searchKeyword?: string;
+  isSearchMode?: boolean;
+  filterType?: "ALL" | "INCOME" | "EXPENSE" | "TRANSFER" | "ADJUSTMENT";
+  sortType?: "DATE_NEWEST" | "DATE_OLDEST" | "AMOUNT_HIGHEST" | "AMOUNT_LOWEST";
 }
 
 export const processAssetTransactions = ({
   transactions,
   selectedYear,
   selectedMonth,
+  searchKeyword,
+  isSearchMode,
+  filterType = "ALL",
+  sortType = "DATE_NEWEST",
 }: ProcessTransactionsParams) => {
   if (!transactions?.length) {
     return {
@@ -24,96 +39,32 @@ export const processAssetTransactions = ({
     };
   }
 
-  // 1. Get all available years
-  const yearsSet = new Set<string>();
-  transactions.forEach((tx) => {
-    yearsSet.add(new Date(tx.transactionDate).getFullYear().toString());
-  });
-  const availableYears = Array.from(yearsSet).sort((a, b) =>
-    b.localeCompare(a),
-  );
+  const availableYears = getAvailableYears(transactions);
+  let filteredItems = applyTypeFilter(transactions, filterType);
+  filteredItems = applySorting(filteredItems, sortType);
 
-  // Determine effective year to filter by
-  const effectiveYear = availableYears.includes(selectedYear)
-    ? selectedYear
-    : availableYears[0];
+  const modeResult = isSearchMode
+    ? handleSearchMode(
+        filteredItems,
+        availableYears,
+        selectedYear,
+        searchKeyword,
+      )
+    : handleDateMode(
+        filteredItems,
+        availableYears,
+        selectedYear,
+        selectedMonth,
+      );
 
-  // 2. Filter transactions by effective year
-  let filteredItems = transactions.filter(
-    (tx) =>
-      new Date(tx.transactionDate).getFullYear().toString() === effectiveYear,
-  );
-
-  // 3. Get all available months for the effective year
-  const monthsSet = new Set<string>();
-  filteredItems.forEach((tx) => {
-    monthsSet.add(
-      new Date(tx.transactionDate).toLocaleString("en-US", {
-        month: "long",
-      }),
-    );
-  });
-
-  // Sort months descending (latest month to earliest month)
-  const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-  const availableMonths = Array.from(monthsSet).sort(
-    (a, b) => monthNames.indexOf(b) - monthNames.indexOf(a),
-  );
-
-  // Determine effective month
-  const effectiveMonth = availableMonths.includes(selectedMonth)
-    ? selectedMonth
-    : availableMonths[0] || "Select";
-
-  // 4. Filter transactions by effective month
-  if (effectiveMonth !== "Select") {
-    filteredItems = filteredItems.filter(
-      (tx) =>
-        new Date(tx.transactionDate).toLocaleString("en-US", {
-          month: "long",
-        }) === effectiveMonth,
-    );
-  }
-
-  const groupedTransactions = (() => {
-    const groups: { dateStr: string; items: typeof filteredItems }[] = [];
-    let currentGroup: {
-      dateStr: string;
-      items: typeof filteredItems;
-    } | null = null;
-
-    filteredItems.forEach((tx) => {
-      const txDate = new Date(tx.transactionDate);
-      const dateStr = formatDisplayDate(txDate);
-
-      if (currentGroup?.dateStr !== dateStr) {
-        currentGroup = { dateStr, items: [] };
-        groups.push(currentGroup);
-      }
-      currentGroup.items.push(tx);
-    });
-    return groups;
-  })();
+  filteredItems = modeResult.items;
 
   return {
-    months: availableMonths,
-    years: availableYears,
-    effectiveYear,
-    effectiveMonth,
-    groupedTransactions,
+    months: modeResult.availableMonths,
+    years: modeResult.years,
+    effectiveYear: modeResult.effectiveYear,
+    effectiveMonth: modeResult.effectiveMonth,
+    groupedTransactions: groupTransactionsByDate(filteredItems),
     filteredItems,
   };
 };

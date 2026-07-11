@@ -356,6 +356,18 @@ interface AssetUIStore {
   setEditingList: (value: boolean) => void;
   hasAssets: boolean;
   setHasAssets: (value: boolean) => void;
+  isSearchMode: boolean;
+  setSearchMode: (value: boolean) => void;
+  searchKeyword: string;
+  setSearchKeyword: (value: string) => void;
+  filterType: "ALL" | "INCOME" | "EXPENSE" | "TRANSFER" | "ADJUSTMENT";
+  setFilterType: (
+    value: "ALL" | "INCOME" | "EXPENSE" | "TRANSFER" | "ADJUSTMENT",
+  ) => void;
+  sortType: "DATE_NEWEST" | "DATE_OLDEST" | "AMOUNT_HIGHEST" | "AMOUNT_LOWEST";
+  setSortType: (
+    value: "DATE_NEWEST" | "DATE_OLDEST" | "AMOUNT_HIGHEST" | "AMOUNT_LOWEST",
+  ) => void;
 }
 
 export const useAssetUIStore = create<AssetUIStore>((set) => ({
@@ -365,4 +377,12 @@ export const useAssetUIStore = create<AssetUIStore>((set) => ({
   setEditingList: (value) => set({ isEditingList: value }),
   hasAssets: true,
   setHasAssets: (value) => set({ hasAssets: value }),
+  isSearchMode: false,
+  setSearchMode: (value) => set({ isSearchMode: value }),
+  searchKeyword: "",
+  setSearchKeyword: (value) => set({ searchKeyword: value }),
+  filterType: "ALL",
+  setFilterType: (value) => set({ filterType: value }),
+  sortType: "DATE_NEWEST",
+  setSortType: (value) => set({ sortType: value }),
 }));
