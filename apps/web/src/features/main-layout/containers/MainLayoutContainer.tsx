@@ -12,6 +12,7 @@ import AssetsMenuContainer from "@/features/assets/containers/AssetsMenuContaine
 import CreateAssetsContainer from "@/features/assets/containers/CreateAssetsContainer";
 import { useAssetUIStore } from "@/features/assets/hooks/assets.hook";
 import { Button } from "@/shared/components/customs/Button";
+import { Input } from "@/shared/components/customs/Input";
 
 export default function MainLayoutContainer({
   children,
@@ -30,6 +31,10 @@ export default function MainLayoutContainer({
     (state) => state.toggleEditingList,
   );
   const hasAssets = useAssetUIStore((state) => state.hasAssets);
+  const isSearchMode = useAssetUIStore((state) => state.isSearchMode);
+  const setSearchMode = useAssetUIStore((state) => state.setSearchMode);
+  const searchKeyword = useAssetUIStore((state) => state.searchKeyword);
+  const setSearchKeyword = useAssetUIStore((state) => state.setSearchKeyword);
   const [isCreateAssetModalOpen, setIsCreateAssetModalOpen] = useState(false);
 
   const { t } = useTranslation();
@@ -140,13 +145,41 @@ export default function MainLayoutContainer({
               mainContentClassName,
             )}
           >
-            {shouldShowTopAppBar && (
+            {shouldShowTopAppBar && !isSearchMode && (
               <TopAppBarMobile
                 title={mobileTitle}
                 showBackButton={pathname !== "/settings"}
-                onBack={() => router.back()}
+                onBack={() => {
+                  if (pathname === "/assets" && assetName) {
+                    setSearchMode(false);
+                    setSearchKeyword("");
+                  }
+                  router.back();
+                }}
                 rightAction={renderRightAction()}
               />
+            )}
+
+            {shouldShowTopAppBar && isSearchMode && (
+              <div className="flex items-center px-4 pb-2 z-40 bg-background/90 backdrop-blur-sm border-b border-border/50 h-10">
+                <Input
+                  autoFocus
+                  placeholder="Search by note or category..."
+                  value={searchKeyword}
+                  onChange={(e) => setSearchKeyword(e.target.value)}
+                  className="h-8 text-sm flex-1 bg-white"
+                />
+                <Button
+                  variant="unstyled"
+                  onClick={() => {
+                    setSearchMode(false);
+                    setSearchKeyword("");
+                  }}
+                  className="ml-2 text-secondary-text cursor-pointer p-1 shrink-0"
+                >
+                  <X size={20} />
+                </Button>
+              </div>
             )}
 
             {children}
