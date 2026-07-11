@@ -2,7 +2,7 @@
 import { useState, useMemo, useRef } from "react";
 import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useAssets } from "../hooks/assets.hook";
+import { useAssets, useAssetUIStore } from "../hooks/assets.hook";
 import {
   useTransactionsQuery,
   useUpdateTransactionMutation,
@@ -30,6 +30,10 @@ export default function AssetDetailContainer() {
 
   const { data: assets, isPending: isAssetsPending } = useAssets();
   const isLoading = !mounted || isAssetsPending;
+  const searchKeyword = useAssetUIStore((state) => state.searchKeyword);
+  const isSearchMode = useAssetUIStore((state) => state.isSearchMode);
+  const filterType = useAssetUIStore((state) => state.filterType);
+  const sortType = useAssetUIStore((state) => state.sortType);
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
@@ -113,6 +117,10 @@ export default function AssetDetailContainer() {
         transactions: transactionsData?.items,
         selectedYear,
         selectedMonth,
+        searchKeyword,
+        isSearchMode,
+        filterType,
+        sortType,
       });
 
       return {
@@ -128,7 +136,15 @@ export default function AssetDetailContainer() {
             }
           : undefined,
       };
-    }, [transactionsData, selectedYear, selectedMonth]);
+    }, [
+      transactionsData,
+      selectedYear,
+      selectedMonth,
+      searchKeyword,
+      isSearchMode,
+      filterType,
+      sortType,
+    ]);
 
   const handleSelectMonth = (month: string) => {
     setSelectedMonth(month);
@@ -207,6 +223,8 @@ export default function AssetDetailContainer() {
               openDeleteModal();
             }}
             onAttachmentClick={(url) => setPreviewImageUrl(url)}
+            isSearchMode={isSearchMode}
+            searchKeyword={searchKeyword}
           />
           {isEditModalOpen && asset && (
             <EditAssetsContainer

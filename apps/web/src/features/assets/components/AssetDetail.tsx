@@ -50,6 +50,8 @@ interface AssetDetailProps {
   onRestoreClick?: (transaction: TransactionResponse) => void;
   onDeleteClick?: (transaction: TransactionResponse) => void;
   onAttachmentClick?: (url: string) => void;
+  isSearchMode?: boolean;
+  searchKeyword?: string;
 }
 
 export default function AssetDetail({
@@ -89,6 +91,8 @@ export default function AssetDetail({
   onRestoreClick,
   onDeleteClick,
   onAttachmentClick,
+  isSearchMode,
+  searchKeyword,
 }: Readonly<AssetDetailProps>) {
   const viewOptionsList = ["Recent Transactions", "Show deleted items"];
 
@@ -122,240 +126,280 @@ export default function AssetDetail({
     );
   }
 
-  return (
-    <div className="flex flex-col h-[calc(100vh-110px)] space-y-4">
-      <section className="relative flex flex-col items-center justify-center mt-6">
-        <div
-          className="px-3 py-1 rounded-full bg-opacity-10 mb-2"
-          style={{ backgroundColor: `${asset?.color || "#2563EB"}1A` }}
-        >
-          <p
-            className="font-semibold text-lg tracking-widest uppercase"
-            style={{ color: asset?.color || undefined }}
-          >
-            balance
-          </p>
+  const renderTransactionsContent = () => {
+    if (isSearchMode && !searchKeyword) {
+      return (
+        <div className="flex flex-col items-center justify-center h-full text-gray-400">
+          <p>Type to search transactions</p>
         </div>
-        <div className="flex items-center gap-1.5">
-          <span
-            className="text-3xl font-bold opacity-80"
-            style={{ color: asset?.color || undefined }}
-          >
-            ฿
-          </span>
-          <p className="text-3xl font-extrabold tracking-tight text-gray-900">
-            {(asset?.balance ?? 0).toLocaleString("en-US", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
-          </p>
-        </div>
-      </section>
+      );
+    }
 
-      <section className="mb-2 px-4">
-        <DropdownSelect
-          ref={viewOptionRef}
-          options={viewOptionsList}
-          selected={viewOption}
-          isOpen={isViewOptionOpen}
-          onToggle={onViewOptionToggle}
-          themeColor={asset?.color}
-          onSelect={onViewOptionSelect}
-          className="w-full text-base font-medium"
-        />
-
-        {groupedTransactions?.length > 0 && (
-          <>
-            <span className="text-secondary-text text-sm">Period</span>
-
+    if (isLoadingTransactions) {
+      return (
+        <>
+          <section className="mb-4 px-4">
+            <Skeleton className="h-4 w-14 mb-1" />
             <div className="flex items-center justify-between gap-4">
-              <DropdownSelect
-                ref={monthRef}
-                options={months}
-                selected={selected}
-                isOpen={isMonthOpen}
-                onToggle={() => setIsMonthOpen(!isMonthOpen)}
-                themeColor={asset?.color}
-                onSelect={(month) => {
-                  handleSelect(month);
-                  setIsMonthOpen(false);
-                }}
-                className="grow"
-              />
-              <DropdownSelect
-                ref={yearRef}
-                options={years}
-                selected={selectedYear}
-                isOpen={isYearOpen}
-                onToggle={() => setIsYearOpen(!isYearOpen)}
-                themeColor={asset?.color}
-                onSelect={(year) => {
-                  handleSelectYear(year);
-                  setIsYearOpen(false);
-                }}
-                className="grow"
-              />
+              <Skeleton className="h-8 w-1/2 rounded-md" />
+              <Skeleton className="h-8 w-1/2 rounded-md" />
             </div>
-          </>
-        )}
-      </section>
-
-      <section className="flex-1 overflow-y-auto relative">
-        {isLoadingTransactions ? (
-          <>
-            <section className="mb-4 px-4">
-              <Skeleton className="h-4 w-14 mb-1" />
-              <div className="flex items-center justify-between gap-4">
-                <Skeleton className="h-8 w-1/2 rounded-md" />
-                <Skeleton className="h-8 w-1/2 rounded-md" />
-              </div>
-            </section>
-            <div className="space-y-4">
-              {SKELETON_GROUPS.map((i) => (
-                <div key={`skeleton-group-tx-${i}`} className="space-y-1 my-2">
-                  <Skeleton className="h-5 w-32 mx-4 mb-3" />
-                  <Skeleton className="h-13 w-full rounded-none" />
-                  <Skeleton className="h-13 w-full rounded-none" />
-                </div>
-              ))}
-            </div>
-          </>
-        ) : (
-          <div className="bg-white">
-            {groupedTransactions.map((group) => (
-              <div key={group.dateStr} className="relative">
-                <div className="sticky top-0 bg-white z-10 py-2 text-base font-medium px-4">
-                  <span>{group.dateStr}</span>
-                </div>
-                <div className="space-y-1">
-                  {group.items.map((transaction) => (
-                    <TransactionItem
-                      key={transaction.id}
-                      transaction={transaction}
-                      currentAssetId={asset?.id}
-                      expandedTransactionId={expandedTransactionId}
-                      setExpandedTransactionId={setExpandedTransactionId}
-                      onTransactionItemClick={onTransactionItemClick}
-                      onRestoreClick={onRestoreClick}
-                      onDeleteClick={onDeleteClick}
-                      onAttachmentClick={onAttachmentClick}
-                    />
-                  ))}
-                </div>
+          </section>
+          <div className="space-y-4">
+            {SKELETON_GROUPS.map((i) => (
+              <div key={`skeleton-group-tx-${i}`} className="space-y-1 my-2">
+                <Skeleton className="h-5 w-32 mx-4 mb-3" />
+                <Skeleton className="h-13 w-full rounded-none" />
+                <Skeleton className="h-13 w-full rounded-none" />
               </div>
             ))}
-            {!groupedTransactions?.length && (
-              <div className="p-4 text-center text-gray-500">
-                No transactions found
-              </div>
-            )}
+          </div>
+        </>
+      );
+    }
+
+    return (
+      <div className="bg-white">
+        {groupedTransactions.map((group, index) => (
+          <div key={`${group.dateStr}-${index}`} className="relative">
+            <div className="sticky top-0 bg-white z-10 py-2 text-base font-medium px-4">
+              <span>{group.dateStr}</span>
+            </div>
+            <div className="space-y-1">
+              {group.items.map((transaction) => (
+                <TransactionItem
+                  key={transaction.id}
+                  transaction={transaction}
+                  currentAssetId={asset?.id}
+                  expandedTransactionId={expandedTransactionId}
+                  setExpandedTransactionId={setExpandedTransactionId}
+                  onTransactionItemClick={onTransactionItemClick}
+                  onRestoreClick={onRestoreClick}
+                  onDeleteClick={onDeleteClick}
+                  onAttachmentClick={onAttachmentClick}
+                />
+              ))}
+            </div>
+          </div>
+        ))}
+        {!groupedTransactions?.length && (
+          <div className="p-4 text-center text-gray-500">
+            {isSearchMode
+              ? "No matching transactions found"
+              : "No transactions found"}
           </div>
         )}
+      </div>
+    );
+  };
+
+  return (
+    <div className="flex flex-col h-[calc(100vh-110px)] space-y-4">
+      {!isSearchMode && (
+        <section className="relative flex flex-col items-center justify-center mt-6">
+          <div
+            className="px-3 py-1 rounded-full bg-opacity-10 mb-2"
+            style={{ backgroundColor: `${asset?.color || "#2563EB"}1A` }}
+          >
+            <p
+              className="font-semibold text-lg tracking-widest uppercase"
+              style={{ color: asset?.color || undefined }}
+            >
+              balance
+            </p>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span
+              className="text-3xl font-bold opacity-80"
+              style={{ color: asset?.color || undefined }}
+            >
+              ฿
+            </span>
+            <p className="text-3xl font-extrabold tracking-tight text-gray-900">
+              {(asset?.balance ?? 0).toLocaleString("en-US", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+            </p>
+          </div>
+        </section>
+      )}
+
+      {!isSearchMode && (
+        <section className="mb-2 px-4">
+          <DropdownSelect
+            ref={viewOptionRef}
+            options={viewOptionsList}
+            selected={viewOption}
+            isOpen={isViewOptionOpen}
+            onToggle={onViewOptionToggle}
+            themeColor={asset?.color}
+            onSelect={onViewOptionSelect}
+            className="w-full text-base font-medium"
+          />
+
+          {groupedTransactions?.length > 0 && (
+            <>
+              <span className="text-secondary-text text-sm">Period</span>
+
+              <div className="flex items-center justify-between gap-4">
+                <DropdownSelect
+                  ref={monthRef}
+                  options={months}
+                  selected={selected}
+                  isOpen={isMonthOpen}
+                  onToggle={() => setIsMonthOpen(!isMonthOpen)}
+                  themeColor={asset?.color}
+                  onSelect={(month) => {
+                    handleSelect(month);
+                    setIsMonthOpen(false);
+                  }}
+                  className="grow"
+                />
+                <DropdownSelect
+                  ref={yearRef}
+                  options={years}
+                  selected={selectedYear}
+                  isOpen={isYearOpen}
+                  onToggle={() => setIsYearOpen(!isYearOpen)}
+                  themeColor={asset?.color}
+                  onSelect={(year) => {
+                    handleSelectYear(year);
+                    setIsYearOpen(false);
+                  }}
+                  className="grow"
+                />
+              </div>
+            </>
+          )}
+        </section>
+      )}
+
+      <section className="flex-1 overflow-y-auto relative">
+        {isSearchMode && (
+          <div className="flex items-end justify-end">
+            <DropdownSelect
+              ref={yearRef}
+              options={years}
+              selected={selectedYear}
+              isOpen={isYearOpen}
+              onToggle={() => setIsYearOpen(!isYearOpen)}
+              themeColor={asset?.color}
+              onSelect={(year) => {
+                handleSelectYear(year);
+                setIsYearOpen(false);
+              }}
+            />
+          </div>
+        )}
+        {renderTransactionsContent()}
       </section>
 
       {/* nav action bottom */}
-      <section className="fixed bottom-0 right-0 left-0 py-2 px-4 border-t border-border bg-white z-50">
-        <div className="flex gap-3">
-          <Button
-            variant="unstyled"
-            onClick={onEditClick}
-            className="w-[25%] flex flex-col items-center justify-center border border-border py-1.5 rounded-md hover:bg-gray-50 cursor-pointer"
-          >
-            <Pencil size={18} />
-            <span className="text-sm mt-px">Edit</span>
-          </Button>
-          <div
-            className={cn(
-              "relative w-[75%] flex items-center bg-primary text-white text-sm font-medium rounded-md cursor-pointer",
-              isAddMenuOpen ? "rounded-tl-none rounded-tr-none" : "",
-            )}
-            style={{ backgroundColor: asset?.color || undefined }}
-          >
+      {!isSearchMode && (
+        <section className="fixed bottom-0 right-0 left-0 py-2 px-4 border-t border-border bg-white z-50">
+          <div className="flex gap-3">
             <Button
               variant="unstyled"
-              onClick={onAddTransactionClick}
-              className={cn(
-                "w-full h-full px-2 truncate rounded-md hover:bg-black/10 transition-colors",
-                isAddMenuOpen
-                  ? "rounded-tl-none rounded-tr-none rounded-br-none"
-                  : "rounded-tr-none rounded-br-none",
-              )}
+              onClick={onEditClick}
+              className="w-[25%] flex flex-col items-center justify-center border border-border py-1.5 rounded-md hover:bg-gray-50 cursor-pointer"
             >
-              Add Transaction
+              <Pencil size={18} />
+              <span className="text-sm mt-px">Edit</span>
             </Button>
-
-            <div className="h-full w-px bg-background" />
-
-            <Button
-              variant="unstyled"
-              onClick={onAddMenuToggle}
+            <div
               className={cn(
-                "w-[20%] h-full rounded-md hover:bg-black/10 transition-colors flex items-center justify-center",
-                isAddMenuOpen
-                  ? "rounded-tr-none rounded-tl-none rounded-bl-none"
-                  : "rounded-tl-none rounded-bl-none",
+                "relative w-[75%] flex items-center bg-primary text-white text-sm font-medium rounded-md cursor-pointer",
+                isAddMenuOpen ? "rounded-tl-none rounded-tr-none" : "",
               )}
+              style={{ backgroundColor: asset?.color || undefined }}
             >
-              <ChevronRight
-                size={20}
+              <Button
+                variant="unstyled"
+                onClick={onAddTransactionClick}
                 className={cn(
-                  "transition-transform",
-                  isAddMenuOpen && "-rotate-90",
+                  "w-full h-full px-2 truncate rounded-md hover:bg-black/10 transition-colors",
+                  isAddMenuOpen
+                    ? "rounded-tl-none rounded-tr-none rounded-br-none"
+                    : "rounded-tr-none rounded-br-none",
                 )}
-              />
-            </Button>
+              >
+                Add Transaction
+              </Button>
 
-            {isAddMenuOpen && (
-              <>
-                <Button
-                  variant="unstyled"
-                  type="button"
-                  aria-label="Close add menu"
-                  className="fixed inset-0 z-0 w-full h-full cursor-default focus:outline-none"
-                  onClick={onAddMenuClose}
-                  tabIndex={-1}
-                />
-                <div
+              <div className="h-full w-px bg-background" />
+
+              <Button
+                variant="unstyled"
+                onClick={onAddMenuToggle}
+                className={cn(
+                  "w-[20%] h-full rounded-md hover:bg-black/10 transition-colors flex items-center justify-center",
+                  isAddMenuOpen
+                    ? "rounded-tr-none rounded-tl-none rounded-bl-none"
+                    : "rounded-tl-none rounded-bl-none",
+                )}
+              >
+                <ChevronRight
+                  size={20}
                   className={cn(
-                    "absolute w-full bottom-full py-1 left-1/2 -translate-x-1/2 z-10 border border-border rounded-md flex flex-col bg-primary text-white overflow-hidden",
-                    isAddMenuOpen ? "rounded-bl-none rounded-br-none" : "",
+                    "transition-transform",
+                    isAddMenuOpen && "-rotate-90",
                   )}
-                  style={{ backgroundColor: asset?.color || undefined }}
-                >
+                />
+              </Button>
+
+              {isAddMenuOpen && (
+                <>
                   <Button
                     variant="unstyled"
-                    onClick={onAddExpenseClick}
-                    className="w-full py-2 text-sm hover:bg-black/10 border-b border-border/20 font-medium"
+                    type="button"
+                    aria-label="Close add menu"
+                    className="fixed inset-0 z-0 w-full h-full cursor-default focus:outline-none"
+                    onClick={onAddMenuClose}
+                    tabIndex={-1}
+                  />
+                  <div
+                    className={cn(
+                      "absolute w-full bottom-full py-1 left-1/2 -translate-x-1/2 z-10 border border-border rounded-md flex flex-col bg-primary text-white overflow-hidden",
+                      isAddMenuOpen ? "rounded-bl-none rounded-br-none" : "",
+                    )}
+                    style={{ backgroundColor: asset?.color || undefined }}
                   >
-                    Expense
-                  </Button>
-                  <Button
-                    variant="unstyled"
-                    onClick={onAddIncomeClick}
-                    className="w-full py-2 text-sm hover:bg-black/10 border-b border-border/20 font-medium"
-                  >
-                    Income
-                  </Button>
-                  <Button
-                    variant="unstyled"
-                    onClick={onTransferClick}
-                    className="w-full py-2 text-sm hover:bg-black/10 border-b border-border/20 font-medium"
-                  >
-                    Transfer
-                  </Button>
-                  <Button
-                    variant="unstyled"
-                    onClick={onAdjustmentClick}
-                    className="w-full py-2 text-sm hover:bg-black/10 font-medium"
-                  >
-                    Adjustment
-                  </Button>
-                </div>
-              </>
-            )}
+                    <Button
+                      variant="unstyled"
+                      onClick={onAddExpenseClick}
+                      className="w-full py-2 text-sm hover:bg-black/10 border-b border-border/20 font-medium"
+                    >
+                      Expense
+                    </Button>
+                    <Button
+                      variant="unstyled"
+                      onClick={onAddIncomeClick}
+                      className="w-full py-2 text-sm hover:bg-black/10 border-b border-border/20 font-medium"
+                    >
+                      Income
+                    </Button>
+                    <Button
+                      variant="unstyled"
+                      onClick={onTransferClick}
+                      className="w-full py-2 text-sm hover:bg-black/10 border-b border-border/20 font-medium"
+                    >
+                      Transfer
+                    </Button>
+                    <Button
+                      variant="unstyled"
+                      onClick={onAdjustmentClick}
+                      className="w-full py-2 text-sm hover:bg-black/10 font-medium"
+                    >
+                      Adjustment
+                    </Button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   );
 }
