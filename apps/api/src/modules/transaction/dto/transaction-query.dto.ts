@@ -47,4 +47,8 @@ export class TransactionQueryDto {
   @Transform(({ value }) => value === "true" || value === true)
   @IsBoolean()
   isDeleted?: boolean;
+
+  @IsOptional()
+  @IsString()
+  sortType?: string;
 }

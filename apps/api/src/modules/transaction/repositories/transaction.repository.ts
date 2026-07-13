@@ -49,6 +49,7 @@ export class TransactionRepository {
       from,
       to,
       isDeleted,
+      sortType,
     } = query;
     const skip = (page - 1) * limit;
 
@@ -68,6 +69,23 @@ export class TransactionRepository {
       }),
     };
 
+    let orderBy:
+      | Prisma.TransactionOrderByWithRelationInput
+      | Prisma.TransactionOrderByWithRelationInput[] = [
+      { date: "desc" },
+      { createdAt: "desc" },
+    ];
+
+    if (sortType === "DATE_OLDEST") {
+      orderBy = [{ date: "asc" }, { createdAt: "asc" }];
+    } else if (sortType === "AMOUNT_HIGHEST") {
+      orderBy = { amount: "desc" };
+    } else if (sortType === "AMOUNT_LOWEST") {
+      orderBy = { amount: "asc" };
+    } else if (sortType === "DATE_NEWEST") {
+      orderBy = [{ date: "desc" }, { createdAt: "desc" }];
+    }
+
     const [items, total] = await Promise.all([
       this.prisma.transaction.findMany({
         where,
@@ -76,7 +94,7 @@ export class TransactionRepository {
           toAsset: true,
           category: true,
         },
-        orderBy: [{ date: "desc" }, { createdAt: "desc" }],
+        orderBy,
         skip,
         take: limit,
       }),
