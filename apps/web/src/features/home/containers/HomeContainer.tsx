@@ -10,10 +10,14 @@ export default function HomeContainer() {
 
   return (
     <>
-      <div className="space-y-4 px-4">
-        <FinancialSnapshotContainer />
+      <div className="space-y-4 py-1 pb-16">
+        <div className="px-4">
+          <FinancialSnapshotContainer />
+        </div>
 
-        <ListAssetsContainer onAddAsset={() => setIsCreateAssetOpen(true)} />
+        <div className="px-4">
+          <ListAssetsContainer onAddAsset={() => setIsCreateAssetOpen(true)} />
+        </div>
 
         <RecentJournalContainer />
       </div>

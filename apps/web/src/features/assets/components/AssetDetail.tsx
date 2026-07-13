@@ -1,14 +1,11 @@
 import { ChevronRight, Pencil } from "lucide-react";
 import { Asset } from "../types/assets.type";
-import {
-  TransactionResponse,
-  GroupedTransaction,
-} from "../../transactions/types/transaction.type";
+import { GroupedTransaction } from "../../transactions/types/transaction.type";
 import { cn } from "@/shared/lib/utils/core.util";
 import { Button } from "@/shared/components/customs/Button";
 import { DropdownSelect } from "@/shared/components/customs/DropdownSelect";
 import { Dispatch, SetStateAction, RefObject } from "react";
-import { TransactionItem } from "./TransactionItem";
+import { TransactionListContainer } from "@/features/transactions/containers/TransactionListContainer";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 
 const SKELETON_GROUPS = Array.from({ length: 3 }, (_, i) => i);
@@ -27,7 +24,6 @@ interface AssetDetailProps {
   onAddTransactionClick: () => void;
   onAddExpenseClick: () => void;
   onAddIncomeClick: () => void;
-  onTransactionItemClick: (transaction: TransactionResponse) => void;
   selected: string;
   months: string[];
   handleSelect: (months: string) => void;
@@ -38,8 +34,6 @@ interface AssetDetailProps {
   setIsMonthOpen: Dispatch<SetStateAction<boolean>>;
   isYearOpen: boolean;
   setIsYearOpen: Dispatch<SetStateAction<boolean>>;
-  expandedTransactionId: string | null;
-  setExpandedTransactionId: Dispatch<SetStateAction<string | null>>;
   viewOption: string;
   isViewOptionOpen: boolean;
   viewOptionRef: RefObject<HTMLDivElement | null>;
@@ -47,9 +41,6 @@ interface AssetDetailProps {
   onViewOptionSelect: (option: string) => void;
   monthRef: RefObject<HTMLDivElement | null>;
   yearRef: RefObject<HTMLDivElement | null>;
-  onRestoreClick?: (transaction: TransactionResponse) => void;
-  onDeleteClick?: (transaction: TransactionResponse) => void;
-  onAttachmentClick?: (url: string) => void;
   isSearchMode?: boolean;
   searchKeyword?: string;
 }
@@ -68,7 +59,6 @@ export default function AssetDetail({
   onAddTransactionClick,
   onAddExpenseClick,
   onAddIncomeClick,
-  onTransactionItemClick,
   selected,
   months,
   handleSelect,
@@ -79,8 +69,6 @@ export default function AssetDetail({
   setIsMonthOpen,
   isYearOpen,
   setIsYearOpen,
-  expandedTransactionId,
-  setExpandedTransactionId,
   viewOption,
   isViewOptionOpen,
   viewOptionRef,
@@ -88,9 +76,6 @@ export default function AssetDetail({
   onViewOptionSelect,
   monthRef,
   yearRef,
-  onRestoreClick,
-  onDeleteClick,
-  onAttachmentClick,
   isSearchMode,
   searchKeyword,
 }: Readonly<AssetDetailProps>) {
@@ -125,73 +110,6 @@ export default function AssetDetail({
       </div>
     );
   }
-
-  const renderTransactionsContent = () => {
-    if (isSearchMode && !searchKeyword) {
-      return (
-        <div className="flex flex-col items-center justify-center h-full text-gray-400">
-          <p>Type to search transactions</p>
-        </div>
-      );
-    }
-
-    if (isLoadingTransactions) {
-      return (
-        <>
-          <section className="mb-4 px-4">
-            <Skeleton className="h-4 w-14 mb-1" />
-            <div className="flex items-center justify-between gap-4">
-              <Skeleton className="h-8 w-1/2 rounded-md" />
-              <Skeleton className="h-8 w-1/2 rounded-md" />
-            </div>
-          </section>
-          <div className="space-y-4">
-            {SKELETON_GROUPS.map((i) => (
-              <div key={`skeleton-group-tx-${i}`} className="space-y-1 my-2">
-                <Skeleton className="h-5 w-32 mx-4 mb-3" />
-                <Skeleton className="h-13 w-full rounded-none" />
-                <Skeleton className="h-13 w-full rounded-none" />
-              </div>
-            ))}
-          </div>
-        </>
-      );
-    }
-
-    return (
-      <div className="bg-white">
-        {groupedTransactions.map((group, index) => (
-          <div key={`${group.dateStr}-${index}`} className="relative">
-            <div className="sticky top-0 bg-white z-10 py-2 text-base font-medium px-4">
-              <span>{group.dateStr}</span>
-            </div>
-            <div className="space-y-1">
-              {group.items.map((transaction) => (
-                <TransactionItem
-                  key={transaction.id}
-                  transaction={transaction}
-                  currentAssetId={asset?.id}
-                  expandedTransactionId={expandedTransactionId}
-                  setExpandedTransactionId={setExpandedTransactionId}
-                  onTransactionItemClick={onTransactionItemClick}
-                  onRestoreClick={onRestoreClick}
-                  onDeleteClick={onDeleteClick}
-                  onAttachmentClick={onAttachmentClick}
-                />
-              ))}
-            </div>
-          </div>
-        ))}
-        {!groupedTransactions?.length && (
-          <div className="p-4 text-center text-gray-500">
-            {isSearchMode
-              ? "No matching transactions found"
-              : "No transactions found"}
-          </div>
-        )}
-      </div>
-    );
-  };
 
   return (
     <div className="flex flex-col h-[calc(100vh-110px)] space-y-4">
@@ -292,7 +210,14 @@ export default function AssetDetail({
             />
           </div>
         )}
-        {renderTransactionsContent()}
+        <TransactionListContainer
+          groupedTransactions={groupedTransactions}
+          isLoadingTransactions={isLoadingTransactions}
+          assetId={asset?.id}
+          isSearchMode={isSearchMode}
+          searchKeyword={searchKeyword}
+          page="asset"
+        />
       </section>
 
       {/* nav action bottom */}

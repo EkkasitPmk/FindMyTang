@@ -12,7 +12,7 @@ export default function ShowProfileContainer() {
   return (
     <header
       className={cn(
-        "bg-surface fixed md:hidden top-0 z-40 w-full flex justify-between items-center px-4 py-2",
+        "bg-background fixed md:hidden top-0 z-40 w-full flex justify-between items-center px-4 py-2",
         pathname === "/settings/account" || pathname === "/assets/new"
           ? "hidden"
           : "",

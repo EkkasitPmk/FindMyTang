@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import { ChevronRight, Landmark, Link2, Plus } from "lucide-react";
 import { useAssets } from "../hooks/assets.hook";

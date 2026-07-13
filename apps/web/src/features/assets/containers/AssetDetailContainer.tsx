@@ -3,23 +3,12 @@ import { useState, useMemo, useRef } from "react";
 import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAssets, useAssetUIStore } from "../hooks/assets.hook";
-import {
-  useTransactionsQuery,
-  useUpdateTransactionMutation,
-  useDeleteTransactionMutation,
-} from "../../transactions/hooks/transaction.hook";
+import { useTransactionsQuery } from "../../transactions/hooks/transaction.hook";
 import { processAssetTransactions } from "../helpers/asset.helper";
-import { toast } from "react-toastify";
-import ConfirmModal from "@/shared/components/customs/ConfirmModal";
-import { useConfirmModal } from "@/shared/lib/hooks/useConfirmModal.hook";
 import { useClickOutside } from "@/shared/lib/hooks/useClickOutside.hook";
-import LoadingModal from "@/shared/components/customs/LoadingModal";
-import { RotateCcw, Trash } from "lucide-react";
-import { TransactionResponse } from "../../transactions/types/transaction.type";
 import EditAssetsContainer from "./EditAssetsContainer";
 import AssetDetail from "../components/AssetDetail";
 import ManageAssetsContainer from "./ManageAssetsContainer";
-import ImagePreviewModal from "@/shared/components/customs/ImagePreviewModal";
 
 export default function AssetDetailContainer() {
   const searchParams = useSearchParams();
@@ -55,6 +44,7 @@ export default function AssetDetailContainer() {
             assetId: asset.id,
             limit: 9999,
             isDeleted: viewOption === "Show deleted items",
+            sortType,
           }
         : undefined,
     );
@@ -70,39 +60,6 @@ export default function AssetDetailContainer() {
 
   const [selectedMonth, setSelectedMonth] = useState("Select");
   const [selectedYear, setSelectedYear] = useState("Select");
-  const [expandedTransactionId, setExpandedTransactionId] = useState<
-    string | null
-  >(null);
-
-  const [isRestoreModalOpen, setIsRestoreModalOpen] = useState(false);
-  const [transactionToRestore, setTransactionToRestore] =
-    useState<TransactionResponse | null>(null);
-  const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
-
-  const restoreTransaction = useUpdateTransactionMutation({
-    onSuccess: () => {
-      toast.success("Transaction restored successfully!");
-    },
-  });
-
-  const {
-    isOpen: isDeleteModalOpen,
-    open: openDeleteModal,
-    close: closeDeleteModal,
-    isHardDelete,
-    setIsHardDelete,
-    inputValue: confirmInput,
-    setInputValue: setConfirmInput,
-  } = useConfirmModal();
-
-  const [transactionToDelete, setTransactionToDelete] =
-    useState<TransactionResponse | null>(null);
-
-  const deleteTransaction = useDeleteTransactionMutation({
-    onSuccess: () => {
-      toast.success("Transaction deleted successfully!");
-    },
-  });
 
   const { months, years, groupedTransactions, effectiveYear, effectiveMonth } =
     useMemo(() => {
@@ -120,7 +77,6 @@ export default function AssetDetailContainer() {
         searchKeyword,
         isSearchMode,
         filterType,
-        sortType,
       });
 
       return {
@@ -143,7 +99,6 @@ export default function AssetDetailContainer() {
       searchKeyword,
       isSearchMode,
       filterType,
-      sortType,
     ]);
 
   const handleSelectMonth = (month: string) => {
@@ -180,18 +135,6 @@ export default function AssetDetailContainer() {
             onAddIncomeClick={() =>
               router.push(`/transaction?type=INCOME&assetId=${asset?.id}`)
             }
-            onTransactionItemClick={(transaction) => {
-              const url = new URL("/transaction", globalThis.location.origin);
-              url.searchParams.set("type", transaction.type);
-              url.searchParams.set("id", transaction.id);
-              if (asset?.id) {
-                url.searchParams.set("assetId", asset.id);
-              }
-              if (transaction.deletedAt) {
-                url.searchParams.set("isDeleted", "true");
-              }
-              router.push(url.pathname + url.search);
-            }}
             selected={effectiveMonth}
             months={months}
             handleSelect={handleSelectMonth}
@@ -202,8 +145,6 @@ export default function AssetDetailContainer() {
             setIsMonthOpen={setIsMonthOpen}
             isYearOpen={isYearOpen}
             setIsYearOpen={setIsYearOpen}
-            expandedTransactionId={expandedTransactionId}
-            setExpandedTransactionId={setExpandedTransactionId}
             viewOption={viewOption}
             isViewOptionOpen={isViewOptionOpen}
             viewOptionRef={viewOptionRef}
@@ -214,15 +155,6 @@ export default function AssetDetailContainer() {
             }}
             monthRef={monthRef}
             yearRef={yearRef}
-            onRestoreClick={(tx) => {
-              setTransactionToRestore(tx);
-              setIsRestoreModalOpen(true);
-            }}
-            onDeleteClick={(tx) => {
-              setTransactionToDelete(tx);
-              openDeleteModal();
-            }}
-            onAttachmentClick={(url) => setPreviewImageUrl(url)}
             isSearchMode={isSearchMode}
             searchKeyword={searchKeyword}
           />
@@ -232,77 +164,6 @@ export default function AssetDetailContainer() {
               onClose={() => setIsEditModalOpen(false)}
             />
           )}
-          <ConfirmModal
-            isOpen={isRestoreModalOpen}
-            onClose={() => {
-              setIsRestoreModalOpen(false);
-              setTransactionToRestore(null);
-            }}
-            onConfirm={() => {
-              if (transactionToRestore) {
-                restoreTransaction.mutate({
-                  id: transactionToRestore.id,
-                  data: {
-                    deletedAt: null,
-                    type: transactionToRestore.type,
-                    amount: transactionToRestore.amount,
-                    transactionDate: transactionToRestore.transactionDate,
-                    assetId: transactionToRestore.assetId,
-                  },
-                });
-                setIsRestoreModalOpen(false);
-                setTransactionToRestore(null);
-              }
-            }}
-            icon={RotateCcw}
-            title="Restore Transaction"
-            des="Are you sure you want to restore this transaction? It will be active again."
-            confirmLabel="Restore"
-            variant="success"
-          />
-          <ConfirmModal
-            isOpen={isDeleteModalOpen}
-            onClose={() => {
-              closeDeleteModal();
-              setTransactionToDelete(null);
-            }}
-            onConfirm={() => {
-              if (transactionToDelete) {
-                deleteTransaction.mutate({
-                  id: transactionToDelete.id,
-                  isHardDelete:
-                    Boolean(isHardDelete) || !!transactionToDelete.deletedAt,
-                });
-                closeDeleteModal();
-                setTransactionToDelete(null);
-              }
-            }}
-            icon={Trash}
-            title={
-              transactionToDelete?.deletedAt
-                ? "Delete Permanently"
-                : "Delete Transaction"
-            }
-            des={
-              transactionToDelete?.deletedAt
-                ? "Are you sure you want to permanently delete this transaction? This action cannot be undone."
-                : "Are you sure you want to delete this transaction?"
-            }
-            confirmLabel="Delete"
-            withHardDeleteOption={!transactionToDelete?.deletedAt}
-            isHardDelete={isHardDelete}
-            onHardDeleteChange={setIsHardDelete}
-            inputValue={confirmInput}
-            onInputChange={setConfirmInput}
-          />
-          <LoadingModal
-            isOpen={restoreTransaction.isPending || deleteTransaction.isPending}
-          />
-          <ImagePreviewModal
-            isOpen={!!previewImageUrl}
-            onClose={() => setPreviewImageUrl(null)}
-            imageUrl={previewImageUrl || ""}
-          />
         </>
       )}
     </>
