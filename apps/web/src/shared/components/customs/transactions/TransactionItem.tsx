@@ -1,5 +1,5 @@
 import { ChevronDown } from "lucide-react";
-import { TransactionResponse } from "../../transactions/types/transaction.type";
+import { TransactionResponse } from "@/features/transactions/types/transaction.type";
 import { cn } from "@/shared/lib/utils/core.util";
 import { Button } from "@/shared/components/customs/Button";
 import { TransactionItemDetails } from "./TransactionItemDetails";
@@ -8,8 +8,7 @@ import {
   getTransferDetails,
   getAmountDisplayConfig,
   getDisplayTitle,
-  getTimeDisplay,
-} from "../helpers/transaction-item.helper";
+} from "@/shared/lib/helpers/transaction-item.helper";
 
 export interface TransactionItemProps {
   transaction: TransactionResponse;
@@ -20,6 +19,7 @@ export interface TransactionItemProps {
   onDeleteClick?: (transaction: TransactionResponse) => void;
   onAttachmentClick?: (url: string) => void;
   currentAssetId?: string;
+  isLastItem?: boolean;
 }
 
 export function TransactionItem({
@@ -31,6 +31,7 @@ export function TransactionItem({
   onDeleteClick,
   onAttachmentClick,
   currentAssetId,
+  isLastItem,
 }: Readonly<TransactionItemProps>) {
   const isAdjustment = transaction.type === "ADJUSTMENT";
   const isTransfer = transaction.type === "TRANSFER";
@@ -39,16 +40,27 @@ export function TransactionItem({
     currentAssetId,
   );
   const { amountColorClass, amountPrefix, isIncome, isExpense } =
-    getAmountDisplayConfig(transaction.type, isTransferIn, isTransferOut);
+    getAmountDisplayConfig(
+      transaction.type,
+      isTransferIn,
+      isTransferOut,
+      transaction.amount,
+    );
 
   const displayTitle = getDisplayTitle(transaction);
-  const timeDisplay = getTimeDisplay(transaction.transactionDate);
 
   const isIncomeOrExpense = isIncome || isExpense;
   const isExpanded = expandedTransactionId === transaction.id;
 
+  let dividerClass = "w-[calc(100%-78px)] bg-border opacity-100";
+  if (isExpanded) {
+    dividerClass = "w-[calc(100%-32px)] mb-2 bg-border opacity-100";
+  } else if (isLastItem) {
+    dividerClass = "w-[calc(100%-78px)] bg-transparent opacity-0";
+  }
+
   return (
-    <div className="bg-surface-secondary">
+    <>
       <Button
         variant="unstyled"
         type="button"
@@ -57,32 +69,47 @@ export function TransactionItem({
             expandedTransactionId === transaction.id ? null : transaction.id,
           )
         }
-        className="w-full text-left flex items-center justify-between px-4 py-2 cursor-pointer bg-surface-secondary hover:bg-gray-50 focus:outline-none focus:bg-gray-50 transition-colors"
+        className={cn(
+          "w-full text-left flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-gray-50 focus:outline-none focus:bg-gray-50 transition-colors",
+        )}
       >
-        <div className="flex items-center gap-3">
-          <TransactionIcon transaction={transaction} />
-          <div className="flex flex-col leading-5">
-            <span className="text-base capitalize">{displayTitle}</span>
-            <span className="text-xs text-gray-500">{timeDisplay}</span>
+        <TransactionIcon transaction={transaction} />
+        <div className="grid grid-cols-2 w-full">
+          <div className="flex items-center gap-3">
+            <div className="flex flex-col leading-5 text-left overflow-hidden mr-2">
+              <span className="text-base capitalize truncate">
+                {displayTitle}
+              </span>
+              <span className="text-xs text-gray-500 truncate">
+                {transaction.note}
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center justify-end gap-1">
+            <span className={`text-base ${amountColorClass}`}>
+              {amountPrefix}฿
+              {Math.abs(transaction.amount).toLocaleString("en-US", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+            </span>
+            <ChevronDown
+              size={18}
+              className={cn(
+                "text-gray-400 transition-transform",
+                isExpanded && "-rotate-x-180",
+              )}
+            />
           </div>
         </div>
-        <div className="flex items-center gap-1">
-          <span className={`text-base ${amountColorClass}`}>
-            {amountPrefix}฿
-            {transaction.amount.toLocaleString("en-US", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
-          </span>
-          <ChevronDown
-            size={18}
-            className={cn(
-              "text-gray-400 transition-transform",
-              isExpanded && "-rotate-x-180",
-            )}
-          />
-        </div>
       </Button>
+
+      <div
+        className={cn(
+          "h-px transition-all duration-200 ml-auto mr-4",
+          dividerClass,
+        )}
+      />
 
       {/* Expandable Detail */}
       <div
@@ -94,7 +121,6 @@ export function TransactionItem({
         )}
       >
         <div className="overflow-hidden">
-          <div className="w-[92%] h-px px-4 mx-auto my-2 bg-border" />
           <TransactionItemDetails
             transaction={transaction}
             isIncomeOrExpense={isIncomeOrExpense}
@@ -108,6 +134,6 @@ export function TransactionItem({
           />
         </div>
       </div>
-    </div>
+    </>
   );
 }

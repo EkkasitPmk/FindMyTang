@@ -36,14 +36,17 @@ export const createTransactionApi = async (
     Object.entries(payload).forEach(([key, value]) => {
       formData.append(key, String(value));
     });
-    
+
     // Force Safari to load the file into memory to avoid DOM detachment bugs
     const arrayBuffer = await data.file.arrayBuffer();
     const safeBlob = new Blob([arrayBuffer], { type: data.file.type });
     formData.append("file", safeBlob, data.file.name);
-    
-    const response = await http.post<TransactionResponse>("/transactions", formData);
-    
+
+    const response = await http.post<TransactionResponse>(
+      "/transactions",
+      formData,
+    );
+
     return response.data;
   }
 
@@ -87,18 +90,24 @@ export const updateTransactionApi = async (
     Object.entries(payload).forEach(([key, value]) => {
       formData.append(key, String(value));
     });
-    
+
     // Force Safari to load the file into memory to avoid DOM detachment bugs
     const arrayBuffer = await data.file.arrayBuffer();
     const safeBlob = new Blob([arrayBuffer], { type: data.file.type });
     formData.append("file", safeBlob, data.file.name);
-    
-    const response = await http.patch<TransactionResponse>(`/transactions/${id}`, formData);
-    
+
+    const response = await http.patch<TransactionResponse>(
+      `/transactions/${id}`,
+      formData,
+    );
+
     return response.data;
   }
 
-  const response = await http.patch<TransactionResponse>(`/transactions/${id}`, payload);
+  const response = await http.patch<TransactionResponse>(
+    `/transactions/${id}`,
+    payload,
+  );
   return response.data;
 };
 

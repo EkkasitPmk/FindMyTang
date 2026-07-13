@@ -3,6 +3,7 @@ import {
   useQuery,
   useQueryClient,
   QueryClient,
+  useInfiniteQuery,
 } from "@tanstack/react-query";
 import {
   createTransactionApi,
@@ -212,21 +213,116 @@ export const useTransactionsQuery = (params?: TransactionQuery) => {
   const isGuest = useIsGuest();
   const guestTransactions = useGuestStore((state) => state.transactions);
 
+  let initialItems = guestTransactions;
+  if (isGuest && params?.sortType) {
+    initialItems = [...guestTransactions].sort((a, b) => {
+      switch (params.sortType) {
+        case "DATE_OLDEST":
+          return (
+            new Date(a.transactionDate).getTime() -
+            new Date(b.transactionDate).getTime()
+          );
+        case "AMOUNT_HIGHEST":
+          return b.amount - a.amount;
+        case "AMOUNT_LOWEST":
+          return a.amount - b.amount;
+        case "DATE_NEWEST":
+        default:
+          return (
+            new Date(b.transactionDate).getTime() -
+            new Date(a.transactionDate).getTime()
+          );
+      }
+    });
+  }
+
   return useQuery<PaginatedTransactionResponse, AxiosError<ApiErrorResponse>>({
     queryKey: ["transactions", params],
     queryFn: () => getTransactionsApi(params),
     enabled: !isGuest,
     initialData: isGuest
       ? {
-          items: guestTransactions,
+          items: initialItems,
           meta: {
             page: 1,
             limit: 10,
-            total: guestTransactions.length,
+            total: initialItems.length,
             totalPages: 1,
           },
         }
       : undefined,
+  });
+};
+
+export const useInfiniteTransactionsQuery = (params?: TransactionQuery) => {
+  const isGuest = useIsGuest();
+  const guestTransactions = useGuestStore((state) => state.transactions);
+
+  return useInfiniteQuery<
+    PaginatedTransactionResponse,
+    AxiosError<ApiErrorResponse>
+  >({
+    queryKey: ["transactions", "infinite", params, isGuest],
+    queryFn: async ({ pageParam = 1 }) => {
+      const page = pageParam as number;
+      const limit = params?.limit || 20;
+
+      if (isGuest) {
+        // Client-side pagination & filtering for Guest Mode
+        let filtered = guestTransactions;
+        if (params?.type) {
+          filtered = filtered.filter((t) => t.type === params.type);
+        }
+
+        // Sorting
+        filtered = [...filtered].sort((a, b) => {
+          switch (params?.sortType) {
+            case "DATE_OLDEST":
+              return (
+                new Date(a.transactionDate).getTime() -
+                new Date(b.transactionDate).getTime()
+              );
+            case "AMOUNT_HIGHEST":
+              return b.amount - a.amount;
+            case "AMOUNT_LOWEST":
+              return a.amount - b.amount;
+            case "DATE_NEWEST":
+            default:
+              return (
+                new Date(b.transactionDate).getTime() -
+                new Date(a.transactionDate).getTime()
+              );
+          }
+        });
+
+        const start = (page - 1) * limit;
+        const end = start + limit;
+        const sliced = filtered.slice(start, end);
+        const totalPages = Math.ceil(filtered.length / limit);
+
+        // Simulate network delay for realistic lazy loading UX
+        await new Promise((resolve) => setTimeout(resolve, 300));
+
+        return {
+          items: sliced,
+          meta: {
+            page,
+            limit,
+            total: filtered.length,
+            totalPages: totalPages === 0 ? 1 : totalPages,
+          },
+        };
+      }
+
+      return getTransactionsApi({ ...params, page });
+    },
+    getNextPageParam: (lastPage) => {
+      if (lastPage.meta.page < lastPage.meta.totalPages) {
+        return lastPage.meta.page + 1;
+      }
+      return undefined;
+    },
+    initialPageParam: 1,
   });
 };
 

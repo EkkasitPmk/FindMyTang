@@ -1,5 +1,5 @@
 import { formatDisplayDate } from "@/shared/lib/helpers/date.helper";
-import { TransactionResponse } from "../../transactions/types/transaction.type";
+import { TransactionResponse } from "@/features/transactions/types/transaction.type";
 
 export function getTransferDetails(
   transaction: TransactionResponse,
@@ -22,17 +22,25 @@ export function getAmountDisplayConfig(
   type: string,
   isTransferIn: boolean,
   isTransferOut: boolean,
+  amount: number = 0,
 ) {
   const isIncome = type === "INCOME";
   const isExpense = type === "EXPENSE";
+  const isAdjustment = type === "ADJUSTMENT";
+  const isTransfer = type === "TRANSFER";
 
   let amountColorClass = "text-gray-800";
   let amountPrefix = "";
 
-  if (isIncome || isTransferIn) {
+  if (isIncome || isTransferIn || (isAdjustment && amount >= 0)) {
     amountColorClass = "text-green-600";
     amountPrefix = "+";
-  } else if (isExpense || isTransferOut) {
+  } else if (
+    isExpense ||
+    isTransferOut ||
+    (isAdjustment && amount < 0) ||
+    (isTransfer && !isTransferIn && !isTransferOut)
+  ) {
     amountColorClass = "text-red-600";
     amountPrefix = "-";
   }

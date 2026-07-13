@@ -3,7 +3,6 @@ import { Asset } from "../types/assets.type";
 import {
   getAvailableYears,
   applyTypeFilter,
-  applySorting,
   handleSearchMode,
   handleDateMode,
   groupTransactionsByDate,
@@ -16,7 +15,6 @@ interface ProcessTransactionsParams {
   searchKeyword?: string;
   isSearchMode?: boolean;
   filterType?: "ALL" | "INCOME" | "EXPENSE" | "TRANSFER" | "ADJUSTMENT";
-  sortType?: "DATE_NEWEST" | "DATE_OLDEST" | "AMOUNT_HIGHEST" | "AMOUNT_LOWEST";
 }
 
 export const processAssetTransactions = ({
@@ -26,7 +24,6 @@ export const processAssetTransactions = ({
   searchKeyword,
   isSearchMode,
   filterType = "ALL",
-  sortType = "DATE_NEWEST",
 }: ProcessTransactionsParams) => {
   if (!transactions?.length) {
     return {
@@ -41,7 +38,6 @@ export const processAssetTransactions = ({
 
   const availableYears = getAvailableYears(transactions);
   let filteredItems = applyTypeFilter(transactions, filterType);
-  filteredItems = applySorting(filteredItems, sortType);
 
   const modeResult = isSearchMode
     ? handleSearchMode(

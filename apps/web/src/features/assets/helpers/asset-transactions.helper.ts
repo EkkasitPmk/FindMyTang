@@ -17,32 +17,6 @@ export const applyTypeFilter = (
   return transactions.filter((tx) => tx.type === filterType);
 };
 
-export const applySorting = (
-  transactions: TransactionResponse[],
-  sortType: string,
-) => {
-  return [...transactions].sort((a, b) => {
-    switch (sortType) {
-      case "DATE_NEWEST":
-        return (
-          new Date(b.transactionDate).getTime() -
-          new Date(a.transactionDate).getTime()
-        );
-      case "DATE_OLDEST":
-        return (
-          new Date(a.transactionDate).getTime() -
-          new Date(b.transactionDate).getTime()
-        );
-      case "AMOUNT_HIGHEST":
-        return b.amount - a.amount;
-      case "AMOUNT_LOWEST":
-        return a.amount - b.amount;
-      default:
-        return 0;
-    }
-  });
-};
-
 export const handleSearchMode = (
   filteredItems: TransactionResponse[],
   availableYears: string[],

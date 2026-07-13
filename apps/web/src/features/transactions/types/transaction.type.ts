@@ -100,6 +100,7 @@ export interface TransactionQuery {
   from?: string;
   to?: string;
   isDeleted?: boolean;
+  sortType?: string;
 }
 
 export interface PaginatedTransactionResponse {

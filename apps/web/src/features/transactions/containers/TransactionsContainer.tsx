@@ -92,6 +92,7 @@ export default function TransactionsContainer() {
   const [amountDigits, setAmountDigits] = useState<string>("");
   const [removedAttachment, setRemovedAttachment] = useState(false);
   const [isMoreDetailsOpen, setIsMoreDetailsOpen] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
 
   const {
     isOpen: isDeleteModalOpen,
@@ -128,6 +129,7 @@ export default function TransactionsContainer() {
     setPrevTypeParam,
     resolveDefaultTransactionType,
     convertAmountToDigits,
+    setFile,
   });
 
   const defaultValues = useMemo(
@@ -160,8 +162,6 @@ export default function TransactionsContainer() {
     () => (watchTransactionDate ? new Date(watchTransactionDate) : new Date()),
     [watchTransactionDate],
   );
-
-  const [file, setFile] = useState<File | null>(null);
 
   const handleSuccess = useCallback(
     (message: string) => {

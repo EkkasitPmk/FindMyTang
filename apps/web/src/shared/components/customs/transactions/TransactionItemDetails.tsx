@@ -1,9 +1,10 @@
 import Image from "next/image";
-import { TransactionResponse } from "../../transactions/types/transaction.type";
+import { TransactionResponse } from "@/features/transactions/types/transaction.type";
 import { cn } from "@/shared/lib/utils/core.util";
 import { Button } from "@/shared/components/customs/Button";
 import { RotateCcw, Trash } from "lucide-react";
 import { useCachedImageUrl } from "@/shared/lib/hooks/useCachedImageUrl.hook";
+import { getTimeDisplay } from "@/shared/lib/helpers/transaction-item.helper";
 
 export interface TransactionItemDetailsProps {
   transaction: TransactionResponse;
@@ -29,9 +30,10 @@ export function TransactionItemDetails({
   currentAssetId,
 }: Readonly<TransactionItemDetailsProps>) {
   const cachedAttachmentUrl = useCachedImageUrl(transaction.attachmentUrl);
+  const timeDisplay = getTimeDisplay(transaction.transactionDate);
 
   return (
-    <div className="px-4 pb-3 bg-surface-secondary text-sm space-y-px">
+    <div className="px-4 pb-3 text-sm space-y-px">
       {isIncomeOrExpense && (
         <>
           <div className="flex items-center justify-between">
@@ -93,13 +95,7 @@ export function TransactionItemDetails({
 
       <div className="flex items-center justify-between">
         <p className="text-gray-500 capitalize">Date:</p>
-        <p className="font-medium">
-          {new Date(transaction.transactionDate).toLocaleDateString("en-GB", {
-            day: "numeric",
-            month: "long",
-            year: "2-digit",
-          })}
-        </p>
+        <p className="font-medium">{timeDisplay}</p>
       </div>
 
       {cachedAttachmentUrl && (

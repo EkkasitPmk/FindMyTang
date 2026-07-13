@@ -1,6 +1,6 @@
 import React from "react";
 import { ArrowRightLeft, SlidersHorizontal } from "lucide-react";
-import { TransactionResponse } from "../../transactions/types/transaction.type";
+import { TransactionResponse } from "@/features/transactions/types/transaction.type";
 import { getCategoryIcon } from "@/shared/lib/configs/category-icons.config";
 
 export interface TransactionIconProps {
@@ -17,10 +17,10 @@ export function TransactionIcon({
     );
     return (
       <span
-        className="rounded-full p-2"
+        className="rounded-lg p-2"
         style={{
           color: transaction.category.color,
-          backgroundColor: `${transaction.category.color}33`,
+          backgroundColor: `${transaction.category.color}22`,
         }}
       >
         {React.createElement(icon, { size: 18 })}
@@ -30,7 +30,7 @@ export function TransactionIcon({
 
   if (transaction.type === "TRANSFER") {
     return (
-      <span className="bg-gray-100 rounded-full p-2 text-blue-500">
+      <span className="bg-gray-100 rounded-lg p-2 text-blue-500">
         <ArrowRightLeft size={18} />
       </span>
     );
@@ -38,7 +38,7 @@ export function TransactionIcon({
 
   if (transaction.type === "ADJUSTMENT") {
     return (
-      <span className="bg-gray-100 rounded-full p-2 text-purple-500">
+      <span className="bg-gray-100 rounded-lg p-2 text-purple-500">
         <SlidersHorizontal size={18} />
       </span>
     );

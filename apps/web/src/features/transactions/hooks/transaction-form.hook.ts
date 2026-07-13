@@ -64,6 +64,7 @@ interface UseTransactionInitializationParams {
   setAmountDigits: (digits: string) => void;
   setDisplayMonth: (date: Date) => void;
   setRemovedAttachment: (removed: boolean) => void;
+  setFile: (file: File | null) => void;
   setIsMoreDetailsOpen: (open: boolean) => void;
   typeParam: string | null;
   prevTypeParam: string | null;
@@ -88,6 +89,7 @@ export const useTransactionInitialization = ({
   setPrevTypeParam,
   resolveDefaultTransactionType,
   convertAmountToDigits,
+  setFile,
 }: UseTransactionInitializationParams) => {
   if (existingTx && existingTx.id !== prevTxId) {
     setPrevTxId(existingTx.id);
@@ -95,6 +97,13 @@ export const useTransactionInitialization = ({
     setAmountDigits(convertAmountToDigits(existingTx.amount));
     setDisplayMonth(new Date(existingTx.transactionDate));
     setRemovedAttachment(false);
+  } else if (!existingTx && prevTxId !== null) {
+    setPrevTxId(null);
+    setAmountDigits("");
+    setRemovedAttachment(false);
+    setFile(null);
+    setTransactionType(resolveDefaultTransactionType(undefined, typeParam));
+    setPrevTypeParam(typeParam);
   } else if (!existingTx && typeParam !== prevTypeParam) {
     setPrevTypeParam(typeParam);
     setTransactionType(resolveDefaultTransactionType(undefined, typeParam));
