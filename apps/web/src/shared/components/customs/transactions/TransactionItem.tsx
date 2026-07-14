@@ -86,7 +86,7 @@ export function TransactionItem({
             </div>
           </div>
           <div className="flex items-center justify-end gap-1">
-            <span className={`text-base ${amountColorClass}`}>
+            <span className={`text-base font-medium ${amountColorClass}`}>
               {amountPrefix}฿
               {Math.abs(transaction.amount).toLocaleString("en-US", {
                 minimumFractionDigits: 2,
