@@ -50,15 +50,16 @@ export default function AnalyticsContainer() {
       {/* Page Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="">
-            Financial Analytics
-          </h1>
+          <h1 className="">Financial Analytics</h1>
           <p className="text-on-surface-variant mt-1">
             Visual breakdown of your expenses and savings patterns
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Calendar className="w-4 h-4 text-on-surface-variant/80" strokeWidth={1.5} />
+          <Calendar
+            className="w-4 h-4 text-on-surface-variant/80"
+            strokeWidth={1.5}
+          />
           <select className="border border-outline-variant/65 rounded-md text-on-surface-variant py-2 px-3 focus:outline-none focus:border-primary-container">
             <option>June 2026</option>
             <option>May 2026</option>
@@ -73,7 +74,10 @@ export default function AnalyticsContainer() {
         <div className="lg:col-span-2 border border-outline-variant/60 rounded-md p-6 flex flex-col justify-between items-center text-center">
           <div className="w-full flex justify-between items-center mb-6">
             <h3 className="">Structure</h3>
-            <PieChart className="w-4 h-4 text-on-surface-variant/80" strokeWidth={1.5} />
+            <PieChart
+              className="w-4 h-4 text-on-surface-variant/80"
+              strokeWidth={1.5}
+            />
           </div>
 
           {/* SVG Donut */}
@@ -132,9 +136,7 @@ export default function AnalyticsContainer() {
               />
             </svg>
             <div className="absolute flex flex-col items-center justify-center">
-              <span className="text-on-surface-variant/80">
-                Total
-              </span>
+              <span className="text-on-surface-variant/80">Total</span>
               <span className="text-xl font-bold tnum">฿10,000</span>
             </div>
           </div>
@@ -175,16 +177,17 @@ export default function AnalyticsContainer() {
 
           {/* Progress Indicators */}
           <div className="space-y-5 flex-1 flex flex-col justify-center">
-            {categorySpending.map((cat, idx) => {
+            {categorySpending.map((cat) => {
               const Icon = cat.icon;
               return (
-                <div key={idx} className="space-y-2">
+                <div key={cat.name} className="space-y-2">
                   <div className="flex justify-between items-center text-xs">
                     <div className="flex items-center gap-2">
-                      <Icon className="w-4 h-4 text-on-surface-variant/80" strokeWidth={1.5} />
-                      <span className="font-bold">
-                        {cat.name}
-                      </span>
+                      <Icon
+                        className="w-4 h-4 text-on-surface-variant/80"
+                        strokeWidth={1.5}
+                      />
+                      <span className="font-bold">{cat.name}</span>
                     </div>
                     <div className="font-semibold">
                       <span className="tnum">
@@ -211,9 +214,7 @@ export default function AnalyticsContainer() {
 
       {/* Monthly comparison bars using CSS Grid */}
       <div className="border border-outline-variant/60 rounded-md p-6">
-        <h3 className="mb-6">
-          Income vs Expenses
-        </h3>
+        <h3 className="mb-6">Income vs Expenses</h3>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 items-end h-40 pt-4">
           {/* April */}

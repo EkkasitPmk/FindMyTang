@@ -80,8 +80,8 @@ export function TransactionList({
   }
 
   return (
-    <div className="bg-white space-y-2">
-      {groupedTransactions.map((group, index) => {
+    <section className="bg-white space-y-2">
+      {groupedTransactions.map((group) => {
         const netTotal = calculateNetTotal(group.items);
         const txDate = new Date(group.items[0].transactionDate);
         const diffDays = getDiffDays(txDate);
@@ -101,7 +101,11 @@ export function TransactionList({
           getNetTotalConfig(netTotal);
 
         return (
-          <div key={`${group.dateStr}-${index}`} className="relative">
+          <div
+            key={group.dateStr}
+            className="relative"
+            data-date-group={group.dateStr}
+          >
             <div
               className={cn(
                 "sticky top-0 bg-white z-10 py-1.5 px-4",
@@ -117,7 +121,7 @@ export function TransactionList({
                 </span>
               </div>
 
-              <span className={cn("text-sm", netTotalColorClass)}>
+              <span className={cn("text-base", netTotalColorClass)}>
                 {netTotalPrefix}฿
                 {Math.abs(netTotal).toLocaleString("en-US", {
                   minimumFractionDigits: 2,
@@ -149,6 +153,6 @@ export function TransactionList({
             : "No transactions found"}
         </div>
       )}
-    </div>
+    </section>
   );
 }

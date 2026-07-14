@@ -431,7 +431,7 @@ export class TransactionService {
     assetId: string,
     amount: number,
   ): Promise<void> {
-    // TODO: asset.balance += amount
+    //  asset.balance += amount
     await this.assetRepository.incrementBalance(assetId, userId, amount);
   }
 
@@ -440,7 +440,10 @@ export class TransactionService {
     assetId: string,
     amount: number,
   ): Promise<void> {
-    // TODO: asset.balance -= amount
     await this.assetRepository.decrementBalance(assetId, userId, amount);
+  }
+
+  async getAvailableYears(userId: string): Promise<number[]> {
+    return this.transactionRepository.getAvailableYears(userId);
   }
 }

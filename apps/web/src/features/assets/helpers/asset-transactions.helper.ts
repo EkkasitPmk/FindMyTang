@@ -1,5 +1,6 @@
 import { TransactionResponse } from "../../transactions/types/transaction.type";
 import { formatDisplayDate } from "@/shared/lib/helpers/date.helper";
+import { MONTHS } from "@/shared/lib/configs/date.config";
 
 export const getAvailableYears = (transactions: TransactionResponse[]) => {
   const yearsSet = new Set<string>();
@@ -57,21 +58,6 @@ export const handleSearchMode = (
   };
 };
 
-const monthNames = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
-
 export const handleDateMode = (
   filteredItems: TransactionResponse[],
   availableYears: string[],
@@ -97,7 +83,9 @@ export const handleDateMode = (
     );
   });
   const availableMonths = Array.from(monthsSet).sort(
-    (a, b) => monthNames.indexOf(b) - monthNames.indexOf(a),
+    (a, b) =>
+      MONTHS.indexOf(b as (typeof MONTHS)[number]) -
+      MONTHS.indexOf(a as (typeof MONTHS)[number]),
   );
 
   const effectiveMonth = availableMonths.includes(selectedMonth)

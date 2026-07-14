@@ -12,6 +12,7 @@ import { useInfiniteTransactionsQuery } from "@/features/transactions/hooks/tran
 import { TransactionResponse } from "@/features/transactions/types/transaction.type";
 import { format } from "date-fns";
 import { Button } from "@/shared/components/customs/Button";
+import JournalCalendarContainer from "./JournalCalendarContainer";
 import {
   JOURNAL_TRANSACTION_TYPES,
   JournalTransactionType,
@@ -94,7 +95,7 @@ export default function JournalContainer() {
   }, [transactionsData, searchKeyword]);
 
   return (
-    <div className="flex flex-col h-[calc(100vh-130px)] bg-background space-y-4">
+    <div className="flex flex-col h-[calc(100vh-82px)] bg-background space-y-2">
       {/* 1. ใส่ Timeline สลับ Calendar */}
       <div className="px-4">
         <SegmentedControl<ViewMode>
@@ -110,7 +111,7 @@ export default function JournalContainer() {
       {viewMode === "timeline" ? (
         <>
           {/* ส่วนแสดงผล timeline */}
-          <div className="px-4 space-y-4">
+          <section className="px-4 space-y-4">
             {/* 2. แสดง ui input search transactions */}
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -260,7 +261,7 @@ export default function JournalContainer() {
                 )}
               </div>
             </div>
-          </div>
+          </section>
 
           {/* 4. แสดง transaction เรียงลงมาแบบปกติ และมี Lazy Load ด้วย Intersection Observer */}
           <div className="flex-1 overflow-y-auto relative">
@@ -277,10 +278,7 @@ export default function JournalContainer() {
           </div>
         </>
       ) : (
-        /* 5. ในส่วนของการแสดงผล Calendar แสดงแบบว่างเปล่าไว้ก่อน */
-        <div className="flex-1 flex items-center justify-center text-secondary-text h-full">
-          Calendar View
-        </div>
+        <JournalCalendarContainer />
       )}
     </div>
   );

@@ -116,7 +116,7 @@ export default function MainLayoutContainer({
 
   let mainContentClassName = "px-0 py-3 md:p-8";
   if (isMainTab) {
-    if (pathname === "/transaction") {
+    if (pathname === "/transaction" || pathname === "/journal") {
       mainContentClassName = cn("md:p-8 pb-20", "py-3");
     } else {
       mainContentClassName = cn("md:p-8 pb-20", "py-3 pt-15");
@@ -136,7 +136,9 @@ export default function MainLayoutContainer({
 
         {/* Right Content Area */}
         <div className="flex-1 flex flex-col min-w-0">
-          {isMainTab && pathname !== "/transaction" && <ShowProfileContainer />}
+          {isMainTab &&
+            pathname !== "/transaction" &&
+            pathname !== "/journal" && <ShowProfileContainer />}
 
           {/* Child Content */}
           <main
