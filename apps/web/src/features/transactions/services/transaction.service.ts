@@ -67,6 +67,11 @@ export const getTransactionsApi = async (
   return response.data;
 };
 
+export const getTransactionYearsApi = async (): Promise<number[]> => {
+  const response = await http.get<number[]>("/transactions/years");
+  return response.data;
+};
+
 export const updateTransactionApi = async (
   id: string,
   data: UpdateTransactionRequest,

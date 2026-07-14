@@ -8,6 +8,7 @@ import {
 import {
   createTransactionApi,
   getTransactionsApi,
+  getTransactionYearsApi,
   updateTransactionApi,
   deleteTransactionApi,
 } from "../services/transaction.service";
@@ -354,5 +355,25 @@ export const useDeleteTransactionMutation = (options?: {
       }
       options?.onSuccess?.();
     },
+  });
+};
+
+export const useTransactionYearsQuery = () => {
+  const isGuest = useIsGuest();
+  const guestTransactions = useGuestStore((state) => state.transactions);
+
+  return useQuery<number[], AxiosError<ApiErrorResponse>>({
+    queryKey: ["transactions", "years"],
+    queryFn: getTransactionYearsApi,
+    enabled: !isGuest,
+    initialData: isGuest
+      ? Array.from(
+          new Set(
+            guestTransactions.map((tx) =>
+              new Date(tx.transactionDate).getFullYear(),
+            ),
+          ),
+        ).sort((a, b) => b - a)
+      : undefined,
   });
 };
