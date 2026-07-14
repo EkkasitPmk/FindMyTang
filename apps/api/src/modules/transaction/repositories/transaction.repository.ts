@@ -135,4 +135,15 @@ export class TransactionRepository {
       data: { deletedAt: new Date() },
     });
   }
+
+  async getAvailableYears(userId: string): Promise<number[]> {
+    const records = await this.prisma.transaction.findMany({
+      where: { userId, deletedAt: null },
+      select: { date: true },
+      orderBy: { date: "desc" },
+    });
+    const years = new Set<number>();
+    records.forEach((r) => years.add(r.date.getFullYear()));
+    return Array.from(years);
+  }
 }

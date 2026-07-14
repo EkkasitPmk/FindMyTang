@@ -85,6 +85,12 @@ export class TransactionController {
     return toResponse(await this.transactionService.create(user.id, dto, file));
   }
 
+  @Get("years")
+  @UseGuards(JwtAuthGuard)
+  async getAvailableYears(@CurrentUser() user: User) {
+    return this.transactionService.getAvailableYears(user.id);
+  }
+
   @Get()
   @UseGuards(JwtAuthGuard)
   async findAll(
