@@ -42,6 +42,12 @@ export function TransactionItemDetails({
               {transaction.type.toLowerCase()}
             </p>
           </div>
+          {!currentAssetId && (
+            <div className="flex items-center justify-between">
+              <p className="text-secondary-text capitalize">Asset:</p>
+              <p className="font-medium">{transaction.asset?.name || "-"}</p>
+            </div>
+          )}
           <div className="flex items-center justify-between">
             <p className="text-secondary-text capitalize">Description:</p>
             <p className="font-medium text-right">{transaction.note || "-"}</p>
@@ -65,6 +71,12 @@ export function TransactionItemDetails({
               })}
             </p>
           </div>
+          {!currentAssetId && (
+            <div className="flex items-center justify-between">
+              <p className="text-secondary-text capitalize">Asset:</p>
+              <p className="font-medium">{transaction.asset?.name || "-"}</p>
+            </div>
+          )}
           <div className="flex items-center justify-between">
             <p className="text-secondary-text capitalize">Description:</p>
             <p className="font-medium text-right">{transaction.note || "-"}</p>
@@ -74,18 +86,33 @@ export function TransactionItemDetails({
 
       {isTransfer && (
         <>
-          <div className="flex items-center justify-between">
-            <p className="text-secondary-text capitalize">
-              {currentAssetId === transaction.toAssetId
-                ? "Transfer (From):"
-                : "Transfer (To):"}
-            </p>
-            <p className="font-medium">
-              {currentAssetId === transaction.toAssetId
-                ? transaction.asset?.name || "-"
-                : transaction.toAsset?.name || "-"}
-            </p>
-          </div>
+          {!currentAssetId ? (
+            <>
+              <div className="flex items-center justify-between">
+                <p className="text-secondary-text capitalize">From Asset:</p>
+                <p className="font-medium">{transaction.asset?.name || "-"}</p>
+              </div>
+              <div className="flex items-center justify-between">
+                <p className="text-secondary-text capitalize">To Asset:</p>
+                <p className="font-medium">
+                  {transaction.toAsset?.name || "-"}
+                </p>
+              </div>
+            </>
+          ) : (
+            <div className="flex items-center justify-between">
+              <p className="text-secondary-text capitalize">
+                {currentAssetId === transaction.toAssetId
+                  ? "Transfer (From):"
+                  : "Transfer (To):"}
+              </p>
+              <p className="font-medium">
+                {currentAssetId === transaction.toAssetId
+                  ? transaction.asset?.name || "-"
+                  : transaction.toAsset?.name || "-"}
+              </p>
+            </div>
+          )}
           <div className="flex items-center justify-between">
             <p className="text-secondary-text capitalize">Description:</p>
             <p className="font-medium text-right">{transaction.note || "-"}</p>
