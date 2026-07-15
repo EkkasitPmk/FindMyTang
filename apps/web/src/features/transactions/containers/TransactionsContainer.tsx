@@ -9,7 +9,7 @@ import { useCategories } from "@/features/category/hooks/category.hook";
 import { useAssets } from "@/features/assets/hooks/assets.hook";
 import {
   useCreateTransactionMutation,
-  useTransactionsQuery,
+  useTransactionQuery,
   useUpdateTransactionMutation,
   useDeleteTransactionMutation,
 } from "../hooks/transaction.hook";
@@ -57,27 +57,13 @@ export default function TransactionsContainer() {
   const hasAssetId = searchParams.has("assetId");
   const defaultAssetId = searchParams.get("assetId") || null;
   const typeParam = searchParams.get("type");
-  const isDeletedParam = searchParams.get("isDeleted") === "true";
 
-  const queryParams = useMemo(
-    () => ({
-      limit: 9999,
-      ...(hasAssetId && { assetId: defaultAssetId! }),
-      ...(isDeletedParam && { isDeleted: true }),
-    }),
-    [hasAssetId, defaultAssetId, isDeletedParam],
-  );
   const {
-    data: txData,
+    data: existingTx,
     isPending: isTxPending,
     isFetching: isTxFetching,
-  } = useTransactionsQuery(queryParams);
+  } = useTransactionQuery(editId || undefined);
   const isLoadingTx = isTxPending || isTxFetching;
-
-  const existingTx = useMemo(
-    () => txData?.items.find((t) => t.id === editId),
-    [txData, editId],
-  );
   const defaultType = useMemo(
     () => resolveDefaultTransactionType(existingTx, typeParam),
     [existingTx, typeParam],

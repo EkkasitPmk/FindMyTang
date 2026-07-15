@@ -97,7 +97,7 @@ export const createDefaultFormValues = (
 ) => ({
   amount: existingTx?.amount || 0,
   note: existingTx?.note || "",
-  transactionDate: existingTx
+  transactionDate: existingTx?.transactionDate
     ? new Date(existingTx.transactionDate).toISOString()
     : new Date().toISOString(),
   assetId: existingTx?.assetId || defaultAssetId || "",
