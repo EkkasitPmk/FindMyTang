@@ -1,12 +1,19 @@
 "use client";
 import { useState, useEffect } from "react";
 
+let globalHydrated = false;
+
 export const useMounted = () => {
-  const [mounted, setMounted] = useState(false);
+  const [mounted, setMounted] = useState(globalHydrated);
 
   useEffect(() => {
-    const id = requestAnimationFrame(() => setMounted(true));
-    return () => cancelAnimationFrame(id);
+    if (!globalHydrated) {
+      const id = requestAnimationFrame(() => {
+        globalHydrated = true;
+        setMounted(true);
+      });
+      return () => cancelAnimationFrame(id);
+    }
   }, []);
 
   return mounted;
