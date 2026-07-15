@@ -2,37 +2,34 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
-
 @theme {
   /* Neutral Colors */
-  --color-background: #FAFAFA;
-  --color-surface: #FFFFFF;
-  --color-surface-secondary: #F5F5F5;
-  --color-border: #E5E7EB;
+  --color-background: var(--semantic-background);
+  --color-surface: var(--semantic-surface);
+  --color-surface-secondary: var(--semantic-surface-secondary);
+  --color-border: var(--semantic-border);
 
-  --color-primary-text: #111827;
-  --color-secondary-text: #6B7280;
-  --color-disabled-text: #9CA3AF;
+  --color-primary-text: var(--semantic-primary-text);
+  --color-secondary-text: var(--semantic-secondary-text);
+  --color-disabled-text: var(--semantic-disabled-text);
 
   /* Brand Colors */
-  --color-primary: #2563EB;
-  --color-primary-hover: #1D4ED8;
-  --color-primary-light: #DBEAFE;
+  --color-primary: var(--semantic-primary);
+  --color-primary-hover: var(--semantic-primary-hover);
+  --color-primary-light: var(--semantic-primary-light);
 
   /* Financial Data & Status Colors */
-  --color-income: #16A34A;
-  --color-income-light: #DCFCE7;
-  --color-expense: #DC2626;
-  --color-expense-light: #FEE2E2;
-  --color-transfer: #7C3AED;
-  --color-investment: #F59E0B;
-  --color-investment-light: #FEF3C7;
-  --color-info: #0EA5E9;
-  --color-info-light: #E0F2FE;
-  --color-highlight: #EA580C;
-  --color-highlight-light: #FFEDD5;
-
+  --color-income: var(--semantic-income);
+  --color-income-light: var(--semantic-income-light);
+  --color-expense: var(--semantic-expense);
+  --color-expense-light: var(--semantic-expense-light);
+  --color-transfer: var(--semantic-transfer);
+  --color-investment: var(--semantic-investment);
+  --color-investment-light: var(--semantic-investment-light);
+  --color-info: var(--semantic-info);
+  --color-info-light: var(--semantic-info-light);
+  --color-highlight: var(--semantic-highlight);
+  --color-highlight-light: var(--semantic-highlight-light);
 }
 
 /* Micro-animations and interaction updates */
@@ -109,6 +106,29 @@
 }
 
 :root {
+  /* Semantic Color System (Light) */
+  --semantic-background: #FAFAFA;
+  --semantic-surface: #FFFFFF;
+  --semantic-surface-secondary: #F5F5F5;
+  --semantic-border: #E5E7EB;
+  --semantic-primary-text: #111827;
+  --semantic-secondary-text: #6B7280;
+  --semantic-disabled-text: #9CA3AF;
+  --semantic-primary: #2563EB;
+  --semantic-primary-hover: #1D4ED8;
+  --semantic-primary-light: #DBEAFE;
+  --semantic-income: #16A34A;
+  --semantic-income-light: #DCFCE7;
+  --semantic-expense: #DC2626;
+  --semantic-expense-light: #FEE2E2;
+  --semantic-transfer: #7C3AED;
+  --semantic-investment: #F59E0B;
+  --semantic-investment-light: #FEF3C7;
+  --semantic-info: #0EA5E9;
+  --semantic-info-light: #E0F2FE;
+  --semantic-highlight: #EA580C;
+  --semantic-highlight-light: #FFEDD5;
+
   --background: #FAFAFA;
   --foreground: #111827;
   --card: #FFFFFF;
@@ -145,6 +165,50 @@
 }
 
 .dark {
+  /* Semantic Color System (Dark) */
+  --semantic-background: #111827;
+  /* Tailwind gray-900 */
+  --semantic-surface: #1F2937;
+  /* Tailwind gray-800 */
+  --semantic-surface-secondary: #374151;
+  /* Tailwind gray-700 */
+  --semantic-border: #374151;
+  /* Tailwind gray-700 */
+  --semantic-primary-text: #F9FAFB;
+  /* Tailwind gray-50 */
+  --semantic-secondary-text: #9CA3AF;
+  /* Tailwind gray-400 */
+  --semantic-disabled-text: #4B5563;
+  /* Tailwind gray-600 */
+  --semantic-primary: #3B82F6;
+  /* Tailwind blue-500 */
+  --semantic-primary-hover: #60A5FA;
+  /* Tailwind blue-400 */
+  --semantic-primary-light: #1E3A8A;
+  /* Tailwind blue-900 */
+  --semantic-income: #22C55E;
+  /* Tailwind green-500 */
+  --semantic-income-light: #14532D;
+  /* Tailwind green-900 */
+  --semantic-expense: #EF4444;
+  /* Tailwind red-500 */
+  --semantic-expense-light: #7F1D1D;
+  /* Tailwind red-900 */
+  --semantic-transfer: #8B5CF6;
+  /* Tailwind violet-500 */
+  --semantic-investment: #F59E0B;
+  /* Tailwind amber-500 */
+  --semantic-investment-light: #78350F;
+  /* Tailwind amber-900 */
+  --semantic-info: #0EA5E9;
+  /* Tailwind sky-500 */
+  --semantic-info-light: #0C4A6E;
+  /* Tailwind sky-900 */
+  --semantic-highlight: #F97316;
+  /* Tailwind orange-500 */
+  --semantic-highlight-light: #7C2D12;
+  /* Tailwind orange-900 */
+
   --background: #111827;
   --foreground: #FAFAFA;
   --card: #1F2937;
