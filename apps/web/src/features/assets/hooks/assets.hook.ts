@@ -368,6 +368,7 @@ interface AssetUIStore {
   setSortType: (
     value: "DATE_NEWEST" | "DATE_OLDEST" | "AMOUNT_HIGHEST" | "AMOUNT_LOWEST",
   ) => void;
+  resetFilters: () => void;
 }
 
 export const useAssetUIStore = create<AssetUIStore>((set) => ({
@@ -385,4 +386,11 @@ export const useAssetUIStore = create<AssetUIStore>((set) => ({
   setFilterType: (value) => set({ filterType: value }),
   sortType: "DATE_NEWEST",
   setSortType: (value) => set({ sortType: value }),
+  resetFilters: () =>
+    set({
+      isSearchMode: false,
+      searchKeyword: "",
+      filterType: "ALL",
+      sortType: "DATE_NEWEST",
+    }),
 }));

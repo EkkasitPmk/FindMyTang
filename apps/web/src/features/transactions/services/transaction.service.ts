@@ -57,14 +57,27 @@ export const createTransactionApi = async (
   return response.data;
 };
 
-export const getTransactionsApi = async (
-  params?: TransactionQuery,
-): Promise<PaginatedTransactionResponse> => {
-  const response = await http.get<PaginatedTransactionResponse>(
+export const getTransactionsApi = async (query?: TransactionQuery) => {
+  const { data } = await http.get<PaginatedTransactionResponse>(
     "/transactions",
-    { params },
+    { params: query },
   );
-  return response.data;
+  return data;
+};
+
+export const getAvailableDatesApi = async (assetId?: string) => {
+  const { data } = await http.get<Record<string, string[]>>(
+    "/transactions/available-dates",
+    {
+      params: { assetId },
+    },
+  );
+  return data;
+};
+
+export const getTransactionApi = async (id: string) => {
+  const { data } = await http.get<TransactionResponse>(`/transactions/${id}`);
+  return data;
 };
 
 export const getTransactionYearsApi = async (): Promise<number[]> => {

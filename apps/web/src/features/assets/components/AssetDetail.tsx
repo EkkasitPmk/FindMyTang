@@ -44,6 +44,9 @@ interface AssetDetailProps {
   yearRef: RefObject<HTMLDivElement | null>;
   isSearchMode?: boolean;
   searchKeyword?: string;
+  fetchNextPage?: () => void;
+  hasNextPage?: boolean;
+  isFetchingNextPage?: boolean;
 }
 
 export default function AssetDetail({
@@ -79,6 +82,9 @@ export default function AssetDetail({
   yearRef,
   isSearchMode,
   searchKeyword,
+  fetchNextPage,
+  hasNextPage,
+  isFetchingNextPage,
 }: Readonly<AssetDetailProps>) {
   const viewOptionsList = ["Recent Transactions", "Show deleted items"];
 
@@ -118,7 +124,9 @@ export default function AssetDetail({
         <section className="relative flex flex-col items-center justify-center mt-6">
           <div
             className="px-3 py-1 rounded-full bg-opacity-10 mb-2"
-            style={{ backgroundColor: `${asset?.color || DEFAULT_ASSET_COLOR}1A` }}
+            style={{
+              backgroundColor: `${asset?.color || DEFAULT_ASSET_COLOR}1A`,
+            }}
           >
             <p
               className="font-semibold text-lg tracking-widest uppercase"
@@ -218,6 +226,9 @@ export default function AssetDetail({
           isSearchMode={isSearchMode}
           searchKeyword={searchKeyword}
           page="asset"
+          fetchNextPage={fetchNextPage}
+          hasNextPage={hasNextPage}
+          isFetchingNextPage={isFetchingNextPage}
         />
       </section>
 

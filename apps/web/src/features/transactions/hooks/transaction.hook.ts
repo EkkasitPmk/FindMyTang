@@ -11,6 +11,8 @@ import {
   getTransactionYearsApi,
   updateTransactionApi,
   deleteTransactionApi,
+  getAvailableDatesApi,
+  getTransactionApi,
 } from "../services/transaction.service";
 import {
   TransactionResponse,
@@ -375,5 +377,52 @@ export const useTransactionYearsQuery = () => {
           ),
         ).sort((a, b) => b - a)
       : undefined,
+  });
+};
+
+export const useAvailableDatesQuery = (assetId?: string) => {
+  const isGuest = useIsGuest();
+  const guestTransactions = useGuestStore((state) => state.transactions);
+
+  return useQuery<Record<string, string[]>, AxiosError<ApiErrorResponse>>({
+    queryKey: ["transactions", "availableDates", assetId],
+    queryFn: () => getAvailableDatesApi(assetId),
+    enabled: !isGuest,
+    initialData: isGuest
+      ? (() => {
+          const datesMap: Record<string, Set<string>> = {};
+          const MONTHS = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December",
+          ];
+          guestTransactions
+            .filter((tx) => !tx.deletedAt && (!assetId || tx.assetId === assetId || tx.toAssetId === assetId))
+            .forEach((tx) => {
+              const date = new Date(tx.transactionDate);
+              const year = date.getFullYear().toString();
+              const month = MONTHS[date.getMonth()];
+              if (!datesMap[year]) datesMap[year] = new Set();
+              datesMap[year].add(month);
+            });
+          const result: Record<string, string[]> = {};
+          for (const year in datesMap) {
+            result[year] = Array.from(datesMap[year]);
+          }
+          return result;
+        })()
+      : undefined,
+  });
+};
+
+export const useTransactionQuery = (id?: string) => {
+  const isGuest = useIsGuest();
+  const guestTransactions = useGuestStore((state) => state.transactions);
+
+  return useQuery<TransactionResponse, AxiosError<ApiErrorResponse>>({
+    queryKey: ["transaction", id],
+    queryFn: () => getTransactionApi(id!),
+    enabled: !!id && !isGuest,
+    initialData:
+      isGuest && id ? guestTransactions.find((t) => t.id === id) : undefined,
   });
 };
