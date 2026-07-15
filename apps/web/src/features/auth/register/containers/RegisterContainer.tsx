@@ -8,11 +8,13 @@ import { useRegisterMutation } from "../hooks/register.hook";
 import { registerSchema, RegisterFormValues } from "../schemas/register.schema";
 import RegisterForm from "../components/RegisterForm";
 import { handleFormError } from "@/shared/lib/helpers/form.helper";
+import LoadingModal from "@/shared/components/customs/LoadingModal";
 
 export default function RegisterContainer() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   const {
     register,
@@ -32,6 +34,7 @@ export default function RegisterContainer() {
 
   const { mutate: registerUser, isPending } = useRegisterMutation({
     onSuccess: () => {
+      setIsRedirecting(true);
       toast.success("Registration successful! Redirecting to login...");
       // Redirect to login page on success
       router.push("/login");
@@ -63,18 +66,24 @@ export default function RegisterContainer() {
   };
 
   return (
-    <RegisterForm
-      register={register}
-      handleSubmit={handleSubmit}
-      onSubmit={onSubmit}
-      errors={errors}
-      isPending={isPending}
-      showPassword={showPassword}
-      showConfirmPassword={showConfirmPassword}
-      onToggleShowPassword={() => setShowPassword(!showPassword)}
-      onToggleShowConfirmPassword={() =>
-        setShowConfirmPassword(!showConfirmPassword)
-      }
-    />
+    <>
+      <RegisterForm
+        register={register}
+        handleSubmit={handleSubmit}
+        onSubmit={onSubmit}
+        errors={errors}
+        isPending={isPending || isRedirecting}
+        showPassword={showPassword}
+        showConfirmPassword={showConfirmPassword}
+        onToggleShowPassword={() => setShowPassword(!showPassword)}
+        onToggleShowConfirmPassword={() =>
+          setShowConfirmPassword(!showConfirmPassword)
+        }
+      />
+      <LoadingModal
+        isOpen={isPending || isRedirecting}
+        message="Registering..."
+      />
+    </>
   );
 }
