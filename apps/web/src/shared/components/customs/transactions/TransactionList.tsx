@@ -80,7 +80,7 @@ export function TransactionList({
   }
 
   return (
-    <section className="bg-white space-y-2">
+    <section className="bg-surface space-y-2">
       {groupedTransactions.map((group) => {
         const netTotal = calculateNetTotal(group.items);
         const txDate = new Date(group.items[0].transactionDate);
@@ -108,7 +108,7 @@ export function TransactionList({
           >
             <div
               className={cn(
-                "sticky top-0 bg-white z-10 py-1.5 px-4",
+                "sticky top-0 bg-surface z-10 py-1.5 px-4",
                 "flex justify-between items-center",
               )}
             >

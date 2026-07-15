@@ -43,7 +43,7 @@ export default function AvatarSection({
         >
           <Avatar url={user?.avatarUrl} size={72} iconSize={26} />
           {!isUpdating && (
-            <span className="absolute bottom-0 right-0 z-10 bg-white p-1 rounded-full border border-border group-hover:bg-primary-light transition-colors">
+            <span className="absolute bottom-0 right-0 z-10 bg-surface p-1 rounded-full border border-border group-hover:bg-primary-light transition-colors">
               <Pencil
                 size={14}
                 className="text-secondary-text group-hover:text-primary"
@@ -58,7 +58,7 @@ export default function AvatarSection({
             type="button"
             disabled={isUpdating}
             onClick={onRemoveAvatar}
-            className="absolute -top-2 -right-1 z-10 bg-white hover:bg-expense-light/20 text-secondary-text hover:text-expense p-0.5 rounded-full border border-border shadow-xs transition-all hover:scale-110 cursor-pointer flex items-center justify-center"
+            className="absolute -top-2 -right-1 z-10 bg-surface hover:bg-expense-light/20 text-secondary-text hover:text-expense p-0.5 rounded-full border border-border shadow-xs transition-all hover:scale-110 cursor-pointer flex items-center justify-center"
             title={t("removeAvatar")}
           >
             <CircleX size={16} />
@@ -77,7 +77,7 @@ export default function AvatarSection({
             className="fixed inset-0 z-10 cursor-default w-full h-full bg-transparent border-none p-0 outline-none"
             onClick={onCloseSelectingAvatar}
           />
-          <div className="absolute top-full mt-1 w-full max-w-sm bg-white border border-border rounded-lg p-4 z-20 shadow-sm animate-in slide-in-from-top-2 duration-200">
+          <div className="absolute top-full mt-1 w-full max-w-sm bg-surface border border-border rounded-lg p-4 z-20 shadow-sm animate-in slide-in-from-top-2 duration-200">
             <p className="text-xs font-semibold text-secondary-text mb-3 uppercase tracking-wider text-center">
               {t("selectAvatar")}
             </p>

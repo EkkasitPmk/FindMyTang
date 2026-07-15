@@ -62,7 +62,7 @@ export default function RecentJournalContainer() {
       </div>
 
       {groupedTransactions.length === 0 && !isLoading ? (
-        <div className="bg-white flex flex-col items-center gap-3 py-8 rounded-md border-2 border-border border-dashed">
+        <div className="bg-surface flex flex-col items-center gap-3 py-8 rounded-md border-2 border-border border-dashed">
           <div className="flex items-center">
             <span className="bg-surface-secondary p-4 rounded-full">
               <ClipboardPenLine className="text-secondary-text" size={24} />

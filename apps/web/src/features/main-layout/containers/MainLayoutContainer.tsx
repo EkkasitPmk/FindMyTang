@@ -169,7 +169,7 @@ export default function MainLayoutContainer({
                   placeholder="Search by note or category..."
                   value={searchKeyword}
                   onChange={(e) => setSearchKeyword(e.target.value)}
-                  className="h-8 text-sm flex-1 bg-white"
+                  className="h-8 text-sm flex-1 bg-surface"
                 />
                 <Button
                   variant="unstyled"

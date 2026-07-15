@@ -102,8 +102,8 @@ export default function NavContainer() {
         onClose={closeLogoutConfirm}
         onConfirm={handleLogout}
         icon={LogOut}
-        title="Log Out?"
-        des="Are you sure you want to log out of your account?"
+        title="Sign out?"
+        des="Are you sure you want to sign out of your account?"
       />
     </>
   );
