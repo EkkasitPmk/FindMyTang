@@ -62,7 +62,7 @@ export default function CategoryGrid({
         onClick={onNewCategoryClick}
         className="flex flex-col items-center justify-center gap-3 border border-border border-dashed p-4 rounded-lg cursor-pointer hover:bg-surface-variant/10 transition-colors"
       >
-        <span className="bg-gray-200 p-2 rounded-lg text-gray-600">
+        <span className="bg-surface-secondary p-2 rounded-lg text-secondary-text">
           <Plus size={16} />
         </span>
         <span className="text-xs font-medium truncate">New Category</span>

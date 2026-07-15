@@ -38,7 +38,7 @@ export default function TransactionAssetList({
 
     if (assets.length === 0) {
       return (
-        <p className="text-xs text-red-500 border border-error text-center py-4 rounded-md my-1">
+        <p className="text-xs text-expense border border-error text-center py-4 rounded-md my-1">
           No assets found. Please add an asset first.
         </p>
       );
@@ -77,7 +77,7 @@ export default function TransactionAssetList({
 
     if (availableAssets.length === 0) {
       return (
-        <p className="text-xs text-red-500 border border-error text-center py-4 rounded-md">
+        <p className="text-xs text-expense border border-error text-center py-4 rounded-md">
           You need at least two assets to make a transfer.
         </p>
       );

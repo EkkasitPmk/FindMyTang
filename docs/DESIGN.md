@@ -43,7 +43,7 @@
 | `transfer`               | `#7C3AED` (ม่วง)   | -          | รายการโอนเงิน (Transfer)                                               |
 | `investment` / `warning` | `#F59E0B` (เหลือง) | `#FEF3C7`  | การลงทุน (Investment), รายการรอตรวจสอบ (Pending), แจ้งเตือน (Reminder) |
 | `info`                   | `#0EA5E9` (ฟ้า)    | `#E0F2FE`  | ข้อมูลทั่วไป (Information)                                             |
-| `accent`                 | `#EA580C` (ส้ม)    | `#FFEDD5`  | เน้นจุดดึงสายตาเฉพาะจุด, Badge, Asset Card                             |
+| `highlight`              | `#EA580C` (ส้ม)    | `#FFEDD5`  | เน้นจุดดึงสายตาเฉพาะจุด, Badge, Asset Card                             |
 
 ---
 
@@ -63,4 +63,4 @@
 | ตัวเลขรายจ่าย                              | `expense`                    |
 | รายการโอนเงิน                              | `transfer`                   |
 | รายการการลงทุน                             | `investment`                 |
-| การแจ้งเตือน / Badge ไฮไลต์                | `accent`                     |
+| การแจ้งเตือน / Badge ไฮไลต์                | `highlight`                  |

@@ -31,8 +31,8 @@ export default function FinancialSnapshotContainer() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col px-3 py-4 bg-white rounded-md border border-gray-300 gap-2 min-h-27.5 justify-center">
-        <span className="text-xs font-medium uppercase tracking-widest text-gray-500">
+      <div className="flex flex-col px-3 py-4 bg-surface rounded-md border border-border gap-2 min-h-27.5 justify-center">
+        <span className="text-xs font-medium uppercase tracking-widest text-secondary-text">
           FINANCIAL SNAPSHOT
         </span>
         <Skeleton className="h-8 w-48 mb-1" />
@@ -45,8 +45,8 @@ export default function FinancialSnapshotContainer() {
 
   if (!hasAssets) {
     return (
-      <div className="flex flex-col px-3 py-4 bg-white rounded-md border border-gray-300 gap-2">
-        <span className="text-xs font-medium uppercase tracking-widest text-gray-500">
+      <div className="flex flex-col px-3 py-4 bg-surface rounded-md border border-border gap-2">
+        <span className="text-xs font-medium uppercase tracking-widest text-secondary-text">
           FINANCIAL SNAPSHOT
         </span>
         <span className="text-3xl font-bold">฿ 0</span>
@@ -60,11 +60,11 @@ export default function FinancialSnapshotContainer() {
   }
 
   return (
-    <section className="flex flex-col px-3 py-4 bg-white rounded-md border border-gray-300 gap-2">
-      <span className="text-xs font-medium uppercase tracking-widest text-gray-500">
+    <section className="flex flex-col px-3 py-4 bg-surface rounded-md border border-border gap-2">
+      <span className="text-xs font-medium uppercase tracking-widest text-secondary-text">
         FINANCIAL SNAPSHOT
       </span>
-      <span className="text-3xl font-bold text-gray-900">
+      <span className="text-3xl font-bold text-primary-text">
         ฿{" "}
         {netWorth.toLocaleString(undefined, {
           minimumFractionDigits: 0,
@@ -74,8 +74,8 @@ export default function FinancialSnapshotContainer() {
       <div className="flex items-center gap-1">
         {netChange >= 0 ? (
           <>
-            <ArrowUp className="text-[#10b981]" size={16} />
-            <span className="text-sm text-[#10b981] font-medium">
+            <ArrowUp className="text-income" size={16} />
+            <span className="text-sm text-income font-medium">
               +
               {netChange.toLocaleString(undefined, {
                 minimumFractionDigits: 0,
@@ -86,8 +86,8 @@ export default function FinancialSnapshotContainer() {
           </>
         ) : (
           <>
-            <ArrowDown className="text-red-500" size={16} />
-            <span className="text-sm text-red-500 font-medium">
+            <ArrowDown className="text-expense" size={16} />
+            <span className="text-sm text-expense font-medium">
               {netChange.toLocaleString(undefined, {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 2,

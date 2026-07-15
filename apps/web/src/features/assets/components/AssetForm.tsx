@@ -76,7 +76,7 @@ export default function AssetForm({
             variant="unstyled"
             type="button"
             onClick={onClose}
-            className="w-full border border-gray-300 rounded-lg py-2.5 text-sm font-medium hover:bg-gray-100 transition-colors cursor-pointer text-gray-700 bg-white shadow-sm"
+            className="w-full border border-border rounded-lg py-2.5 text-sm font-medium hover:bg-surface-secondary transition-colors cursor-pointer text-secondary-text bg-surface shadow-sm"
           >
             Cancel
           </Button>
@@ -92,7 +92,7 @@ export default function AssetForm({
         </>
       }
     >
-      <p className="text-sm text-on-surface-variant">
+      <p className="text-sm text-secondary-text">
         {isEdit
           ? "Update your financial account or wallet details."
           : "Add a new financial account or wallet to track your balance."}
@@ -102,7 +102,7 @@ export default function AssetForm({
       <div className="flex flex-col gap-1.5 relative">
         <label
           htmlFor="type"
-          className="text-sm font-semibold text-on-surface-variant"
+          className="text-sm font-semibold text-secondary-text"
         >
           Asset Type
         </label>
@@ -118,12 +118,12 @@ export default function AssetForm({
               "w-full h-12 pl-10 pr-4 text-left bg-background border rounded-lg outline-none transition-all cursor-pointer flex items-center justify-between",
               errors.type
                 ? "border-error focus:border-error"
-                : "border-outline/20 focus:border-primary/50 focus:ring-2 focus:ring-primary/20",
+                : "border-border/20 focus:border-primary/50 focus:ring-2 focus:ring-primary/20",
             )}
           >
-            <span className="font-medium text-gray-700">{selected}</span>
+            <span className="font-medium text-secondary-text">{selected}</span>
             <svg
-              className={`w-5 h-5 transition-transform duration-200 ${isOpen ? "rotate-0 text-primary" : "-rotate-90 text-gray-400"}`}
+              className={`w-5 h-5 transition-transform duration-200 ${isOpen ? "rotate-0 text-primary" : "-rotate-90 text-disabled-text"}`}
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -139,14 +139,14 @@ export default function AssetForm({
           </Button>
         </div>
         {isOpen && (
-          <ul className="absolute top-19 w-full bg-white border border-gray-200 rounded-lg shadow-xl py-1.5 z-20 max-h-52 overflow-y-auto animate-in fade-in zoom-in-95">
+          <ul className="absolute top-19 w-full bg-surface border border-border rounded-lg shadow-xl py-1.5 z-20 max-h-52 overflow-y-auto animate-in fade-in zoom-in-95">
             {assetTypeList.map((type) => (
               <li key={type}>
                 <Button
                   variant="unstyled"
                   type="button"
                   className={cn(
-                    "w-full px-4 py-2.5 text-sm flex items-center justify-between hover:bg-gray-50 cursor-pointer text-left transition-colors",
+                    "w-full px-4 py-2.5 text-sm flex items-center justify-between hover:bg-surface-secondary cursor-pointer text-left transition-colors",
                     selected === type &&
                       "bg-primary/5 text-primary font-medium",
                   )}
@@ -180,13 +180,13 @@ export default function AssetForm({
       <div className="flex flex-col gap-1.5">
         <label
           htmlFor="name"
-          className="text-sm font-semibold text-on-surface-variant"
+          className="text-sm font-semibold text-secondary-text"
         >
           Asset Name
         </label>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-            <Tag size={18} className="text-gray-400" />
+            <Tag size={18} className="text-disabled-text" />
           </div>
           <Input
             id="name"
@@ -209,13 +209,13 @@ export default function AssetForm({
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor="balance"
-            className="text-sm font-semibold text-on-surface-variant"
+            className="text-sm font-semibold text-secondary-text"
           >
             Initial Balance
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <span className="font-semibold text-gray-400">฿</span>
+              <span className="font-semibold text-disabled-text">฿</span>
             </div>
             <Input
               id="balance"
@@ -242,10 +242,10 @@ export default function AssetForm({
 
       {/* Color Selection */}
       <div className="flex flex-col gap-1.5">
-        <p className="text-sm font-semibold text-on-surface-variant flex items-center justify-between">
+        <p className="text-sm font-semibold text-secondary-text flex items-center justify-between">
           Theme Color
         </p>
-        <div className="grid grid-cols-7 gap-2 p-3 bg-gray-50/50 rounded-lg border border-gray-100">
+        <div className="grid grid-cols-7 gap-2 p-3 bg-surface-secondary/50 rounded-lg border border-border">
           {ASSET_COLORS.map((color) => (
             <Button
               variant="unstyled"

@@ -39,7 +39,7 @@ export default function ShowProfileContainer() {
           aria-label="Notifications"
           className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-variant transition-colors active:scale-95 duration-200"
         >
-          <span className="material-symbols-outlined text-on-surface-variant">
+          <span className="material-symbols-outlined text-secondary-text">
             notifications
           </span>
         </Button>

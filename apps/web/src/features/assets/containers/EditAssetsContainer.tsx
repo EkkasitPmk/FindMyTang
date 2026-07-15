@@ -40,7 +40,7 @@ export default function EditAssetsContainer({
     defaultValues: {
       name: asset.name,
       type: asset.type,
-      color: asset.color || "#2563EB",
+      color: asset.color || "var(--color-primary)",
     },
   });
 
@@ -52,7 +52,7 @@ export default function EditAssetsContainer({
     reset({
       name: asset.name,
       type: asset.type,
-      color: asset.color || "#2563EB",
+      color: asset.color || "var(--color-primary)",
     });
   }, [asset, reset]);
 

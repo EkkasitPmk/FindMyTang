@@ -70,7 +70,7 @@ export function TransactionItem({
           )
         }
         className={cn(
-          "w-full text-left flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-gray-50 focus:outline-none focus:bg-gray-50 transition-colors",
+          "w-full text-left flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-surface-secondary focus:outline-none focus:bg-surface-secondary transition-colors",
         )}
       >
         <TransactionIcon transaction={transaction} />
@@ -80,7 +80,7 @@ export function TransactionItem({
               <span className="text-base capitalize truncate">
                 {displayTitle}
               </span>
-              <span className="text-xs text-gray-500 truncate">
+              <span className="text-xs text-secondary-text truncate">
                 {transaction.note}
               </span>
             </div>
@@ -96,7 +96,7 @@ export function TransactionItem({
             <ChevronDown
               size={18}
               className={cn(
-                "text-gray-400 transition-transform",
+                "text-disabled-text transition-transform",
                 isExpanded && "-rotate-x-180",
               )}
             />

@@ -56,7 +56,7 @@ export default function ManageAssetActions({
       <Button
         size="sm"
         variant="ghost"
-        className="flex-1 text-gray-600 hover:text-gray-900"
+        className="flex-1 text-secondary-text hover:text-primary-text"
         onClick={(e) => {
           e.stopPropagation();
           onEdit();
@@ -83,7 +83,7 @@ export default function ManageAssetActions({
         <Button
           size="sm"
           variant="ghost"
-          className="flex-1 text-orange-600 hover:text-orange-700 hover:bg-orange-50"
+          className="flex-1 text-highlight hover:text-highlight hover:bg-highlight-light"
           onClick={(e) => {
             e.stopPropagation();
             onArchive();

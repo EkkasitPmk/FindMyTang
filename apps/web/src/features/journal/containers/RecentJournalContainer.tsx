@@ -62,16 +62,16 @@ export default function RecentJournalContainer() {
       </div>
 
       {groupedTransactions.length === 0 && !isLoading ? (
-        <div className="bg-white flex flex-col items-center gap-3 py-8 rounded-md border-2 border-gray-200 border-dashed">
+        <div className="bg-white flex flex-col items-center gap-3 py-8 rounded-md border-2 border-border border-dashed">
           <div className="flex items-center">
-            <span className="bg-gray-100 p-4 rounded-full">
-              <ClipboardPenLine className="text-gray-600" size={24} />
+            <span className="bg-surface-secondary p-4 rounded-full">
+              <ClipboardPenLine className="text-secondary-text" size={24} />
             </span>
           </div>
-          <span className="text-base font-normal text-gray-600">
+          <span className="text-base font-normal text-secondary-text">
             Your financial timeline starts here.
           </span>
-          <span className="text-base font-normal text-gray-600 text-center max-w-68">
+          <span className="text-base font-normal text-secondary-text text-center max-w-68">
             Log your first transaction to see your spending patterns and history
             in action.
           </span>

@@ -46,7 +46,7 @@ export function TransactionList({
 }: Readonly<TransactionListProps>) {
   if (isSearchMode && !searchKeyword) {
     return (
-      <div className="flex flex-col items-center justify-center h-full text-gray-400">
+      <div className="flex flex-col items-center justify-center h-full text-disabled-text">
         <p>Type to search transactions</p>
       </div>
     );
@@ -147,7 +147,7 @@ export function TransactionList({
         );
       })}
       {!groupedTransactions?.length && (
-        <div className="p-4 text-center text-gray-500">
+        <div className="p-4 text-center text-secondary-text">
           {isSearchMode
             ? "No matching transactions found"
             : "No transactions found"}

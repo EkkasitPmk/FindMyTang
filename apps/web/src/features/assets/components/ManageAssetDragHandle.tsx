@@ -32,7 +32,7 @@ export default function ManageAssetDragHandle({
     >
       <GripVertical
         size={16}
-        className="text-gray-400 cursor-grab active:cursor-grabbing"
+        className="text-disabled-text cursor-grab active:cursor-grabbing"
       />
     </div>
   );

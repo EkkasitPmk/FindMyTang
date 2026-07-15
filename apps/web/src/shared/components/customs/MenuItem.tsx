@@ -5,7 +5,7 @@ interface MenuItemProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 export default function MenuItem({
-  className = "hover:bg-gray-50",
+  className = "hover:bg-surface-secondary",
   children,
   ...props
 }: Readonly<MenuItemProps>) {

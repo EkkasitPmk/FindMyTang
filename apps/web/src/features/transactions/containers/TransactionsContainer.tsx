@@ -349,7 +349,7 @@ export default function TransactionsContainer() {
             variant="unstyled"
             type="button"
             onClick={() => router.back()}
-            className="p-1 -ml-1 cursor-pointer hover:bg-gray-100 transition-colors"
+            className="p-1 -ml-1 cursor-pointer hover:bg-surface-secondary transition-colors"
           >
             <ChevronLeft size={24} />
           </Button>
@@ -366,7 +366,7 @@ export default function TransactionsContainer() {
           <Button
             variant="unstyled"
             type="button"
-            className="p-1 cursor-pointer hover:bg-gray-100 transition-colors text-red-500 rounded-full"
+            className="p-1 cursor-pointer hover:bg-surface-secondary transition-colors text-expense rounded-full"
             onClick={openDeleteModal}
           >
             <Trash size={20} />
@@ -398,7 +398,7 @@ export default function TransactionsContainer() {
               />
               <input type="hidden" name="amount" value={numericAmount} />
               {errors.amount && (
-                <p className="text-red-500 text-xs">{errors.amount.message}</p>
+                <p className="text-expense text-xs">{errors.amount.message}</p>
               )}
             </>
           )}

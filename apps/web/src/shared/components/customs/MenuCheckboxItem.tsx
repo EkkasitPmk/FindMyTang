@@ -24,7 +24,7 @@ export default function MenuCheckboxItem({
     <div
       role="menuitem"
       tabIndex={0}
-      className={`relative flex items-center ${hasSubMenu ? "justify-between" : ""} gap-2 w-full px-3 py-1.5 hover:bg-gray-50 cursor-pointer`}
+      className={`relative flex items-center ${hasSubMenu ? "justify-between" : ""} gap-2 w-full px-3 py-1.5 hover:bg-surface-secondary cursor-pointer`}
       onClick={(e) => {
         e.stopPropagation();
         onClick();
@@ -51,7 +51,7 @@ export default function MenuCheckboxItem({
         />
       )}
       {hasSubMenu && isSubMenuOpen && children && (
-        <div className="absolute top-full left-0 w-full bg-white flex flex-col py-1 shadow-md rounded-md z-50 border border-gray-100">
+        <div className="absolute top-full left-0 w-full bg-surface flex flex-col py-1 shadow-md rounded-md z-50 border border-border">
           {children}
         </div>
       )}

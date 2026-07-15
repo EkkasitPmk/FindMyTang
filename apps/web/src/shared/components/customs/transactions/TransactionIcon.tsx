@@ -30,7 +30,7 @@ export function TransactionIcon({
 
   if (transaction.type === "TRANSFER") {
     return (
-      <span className="bg-gray-100 rounded-lg p-2 text-blue-500">
+      <span className="bg-surface-secondary rounded-lg p-2 text-transfer">
         <ArrowRightLeft size={18} />
       </span>
     );
@@ -38,7 +38,7 @@ export function TransactionIcon({
 
   if (transaction.type === "ADJUSTMENT") {
     return (
-      <span className="bg-gray-100 rounded-lg p-2 text-purple-500">
+      <span className="bg-surface-secondary rounded-lg p-2 text-transfer">
         <SlidersHorizontal size={18} />
       </span>
     );

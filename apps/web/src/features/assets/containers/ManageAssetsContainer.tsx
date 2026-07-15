@@ -244,7 +244,7 @@ export default function ManageAssetsContainer() {
         {SKELETON_ITEMS.map((i) => (
           <div
             key={`manage-skeleton-${i}`}
-            className="flex items-center justify-between bg-white px-3 py-2.5 rounded-lg border-l-4 border-gray-200"
+            className="flex items-center justify-between bg-surface px-3 py-2.5 rounded-lg border-l-4 border-border"
           >
             <div className="flex items-center gap-3">
               <Skeleton className="h-9.5 w-9.5 rounded-full" />
@@ -307,8 +307,8 @@ export default function ManageAssetsContainer() {
 
         {/* Deleted Assets Section */}
         {deletedAssets.length > 0 && (
-          <div className="space-y-1 pt-4 border-t border-gray-100">
-            <span className="text-xs font-medium text-gray-400 uppercase tracking-wider px-1">
+          <div className="space-y-1 pt-4 border-t border-border">
+            <span className="text-xs font-medium text-disabled-text uppercase tracking-wider px-1">
               Archived / Deleted
             </span>
             {deletedAssets.map((asset) => (
@@ -340,7 +340,7 @@ export default function ManageAssetsContainer() {
 
         {/* Empty state */}
         {localActiveAssets.length === 0 && deletedAssets.length === 0 && (
-          <div className="flex flex-col items-center justify-center h-[70vh] text-gray-500 text-base">
+          <div className="flex flex-col items-center justify-center h-[70vh] text-secondary-text text-base">
             No assets found.
           </div>
         )}
@@ -348,15 +348,15 @@ export default function ManageAssetsContainer() {
 
       {/* Bulk Bottom Bar */}
       {isEditingList && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-[0_-4px_10px_-4px_rgba(0,0,0,0.1)] z-50 flex items-center justify-between gap-2 overflow-x-auto">
-          <span className="text-sm font-medium text-gray-700 whitespace-nowrap pl-2">
+        <div className="fixed bottom-0 left-0 right-0 bg-surface border-t border-border p-4 shadow-[0_-4px_10px_-4px_rgba(0,0,0,0.1)] z-50 flex items-center justify-between gap-2 overflow-x-auto">
+          <span className="text-sm font-medium text-secondary-text whitespace-nowrap pl-2">
             {selectedIds.size} selected
           </span>
           <div className="flex gap-2 min-w-max">
             {hasActiveSelected && (
               <Button
                 variant="default"
-                className="bg-amber-100 hover:bg-amber-200 text-amber-700 rounded-full px-4 text-xs h-9"
+                className="bg-investment-light hover:bg-investment/20 text-investment rounded-full px-4 text-xs h-9"
                 disabled={selectedIds.size === 0}
                 onClick={openBulkArchiveModal}
               >

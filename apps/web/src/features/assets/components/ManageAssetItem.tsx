@@ -85,7 +85,7 @@ export default function ManageAssetItem({
     selectionIndicator = isSelected ? (
       <CheckCircle2 size={18} className="text-primary fill-primary/10" />
     ) : (
-      <Circle size={18} className="text-gray-300" />
+      <Circle size={18} className="text-disabled-text" />
     );
   }
 
@@ -101,7 +101,7 @@ export default function ManageAssetItem({
         {asset.name}
       </span>
       {isInactive && (
-        <span className="text-[11px] text-gray-500 font-medium">
+        <span className="text-[11px] text-secondary-text font-medium">
           {isDeleted ? "Deleted" : "Archived"}
         </span>
       )}
@@ -122,7 +122,7 @@ export default function ManageAssetItem({
         <ChevronDown
           size={16}
           className={cn(
-            "text-gray-400 transition-transform",
+            "text-disabled-text transition-transform",
             isExpanded && "-rotate-x-180",
           )}
         />
@@ -158,7 +158,7 @@ export default function ManageAssetItem({
       {isExpanded && !isEditingList && (
         <div
           className={cn(
-            "flex items-center gap-2 px-3 py-2 border-t border-gray-100",
+            "flex items-center gap-2 px-3 py-2 border-t border-border",
             "animate-subtle-pop",
           )}
         >

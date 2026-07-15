@@ -30,7 +30,7 @@ export const getTopRowText = (diffDays: number | null) => {
 };
 
 export const getNetTotalConfig = (netTotal: number) => {
-  if (netTotal > 0) return { colorClass: "text-green-600", prefix: "+" };
-  if (netTotal < 0) return { colorClass: "text-red-600", prefix: "-" };
-  return { colorClass: "text-gray-500", prefix: "" };
+  if (netTotal > 0) return { colorClass: "text-income", prefix: "+" };
+  if (netTotal < 0) return { colorClass: "text-expense", prefix: "-" };
+  return { colorClass: "text-secondary-text", prefix: "" };
 };

@@ -196,7 +196,7 @@ export default function CUCategoryModal({
             ACCENT COLOR
           </p>
         </div>
-        <div className="grid grid-cols-7 gap-2 p-3 max-h-[16vh] overflow-auto bg-gray-50/50 rounded-lg border border-gray-100">
+        <div className="grid grid-cols-7 gap-2 p-3 max-h-[16vh] overflow-auto bg-surface-secondary/50 rounded-lg border border-border">
           {PREMIUM_COLORS.map((color) => {
             const isSelected = selectedColor === color;
             return (
