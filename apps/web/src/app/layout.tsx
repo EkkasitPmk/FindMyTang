@@ -27,6 +27,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={cn("antialiased", GeistSans.variable, GeistMono.variable)}
     >
       <body className="bg-background min-h-screen flex flex-col">
