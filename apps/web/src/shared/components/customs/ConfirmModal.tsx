@@ -126,7 +126,9 @@ export default function ConfirmModal({
                       : `border-border bg-surface group-hover:${colors.border}`
                   }`}
                 >
-                  {isHardDelete && <Check size={12} strokeWidth={3} />}
+                  {isHardDelete && (
+                    <Check size={12} strokeWidth={3} className="text-white" />
+                  )}
                 </div>
                 <input
                   type="checkbox"

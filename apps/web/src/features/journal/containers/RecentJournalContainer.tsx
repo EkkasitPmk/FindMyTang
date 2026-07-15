@@ -6,24 +6,18 @@ import { TransactionResponse } from "@/features/transactions/types/transaction.t
 import { format } from "date-fns";
 import { useMemo } from "react";
 import Link from "next/link";
+import { cn } from "@/shared/lib/utils/core.util";
 
 export default function RecentJournalContainer() {
   const mounted = useMounted();
 
-  const {
-    data: transactionsData,
-    isPending: isTransactionsPending,
-    isFetching: isTransactionsFetching,
-  } = useTransactionsQuery({
-    limit: 5,
-    sortType: "DATE_NEWEST",
-  });
+  const { data: transactionsData, isPending: isTransactionsPending } =
+    useTransactionsQuery({
+      limit: 5,
+      sortType: "DATE_NEWEST",
+    });
 
-  const isLoading =
-    !mounted ||
-    isTransactionsPending ||
-    (isTransactionsFetching &&
-      (!transactionsData?.items || transactionsData.items.length === 0));
+  const isLoading = !mounted || isTransactionsPending;
 
   const groupedTransactions = useMemo(() => {
     if (!transactionsData?.items) return [];
@@ -47,8 +41,17 @@ export default function RecentJournalContainer() {
   }, [transactionsData]);
 
   return (
-    <section>
-      <div className="flex items-center justify-between mb-2 px-4">
+    <section
+      className={cn(
+        groupedTransactions.length === 0 && !isLoading && "px-4 mb-2",
+      )}
+    >
+      <div
+        className={cn(
+          "flex items-center justify-between mb-2",
+          groupedTransactions.length > 0 && "px-4",
+        )}
+      >
         <span className="text-lg font-medium">Recent Journal</span>
         {groupedTransactions.length > 0 && (
           <Link

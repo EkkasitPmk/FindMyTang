@@ -90,12 +90,11 @@ export default function AssetDetail({
 
   if (isLoading) {
     return (
-      <div className="flex flex-col h-[calc(100vh-110px)] space-y-4">
+      <div className="flex flex-col h-[calc(100vh-124px)] space-y-4">
         <section className="relative flex flex-col items-center justify-center mt-6">
           <Skeleton className="h-9 w-30 rounded-full mb-2" />
           <Skeleton className="h-10 w-48" />
         </section>
-
         <section className="mb-2 px-4">
           <Skeleton className="h-10 w-full rounded-md mb-1" />
           <Skeleton className="h-4 w-14 mb-1" />
@@ -104,7 +103,6 @@ export default function AssetDetail({
             <Skeleton className="h-8 w-1/2 rounded-md" />
           </div>
         </section>
-
         <section className="flex-1 space-y-4 overflow-hidden">
           {SKELETON_GROUPS.map((i) => (
             <div key={`skeleton-group-${i}`} className="space-y-1 my-2">
@@ -119,7 +117,7 @@ export default function AssetDetail({
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-110px)] space-y-4">
+    <div className="flex flex-col h-[calc(100vh-124px)] space-y-4">
       {!isSearchMode && (
         <section className="relative flex flex-col items-center justify-center mt-6">
           <div
@@ -202,7 +200,7 @@ export default function AssetDetail({
         </section>
       )}
 
-      <section className="flex-1 overflow-y-auto relative">
+      <section className="flex-1 overflow-y-auto relative m-0">
         {isSearchMode && (
           <div className="flex items-end justify-end">
             <DropdownSelect

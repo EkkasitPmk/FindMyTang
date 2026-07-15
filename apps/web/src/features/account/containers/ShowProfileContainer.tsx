@@ -4,10 +4,26 @@ import Link from "next/link";
 import { cn } from "@/shared/lib/utils/core.util";
 import Avatar from "@/shared/components/customs/Avatar";
 import { useMeQuery } from "@/features/nav/hooks/auth.hook";
+import { useIsGuest } from "@/shared/lib/storages/guest.storage";
+import { format } from "date-fns";
+import { Skeleton } from "@/shared/components/ui/skeleton";
+import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 
 export default function ShowProfileContainer() {
   const pathname = usePathname();
-  const { data: user } = useMeQuery();
+  const { data: user, isLoading } = useMeQuery();
+  const isGuest = useIsGuest();
+  const mounted = useMounted();
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour >= 12 && hour < 17) return "Good Afternoon ⛅️";
+    if (hour >= 17) return "Good Evening 🌙";
+    return "Good Morning ☀️";
+  };
+
+  const displayName = isGuest ? "Guest" : user?.displayName || "User";
+  const currentDate = mounted ? format(new Date(), "d MMMM yyyy") : "";
 
   return (
     <header
@@ -21,15 +37,25 @@ export default function ShowProfileContainer() {
       <div className="flex items-center gap-2">
         <Link
           href="/settings/account"
-          className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden bg-surface-secondary border border-border"
+          className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden bg-surface-secondary border border-border shrink-0"
         >
           <Avatar url={user?.avatarUrl} size={40} />
         </Link>
         <div className="flex flex-col">
-          <h1 className="text-base font-medium leading-tight">
-            Good Morning ☀️
-          </h1>
-          <p className="text-body-sm">13 June 2026</p>
+          {isLoading && !isGuest ? (
+            <Skeleton className="h-5 w-32 mb-1" />
+          ) : (
+            <h1 className="text-base font-medium leading-tight line-clamp-1">
+              {getGreeting().split(" ")[0]} {getGreeting().split(" ")[1]}{" "}
+              {displayName} {getGreeting().split(" ")[2]}
+            </h1>
+          )}
+
+          {mounted ? (
+            <p className="text-body-sm">{currentDate}</p>
+          ) : (
+            <Skeleton className="h-4 w-24" />
+          )}
         </div>
       </div>
 

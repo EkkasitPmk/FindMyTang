@@ -321,7 +321,7 @@ export default function TransactionsContainer() {
     <form
       onSubmit={handleSubmit(onSubmit)}
       onReset={handleResetForm}
-      className="pb-26"
+      className={cn(isMoreDetailsOpen && "pb-28")}
     >
       <header
         className={cn(
@@ -441,7 +441,7 @@ export default function TransactionsContainer() {
           isLoadingTx={!!(editId && (!mounted || isLoadingTx))}
         />
 
-        <section className="fixed bottom-18 left-0 right-0 mx-4 bg-background pt-2">
+        <section className="fixed bottom-16 left-0 right-0 mx-4 pb-4 bg-background pt-2">
           <Button
             variant="unstyled"
             type="submit"

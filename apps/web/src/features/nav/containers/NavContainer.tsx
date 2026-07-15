@@ -9,12 +9,14 @@ import DesktopSidebar from "../components/DesktopSidebar";
 import MobileBottomNav from "../components/MobileBottomNav";
 import MobileDrawer from "../components/MobileDrawer";
 import ConfirmModal from "@/shared/components/customs/ConfirmModal";
+import LoadingModal from "@/shared/components/customs/LoadingModal";
 import { useConfirmModal } from "@/shared/lib/hooks/useConfirmModal.hook";
 
 export default function NavContainer() {
   const pathname = usePathname();
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isLoggingOutLocal, setIsLoggingOutLocal] = useState(false);
   const {
     isOpen: logoutConfirmOpen,
     open: openLogoutConfirm,
@@ -26,7 +28,7 @@ export default function NavContainer() {
 
   const { data: user, isLoading } = useMeQuery();
 
-  const { mutate: logoutUser } = useLogoutMutation({
+  const { mutate: logoutUser, isPending: isLogoutPending } = useLogoutMutation({
     onSuccess: () => {
       toast.success("Successfully logged out");
       router.push("/login");
@@ -55,6 +57,7 @@ export default function NavContainer() {
   const handleLogout = () => {
     closeLogoutConfirm();
     if (isGuest) {
+      setIsLoggingOutLocal(true);
       setGuestMode(false);
       clearGuestData();
       toast.success("Guest session cleared");
@@ -63,6 +66,8 @@ export default function NavContainer() {
       logoutUser();
     }
   };
+
+  const isLoggingOut = isLogoutPending || isLoggingOutLocal;
 
   return (
     <>
@@ -105,6 +110,9 @@ export default function NavContainer() {
         title="Sign out?"
         des="Are you sure you want to sign out of your account?"
       />
+
+      {/* Loading Modal for Logout */}
+      <LoadingModal isOpen={isLoggingOut} message="Signing out..." />
     </>
   );
 }
