@@ -43,7 +43,7 @@ export default function PersonalInfoForm({
       </p>
 
       <form onSubmit={handleSubmit(onUpdateProfile)} className="m-0">
-        <div className="bg-white rounded-b-none rounded-md border border-border p-4 m-0">
+        <div className="bg-surface rounded-b-none rounded-md border border-border p-4 m-0">
           <div className="space-y-1">
             <p className="text-xs text-secondary-text font-semibold uppercase">
               {t("displayName")}
@@ -86,7 +86,7 @@ export default function PersonalInfoForm({
         </div>
       </form>
 
-      <div className="bg-white rounded-t-none rounded-md border-t-0 border border-border p-4">
+      <div className="bg-surface rounded-t-none rounded-md border-t-0 border border-border p-4">
         <div className="space-y-1">
           <p className="text-xs text-secondary-text font-semibold uppercase">
             {t("emailAddressLabel")}

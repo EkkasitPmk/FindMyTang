@@ -140,8 +140,8 @@ export default function AccountContainer() {
           <div className="w-24 h-24 rounded-full bg-surface-secondary border border-border" />
         </div>
         <div className="space-y-4">
-          <div className="h-20 bg-white border border-border rounded-md" />
-          <div className="h-16 bg-white border border-border rounded-md" />
+          <div className="h-20 bg-surface border border-border rounded-md" />
+          <div className="h-16 bg-surface border border-border rounded-md" />
         </div>
       </div>
     );
@@ -180,7 +180,7 @@ export default function AccountContainer() {
           <Button
             variant="unstyled"
             onClick={() => setIsPasswordModalOpen(true)}
-            className="w-full bg-white rounded-md border border-border p-4 text-left hover:bg-surface-secondary transition-colors cursor-pointer"
+            className="w-full bg-surface rounded-md border border-border p-4 text-left hover:bg-surface-secondary transition-colors cursor-pointer"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-secondary-text">
@@ -199,7 +199,7 @@ export default function AccountContainer() {
           <Button
             variant="unstyled"
             onClick={openDeleteModal}
-            className="w-full bg-white rounded-md border text-xs font-semibold text-expense uppercase border-expense/60 p-4 text-left hover:bg-expense-light/20 hover:border-expense transition-colors cursor-pointer"
+            className="w-full bg-surface rounded-md border text-xs font-semibold text-expense uppercase border-expense/60 p-4 text-left hover:bg-expense-light/20 hover:border-expense transition-colors cursor-pointer"
           >
             {t("deleteAccountBtn")}
           </Button>

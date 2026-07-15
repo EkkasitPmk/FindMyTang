@@ -257,7 +257,7 @@ export default function AssetForm({
               aria-label={`Select color ${color}`}
             >
               {currentColor === color && (
-                <div className="bg-white/30 rounded-full p-0.5 backdrop-blur-sm shadow-sm">
+                <div className="bg-surface/30 rounded-full p-0.5 backdrop-blur-sm shadow-sm">
                   <Check size={16} className="text-white drop-shadow-md" />
                 </div>
               )}

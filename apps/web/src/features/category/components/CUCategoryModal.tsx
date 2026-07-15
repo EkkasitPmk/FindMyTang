@@ -210,7 +210,7 @@ export default function CUCategoryModal({
                 aria-label={`Select color ${color}`}
               >
                 {isSelected && (
-                  <div className="bg-white/30 rounded-full p-0.5 backdrop-blur-sm shadow-sm">
+                  <div className="bg-surface/30 rounded-full p-0.5 backdrop-blur-sm shadow-sm">
                     <Check size={16} className="text-white drop-shadow-md" />
                   </div>
                 )}
@@ -231,7 +231,7 @@ export default function CUCategoryModal({
             >
               <div className="w-full h-full rounded-full bg-surface/50 flex items-center justify-center border border-white/20">
                 {selectedColor === customColor ? (
-                  <div className="bg-white/30 rounded-full p-0.5 backdrop-blur-sm shadow-sm">
+                  <div className="bg-surface/30 rounded-full p-0.5 backdrop-blur-sm shadow-sm">
                     <Check size={16} className="text-white drop-shadow-md" />
                   </div>
                 ) : (

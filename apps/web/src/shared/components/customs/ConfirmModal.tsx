@@ -25,7 +25,7 @@ export default function ConfirmModal({
   icon: Icon,
   title,
   des,
-  confirmLabel = "Log Out",
+  confirmLabel = "Sign out",
   withHardDeleteOption,
   hardDeleteCheckboxLabel = "Delete permanently",
   expectedInputToConfirm,

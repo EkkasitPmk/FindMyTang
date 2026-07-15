@@ -223,7 +223,7 @@ export default function AssetDetail({
 
       {/* nav action bottom */}
       {!isSearchMode && (
-        <section className="fixed bottom-0 right-0 left-0 py-2 px-4 border-t border-border bg-white z-50">
+        <section className="fixed bottom-0 right-0 left-0 py-2 px-4 border-t border-border bg-surface z-50">
           <div className="flex gap-3">
             <Button
               variant="unstyled"
