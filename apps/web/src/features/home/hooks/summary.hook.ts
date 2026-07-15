@@ -10,7 +10,7 @@ export const useThisMonthSummary = () => {
   const guestAssets = useGuestStore((state) => state.assets);
 
   return useQuery<TodaySummary, AxiosError>({
-    queryKey: ["summary", "monthly"],
+    queryKey: ["summary", "monthly", isGuest],
     queryFn: getThisMonthSummaryApi,
     enabled: !isGuest,
     initialData: isGuest

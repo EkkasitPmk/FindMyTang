@@ -115,7 +115,7 @@ export const useAssets = (options?: { includeDeleted?: boolean }) => {
   const includeDeleted = options?.includeDeleted ?? false;
 
   return useQuery<Asset[], AxiosError<ApiErrorResponse>>({
-    queryKey: ["assets", { includeDeleted }],
+    queryKey: ["assets", { includeDeleted }, isGuest],
     queryFn: () => getAssetsApi(includeDeleted),
     enabled: !isGuest,
     initialData: isGuest ? guestAssets : undefined,

@@ -240,7 +240,7 @@ export const useTransactionsQuery = (params?: TransactionQuery) => {
   }
 
   return useQuery<PaginatedTransactionResponse, AxiosError<ApiErrorResponse>>({
-    queryKey: ["transactions", params],
+    queryKey: ["transactions", params, isGuest],
     queryFn: () => getTransactionsApi(params),
     enabled: !isGuest,
     initialData: isGuest
@@ -365,7 +365,7 @@ export const useTransactionYearsQuery = () => {
   const guestTransactions = useGuestStore((state) => state.transactions);
 
   return useQuery<number[], AxiosError<ApiErrorResponse>>({
-    queryKey: ["transactions", "years"],
+    queryKey: ["transactions", "years", isGuest],
     queryFn: getTransactionYearsApi,
     enabled: !isGuest,
     initialData: isGuest
@@ -385,18 +385,34 @@ export const useAvailableDatesQuery = (assetId?: string) => {
   const guestTransactions = useGuestStore((state) => state.transactions);
 
   return useQuery<Record<string, string[]>, AxiosError<ApiErrorResponse>>({
-    queryKey: ["transactions", "availableDates", assetId],
+    queryKey: ["transactions", "availableDates", assetId, isGuest],
     queryFn: () => getAvailableDatesApi(assetId),
     enabled: !isGuest,
     initialData: isGuest
       ? (() => {
           const datesMap: Record<string, Set<string>> = {};
           const MONTHS = [
-            "January", "February", "March", "April", "May", "June",
-            "July", "August", "September", "October", "November", "December",
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
           ];
           guestTransactions
-            .filter((tx) => !tx.deletedAt && (!assetId || tx.assetId === assetId || tx.toAssetId === assetId))
+            .filter(
+              (tx) =>
+                !tx.deletedAt &&
+                (!assetId ||
+                  tx.assetId === assetId ||
+                  tx.toAssetId === assetId),
+            )
             .forEach((tx) => {
               const date = new Date(tx.transactionDate);
               const year = date.getFullYear().toString();
@@ -419,7 +435,7 @@ export const useTransactionQuery = (id?: string) => {
   const guestTransactions = useGuestStore((state) => state.transactions);
 
   return useQuery<TransactionResponse, AxiosError<ApiErrorResponse>>({
-    queryKey: ["transaction", id],
+    queryKey: ["transaction", id, isGuest],
     queryFn: () => getTransactionApi(id!),
     enabled: !!id && !isGuest,
     initialData:

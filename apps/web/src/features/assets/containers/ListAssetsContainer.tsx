@@ -24,14 +24,11 @@ export default function ListAssetsContainer({
 
   const mounted = useMounted();
 
-  const {
-    data: assets,
-    isPending: isAssetsPending,
-    isFetching: isAssetsFetching,
-  } = useAssets();
-  const { data: summary } = useThisMonthSummary();
+  const { data: assets, isPending: isAssetsPending } = useAssets();
+  const { data: summary, isPending: isSummaryPending } = useThisMonthSummary();
 
-  const isLoading = !mounted || isAssetsPending || isAssetsFetching;
+  const isLoading = !mounted || isAssetsPending;
+  const isSummaryLoading = !mounted || isSummaryPending;
 
   const renderAssetsList = () => {
     if (isLoading) {
@@ -167,7 +164,7 @@ export default function ListAssetsContainer({
           <div className="flex gap-4">
             <div className="flex flex-col grow w-full px-4 py-3 rounded-md bg-surface border border-border/30">
               <span className="text-sm font-medium">Income</span>
-              {isLoading ? (
+              {isSummaryLoading ? (
                 <Skeleton className="h-6 w-24" />
               ) : (
                 <span className="text-base font-bold">
@@ -177,7 +174,7 @@ export default function ListAssetsContainer({
             </div>
             <div className="flex flex-col grow w-full px-4 py-3 rounded-md bg-surface border border-border/30">
               <span className="text-sm font-medium">Expense</span>
-              {isLoading ? (
+              {isSummaryLoading ? (
                 <Skeleton className="h-6 w-24" />
               ) : (
                 <span className="text-base font-bold">

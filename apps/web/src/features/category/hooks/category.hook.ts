@@ -105,7 +105,7 @@ export const useCategories = () => {
   const guestCategories = useGuestStore((state) => state.categories);
 
   return useQuery<Category[], AxiosError<ApiErrorResponse>>({
-    queryKey: ["categories"],
+    queryKey: ["categories", isGuest],
     queryFn: getCategoriesApi,
     enabled: !isGuest,
     initialData: isGuest ? guestCategories : undefined,

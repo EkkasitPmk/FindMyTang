@@ -7,27 +7,14 @@ import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 export default function FinancialSnapshotContainer() {
   const mounted = useMounted();
 
-  const {
-    data: assets,
-    isPending: isAssetsPending,
-    isFetching: isAssetsFetching,
-  } = useAssets();
-  const {
-    data: summary,
-    isPending: isSummaryPending,
-    isFetching: isSummaryFetching,
-  } = useThisMonthSummary();
+  const { data: assets, isPending: isAssetsPending } = useAssets();
+  const { data: summary, isPending: isSummaryPending } = useThisMonthSummary();
 
   // ponytail: The backend now provides totalNetWorth directly, avoiding frontend calculations.
   const netWorth = summary?.totalNetWorth || 0;
   const netChange = summary?.net || 0;
 
-  const isLoading =
-    !mounted ||
-    isAssetsPending ||
-    isAssetsFetching ||
-    isSummaryPending ||
-    isSummaryFetching;
+  const isLoading = !mounted || isAssetsPending || isSummaryPending;
 
   if (isLoading) {
     return (
