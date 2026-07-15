@@ -30,21 +30,9 @@
   --color-investment-light: #FEF3C7;
   --color-info: #0EA5E9;
   --color-info-light: #E0F2FE;
-  --color-accent: #EA580C;
-  --color-accent-light: #FFEDD5;
+  --color-highlight: #EA580C;
+  --color-highlight-light: #FFEDD5;
 
-  /* 
-    ponytail: backward compatibility for M3 to semantic mapping. 
-    Ceiling: Limits color granularity on legacy components.
-    Upgrade path: Replace legacy classes (like text-on-surface-variant) in components with semantic classes and delete this block.
-  */
-  --color-error: #DC2626;
-  --color-success: #16A34A;
-  --color-warning: #F59E0B;
-  --color-on-surface-variant: #6B7280;
-  --color-primary-container: #DBEAFE;
-  --color-outline: #E5E7EB;
-  --color-outline-variant: #E5E7EB;
 }
 
 /* Micro-animations and interaction updates */

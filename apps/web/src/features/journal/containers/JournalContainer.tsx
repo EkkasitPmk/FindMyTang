@@ -147,7 +147,7 @@ export default function JournalContainer() {
                       "flex-none px-4 py-1.5 rounded-full text-sm font-medium transition-colors",
                       selectedType === type.value
                         ? "bg-primary text-white"
-                        : "bg-white border border-border text-secondary-text hover:bg-gray-50",
+                        : "bg-surface border border-border text-secondary-text hover:bg-surface-secondary",
                     )}
                   >
                     {type.label}
@@ -162,13 +162,13 @@ export default function JournalContainer() {
                     setIsSortOpen(!isSortOpen);
                     if (!isSortOpen) setOpenSortSubMenu(null);
                   }}
-                  className="p-1.5 bg-white border border-border rounded-md text-secondary-text hover:bg-gray-50"
+                  className="p-1.5 bg-surface border border-border rounded-md text-secondary-text hover:bg-surface-secondary"
                 >
                   <ArrowUpDown size={18} />
                 </Button>
 
                 {isSortOpen && (
-                  <div className="absolute right-0 top-full mt-1 flex flex-col items-start w-44 bg-white rounded-md py-1 shadow-md z-50 border border-gray-100">
+                  <div className="absolute right-0 top-full mt-1 flex flex-col items-start w-44 bg-surface rounded-md py-1 shadow-md z-50 border border-border">
                     <MenuItem
                       onClick={(e) => {
                         e.stopPropagation();
@@ -191,7 +191,7 @@ export default function JournalContainer() {
                         )}
                       />
                       {openSortSubMenu === "DATE" && (
-                        <div className="absolute top-full right-0 w-full bg-white flex flex-col py-1 shadow-md rounded-md z-50 border border-gray-100">
+                        <div className="absolute top-full right-0 w-full bg-surface flex flex-col py-1 shadow-md rounded-md z-50 border border-border">
                           <MenuCheckboxItem
                             label="Newest First"
                             labelSize="sm"
@@ -235,7 +235,7 @@ export default function JournalContainer() {
                         )}
                       />
                       {openSortSubMenu === "MONEY" && (
-                        <div className="absolute top-full right-0 w-full bg-white flex flex-col py-1 shadow-md rounded-md z-50 border border-gray-100">
+                        <div className="absolute top-full right-0 w-full bg-surface flex flex-col py-1 shadow-md rounded-md z-50 border border-border">
                           <MenuCheckboxItem
                             label="Highest Amount"
                             labelSize="sm"

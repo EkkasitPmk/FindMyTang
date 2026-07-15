@@ -77,14 +77,14 @@ export default function ConfirmModal({
       focusBorder: "focus:border-primary",
     },
     warning: {
-      bg: "bg-amber-500",
-      text: "text-amber-500",
-      bgLight: "bg-amber-100",
-      border: "border-amber-500",
-      hoverBg: "hover:bg-amber-600",
-      disabledBg: "bg-amber-500/50",
-      focusRing: "focus:ring-amber-500",
-      focusBorder: "focus:border-amber-500",
+      bg: "bg-investment",
+      text: "text-investment",
+      bgLight: "bg-investment-light",
+      border: "border-investment",
+      hoverBg: "hover:bg-investment",
+      disabledBg: "bg-investment/50",
+      focusRing: "focus:ring-investment",
+      focusBorder: "focus:border-investment",
     },
   };
 

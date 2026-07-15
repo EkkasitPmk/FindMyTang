@@ -42,7 +42,7 @@ export default function ChooseADate({
           classNames={{
             month: "flex w-full flex-col gap-2",
             week: "mt-1 flex w-full",
-            day_button: "data-[selected-single=true]:bg-blue-500 h-8",
+            day_button: "data-[selected-single=true]:bg-primary h-8",
             day: "h-8",
           }}
         />
@@ -63,7 +63,7 @@ export default function ChooseADate({
             className={cn(
               "flex-1 transition-colors",
               diffDays === preset.value
-                ? "bg-blue-50 text-blue-500 border-blue-500 hover:bg-blue-50 hover:text-blue-600"
+                ? "bg-primary-light text-primary border-primary hover:bg-primary-light hover:text-blue-600"
                 : "",
             )}
             onClick={() => onPresetClick(preset.value)}
@@ -74,7 +74,7 @@ export default function ChooseADate({
       </CardFooter>
       <Button
         type="button"
-        className="mb-2 mx-2 py-4 bg-blue-500 text-white"
+        className="mb-2 mx-2 py-4 bg-primary text-white"
         onClick={onConfirm}
       >
         Confirm

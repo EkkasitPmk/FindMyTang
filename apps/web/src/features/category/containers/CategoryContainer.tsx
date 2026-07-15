@@ -309,7 +309,7 @@ export default function CategoryContainer() {
       </div>
 
       {/* Select Option Tab */}
-      <div className="flex border-b border-outline/10 mb-1 cursor-pointer">
+      <div className="flex border-b border-border/10 mb-1 cursor-pointer">
         <Button
           variant="unstyled"
           type="button"
@@ -317,7 +317,7 @@ export default function CategoryContainer() {
           className={`grow text-center py-2 text-base font-medium border-b-2 ${
             activeTab === "EXPENSE"
               ? "border-primary text-primary"
-              : "border-transparent text-on-surface-variant hover:text-on-surface"
+              : "border-transparent text-secondary-text hover:text-primary-text"
           }`}
         >
           Expenses
@@ -329,7 +329,7 @@ export default function CategoryContainer() {
           className={`grow text-center py-2 text-base font-medium border-b-2 ${
             activeTab === "INCOME"
               ? "border-primary text-primary"
-              : "border-transparent text-on-surface-variant hover:text-on-surface"
+              : "border-transparent text-secondary-text hover:text-primary-text"
           }`}
         >
           Income

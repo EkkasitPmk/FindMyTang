@@ -40,7 +40,7 @@ export default function CreateAssetsContainer({
       name: "",
       type: AssetType.CASH,
       balance: "",
-      color: "#2563EB",
+      color: "var(--color-primary)",
     },
   });
 

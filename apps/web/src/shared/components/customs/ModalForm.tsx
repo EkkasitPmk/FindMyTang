@@ -50,7 +50,7 @@ export function ModalForm({
         {/* Header */}
         <div
           className={cn(
-            "flex items-center justify-between px-6 py-4 border-b border-border bg-gray-50/50",
+            "flex items-center justify-between px-6 py-4 border-b border-border bg-surface-secondary/50",
             headerClassName,
           )}
         >
@@ -59,7 +59,7 @@ export function ModalForm({
             variant="unstyled"
             type="button"
             onClick={onClose}
-            className="p-2 -mr-2 text-muted-foreground hover:text-foreground hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
+            className="p-2 -mr-2 text-muted-foreground hover:text-foreground hover:bg-surface-secondary rounded-full transition-colors cursor-pointer"
           >
             <X size={20} />
           </Button>
@@ -79,7 +79,7 @@ export function ModalForm({
         {footer && (
           <div
             className={cn(
-              "flex items-center gap-3 px-6 py-4 bg-gray-50/80 border-t border-border mt-auto",
+              "flex items-center gap-3 px-6 py-4 bg-surface-secondary/80 border-t border-border mt-auto",
               footerClassName,
             )}
           >

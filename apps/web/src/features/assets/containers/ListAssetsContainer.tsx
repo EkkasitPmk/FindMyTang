@@ -40,7 +40,7 @@ export default function ListAssetsContainer({
           {SKELETON_ASSETS.map((i) => (
             <div
               key={`asset-skeleton-${i}`}
-              className="flex items-center justify-between bg-white px-3 py-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors border-l-4 border-gray-200"
+              className="flex items-center justify-between bg-surface px-3 py-2 rounded-lg cursor-pointer hover:bg-surface-secondary transition-colors border-l-4 border-border"
             >
               <div className="flex items-center gap-3">
                 <Skeleton className="h-9.5 w-9.5 rounded-full" />
@@ -51,7 +51,7 @@ export default function ListAssetsContainer({
               </div>
               <div className="flex items-center gap-1">
                 <Skeleton className="h-5 w-20" />
-                <ChevronRight size={18} className="text-gray-200" />
+                <ChevronRight size={18} className="text-disabled-text" />
               </div>
             </div>
           ))}
@@ -68,7 +68,7 @@ export default function ListAssetsContainer({
               <Link
                 href={`/assets?id=${asset.id}&name=${encodeURIComponent(asset.name)}`}
                 key={asset.id}
-                className="flex items-center justify-between bg-white px-3 py-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors border-l-4"
+                className="flex items-center justify-between bg-surface px-3 py-2 rounded-lg cursor-pointer hover:bg-surface-secondary transition-colors border-l-4"
                 style={{
                   borderLeftColor: asset.color || "transparent",
                 }}
@@ -78,7 +78,7 @@ export default function ListAssetsContainer({
                     className={
                       asset.color
                         ? "p-2.5 rounded-full"
-                        : "bg-gray-100 p-2.5 rounded-full"
+                        : "bg-surface-secondary p-2.5 rounded-full"
                     }
                     style={
                       asset.color
@@ -91,7 +91,7 @@ export default function ListAssetsContainer({
                   >
                     {getAssetIcon(asset.type, asset.color)}
                   </span>
-                  <div className="flex flex-col text-gray-800">
+                  <div className="flex flex-col text-primary-text">
                     <span className="text-base font-semibold">
                       {asset.name}
                     </span>
@@ -99,10 +99,10 @@ export default function ListAssetsContainer({
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
-                  <span className="font-semibold text-base text-gray-900">
+                  <span className="font-semibold text-base text-primary-text">
                     ฿ {asset.balance.toLocaleString()}
                   </span>
-                  <ChevronRight size={18} className="text-gray-400" />
+                  <ChevronRight size={18} className="text-disabled-text" />
                 </div>
               </Link>
             ))}
@@ -112,13 +112,13 @@ export default function ListAssetsContainer({
     }
 
     return (
-      <div className="bg-white flex flex-col items-center gap-3 py-8 rounded-md border-2 border-gray-200 border-dashed">
+      <div className="bg-surface flex flex-col items-center gap-3 py-8 rounded-md border-2 border-border border-dashed">
         <div className="flex items-center">
-          <span className="bg-gray-100 p-4 rounded-full">
-            <Landmark className="text-gray-600" size={24} />
+          <span className="bg-surface-secondary p-4 rounded-full">
+            <Landmark className="text-secondary-text" size={24} />
           </span>
         </div>
-        <span className="text-base font-normal text-gray-600">
+        <span className="text-base font-normal text-secondary-text">
           No assets linked yet
         </span>
         <Button
@@ -148,24 +148,24 @@ export default function ListAssetsContainer({
               Assets
               <ChevronRight
                 size={18}
-                className="text-gray-400 group-hover:text-primary transition-colors"
+                className="text-disabled-text group-hover:text-primary transition-colors"
               />
             </Link>
             <Button
               variant="unstyled"
               type="button"
-              className="flex items-center justify-center bg-gray-100 hover:bg-gray-200 transition-colors p-1 rounded-full cursor-pointer"
+              className="flex items-center justify-center bg-surface-secondary hover:bg-border transition-colors p-1 rounded-full cursor-pointer"
               onClick={onAddAsset}
               aria-label="Add Asset"
             >
-              <Plus size={18} className="text-gray-600" />
+              <Plus size={18} className="text-secondary-text" />
             </Button>
           </div>
 
           {renderAssetsList()}
 
           <div className="flex gap-4">
-            <div className="flex flex-col grow w-full px-4 py-3 rounded-md bg-white border border-outline-variant/30">
+            <div className="flex flex-col grow w-full px-4 py-3 rounded-md bg-surface border border-border/30">
               <span className="text-sm font-medium">Income</span>
               {isLoading ? (
                 <Skeleton className="h-6 w-24" />
@@ -175,7 +175,7 @@ export default function ListAssetsContainer({
                 </span>
               )}
             </div>
-            <div className="flex flex-col grow w-full px-4 py-3 rounded-md bg-white border border-outline-variant/30">
+            <div className="flex flex-col grow w-full px-4 py-3 rounded-md bg-surface border border-border/30">
               <span className="text-sm font-medium">Expense</span>
               {isLoading ? (
                 <Skeleton className="h-6 w-24" />

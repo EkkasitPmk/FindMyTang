@@ -31,15 +31,15 @@ export const DropdownSelect = forwardRef<HTMLDivElement, DropdownSelectProps>(
           variant="unstyled"
           type="button"
           onClick={onToggle}
-          className="w-full text-left p-2 border-b text-gray-800 border-border hover:bg-gray-50 focus:outline-none"
+          className="w-full text-left p-2 border-b text-primary-text border-border hover:bg-surface-secondary focus:outline-none"
         >
           <span>{selected}</span>
           <svg
-            className={`w-5 h-5 inline float-right transition-transform duration-200 ${isOpen ? "rotate-0" : "-rotate-90"}`}
+            className={`w-5 h-5 inline float-right transition-transform duration-200 text-secondary-text ${isOpen ? "rotate-0" : "-rotate-90"}`}
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 26 26"
-            stroke="#6B7280"
+            stroke="currentColor"
           >
             <path
               strokeLinecap="round"
@@ -51,7 +51,7 @@ export const DropdownSelect = forwardRef<HTMLDivElement, DropdownSelectProps>(
         </Button>
 
         {isOpen && (
-          <ul className="absolute top-full w-full bg-white border border-border rounded py-1 z-20">
+          <ul className="absolute top-full w-full bg-surface border border-border rounded py-1 z-20">
             {options.map((option) => {
               const isSelected = option === selected;
               let bgClass = "";
@@ -75,7 +75,7 @@ export const DropdownSelect = forwardRef<HTMLDivElement, DropdownSelectProps>(
                       "w-full text-left p-2 cursor-pointer focus:outline-none transition-colors",
                       isSelected
                         ? "text-white font-medium"
-                        : "text-gray-800 hover:text-white focus:text-white",
+                        : "text-primary-text hover:text-white focus:text-white",
                       bgClass,
                     )}
                     onClick={() => {

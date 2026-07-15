@@ -95,31 +95,31 @@ export const getManageAssetItemClasses = ({
   draggable: boolean;
   hasColor: boolean;
 }) => {
-  let titleClass = "text-gray-800";
-  if (isDeleted) titleClass = "text-gray-400 line-through";
-  else if (isArchived) titleClass = "text-gray-400";
+  let titleClass = "text-primary-text";
+  if (isDeleted) titleClass = "text-disabled-text line-through";
+  else if (isArchived) titleClass = "text-disabled-text";
 
-  let rowBgClass = "hover:bg-gray-50";
-  if (isExpanded) rowBgClass = "bg-gray-50";
+  let rowBgClass = "hover:bg-surface-secondary";
+  if (isExpanded) rowBgClass = "bg-surface-secondary";
   else if (isEditingList) rowBgClass = isSelected ? "bg-primary/10" : "";
 
   const iconBgClass =
     hasColor && !isInactive
       ? "p-2.5 rounded-full"
-      : "bg-gray-100 p-2.5 rounded-full";
+      : "bg-surface-secondary p-2.5 rounded-full";
 
   const containerBase =
     "rounded-lg border-l-4 overflow-hidden transition-all duration-200";
   const containerState = isInactive
-    ? "bg-gray-50 opacity-60 border-l-gray-300"
-    : "bg-white";
+    ? "bg-surface-secondary opacity-60 border-l-border"
+    : "bg-surface";
   const containerDrag = draggable ? "cursor-grab active:cursor-grabbing" : "";
 
   const headerBase =
     "w-full flex items-center justify-between px-3 py-2.5 transition-colors";
   const headerState = isEditingList ? "cursor-default" : "cursor-pointer";
 
-  const balanceClass = isInactive ? "text-gray-400" : "text-gray-900";
+  const balanceClass = isInactive ? "text-disabled-text" : "text-primary-text";
 
   return {
     titleClass,

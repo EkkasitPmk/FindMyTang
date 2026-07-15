@@ -64,7 +64,7 @@ export default function TransactionMoreDetails({
   const renderAttachment = () => {
     if (file && filePreview) {
       return (
-        <div className="w-full min-h-113 flex flex-col items-center justify-center rounded-md border-2 border-border relative overflow-hidden bg-gray-50/50">
+        <div className="w-full min-h-113 flex flex-col items-center justify-center rounded-md border-2 border-border relative overflow-hidden bg-surface-secondary/50">
           <Image
             src={filePreview}
             alt="attachment preview"
@@ -90,7 +90,7 @@ export default function TransactionMoreDetails({
 
     if (attachmentUrl) {
       return (
-        <div className="w-full min-h-113 flex flex-col items-center justify-center rounded-md border-2 border-border relative overflow-hidden bg-gray-50/50">
+        <div className="w-full min-h-113 flex flex-col items-center justify-center rounded-md border-2 border-border relative overflow-hidden bg-surface-secondary/50">
           <Image
             src={attachmentUrl}
             alt="existing attachment"
@@ -129,7 +129,7 @@ export default function TransactionMoreDetails({
             <Button
               variant="unstyled"
               type="button"
-              className="text-sm font-medium text-center w-[80%] py-2.5 bg-white border border-gray-200 rounded-lg hover:text-primary transition-colors cursor-pointer"
+              className="text-sm font-medium text-center w-[80%] py-2.5 bg-surface border border-border rounded-lg hover:text-primary transition-colors cursor-pointer"
               onClick={(e) => {
                 e.stopPropagation();
                 onTakeAPhoto();
@@ -140,7 +140,7 @@ export default function TransactionMoreDetails({
             <Button
               variant="unstyled"
               type="button"
-              className="text-sm font-medium text-center w-[80%] py-2.5 bg-white border border-gray-200 rounded-lg hover:text-primary transition-colors cursor-pointer"
+              className="text-sm font-medium text-center w-[80%] py-2.5 bg-surface border border-border rounded-lg hover:text-primary transition-colors cursor-pointer"
               onClick={(e) => {
                 e.stopPropagation();
                 onSelectAPhoto();
@@ -154,7 +154,7 @@ export default function TransactionMoreDetails({
             variant="unstyled"
             type="button"
             onClick={() => setIsPhotoMenuOpen(true)}
-            className="w-full h-113 flex flex-col items-center justify-center gap-1 rounded-md border-2 border-border border-dashed hover:bg-gray-50/50 transition-colors cursor-pointer"
+            className="w-full h-113 flex flex-col items-center justify-center gap-1 rounded-md border-2 border-border border-dashed hover:bg-surface-secondary/50 transition-colors cursor-pointer"
           >
             <Camera size={24} className="text-secondary-text" />
             <p className="text-sm font-medium text-secondary-text">Add Photo</p>
@@ -193,7 +193,7 @@ export default function TransactionMoreDetails({
             {isLoadingTx ? (
               <Skeleton className="w-full h-15 rounded-md" />
             ) : (
-              <div className="relative w-full flex items-center gap-2 bg-white rounded-md border border-border px-4 py-3">
+              <div className="relative w-full flex items-center gap-2 bg-surface rounded-md border border-border px-4 py-3">
                 <CalendarLucide size={18} className="text-secondary-text" />
                 <Button
                   variant="unstyled"
@@ -234,7 +234,7 @@ export default function TransactionMoreDetails({
             {isLoadingTx ? (
               <Skeleton className="w-full h-27.5 rounded-md" />
             ) : (
-              <div className="w-full bg-white rounded-md border border-border px-4 py-3 space-y-1">
+              <div className="w-full bg-surface rounded-md border border-border px-4 py-3 space-y-1">
                 <div className="flex items-center gap-2">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -260,7 +260,7 @@ export default function TransactionMoreDetails({
                 <textarea
                   id="note"
                   placeholder="Add a note..."
-                  className="w-full min-h-15 max-h-30 placeholder:text-secondary-text outline-none transition-all bg-white"
+                  className="w-full min-h-15 max-h-30 placeholder:text-secondary-text outline-none transition-all bg-surface"
                   {...register("note")}
                 ></textarea>
               </div>

@@ -37,17 +37,17 @@ export function TransactionItemDetails({
       {isIncomeOrExpense && (
         <>
           <div className="flex items-center justify-between">
-            <p className="text-gray-500 capitalize">Transaction Type:</p>
+            <p className="text-secondary-text capitalize">Transaction Type:</p>
             <p className="capitalize font-medium">
               {transaction.type.toLowerCase()}
             </p>
           </div>
           <div className="flex items-center justify-between">
-            <p className="text-gray-500 capitalize">Description:</p>
+            <p className="text-secondary-text capitalize">Description:</p>
             <p className="font-medium text-right">{transaction.note || "-"}</p>
           </div>
           <div className="flex items-center justify-between">
-            <p className="text-gray-500 capitalize">Category:</p>
+            <p className="text-secondary-text capitalize">Category:</p>
             <p className="font-medium">{transaction.category?.name || "-"}</p>
           </div>
         </>
@@ -56,7 +56,7 @@ export function TransactionItemDetails({
       {isAdjustment && (
         <>
           <div className="flex items-center justify-between">
-            <p className="text-gray-500 capitalize">Adjustment:</p>
+            <p className="text-secondary-text capitalize">Adjustment:</p>
             <p className="font-medium">
               {transaction.amount >= 0 ? "+" : ""}
               {transaction.amount.toLocaleString("en-US", {
@@ -66,7 +66,7 @@ export function TransactionItemDetails({
             </p>
           </div>
           <div className="flex items-center justify-between">
-            <p className="text-gray-500 capitalize">Description:</p>
+            <p className="text-secondary-text capitalize">Description:</p>
             <p className="font-medium text-right">{transaction.note || "-"}</p>
           </div>
         </>
@@ -75,7 +75,7 @@ export function TransactionItemDetails({
       {isTransfer && (
         <>
           <div className="flex items-center justify-between">
-            <p className="text-gray-500 capitalize">
+            <p className="text-secondary-text capitalize">
               {currentAssetId === transaction.toAssetId
                 ? "Transfer (From):"
                 : "Transfer (To):"}
@@ -87,24 +87,24 @@ export function TransactionItemDetails({
             </p>
           </div>
           <div className="flex items-center justify-between">
-            <p className="text-gray-500 capitalize">Description:</p>
+            <p className="text-secondary-text capitalize">Description:</p>
             <p className="font-medium text-right">{transaction.note || "-"}</p>
           </div>
         </>
       )}
 
       <div className="flex items-center justify-between">
-        <p className="text-gray-500 capitalize">Date:</p>
+        <p className="text-secondary-text capitalize">Date:</p>
         <p className="font-medium">{timeDisplay}</p>
       </div>
 
       {cachedAttachmentUrl && (
         <div className="mt-2 flex items-center justify-between">
-          <p className="text-gray-500 capitalize">Attachment:</p>
+          <p className="text-secondary-text capitalize">Attachment:</p>
           <button
             type="button"
             className={cn(
-              "relative h-16 w-16 overflow-hidden rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary",
+              "relative h-16 w-16 overflow-hidden rounded-md border border-border focus:outline-none focus:ring-2 focus:ring-primary",
               onAttachmentClick &&
                 "cursor-pointer hover:opacity-80 transition-opacity",
             )}
@@ -139,7 +139,7 @@ export function TransactionItemDetails({
         >
           <Button
             variant="unstyled"
-            className="flex-1 py-2 text-center text-primary font-medium border border-border hover:bg-gray-100 rounded-md transition-colors"
+            className="flex-1 py-2 text-center text-primary font-medium border border-border hover:bg-surface-secondary rounded-md transition-colors"
             onClick={() => onTransactionItemClick(transaction)}
           >
             Edit{" "}
@@ -150,7 +150,7 @@ export function TransactionItemDetails({
           {transaction.deletedAt && onRestoreClick && (
             <Button
               variant="unstyled"
-              className="flex-1 py-2 flex items-center justify-center gap-1.5 text-green-600 font-medium border border-border hover:bg-gray-100 rounded-md transition-colors"
+              className="flex-1 py-2 flex items-center justify-center gap-1.5 text-income font-medium border border-border hover:bg-surface-secondary rounded-md transition-colors"
               onClick={() => onRestoreClick(transaction)}
             >
               <RotateCcw size={16} />
@@ -166,7 +166,7 @@ export function TransactionItemDetails({
         >
           <Button
             variant="unstyled"
-            className="flex-1 w-full py-2 flex items-center justify-center gap-1.5 text-red-500 font-medium border border-border hover:bg-gray-100 rounded-md transition-colors"
+            className="flex-1 w-full py-2 flex items-center justify-center gap-1.5 text-expense font-medium border border-border hover:bg-surface-secondary rounded-md transition-colors"
             onClick={() => onDeleteClick?.(transaction)}
           >
             <Trash size={16} />

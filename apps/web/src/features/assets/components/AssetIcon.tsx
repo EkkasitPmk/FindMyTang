@@ -15,7 +15,7 @@ export const getAssetIcon = (
 ) => {
   const iconProps = {
     size,
-    className: color ? "" : "text-gray-600",
+    className: color ? "" : "text-secondary-text",
     color: color || undefined,
   };
 

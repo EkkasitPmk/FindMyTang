@@ -29,11 +29,11 @@ export function getAmountDisplayConfig(
   const isAdjustment = type === "ADJUSTMENT";
   const isTransfer = type === "TRANSFER";
 
-  let amountColorClass = "text-gray-800";
+  let amountColorClass = "text-primary-text";
   let amountPrefix = "";
 
   if (isIncome || isTransferIn || (isAdjustment && amount >= 0)) {
-    amountColorClass = "text-green-600";
+    amountColorClass = "text-income";
     amountPrefix = "+";
   } else if (
     isExpense ||
@@ -41,7 +41,7 @@ export function getAmountDisplayConfig(
     (isAdjustment && amount < 0) ||
     (isTransfer && !isTransferIn && !isTransferOut)
   ) {
-    amountColorClass = "text-red-600";
+    amountColorClass = "text-expense";
     amountPrefix = "-";
   }
 

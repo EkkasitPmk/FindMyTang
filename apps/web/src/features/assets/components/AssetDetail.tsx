@@ -8,6 +8,7 @@ import { Dispatch, SetStateAction, RefObject } from "react";
 import { TransactionListContainer } from "@/features/transactions/containers/TransactionListContainer";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 
+const DEFAULT_ASSET_COLOR = "#2563EB";
 const SKELETON_GROUPS = Array.from({ length: 3 }, (_, i) => i);
 
 interface AssetDetailProps {
@@ -117,7 +118,7 @@ export default function AssetDetail({
         <section className="relative flex flex-col items-center justify-center mt-6">
           <div
             className="px-3 py-1 rounded-full bg-opacity-10 mb-2"
-            style={{ backgroundColor: `${asset?.color || "#2563EB"}1A` }}
+            style={{ backgroundColor: `${asset?.color || DEFAULT_ASSET_COLOR}1A` }}
           >
             <p
               className="font-semibold text-lg tracking-widest uppercase"
@@ -133,7 +134,7 @@ export default function AssetDetail({
             >
               ฿
             </span>
-            <p className="text-3xl font-extrabold tracking-tight text-gray-900">
+            <p className="text-3xl font-extrabold tracking-tight text-primary-text">
               {(asset?.balance ?? 0).toLocaleString("en-US", {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
@@ -227,7 +228,7 @@ export default function AssetDetail({
             <Button
               variant="unstyled"
               onClick={onEditClick}
-              className="w-[25%] flex flex-col items-center justify-center border border-border py-1.5 rounded-md hover:bg-gray-50 cursor-pointer"
+              className="w-[25%] flex flex-col items-center justify-center border border-border py-1.5 rounded-md hover:bg-surface-secondary cursor-pointer"
             >
               <Pencil size={18} />
               <span className="text-sm mt-px">Edit</span>

@@ -88,7 +88,7 @@ export default function AssetsMenu({
           <EllipsisVertical size={18} />
         </Button>
         {isOpen && (
-          <div className="absolute right-3 top-full flex flex-col items-start w-44 bg-white rounded-md py-1 shadow-md z-50 border border-gray-100">
+          <div className="absolute right-3 top-full flex flex-col items-start w-44 bg-surface rounded-md py-1 shadow-md z-50 border border-border">
             <MenuItem
               onClick={() => {
                 setIsOpen(false);
@@ -121,7 +121,7 @@ export default function AssetsMenu({
               />
 
               {isFilterOpen && (
-                <div className="absolute top-full left-0 w-full bg-white flex flex-col py-1 shadow-md rounded-md z-50 border border-gray-100">
+                <div className="absolute top-full left-0 w-full bg-surface flex flex-col py-1 shadow-md rounded-md z-50 border border-border">
                   <MenuCheckboxItem
                     label="No Filter"
                     labelSize="base"
@@ -177,7 +177,7 @@ export default function AssetsMenu({
               />
 
               {isSortOpen && (
-                <div className="absolute top-full left-0 w-full bg-white flex flex-col py-1 shadow-md rounded-md z-50 border border-gray-100">
+                <div className="absolute top-full left-0 w-full bg-surface flex flex-col py-1 shadow-md rounded-md z-50 border border-border">
                   <MenuCheckboxItem
                     label="Date"
                     labelSize="base"
@@ -230,7 +230,7 @@ export default function AssetsMenu({
               )}
             </MenuItem>
 
-            <div className="h-px bg-gray-100 my-1 w-full" />
+            <div className="h-px bg-surface-secondary my-1 w-full" />
 
             <MenuItem
               onClick={() => {
@@ -247,9 +247,9 @@ export default function AssetsMenu({
                 setIsOpen(false);
                 setIsDeleteModalOpen(true);
               }}
-              className="text-red-500 text-base flex items-center gap-2"
+              className="text-expense text-base flex items-center gap-2"
             >
-              <Trash2 size={16} className="text-red-500" />
+              <Trash2 size={16} className="text-expense" />
               <span>Delete Asset</span>
             </MenuItem>
           </div>
