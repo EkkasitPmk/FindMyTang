@@ -1,5 +1,6 @@
 import { Wallet } from "lucide-react";
 import NavLinks from "./NavLinks";
+import ThemeSwitcher from "@/shared/components/customs/ThemeSwitcher";
 import NavUserProfile from "./NavUserProfile";
 import { UserProfile } from "@/features/nav/types/auth.type";
 
@@ -33,13 +34,18 @@ export default function DesktopSidebar({
         <NavLinks pathname={pathname} itemClassName="py-3" />
       </div>
 
-      {/* User profile & Action */}
-      <NavUserProfile
-        user={user}
-        isLoading={isLoading}
-        onLogout={onLogout}
-        className="pt-6 border-t border-border"
-      />
+      <div className="flex flex-col gap-4">
+        <div className="px-4">
+          <ThemeSwitcher />
+        </div>
+        {/* User profile & Action */}
+        <NavUserProfile
+          user={user}
+          isLoading={isLoading}
+          onLogout={onLogout}
+          className="pt-4 border-t border-border"
+        />
+      </div>
     </aside>
   );
 }
