@@ -66,8 +66,6 @@ export function TransactionListContainer({
     close: closeDeleteModal,
     isHardDelete,
     setIsHardDelete,
-    inputValue: confirmInput,
-    setInputValue: setConfirmInput,
   } = useConfirmModal();
 
   const [transactionToDelete, setTransactionToDelete] =
@@ -218,13 +216,6 @@ export function TransactionListContainer({
         withHardDeleteOption={!transactionToDelete?.deletedAt}
         isHardDelete={isHardDelete}
         onHardDeleteChange={setIsHardDelete}
-        expectedInputToConfirm={
-          Boolean(isHardDelete) || !!transactionToDelete?.deletedAt
-            ? "delete"
-            : undefined
-        }
-        inputValue={confirmInput}
-        onInputChange={setConfirmInput}
       />
 
       <LoadingModal
