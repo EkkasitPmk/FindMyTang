@@ -74,6 +74,21 @@ function toResponse(tx: TransactionWithRelations) {
 export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {}
 
+  @Get("available-dates")
+  @UseGuards(JwtAuthGuard)
+  async getAvailableDates(
+    @CurrentUser() user: User,
+    @Query("assetId") assetId?: string,
+  ) {
+    return this.transactionService.getAvailableDates(user.id, assetId);
+  }
+
+  @Get(":id")
+  @UseGuards(JwtAuthGuard)
+  async findOne(@CurrentUser() user: User, @Param("id") id: string) {
+    return toResponse(await this.transactionService.findOne(user.id, id));
+  }
+
   @Post()
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor("file"))

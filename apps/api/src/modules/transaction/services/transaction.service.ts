@@ -424,6 +424,29 @@ export class TransactionService {
     });
   }
 
+  async getAvailableDates(userId: string, assetId?: string) {
+    return this.transactionRepository.getAvailableDates(userId, assetId);
+  }
+
+  async findOne(userId: string, id: string) {
+    // ponytail: Repository.findAll doesn't accept an ID directly, so we just use Prisma here for the single fetch.
+    const transaction = await this.prisma.transaction.findFirst({
+      where: { id, userId },
+      include: { asset: true, toAsset: true, category: true },
+    });
+    if (!transaction) throw new NotFoundException("Transaction not found");
+
+    if (transaction.attachmentUrl) {
+      const bucketName = process.env.SUPABASE_BUCKET || "attachments";
+      transaction.attachmentUrl = await this.getAttachmentUrl(
+        transaction.attachmentUrl,
+        bucketName,
+      );
+    }
+
+    return transaction;
+  }
+
   // ponytail: skeletons — will wire into create/update/delete when POST /transactions is implemented.
 
   async applyIncome(

@@ -50,6 +50,7 @@ export class TransactionRepository {
       to,
       isDeleted,
       sortType,
+      searchKeyword,
     } = query;
     const skip = (page - 1) * limit;
 
@@ -61,6 +62,18 @@ export class TransactionRepository {
         OR: [{ assetId }, { toAssetId: assetId }],
       }),
       ...(categoryId && { categoryId }),
+      ...(searchKeyword && {
+        OR: [
+          { note: { contains: searchKeyword, mode: "insensitive" } },
+          {
+            amount: {
+              equals: Number.isNaN(Number(searchKeyword))
+                ? undefined
+                : Number(searchKeyword),
+            },
+          },
+        ],
+      }),
       ...((from || to) && {
         date: {
           ...(from && { gte: new Date(from) }),
@@ -145,5 +158,51 @@ export class TransactionRepository {
     const years = new Set<number>();
     records.forEach((r) => years.add(r.date.getFullYear()));
     return Array.from(years);
+  }
+
+  // ponytail: Use Prisma raw query if performance is an issue later.
+  // Currently fetching dates and doing memory map since dataset per user is small enough.
+  async getAvailableDates(userId: string, assetId?: string) {
+    const transactions = await this.prisma.transaction.findMany({
+      where: {
+        userId,
+        deletedAt: null,
+        ...(assetId
+          ? {
+              OR: [{ assetId }, { toAssetId: assetId }],
+            }
+          : {}),
+      },
+      select: { date: true },
+    });
+
+    const datesMap: Record<string, Set<string>> = {};
+    const MONTHS = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+
+    transactions.forEach((tx) => {
+      const year = tx.date.getFullYear().toString();
+      const month = MONTHS[tx.date.getMonth()];
+      if (!datesMap[year]) datesMap[year] = new Set();
+      datesMap[year].add(month);
+    });
+
+    const result: Record<string, string[]> = {};
+    for (const year in datesMap) {
+      result[year] = Array.from(datesMap[year]);
+    }
+    return result;
   }
 }

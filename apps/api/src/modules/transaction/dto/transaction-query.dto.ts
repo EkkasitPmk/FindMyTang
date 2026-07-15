@@ -36,6 +36,10 @@ export class TransactionQueryDto {
   categoryId?: string;
 
   @IsOptional()
+  @IsString()
+  searchKeyword?: string;
+
+  @IsOptional()
   @IsDateString()
   from?: string;
 
