@@ -38,8 +38,17 @@ export default function TransactionCategoryList({
       ) : (
         <div className="grid grid-cols-4 gap-y-2 overflow-auto max-h-[24vh] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
           {categories.map((category) => {
-            const Icon = getCategoryIcon(category.icon, category.type);
+            const Icon = getCategoryIcon(category.icon);
             const isSelected = activeCategoryId === category.id;
+
+            const backgroundColor =
+              isSelected && category.color
+                ? `${category.color}33`
+                : "var(--color-surface-secondary)";
+
+            const borderColor = isSelected
+              ? category.color || "var(--color-primary)"
+              : "transparent";
 
             return (
               <Button
@@ -47,27 +56,24 @@ export default function TransactionCategoryList({
                 key={category.id}
                 type="button"
                 onClick={() => onSelectCategory(category.id)}
-                className="flex flex-col items-center justify-center gap-1"
+                className={cn(
+                  "flex flex-col items-center justify-center gap-1 transition-all",
+                  !isSelected && "hover:bg-surface-variant/10",
+                )}
               >
                 <span
-                  className={cn(
-                    "p-3 rounded-xl transition-all",
-                    isSelected
-                      ? "text-primary-text"
-                      : "bg-surface-secondary text-secondary-text",
-                  )}
+                  className="p-3 rounded-xl transition-all border"
                   style={{
-                    color: isSelected ? category.color : undefined,
-                    backgroundColor: isSelected
-                      ? `${category.color}33`
-                      : undefined,
+                    color: category.color || "inherit",
+                    backgroundColor,
+                    borderColor,
                   }}
                 >
                   <Icon size={18} />
                 </span>
                 <span
                   className={cn(
-                    "uppercase text-xs truncate font-medium w-full text-center ",
+                    "uppercase text-xs truncate font-medium w-full text-center transition-colors",
                     isSelected ? "text-primary-text" : "text-secondary-text",
                   )}
                 >

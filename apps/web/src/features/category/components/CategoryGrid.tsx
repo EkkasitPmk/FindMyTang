@@ -70,7 +70,7 @@ export default function CategoryGrid({
       {/* New Category */}
 
       {categories.map((category, index) => {
-        const IconComponent = getCategoryIcon(category.icon, category.type);
+        const IconComponent = getCategoryIcon(category.icon);
         const isDraggable = isEditingList && !category.isSystem;
 
         return (

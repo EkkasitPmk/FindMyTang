@@ -472,7 +472,7 @@ export const allCategoryIcons: Record<string, LucideIcon> = {
 };
 
 // Helper function to resolve icon key to Lucide Component
-export function getCategoryIcon(iconName?: string, type?: string): LucideIcon {
+export function getCategoryIcon(iconName?: string): LucideIcon {
   // ponytail: Removed transaction type checks so that identical iconNames resolve to the same icon component across types, avoiding UI alignment inconsistencies.
   if (!iconName) return CircleQuestionMark;
 

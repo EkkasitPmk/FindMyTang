@@ -145,7 +145,7 @@ export default function CUCategoryModal({
         <p className="text-xs text-muted-foreground font-semibold">ICON</p>
         <div className="grid grid-cols-6 place-items-center max-h-[16vh] overflow-auto border border-border rounded-md p-1 bg-background">
           {SELECTABLE_ICONS.map((iconName) => {
-            const Icon = getCategoryIcon(iconName, transactionType);
+            const Icon = getCategoryIcon(iconName);
             const isSelected = selectedIconName === iconName;
             return (
               <Button

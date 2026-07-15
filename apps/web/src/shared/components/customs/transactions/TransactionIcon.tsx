@@ -11,10 +11,7 @@ export function TransactionIcon({
   transaction,
 }: Readonly<TransactionIconProps>) {
   if (transaction.category) {
-    const icon = getCategoryIcon(
-      transaction.category.icon,
-      transaction.category.type,
-    );
+    const icon = getCategoryIcon(transaction.category.icon);
     return (
       <span
         className="rounded-lg p-2"
