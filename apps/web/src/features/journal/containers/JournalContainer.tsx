@@ -60,8 +60,15 @@ export default function JournalContainer() {
   const groupedTransactions = useMemo(() => {
     if (!transactionsData?.pages) return [];
 
-    // Flatten all pages into a single array of items
-    let filteredItems = transactionsData.pages.flatMap((page) => page.items);
+    // Flatten all pages, deduplicate by id in case page boundaries overlap
+    const seen = new Set<string>();
+    let filteredItems = transactionsData.pages
+      .flatMap((page) => page.items)
+      .filter((tx) => {
+        if (seen.has(tx.id)) return false;
+        seen.add(tx.id);
+        return true;
+      });
 
     if (searchKeyword.trim()) {
       const lowerKeyword = searchKeyword.toLowerCase();
@@ -95,7 +102,7 @@ export default function JournalContainer() {
   }, [transactionsData, searchKeyword]);
 
   return (
-    <div className="flex flex-col h-[calc(100vh-82px)] bg-background space-y-2">
+    <div className="flex flex-col h-[calc(100vh-84px)] bg-background space-y-2">
       {/* 1. ใส่ Timeline สลับ Calendar */}
       <div className="px-4">
         <SegmentedControl<ViewMode>

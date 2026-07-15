@@ -148,7 +148,14 @@ export default function AssetDetailContainer() {
 
   const groupedTransactions = useMemo(() => {
     if (!transactionsData) return [];
-    const allItems = transactionsData.pages.flatMap((p) => p.items);
+    const seen = new Set<string>();
+    const allItems = transactionsData.pages
+      .flatMap((p) => p.items)
+      .filter((tx) => {
+        if (seen.has(tx.id)) return false;
+        seen.add(tx.id);
+        return true;
+      });
     return groupTransactionsByDate(allItems);
   }, [transactionsData]);
 
