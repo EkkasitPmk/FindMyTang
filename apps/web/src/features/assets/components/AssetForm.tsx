@@ -170,7 +170,7 @@ export default function AssetForm({
         )}
 
         {errors.type && (
-          <p className="text-xs text-error font-medium">
+          <p className="text-xs text-destructive font-medium">
             {errors.type.message}
           </p>
         )}
@@ -198,7 +198,7 @@ export default function AssetForm({
           />
         </div>
         {errors.name && (
-          <p className="text-xs text-error font-medium">
+          <p className="text-xs text-destructive font-medium">
             {errors.name.message}
           </p>
         )}
@@ -233,7 +233,7 @@ export default function AssetForm({
             />
           </div>
           {errors.balance && (
-            <p className="text-xs text-error font-medium">
+            <p className="text-xs text-destructive font-medium">
               {errors.balance.message}
             </p>
           )}

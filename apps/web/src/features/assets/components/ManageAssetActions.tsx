@@ -38,7 +38,7 @@ export default function ManageAssetActions({
         <Button
           size="sm"
           variant="outline"
-          className="flex-1 text-error border-error hover:bg-error/5"
+          className="flex-1 text-destructive border-destructive hover:bg-destructive/5"
           onClick={(e) => {
             e.stopPropagation();
             onDelete();
@@ -97,7 +97,7 @@ export default function ManageAssetActions({
       <Button
         size="sm"
         variant="ghost"
-        className="flex-1 text-error hover:text-error/90 hover:bg-error/5"
+        className="flex-1 text-destructive hover:text-destructive/90 hover:bg-destructive/5"
         onClick={(e) => {
           e.stopPropagation();
           onDelete();

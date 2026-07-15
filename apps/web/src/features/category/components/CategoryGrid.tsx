@@ -135,7 +135,7 @@ export default function CategoryGrid({
                   e.stopPropagation();
                   onDeleteClick(category);
                 }}
-                className="absolute top-1 right-1 text-error transition-colors"
+                className="absolute top-1 right-1 text-destructive transition-colors"
               >
                 <CircleX size={16} />
               </Button>

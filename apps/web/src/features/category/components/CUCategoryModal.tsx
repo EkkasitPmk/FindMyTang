@@ -97,7 +97,7 @@ export default function CUCategoryModal({
           {...register("name")}
         />
         {errors.name && (
-          <p className="text-xs text-error">{errors.name.message}</p>
+          <p className="text-xs text-destructive">{errors.name.message}</p>
         )}
       </div>
 
@@ -137,7 +137,7 @@ export default function CUCategoryModal({
           </Button>
         </div>
         {errors.type && (
-          <p className="text-xs text-error">{errors.type.message}</p>
+          <p className="text-xs text-destructive">{errors.type.message}</p>
         )}
       </div>
 
@@ -186,7 +186,7 @@ export default function CUCategoryModal({
           })}
         </div>
         {errors.icon && (
-          <p className="text-xs text-error">{errors.icon.message}</p>
+          <p className="text-xs text-destructive">{errors.icon.message}</p>
         )}
       </div>
 
@@ -251,7 +251,7 @@ export default function CUCategoryModal({
           </div>
         </div>
         {errors.color && (
-          <p className="text-xs text-error mt-1">{errors.color.message}</p>
+          <p className="text-xs text-destructive mt-1">{errors.color.message}</p>
         )}
       </div>
     </ModalForm>

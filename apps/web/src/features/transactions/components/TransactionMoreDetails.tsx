@@ -124,7 +124,7 @@ export default function TransactionMoreDetails({
               onClick={() => setIsPhotoMenuOpen(!isPhotoMenuOpen)}
               className="absolute top-1 right-2"
             >
-              <X className="text-error" />
+              <X className="text-destructive" />
             </Button>
             <Button
               variant="unstyled"
