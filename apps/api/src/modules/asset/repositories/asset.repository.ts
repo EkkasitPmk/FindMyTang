@@ -14,15 +14,32 @@ export class AssetRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(userId: string, data: CreateAssetData): Promise<Asset> {
-    // ponytail: Creates a new asset associated with the authenticated user.
-    return this.prisma.asset.create({
-      data: {
-        name: data.name,
-        type: data.type,
-        balance: data.balance,
-        color: data.color,
-        userId,
-      },
+    // ponytail: Creates a new asset and its initial adjustment transaction in one go if balance > 0.
+    return this.prisma.$transaction(async (tx) => {
+      const asset = await tx.asset.create({
+        data: {
+          name: data.name,
+          type: data.type,
+          balance: data.balance ?? 0,
+          color: data.color,
+          userId,
+        },
+      });
+
+      if (data.balance && data.balance > 0) {
+        await tx.transaction.create({
+          data: {
+            amount: data.balance,
+            date: new Date(),
+            userId,
+            assetId: asset.id,
+            type: "ADJUSTMENT",
+            note: "Initial Balance",
+          },
+        });
+      }
+
+      return asset;
     });
   }
 
@@ -40,16 +57,18 @@ export class AssetRepository {
     });
   }
 
-  async findAllByUserId(
-    userId: string,
-    includeDeleted = false,
-  ): Promise<Asset[]> {
-    // ponytail: Fetches user assets. includeDeleted=true returns all including soft-deleted.
+  async findAllActiveByUserId(userId: string): Promise<Asset[]> {
+    // ponytail: Fetches active user assets.
     return this.prisma.asset.findMany({
-      where: {
-        userId,
-        ...(!includeDeleted && { deletedAt: null }),
-      },
+      where: { userId, deletedAt: null },
+      orderBy: { displayOrder: "asc" },
+    });
+  }
+
+  async findAllIncludingDeletedByUserId(userId: string): Promise<Asset[]> {
+    // ponytail: Fetches all user assets, including soft-deleted.
+    return this.prisma.asset.findMany({
+      where: { userId },
       orderBy: { displayOrder: "asc" },
     });
   }

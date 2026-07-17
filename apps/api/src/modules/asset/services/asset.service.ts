@@ -57,9 +57,12 @@ export class AssetService {
     });
   }
 
-  async findAll(userId: string, includeDeleted = false): Promise<Asset[]> {
-    // ponytail: Retrieves assets belonging to the specified user, optionally including soft-deleted.
-    return this.assetRepository.findAllByUserId(userId, includeDeleted);
+  async findAllActive(userId: string): Promise<Asset[]> {
+    return this.assetRepository.findAllActiveByUserId(userId);
+  }
+
+  async findAllIncludingDeleted(userId: string): Promise<Asset[]> {
+    return this.assetRepository.findAllIncludingDeletedByUserId(userId);
   }
 
   async update(
@@ -87,13 +90,15 @@ export class AssetService {
       dto.name = trimmedName;
     }
 
-    return this.assetRepository.update(id, userId, {
-      name: dto.name,
-      type: dto.type,
-      balance: dto.balance,
-      color: dto.color,
-      isArchived: dto.isArchived,
-    });
+    const updateData = {
+      ...(dto.name !== undefined && { name: dto.name }),
+      ...(dto.type !== undefined && { type: dto.type }),
+      ...(dto.balance !== undefined && { balance: dto.balance }),
+      ...(dto.color !== undefined && { color: dto.color }),
+      ...(dto.isArchived !== undefined && { isArchived: dto.isArchived }),
+    };
+
+    return this.assetRepository.update(id, userId, updateData);
   }
 
   async softDelete(id: string, userId: string): Promise<Asset> {

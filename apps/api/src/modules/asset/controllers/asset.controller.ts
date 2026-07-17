@@ -50,10 +50,10 @@ export class AssetController {
     @CurrentUser() user: User,
     @Query("includeDeleted") includeDeleted?: string,
   ) {
-    const assets = await this.assetService.findAll(
-      user.id,
-      includeDeleted === "true",
-    );
+    const assets =
+      includeDeleted === "true"
+        ? await this.assetService.findAllIncludingDeleted(user.id)
+        : await this.assetService.findAllActive(user.id);
     return assets.map(toResponse);
   }
 

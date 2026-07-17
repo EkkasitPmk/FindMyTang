@@ -16,7 +16,8 @@ describe("AssetService", () => {
   const mockAssetRepository = {
     create: jest.fn(),
     findById: jest.fn(),
-    findAllByUserId: jest.fn(),
+    findAllActiveByUserId: jest.fn(),
+    findAllIncludingDeletedByUserId: jest.fn(),
     update: jest.fn(),
     softDelete: jest.fn(),
     hardDelete: jest.fn(),
@@ -85,8 +86,8 @@ describe("AssetService", () => {
     });
   });
 
-  describe("findAll", () => {
-    it("should return all assets belonging to the user", async () => {
+  describe("findAllActive", () => {
+    it("should return active assets belonging to the user", async () => {
       const expectedAssets = [
         {
           id: "asset-1",
@@ -99,12 +100,35 @@ describe("AssetService", () => {
         },
       ] as any;
 
-      mockAssetRepository.findAllByUserId.mockResolvedValue(expectedAssets);
+      mockAssetRepository.findAllActiveByUserId.mockResolvedValue(expectedAssets);
 
-      const result = await service.findAll("user-123");
+      const result = await service.findAllActive("user-123");
 
       expect(result).toEqual(expectedAssets);
-      expect(repository.findAllByUserId).toHaveBeenCalledWith("user-123");
+      expect(repository.findAllActiveByUserId).toHaveBeenCalledWith("user-123");
+    });
+  });
+
+  describe("findAllIncludingDeleted", () => {
+    it("should return all assets including soft-deleted ones", async () => {
+      const expectedAssets = [
+        {
+          id: "asset-1",
+          name: "Cash",
+          type: AssetType.CASH,
+          balance: 1000,
+          userId: "user-123",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ] as any;
+
+      mockAssetRepository.findAllIncludingDeletedByUserId.mockResolvedValue(expectedAssets);
+
+      const result = await service.findAllIncludingDeleted("user-123");
+
+      expect(result).toEqual(expectedAssets);
+      expect(repository.findAllIncludingDeletedByUserId).toHaveBeenCalledWith("user-123");
     });
   });
 
