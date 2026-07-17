@@ -80,8 +80,10 @@ export function TransactionItem({
               <span className="text-base capitalize truncate">
                 {displayTitle}
               </span>
-              <span className="text-xs text-secondary-text truncate">
-                {transaction.note}
+              <span className="text-xs text-secondary-text truncate flex items-center gap-1">
+                {transaction.note && (
+                  <span className="truncate">{transaction.note}</span>
+                )}
               </span>
             </div>
           </div>

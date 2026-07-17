@@ -147,10 +147,7 @@ export class AuthController {
     @Req() req: express.Request,
     @Response({ passthrough: true }) res: express.Response,
   ) {
-    const cookies = req.cookies as Record<string, unknown> | undefined;
-    const refreshToken = cookies?.refresh_token as string | undefined;
-
-    await this.authService.logout(refreshToken);
+    await this.authService.logout();
 
     const domain =
       this.configService.get<string>("cookie.domain") || "localhost";

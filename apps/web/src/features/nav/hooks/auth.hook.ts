@@ -22,8 +22,7 @@ export const useLogoutMutation = (options?: {
   return useMutation<{ success: boolean }, Error, void>({
     mutationFn: logoutApi,
     onSuccess: () => {
-      queryClient.setQueryData(["auth", "me"], null);
-      void queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+      queryClient.clear();
       options?.onSuccess?.();
     },
     onError: options?.onError,

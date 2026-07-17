@@ -16,7 +16,10 @@ export function getDiffDays(date: Date | undefined): number | null {
   return Math.round(diffTime / (1000 * 60 * 60 * 24));
 }
 
-export function formatDisplayDate(date: Date | undefined): string {
+export function formatDisplayDate(
+  date: Date | undefined,
+  includeTime: boolean = false,
+): string {
   const diffDays = getDiffDays(date);
   if (diffDays === null || !date) return "";
 
@@ -40,5 +43,16 @@ export function formatDisplayDate(date: Date | undefined): string {
   }
 
   const dateStr = `${String(date.getDate()).padStart(2, "0")} ${date.toLocaleString("en-US", { month: "long" })} ${String(date.getFullYear()).slice(-2)}`;
-  return prefix ? `${prefix}, ${dateStr}` : dateStr;
+  const displayStr = prefix ? `${prefix}, ${dateStr}` : dateStr;
+
+  if (includeTime) {
+    const timeStr = date.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+    return `${displayStr} ${timeStr}`;
+  }
+
+  return displayStr;
 }

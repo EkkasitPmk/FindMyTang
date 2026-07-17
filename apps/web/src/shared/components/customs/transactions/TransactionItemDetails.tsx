@@ -147,6 +147,10 @@ export function TransactionItemDetails({
               fill
               className="object-cover"
               sizes="64px"
+              unoptimized={
+                cachedAttachmentUrl.startsWith("blob:") ||
+                cachedAttachmentUrl.startsWith("data:")
+              }
             />
           </button>
         </div>

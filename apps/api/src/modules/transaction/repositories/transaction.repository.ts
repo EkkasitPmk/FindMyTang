@@ -162,11 +162,15 @@ export class TransactionRepository {
 
   // ponytail: Use Prisma raw query if performance is an issue later.
   // Currently fetching dates and doing memory map since dataset per user is small enough.
-  async getAvailableDates(userId: string, assetId?: string) {
+  async getAvailableDates(
+    userId: string,
+    assetId?: string,
+    isDeleted?: boolean,
+  ) {
     const transactions = await this.prisma.transaction.findMany({
       where: {
         userId,
-        deletedAt: null,
+        deletedAt: isDeleted ? { not: null } : null,
         ...(assetId
           ? {
               OR: [{ assetId }, { toAssetId: assetId }],

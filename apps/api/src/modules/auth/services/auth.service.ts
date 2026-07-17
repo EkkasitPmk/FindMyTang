@@ -1,4 +1,5 @@
 import { Prisma } from "@prisma/client";
+import { createClient } from "@supabase/supabase-js";
 import {
   BadRequestException,
   ConflictException,
@@ -25,6 +26,49 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly prisma: PrismaService,
   ) {}
+
+  private readonly supabase = createClient(
+    process.env.SUPABASE_URL || "",
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+      process.env.SUPABASE_ANON_KEY ||
+      "",
+  );
+
+  private async uploadBase64File(base64Data: string): Promise<string | null> {
+    try {
+      const match = base64Data.match(/^data:([A-Za-z-+/]+);base64,(.+)$/);
+      if (match?.length !== 3) {
+        return null;
+      }
+
+      const mimeType = match[1];
+      const base64String = match[2];
+      const buffer = Buffer.from(base64String, "base64");
+
+      let extension = mimeType.split("/")[1] || "bin";
+      if (extension === "jpeg") extension = "jpg";
+
+      const bucketName = process.env.SUPABASE_BUCKET || "attachments";
+      const secureRandom = crypto.randomBytes(4).toString("hex");
+      const fileName = `${Date.now()}-${secureRandom}.${extension}`;
+
+      const { data, error } = await this.supabase.storage
+        .from(bucketName)
+        .upload(fileName, buffer, {
+          contentType: mimeType,
+          upsert: false,
+        });
+
+      if (error) {
+        console.error("Supabase base64 upload error:", error);
+        return null;
+      }
+      return data.path;
+    } catch (e) {
+      console.error("Upload base64 exception:", e);
+      return null;
+    }
+  }
 
   async login(loginDto: LoginDto) {
     const { email, password } = loginDto;
@@ -109,6 +153,107 @@ export class AuthService {
     return user;
   }
 
+  // ponytail: extracted sync logic into private methods to reduce cognitive complexity from 17 to below 15
+  private async _syncCategories(
+    tx: Prisma.TransactionClient,
+    userId: string,
+    categories: SyncGuestDto["categories"],
+  ) {
+    const categoryMap = new Map<string, string>();
+    for (const cat of categories) {
+      const existingSystemCategory = cat.isSystem
+        ? await tx.category.findFirst({
+            where: { userId, name: cat.name, type: cat.type },
+          })
+        : null;
+      const createdCat =
+        existingSystemCategory ??
+        (await tx.category.create({
+          data: {
+            name: cat.name,
+            type: cat.type,
+            color: cat.color,
+            icon: cat.icon,
+            displayOrder: cat.displayOrder ?? 0,
+            isSystem: cat.isSystem ?? false,
+            deletedAt: cat.deletedAt ? new Date(cat.deletedAt) : null,
+            userId,
+          },
+        }));
+      categoryMap.set(cat.localId, createdCat.id);
+    }
+    return categoryMap;
+  }
+
+  private async _syncAssets(
+    tx: Prisma.TransactionClient,
+    userId: string,
+    assets: SyncGuestDto["assets"],
+  ) {
+    const assetMap = new Map<string, string>();
+    for (const asset of assets) {
+      const createdAsset = await tx.asset.create({
+        data: {
+          name: asset.name,
+          type: asset.type,
+          balance: new Prisma.Decimal(asset.balance || 0),
+          color: asset.color,
+          displayOrder: asset.displayOrder ?? 0,
+          isArchived: asset.isArchived ?? false,
+          deletedAt: asset.deletedAt ? new Date(asset.deletedAt) : null,
+          userId,
+        },
+      });
+      assetMap.set(asset.localId, createdAsset.id);
+    }
+    return assetMap;
+  }
+
+  private async _syncTransactions(
+    tx: Prisma.TransactionClient,
+    userId: string,
+    transactions: SyncGuestDto["transactions"],
+    assetMap: Map<string, string>,
+    categoryMap: Map<string, string>,
+  ) {
+    for (const txData of transactions) {
+      const assetId = assetMap.get(txData.localAssetId);
+      if (!assetId) continue;
+
+      const toAssetId = txData.localToAssetId
+        ? assetMap.get(txData.localToAssetId)
+        : undefined;
+      const categoryId = txData.localCategoryId
+        ? categoryMap.get(txData.localCategoryId)
+        : undefined;
+
+      let finalAttachmentUrl = txData.attachmentUrl;
+      if (finalAttachmentUrl?.startsWith("data:")) {
+        const uploadedPath = await this.uploadBase64File(finalAttachmentUrl);
+        if (uploadedPath) {
+          finalAttachmentUrl = uploadedPath;
+        } else {
+          finalAttachmentUrl = undefined; // Don't save raw base64 if upload fails
+        }
+      }
+
+      await tx.transaction.create({
+        data: {
+          type: txData.type,
+          amount: new Prisma.Decimal(txData.amount),
+          note: txData.note,
+          date: new Date(txData.date),
+          userId,
+          assetId,
+          toAssetId,
+          categoryId,
+          attachmentUrl: finalAttachmentUrl,
+          deletedAt: txData.deletedAt ? new Date(txData.deletedAt) : null,
+        },
+      });
+    }
+  }
+
   async syncGuest(
     userId: string,
     syncDto: SyncGuestDto,
@@ -116,63 +261,20 @@ export class AuthService {
     const { assets, categories, transactions } = syncDto;
 
     return await this.prisma.$transaction(async (tx) => {
-      const categoryMap = new Map<string, string>();
-      const assetMap = new Map<string, string>();
-
       // 1. Sync Categories
-      for (const cat of categories) {
-        const createdCat = await tx.category.create({
-          data: {
-            name: cat.name,
-            type: cat.type,
-            color: cat.color,
-            icon: cat.icon,
-            displayOrder: cat.displayOrder ?? 0,
-            userId,
-          },
-        });
-        categoryMap.set(cat.localId, createdCat.id);
-      }
+      const categoryMap = await this._syncCategories(tx, userId, categories);
 
       // 2. Sync Assets
-      for (const asset of assets) {
-        const createdAsset = await tx.asset.create({
-          data: {
-            name: asset.name,
-            type: asset.type,
-            balance: new Prisma.Decimal(asset.balance || 0),
-            color: asset.color,
-            userId,
-          },
-        });
-        assetMap.set(asset.localId, createdAsset.id);
-      }
+      const assetMap = await this._syncAssets(tx, userId, assets);
 
       // 3. Sync Transactions
-      for (const txData of transactions) {
-        const assetId = assetMap.get(txData.localAssetId);
-        if (!assetId) continue;
-
-        const toAssetId = txData.localToAssetId
-          ? assetMap.get(txData.localToAssetId)
-          : undefined;
-        const categoryId = txData.localCategoryId
-          ? categoryMap.get(txData.localCategoryId)
-          : undefined;
-
-        await tx.transaction.create({
-          data: {
-            type: txData.type,
-            amount: new Prisma.Decimal(txData.amount),
-            note: txData.note,
-            date: new Date(txData.date),
-            userId,
-            assetId,
-            toAssetId,
-            categoryId,
-          },
-        });
-      }
+      await this._syncTransactions(
+        tx,
+        userId,
+        transactions,
+        assetMap,
+        categoryMap,
+      );
 
       // 4. Update Sync Status on User model directly
       await tx.user.update({
@@ -243,8 +345,8 @@ export class AuthService {
     };
   }
 
-  async logout(refreshToken?: string): Promise<void> {
+  logout(): Promise<void> {
     // ponytail: stateless session invalidation is handled by client clearing cookies.
-    return;
+    return Promise.resolve();
   }
 }

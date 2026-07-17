@@ -20,7 +20,7 @@ export default function TransactionAssetItem({
       type="button"
       onClick={() => onClick(asset.id)}
       className={cn(
-        "flex items-center justify-center border gap-2 h-14 w-fit max-w-30 rounded-md px-4 py-2 transition-all shrink-0",
+        "flex items-center justify-center border gap-2 h-14 w-fit rounded-md px-4 py-2 transition-all shrink-0",
         isSelected && !asset.color && "border-primary bg-primary-light",
         !isSelected && "border-border bg-surface-secondary",
       )}
@@ -50,7 +50,7 @@ export default function TransactionAssetItem({
         )}
       </span>
       <div className="flex flex-col text-left">
-        <span className="text-sm font-bold text-primary-text truncate max-w-20">
+        <span className="text-sm font-bold text-primary-text truncate max-w-30">
           {asset.name}
         </span>
         <span className="text-xs text-secondary-text truncate max-w-20">

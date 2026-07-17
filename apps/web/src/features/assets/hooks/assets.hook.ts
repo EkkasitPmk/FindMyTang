@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  QueryClient,
+} from "@tanstack/react-query";
 import { create } from "zustand";
 import {
   createAssetApi,
@@ -18,7 +23,6 @@ import {
   Asset,
 } from "../types/assets.type";
 import { AxiosError } from "axios";
-import { useGuestStore, useIsGuest } from "@/shared/lib/storages/guest.storage";
 
 export interface ApiErrorResponse {
   message: string | string[];
@@ -26,43 +30,27 @@ export interface ApiErrorResponse {
   statusCode: number;
 }
 
+const invalidateQueries = (queryClient: QueryClient) => {
+  queryClient.invalidateQueries({ queryKey: ["assets"] }).catch(() => {});
+  queryClient.invalidateQueries({ queryKey: ["transactions"] }).catch(() => {});
+  queryClient.invalidateQueries({ queryKey: ["summary"] }).catch(() => {});
+};
+
 export const useCreateAssetMutation = (options?: {
   onSuccess?: (data: CreateAssetResponse) => void;
   onError?: (error: AxiosError<ApiErrorResponse>) => void;
 }) => {
   const queryClient = useQueryClient();
-  const isGuest = useGuestStore((state) => state.isGuest);
-  const addAsset = useGuestStore((state) => state.addAsset);
 
   return useMutation<
     CreateAssetResponse,
     AxiosError<ApiErrorResponse>,
     CreateAssetRequest
   >({
-    mutationFn: async (data) => {
-      if (isGuest) {
-        const mockResponse: Asset = {
-          id: crypto.randomUUID(),
-          name: data.name,
-          type: data.type,
-          balance: data.balance ?? 0,
-          color: data.color,
-          isArchived: false,
-          deletedAt: null,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
-        return mockResponse;
-      }
-      return createAssetApi(data);
-    },
+    mutationFn: (data) => createAssetApi(data),
     ...options,
     onSuccess: (data) => {
-      if (isGuest) {
-        addAsset(data);
-      } else {
-        void queryClient.invalidateQueries({ queryKey: ["assets"] });
-      }
+      invalidateQueries(queryClient);
       options?.onSuccess?.(data);
     },
   });
@@ -73,52 +61,27 @@ export const useUpdateAssetMutation = (options?: {
   onError?: (error: AxiosError<ApiErrorResponse>) => void;
 }) => {
   const queryClient = useQueryClient();
-  const isGuest = useGuestStore((state) => state.isGuest);
-  const updateAsset = useGuestStore((state) => state.updateAsset);
 
   return useMutation<
     CreateAssetResponse,
     AxiosError<ApiErrorResponse>,
     { id: string; data: UpdateAssetRequest }
   >({
-    mutationFn: async ({ id, data }) => {
-      if (isGuest) {
-        const state = useGuestStore.getState();
-        const existingAsset = state.assets.find((a) => a.id === id);
-        if (!existingAsset) {
-          throw new Error("Asset not found");
-        }
-        const mockResponse: Asset = {
-          ...existingAsset,
-          ...data,
-          updatedAt: new Date().toISOString(),
-        };
-        return mockResponse;
-      }
-      return updateAssetApi(id, data);
-    },
+    mutationFn: ({ id, data }) => updateAssetApi(id, data),
     ...options,
     onSuccess: (data) => {
-      if (isGuest) {
-        updateAsset(data.id, data);
-      } else {
-        void queryClient.invalidateQueries({ queryKey: ["assets"] });
-      }
+      invalidateQueries(queryClient);
       options?.onSuccess?.(data);
     },
   });
 };
 
 export const useAssets = (options?: { includeDeleted?: boolean }) => {
-  const isGuest = useIsGuest();
-  const guestAssets = useGuestStore((state) => state.assets);
   const includeDeleted = options?.includeDeleted ?? false;
 
   return useQuery<Asset[], AxiosError<ApiErrorResponse>>({
-    queryKey: ["assets", { includeDeleted }, isGuest],
+    queryKey: ["assets", { includeDeleted }],
     queryFn: () => getAssetsApi(includeDeleted),
-    enabled: !isGuest,
-    initialData: isGuest ? guestAssets : undefined,
   });
 };
 
@@ -127,43 +90,16 @@ export const useDeleteAssetMutation = (options?: {
   onError?: (error: AxiosError<ApiErrorResponse>) => void;
 }) => {
   const queryClient = useQueryClient();
-  const isGuest = useGuestStore((state) => state.isGuest);
-  const deleteAsset = useGuestStore((state) => state.deleteAsset);
-  const updateAsset = useGuestStore((state) => state.updateAsset);
 
   return useMutation<
     Asset,
     AxiosError<ApiErrorResponse>,
     { id: string; hardDelete?: boolean }
   >({
-    mutationFn: async ({ id, hardDelete }) => {
-      if (isGuest) {
-        const state = useGuestStore.getState();
-        const existingAsset = state.assets.find((a) => a.id === id);
-        if (!existingAsset) {
-          throw new Error("Asset not found");
-        }
-        if (hardDelete) {
-          return existingAsset;
-        }
-        return {
-          ...existingAsset,
-          deletedAt: new Date().toISOString(),
-        };
-      }
-      return deleteAssetApi(id, hardDelete);
-    },
+    mutationFn: ({ id, hardDelete }) => deleteAssetApi(id, hardDelete),
     ...options,
-    onSuccess: (data, variables) => {
-      if (isGuest) {
-        if (variables.hardDelete) {
-          deleteAsset(data.id);
-        } else {
-          updateAsset(data.id, { deletedAt: data.deletedAt });
-        }
-      } else {
-        void queryClient.invalidateQueries({ queryKey: ["assets"] });
-      }
+    onSuccess: (data) => {
+      invalidateQueries(queryClient);
       options?.onSuccess?.(data);
     },
   });
@@ -174,31 +110,12 @@ export const useRestoreAssetMutation = (options?: {
   onError?: (error: AxiosError<ApiErrorResponse>) => void;
 }) => {
   const queryClient = useQueryClient();
-  const isGuest = useGuestStore((state) => state.isGuest);
-  const updateAsset = useGuestStore((state) => state.updateAsset);
 
   return useMutation<Asset, AxiosError<ApiErrorResponse>, string>({
-    mutationFn: async (id) => {
-      if (isGuest) {
-        const state = useGuestStore.getState();
-        const existingAsset = state.assets.find((a) => a.id === id);
-        if (!existingAsset) {
-          throw new Error("Asset not found");
-        }
-        return {
-          ...existingAsset,
-          deletedAt: null,
-        };
-      }
-      return restoreAssetApi(id);
-    },
+    mutationFn: (id) => restoreAssetApi(id),
     ...options,
     onSuccess: (data) => {
-      if (isGuest) {
-        updateAsset(data.id, { deletedAt: null });
-      } else {
-        void queryClient.invalidateQueries({ queryKey: ["assets"] });
-      }
+      invalidateQueries(queryClient);
       options?.onSuccess?.(data);
     },
   });
@@ -209,35 +126,16 @@ export const useBulkDeleteAssetsMutation = (options?: {
   onError?: (error: AxiosError<ApiErrorResponse>) => void;
 }) => {
   const queryClient = useQueryClient();
-  const isGuest = useGuestStore((state) => state.isGuest);
-  const deleteAsset = useGuestStore((state) => state.deleteAsset);
-  const updateAsset = useGuestStore((state) => state.updateAsset);
 
   return useMutation<
     { success: boolean },
     AxiosError<ApiErrorResponse>,
     { ids: string[]; hardDelete?: boolean }
   >({
-    mutationFn: async ({ ids, hardDelete }) => {
-      if (isGuest) {
-        // Mock bulk delete
-        return { success: true };
-      }
-      return bulkDeleteAssetsApi(ids, hardDelete);
-    },
+    mutationFn: ({ ids, hardDelete }) => bulkDeleteAssetsApi(ids, hardDelete),
     ...options,
-    onSuccess: (data, variables) => {
-      if (isGuest) {
-        if (variables.hardDelete) {
-          variables.ids.forEach((id) => deleteAsset(id));
-        } else {
-          variables.ids.forEach((id) =>
-            updateAsset(id, { deletedAt: new Date().toISOString() }),
-          );
-        }
-      } else {
-        void queryClient.invalidateQueries({ queryKey: ["assets"] });
-      }
+    onSuccess: () => {
+      invalidateQueries(queryClient);
       options?.onSuccess?.();
     },
   });
@@ -248,39 +146,16 @@ export const useReorderAssetsMutation = (options?: {
   onError?: (error: AxiosError<ApiErrorResponse>) => void;
 }) => {
   const queryClient = useQueryClient();
-  const isGuest = useGuestStore((state) => state.isGuest);
 
   return useMutation<
     { success: boolean },
     AxiosError<ApiErrorResponse>,
     string[]
   >({
-    mutationFn: async (ids) => {
-      if (isGuest) {
-        const state = useGuestStore.getState();
-        const reorderedAssets: Asset[] = [];
-        ids.forEach((id) => {
-          const asset = state.assets.find((a) => a.id === id);
-          if (asset) reorderedAssets.push(asset);
-        });
-        state.assets.forEach((asset) => {
-          if (!ids.includes(asset.id)) {
-            reorderedAssets.push(asset);
-          }
-        });
-        reorderedAssets.forEach((asset, idx) => {
-          asset.displayOrder = idx + 1;
-        });
-        useGuestStore.setState({ assets: reorderedAssets });
-        return { success: true };
-      }
-      return reorderAssetsApi(ids);
-    },
+    mutationFn: (ids) => reorderAssetsApi(ids),
     ...options,
     onSuccess: () => {
-      if (!isGuest) {
-        void queryClient.invalidateQueries({ queryKey: ["assets"] });
-      }
+      invalidateQueries(queryClient);
       options?.onSuccess?.();
     },
   });
@@ -291,28 +166,16 @@ export const useBulkArchiveAssetsMutation = (options?: {
   onError?: (error: AxiosError<ApiErrorResponse>) => void;
 }) => {
   const queryClient = useQueryClient();
-  const isGuest = useGuestStore((state) => state.isGuest);
-  const updateAsset = useGuestStore((state) => state.updateAsset);
 
   return useMutation<
     { success: boolean },
     AxiosError<ApiErrorResponse>,
     { ids: string[] }
   >({
-    mutationFn: async ({ ids }) => {
-      if (isGuest) {
-        ids.forEach((id) => {
-          updateAsset(id, { isArchived: true });
-        });
-        return { success: true };
-      }
-      return bulkArchiveAssetsApi(ids);
-    },
+    mutationFn: ({ ids }) => bulkArchiveAssetsApi(ids),
     ...options,
     onSuccess: () => {
-      if (!isGuest) {
-        void queryClient.invalidateQueries({ queryKey: ["assets"] });
-      }
+      invalidateQueries(queryClient);
       options?.onSuccess?.();
     },
   });
@@ -323,28 +186,16 @@ export const useBulkRestoreAssetsMutation = (options?: {
   onError?: (error: AxiosError<ApiErrorResponse>) => void;
 }) => {
   const queryClient = useQueryClient();
-  const isGuest = useGuestStore((state) => state.isGuest);
-  const updateAsset = useGuestStore((state) => state.updateAsset);
 
   return useMutation<
     { success: boolean },
     AxiosError<ApiErrorResponse>,
     { ids: string[] }
   >({
-    mutationFn: async ({ ids }) => {
-      if (isGuest) {
-        ids.forEach((id) => {
-          updateAsset(id, { deletedAt: null, isArchived: false });
-        });
-        return { success: true };
-      }
-      return bulkRestoreAssetsApi(ids);
-    },
+    mutationFn: ({ ids }) => bulkRestoreAssetsApi(ids),
     ...options,
     onSuccess: () => {
-      if (!isGuest) {
-        void queryClient.invalidateQueries({ queryKey: ["assets"] });
-      }
+      invalidateQueries(queryClient);
       options?.onSuccess?.();
     },
   });

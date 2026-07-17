@@ -5,7 +5,10 @@ import { cn } from "@/shared/lib/utils/core.util";
 
 interface NavLinksProps {
   pathname: string;
-  onLinkClick?: () => void;
+  onLinkClick?: (
+    e?: React.MouseEvent<HTMLAnchorElement>,
+    href?: string,
+  ) => void;
   className?: string;
   itemClassName?: string;
 }
@@ -31,7 +34,7 @@ export default function NavLinks({
           <Link
             key={item.href}
             href={item.href}
-            onClick={onLinkClick}
+            onClick={(e) => onLinkClick?.(e, item.href)}
             className={cn(
               "flex items-center gap-3 px-4 rounded-md text-sm font-medium transition-all duration-200 active-press",
               isActive

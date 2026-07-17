@@ -51,7 +51,7 @@ export const translations = {
     save: "บันทึก",
     saving: "กำลังบันทึก...",
     updating: "กำลังอัปเดต...",
-    
+
     // Additional settings / account layout
     done: "เสร็จสิ้น",
     edit: "แก้ไข",
@@ -60,7 +60,8 @@ export const translations = {
     security: "ความปลอดภัย",
     deleteAccountBtn: "ลบบัญชีผู้ใช้",
     deleteAccountTitle: "ลบบัญชีผู้ใช้?",
-    deleteAccountDesc: "คุณแน่ใจหรือไม่ว่าต้องการลบบัญชีผู้ใช้ของคุณ? การกระทำนี้จะเป็นการลบอย่างถาวรและไม่สามารถย้อนกลับได้",
+    deleteAccountDesc:
+      "คุณแน่ใจหรือไม่ว่าต้องการลบบัญชีผู้ใช้ของคุณ? การกระทำนี้จะเป็นการลบอย่างถาวรและไม่สามารถย้อนกลับได้",
     deleteBtn: "ลบ",
     cancelBtn: "ยกเลิก",
     currentPasswordLabel: "รหัสผ่านปัจจุบัน",
@@ -143,7 +144,8 @@ export const translations = {
     security: "Security",
     deleteAccountBtn: "Delete Account",
     deleteAccountTitle: "Delete Account?",
-    deleteAccountDesc: "Are you sure you want to delete your account? This action is permanent and cannot be undone.",
+    deleteAccountDesc:
+      "Are you sure you want to delete your account? This action is permanent and cannot be undone.",
     deleteBtn: "Delete",
     cancelBtn: "Cancel",
     currentPasswordLabel: "Current Password",
@@ -154,7 +156,8 @@ export const translations = {
     placeholderConfirmNewPassword: "Confirm new password",
     profileUpdated: "Profile updated successfully!",
     passwordChanged: "Password changed successfully!",
-    deleteAccountInfo: "To delete your account, please contact the administrator.",
+    deleteAccountInfo:
+      "To delete your account, please contact the administrator.",
     selectAvatar: "Select an Avatar",
     removeAvatar: "Remove Avatar",
     saveChanges: "Save Changes",

@@ -97,7 +97,11 @@ export default function ListAssetsContainer({
                 </div>
                 <div className="flex items-center gap-1">
                   <span className="font-semibold text-base text-primary-text">
-                    ฿ {asset.balance.toLocaleString()}
+                    ฿{" "}
+                    {asset.balance.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
                   </span>
                   <ChevronRight size={18} className="text-disabled-text" />
                 </div>
@@ -168,7 +172,11 @@ export default function ListAssetsContainer({
                 <Skeleton className="h-6 w-24" />
               ) : (
                 <span className="text-base font-bold">
-                  ฿ {summary?.income?.toLocaleString() ?? 0}
+                  ฿{" "}
+                  {summary?.income?.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  }) ?? "0.00"}
                 </span>
               )}
             </div>
@@ -178,7 +186,11 @@ export default function ListAssetsContainer({
                 <Skeleton className="h-6 w-24" />
               ) : (
                 <span className="text-base font-bold">
-                  ฿ {summary?.expense?.toLocaleString() ?? 0}
+                  ฿{" "}
+                  {summary?.expense?.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  }) ?? "0.00"}
                 </span>
               )}
             </div>

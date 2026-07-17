@@ -46,7 +46,10 @@ export default function AssetDetailContainer() {
 
   const asset = assets?.find((a) => a.id === id) || assets?.[0];
 
-  const { data: availableDatesData } = useAvailableDatesQuery(asset?.id);
+  const { data: availableDatesData } = useAvailableDatesQuery(
+    asset?.id,
+    viewOption === "Show deleted items",
+  );
   const availableYears = useMemo(
     () =>
       Object.keys(availableDatesData ?? {}).sort((a, b) => b.localeCompare(a)),

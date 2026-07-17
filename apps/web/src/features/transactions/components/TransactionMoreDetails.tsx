@@ -72,6 +72,9 @@ export default function TransactionMoreDetails({
             height={0}
             sizes="100vw"
             className="w-full h-auto object-contain"
+            unoptimized={
+              filePreview.startsWith("blob:") || filePreview.startsWith("data:")
+            }
           />
           <Button
             variant="unstyled"
@@ -98,6 +101,10 @@ export default function TransactionMoreDetails({
             height={0}
             sizes="100vw"
             className="w-full h-auto object-contain"
+            unoptimized={
+              attachmentUrl.startsWith("blob:") ||
+              attachmentUrl.startsWith("data:")
+            }
           />
           <Button
             variant="unstyled"

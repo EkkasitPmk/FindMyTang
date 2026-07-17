@@ -311,6 +311,9 @@ export default function ManageAssetsContainer() {
             <span className="text-xs font-medium text-disabled-text uppercase tracking-wider px-1">
               Archived / Deleted
             </span>
+            <p className="px-1 text-xs text-secondary-text">
+              Deleted items are permanently removed after 30 days.
+            </p>
             {deletedAssets.map((asset) => (
               <ManageAssetItem
                 key={asset.id}
