@@ -180,7 +180,7 @@ export default function SettingsContainer({
       </div>
 
       {/* Data Management Section */}
-      <div className="space-y-2">
+      {/* <div className="space-y-2">
         <h5 className="text-[11px] font-semibold text-secondary-text/85 uppercase tracking-wider px-1">
           {t("dataManagement")}
         </h5>
@@ -222,10 +222,10 @@ export default function SettingsContainer({
             />
           </Button>
         </div>
-      </div>
+      </div> */}
 
       {/* App details & Help */}
-      <div className="bg-surface-secondary border border-border/60 rounded-md p-3 flex justify-between items-center text-[10px] text-secondary-text/85">
+      {/* <div className="bg-surface-secondary border border-border/60 rounded-md p-3 flex justify-between items-center text-[10px] text-secondary-text/85">
         <div className="flex items-center gap-1.5">
           <HelpCircle className="w-3.5 h-3.5" strokeWidth={1.5} />
           <span>Version 1.0.0 (Geist Edition)</span>
@@ -233,7 +233,7 @@ export default function SettingsContainer({
         <a href="#" className="hover:underline font-semibold text-primary">
           TOS & Privacy
         </a>
-      </div>
+      </div> */}
     </div>
   );
 }

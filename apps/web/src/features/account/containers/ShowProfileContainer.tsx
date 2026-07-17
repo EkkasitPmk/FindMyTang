@@ -8,12 +8,14 @@ import { useIsGuest } from "@/shared/lib/storages/guest.storage";
 import { format } from "date-fns";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
+import { useFeatureLockModal } from "@/shared/lib/hooks/useFeatureLockModal.hook";
 
 export default function ShowProfileContainer() {
   const pathname = usePathname();
   const { data: user, isLoading } = useMeQuery();
   const isGuest = useIsGuest();
   const mounted = useMounted();
+  const openLockModal = useFeatureLockModal((state) => state.openModal);
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -37,6 +39,12 @@ export default function ShowProfileContainer() {
       <div className="flex items-center gap-2">
         <Link
           href="/settings/account"
+          onClick={(e) => {
+            if (isGuest) {
+              e.preventDefault();
+              openLockModal("Account Settings & Cloud Backup");
+            }
+          }}
           className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden bg-surface-secondary border border-border shrink-0"
         >
           <Avatar url={user?.avatarUrl} size={40} />
