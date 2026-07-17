@@ -79,8 +79,13 @@ export class TransactionController {
   async getAvailableDates(
     @CurrentUser() user: User,
     @Query("assetId") assetId?: string,
+    @Query("isDeleted") isDeleted?: string,
   ) {
-    return this.transactionService.getAvailableDates(user.id, assetId);
+    return this.transactionService.getAvailableDates(
+      user.id,
+      assetId,
+      isDeleted === "true",
+    );
   }
 
   @Get(":id")

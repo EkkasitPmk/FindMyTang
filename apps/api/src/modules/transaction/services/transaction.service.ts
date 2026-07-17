@@ -3,6 +3,7 @@ import {
   NotFoundException,
   ForbiddenException,
   BadRequestException,
+  OnModuleInit,
 } from "@nestjs/common";
 import * as crypto from "node:crypto";
 import "multer";
@@ -17,7 +18,7 @@ import { createClient } from "@supabase/supabase-js";
 import { TransactionQueryDto } from "../dto/transaction-query.dto";
 
 @Injectable()
-export class TransactionService {
+export class TransactionService implements OnModuleInit {
   constructor(
     private readonly transactionRepository: TransactionRepository,
     private readonly assetRepository: AssetRepository,
@@ -31,6 +32,97 @@ export class TransactionService {
       process.env.SUPABASE_ANON_KEY ||
       "",
   );
+
+  onModuleInit() {
+    // ponytail: using native setInterval instead of @nestjs/schedule to avoid unnecessary dependency.
+    // Run every hour to check for 30-day old soft-deleted transactions and hard delete them.
+    setInterval(
+      () => {
+        void (async () => {
+          try {
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+            const expiredTransactions = await this.prisma.transaction.findMany({
+              where: {
+                deletedAt: {
+                  lte: thirtyDaysAgo,
+                },
+              },
+            });
+
+            if (expiredTransactions.length > 0) {
+              console.log(
+                `Auto-deleting ${expiredTransactions.length} expired transactions`,
+              );
+
+              for (const tx of expiredTransactions) {
+                if (tx.attachmentUrl) {
+                  await this.removeAttachmentFromSupabase(tx.attachmentUrl);
+                }
+              }
+
+              await this.prisma.transaction.deleteMany({
+                where: {
+                  id: { in: expiredTransactions.map((t) => t.id) },
+                },
+              });
+            }
+
+            const expiredCategories = await this.prisma.category.findMany({
+              where: { deletedAt: { lte: thirtyDaysAgo } },
+              select: { id: true },
+            });
+            if (expiredCategories.length > 0) {
+              const categoryIds = expiredCategories.map(
+                (category) => category.id,
+              );
+              await this.prisma.transaction.updateMany({
+                where: { categoryId: { in: categoryIds } },
+                data: { categoryId: null },
+              });
+              await this.prisma.category.deleteMany({
+                where: { id: { in: categoryIds } },
+              });
+            }
+
+            const expiredAssets = await this.prisma.asset.findMany({
+              where: { deletedAt: { lte: thirtyDaysAgo } },
+              select: { id: true },
+            });
+            if (expiredAssets.length > 0) {
+              const assetIds = expiredAssets.map((asset) => asset.id);
+              const assetTransactions = await this.prisma.transaction.findMany({
+                where: {
+                  OR: [
+                    { assetId: { in: assetIds } },
+                    { toAssetId: { in: assetIds } },
+                  ],
+                  attachmentUrl: { not: null },
+                },
+                select: { attachmentUrl: true },
+              });
+              await Promise.all(
+                assetTransactions
+                  .map((transaction) => transaction.attachmentUrl)
+                  .filter((url): url is string => Boolean(url))
+                  .map((url) => this.removeAttachmentFromSupabase(url)),
+              );
+              await this.prisma.transaction.deleteMany({
+                where: { toAssetId: { in: assetIds } },
+              });
+              await this.prisma.asset.deleteMany({
+                where: { id: { in: assetIds } },
+              });
+            }
+          } catch (e) {
+            console.error("Error running auto-delete cron:", e);
+          }
+        })();
+      },
+      60 * 60 * 1000,
+    ); // Check every hour
+  }
 
   async uploadFile(file: Express.Multer.File): Promise<string | null> {
     if (!file) return null;
@@ -353,7 +445,20 @@ export class TransactionService {
       const newType = dto.type ?? tx.type;
       const newAmount = dto.amount ?? tx.amount;
       const newAssetId = dto.assetId ?? tx.assetId;
-      const newToAssetId = dto.toAssetId ?? tx.toAssetId;
+
+      let newToAssetId = dto.toAssetId ?? tx.toAssetId;
+      if (newType !== "TRANSFER" || newToAssetId === "") {
+        newToAssetId = null;
+      }
+
+      let newCategoryId = dto.categoryId ?? tx.categoryId;
+      if (
+        newType === "TRANSFER" ||
+        newType === "ADJUSTMENT" ||
+        newCategoryId === ""
+      ) {
+        newCategoryId = null;
+      }
 
       // Apply new transaction balances
       await this.updateBalances(
@@ -369,6 +474,8 @@ export class TransactionService {
         where: { id },
         data: {
           ...dto,
+          toAssetId: newToAssetId,
+          categoryId: newCategoryId,
           attachmentUrl: newAttachmentUrl,
           date: dto.date ? new Date(dto.date) : undefined,
         },
@@ -424,8 +531,16 @@ export class TransactionService {
     });
   }
 
-  async getAvailableDates(userId: string, assetId?: string) {
-    return this.transactionRepository.getAvailableDates(userId, assetId);
+  async getAvailableDates(
+    userId: string,
+    assetId?: string,
+    isDeleted?: boolean,
+  ) {
+    return this.transactionRepository.getAvailableDates(
+      userId,
+      assetId,
+      isDeleted,
+    );
   }
 
   async findOne(userId: string, id: string) {
