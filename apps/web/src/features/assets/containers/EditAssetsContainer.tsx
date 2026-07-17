@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
@@ -15,7 +15,7 @@ import { handleFormError } from "@/shared/lib/helpers/form.helper";
 
 interface EditAssetsContainerProps {
   asset: Asset;
-  onClose?: () => void;
+  onClose?: (newName?: string) => void;
 }
 
 export default function EditAssetsContainer({
@@ -30,31 +30,24 @@ export default function EditAssetsContainer({
     register,
     handleSubmit,
     setError,
-    reset,
     control,
     setValue,
     getValues,
     formState: { errors },
   } = useForm<CreateAssetFormValues>({
     resolver: zodResolver(createAssetSchema),
-    defaultValues: {
+    values: {
       name: asset.name,
       type: asset.type,
-      color: asset.color || "var(--color-primary)",
+      color: asset.color || "#2563EB",
+    },
+    resetOptions: {
+      keepDirtyValues: true,
     },
   });
 
   const currentColor = useWatch({ control, name: "color" });
   const selected = useWatch({ control, name: "type" }) || AssetType.CASH;
-
-  // Keep internal state synced if asset changes
-  useEffect(() => {
-    reset({
-      name: asset.name,
-      type: asset.type,
-      color: asset.color || "var(--color-primary)",
-    });
-  }, [asset, reset]);
 
   const handleSelect = (type: string) => {
     setValue("type", type as AssetType);
@@ -64,7 +57,7 @@ export default function EditAssetsContainer({
   const { mutate: updateAsset, isPending } = useUpdateAssetMutation({
     onSuccess: (data) => {
       toast.success(`Asset "${data.name}" updated successfully!`);
-      if (onClose) onClose();
+      if (onClose) onClose(data.name);
     },
     onError: (error) => {
       handleFormError(
@@ -81,19 +74,11 @@ export default function EditAssetsContainer({
   });
 
   const onSubmit = (values: CreateAssetFormValues) => {
-    const balanceNum =
-      values.balance === "" ||
-      values.balance === null ||
-      values.balance === undefined
-        ? undefined
-        : Number(values.balance);
-
     updateAsset({
       id: asset.id,
       data: {
         name: values.name,
         type: values.type,
-        ...(balanceNum !== undefined && { balance: balanceNum }),
         color: values.color,
       },
     });

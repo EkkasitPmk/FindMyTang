@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAssets, useAssetUIStore } from "../hooks/assets.hook";
@@ -169,6 +169,19 @@ export default function AssetDetailContainer() {
     setSelectedMonth(month);
   };
 
+  const handleEditClose = useCallback(
+    (newName?: string) => {
+      setIsEditModalOpen(false);
+      // ponytail: sync URL ?name= param หลัง edit เพื่อ TopAppBar แสดงชื่อใหม่ทันที
+      if (newName && id) {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set("name", newName);
+        router.replace(`/assets?${params.toString()}`);
+      }
+    },
+    [id, router, searchParams],
+  );
+
   return (
     <>
       {id === null ? (
@@ -228,7 +241,7 @@ export default function AssetDetailContainer() {
           {isEditModalOpen && asset && (
             <EditAssetsContainer
               asset={asset}
-              onClose={() => setIsEditModalOpen(false)}
+              onClose={(newName) => handleEditClose(newName)}
             />
           )}
         </>

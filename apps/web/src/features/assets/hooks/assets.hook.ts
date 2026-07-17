@@ -23,6 +23,7 @@ import {
   Asset,
 } from "../types/assets.type";
 import { AxiosError } from "axios";
+import { useGuestStore } from "@/shared/lib/storages/guest.storage";
 
 export interface ApiErrorResponse {
   message: string | string[];
@@ -69,8 +70,19 @@ export const useUpdateAssetMutation = (options?: {
   >({
     mutationFn: ({ id, data }) => updateAssetApi(id, data),
     ...options,
-    onSuccess: (data) => {
-      invalidateQueries(queryClient);
+    onSuccess: async (data) => {
+      // ponytail: Optimistic update to make UI feel instant.
+      queryClient.setQueriesData<Asset[]>({ queryKey: ["assets"] }, (oldData) =>
+        oldData?.map((asset) =>
+          asset.id === data.id ? { ...asset, ...data } : asset,
+        ),
+      );
+      // Let background refetch ensure everything is in sync.
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["assets"] }),
+        queryClient.invalidateQueries({ queryKey: ["transactions"] }),
+        queryClient.invalidateQueries({ queryKey: ["summary"] }),
+      ]);
       options?.onSuccess?.(data);
     },
   });
@@ -78,9 +90,10 @@ export const useUpdateAssetMutation = (options?: {
 
 export const useAssets = (options?: { includeDeleted?: boolean }) => {
   const includeDeleted = options?.includeDeleted ?? false;
+  const isGuest = useGuestStore((state) => state.isGuest);
 
   return useQuery<Asset[], AxiosError<ApiErrorResponse>>({
-    queryKey: ["assets", { includeDeleted }],
+    queryKey: ["assets", { includeDeleted, isGuest }],
     queryFn: () => getAssetsApi(includeDeleted),
   });
 };

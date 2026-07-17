@@ -5,6 +5,7 @@ import {
   useDeleteAssetMutation,
   useUpdateAssetMutation,
   useAssetUIStore,
+  useAssets,
 } from "../hooks/assets.hook";
 import { toast } from "react-toastify";
 import { useClickOutside } from "@/shared/lib/hooks/useClickOutside.hook";
@@ -44,7 +45,10 @@ export default function AssetsMenuContainer() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const id = searchParams.get("id");
-  const name = searchParams.get("name");
+  const nameParam = searchParams.get("name");
+  const { data: assets } = useAssets();
+  const currentAsset = assets?.find((a) => a.id === id);
+  const name = currentAsset?.name || nameParam;
 
   const { mutate: deleteAsset, isPending: isDeletingAsset } =
     useDeleteAssetMutation({
