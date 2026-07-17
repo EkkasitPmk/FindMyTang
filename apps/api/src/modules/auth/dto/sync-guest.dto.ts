@@ -1,6 +1,9 @@
 import { ApiProperty, OmitType } from "@nestjs/swagger";
 import {
   IsArray,
+  IsBoolean,
+  IsDateString,
+  IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -15,14 +18,34 @@ export class SyncAssetItemDto extends CreateAssetDto {
   @ApiProperty({ description: "Client-side temporary ID" })
   @IsString()
   @IsNotEmpty()
-  localId: string;
+  localId!: string;
+
+  @IsInt()
+  @IsOptional()
+  displayOrder?: number;
+
+  @IsBoolean()
+  @IsOptional()
+  isArchived?: boolean;
+
+  @IsDateString()
+  @IsOptional()
+  deletedAt?: string | null;
 }
 
 export class SyncCategoryItemDto extends CreateCategoryDto {
   @ApiProperty({ description: "Client-side temporary ID" })
   @IsString()
   @IsNotEmpty()
-  localId: string;
+  localId!: string;
+
+  @IsBoolean()
+  @IsOptional()
+  isSystem?: boolean;
+
+  @IsDateString()
+  @IsOptional()
+  deletedAt?: string | null;
 }
 
 export class SyncTransactionItemDto extends OmitType(CreateTransactionDto, [
@@ -33,12 +56,12 @@ export class SyncTransactionItemDto extends OmitType(CreateTransactionDto, [
   @ApiProperty({ description: "Client-side temporary ID" })
   @IsString()
   @IsNotEmpty()
-  localId: string;
+  localId!: string;
 
   @ApiProperty({ description: "Client-side temporary Asset ID" })
   @IsString()
   @IsNotEmpty()
-  localAssetId: string;
+  localAssetId!: string;
 
   @ApiProperty({
     description: "Client-side temporary Target Asset ID (for TRANSFER)",
@@ -53,6 +76,10 @@ export class SyncTransactionItemDto extends OmitType(CreateTransactionDto, [
   @IsString()
   @IsOptional()
   localCategoryId?: string;
+
+  @IsDateString()
+  @IsOptional()
+  deletedAt?: string | null;
 }
 
 export class SyncGuestDto {
@@ -60,17 +87,17 @@ export class SyncGuestDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => SyncAssetItemDto)
-  assets: SyncAssetItemDto[];
+  assets!: SyncAssetItemDto[];
 
   @ApiProperty({ type: [SyncCategoryItemDto] })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => SyncCategoryItemDto)
-  categories: SyncCategoryItemDto[];
+  categories!: SyncCategoryItemDto[];
 
   @ApiProperty({ type: [SyncTransactionItemDto] })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => SyncTransactionItemDto)
-  transactions: SyncTransactionItemDto[];
+  transactions!: SyncTransactionItemDto[];
 }
