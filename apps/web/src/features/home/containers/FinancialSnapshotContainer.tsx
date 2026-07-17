@@ -54,7 +54,7 @@ export default function FinancialSnapshotContainer() {
       <span className="text-3xl font-bold text-primary-text">
         ฿{" "}
         {netWorth.toLocaleString(undefined, {
-          minimumFractionDigits: 0,
+          minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         })}
       </span>
@@ -65,7 +65,7 @@ export default function FinancialSnapshotContainer() {
             <span className="text-sm text-income font-medium">
               +
               {netChange.toLocaleString(undefined, {
-                minimumFractionDigits: 0,
+                minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}{" "}
               This month
@@ -75,8 +75,8 @@ export default function FinancialSnapshotContainer() {
           <>
             <ArrowDown className="text-expense" size={16} />
             <span className="text-sm text-expense font-medium">
-              {netChange.toLocaleString(undefined, {
-                minimumFractionDigits: 0,
+              {Math.abs(netChange).toLocaleString(undefined, {
+                minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}{" "}
               This month
