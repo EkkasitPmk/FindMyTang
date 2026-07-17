@@ -10,7 +10,10 @@ import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { cn } from "@/shared/lib/utils/core.util";
 import AssetsMenuContainer from "@/features/assets/containers/AssetsMenuContainer";
 import CreateAssetsContainer from "@/features/assets/containers/CreateAssetsContainer";
-import { useAssetUIStore } from "@/features/assets/hooks/assets.hook";
+import {
+  useAssetUIStore,
+  useAssets,
+} from "@/features/assets/hooks/assets.hook";
 import { Button } from "@/shared/components/customs/Button";
 import { Input } from "@/shared/components/customs/Input";
 
@@ -20,7 +23,13 @@ export default function MainLayoutContainer({
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const assetName = searchParams.get("name");
+  const assetId = searchParams.get("id");
+  const assetNameParam = searchParams.get("name");
+
+  const { data: assets } = useAssets();
+  const currentAsset = assets?.find((a) => a.id === assetId);
+  // ponytail: prioritize URL param to allow instant optimistic UI updates from AssetDetailContainer
+  const assetName = assetNameParam || currentAsset?.name;
   const isEditingList = useCategoryUIStore((state) => state.isEditingList);
   const toggleEditingList = useCategoryUIStore(
     (state) => state.toggleEditingList,
