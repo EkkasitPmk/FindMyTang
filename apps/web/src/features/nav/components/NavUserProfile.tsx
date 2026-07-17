@@ -80,7 +80,7 @@ export default function NavUserProfile({
           <Link
             href="/login"
             onClick={onActionClick}
-            className="flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium text-secondary-text hover:text-primary hover:bg-primary-light/50 transition-all duration-200 border border-transparent active-press"
+            className="flex items-center gap-2 px-4 py-3 truncate rounded-md text-sm font-medium text-secondary-text hover:text-primary hover:bg-primary-light/50 transition-all duration-200 border border-transparent active-press"
           >
             <LogIn className="w-4 h-4" strokeWidth={1.5} />
             {t("connectBtn")}

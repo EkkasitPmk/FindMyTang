@@ -1,6 +1,7 @@
 import { Wallet } from "lucide-react";
 import NavLinks from "./NavLinks";
 import ThemeSwitcher from "@/shared/components/customs/ThemeSwitcher";
+import SyncStatusButton from "@/shared/components/customs/SyncStatusButton";
 import NavUserProfile from "./NavUserProfile";
 import { UserProfile } from "@/features/nav/types/auth.type";
 
@@ -9,6 +10,11 @@ interface DesktopSidebarProps {
   user?: UserProfile | null;
   isLoading: boolean;
   onLogout: () => void;
+  isGuest: boolean;
+  isSyncing: boolean;
+  syncStatus: "synced" | "syncing" | "offline";
+  onSyncClick?: () => void;
+  onNavigate?: (e?: React.MouseEvent<HTMLAnchorElement>, href?: string) => void;
 }
 
 export default function DesktopSidebar({
@@ -16,6 +22,11 @@ export default function DesktopSidebar({
   user,
   isLoading,
   onLogout,
+  isGuest,
+  isSyncing,
+  syncStatus,
+  onSyncClick,
+  onNavigate,
 }: Readonly<DesktopSidebarProps>) {
   return (
     <aside className="hidden md:flex flex-col w-64 border-r border-border bg-surface sticky top-0 h-screen p-6 justify-between shrink-0">
@@ -31,12 +42,24 @@ export default function DesktopSidebar({
         </div>
 
         {/* Navigation links */}
-        <NavLinks pathname={pathname} itemClassName="py-3" />
+        <NavLinks
+          pathname={pathname}
+          itemClassName="py-3"
+          onLinkClick={onNavigate}
+        />
       </div>
 
       <div className="flex flex-col gap-4">
-        <div className="px-4">
-          <ThemeSwitcher />
+        <div className="flex flex-col gap-2">
+          <SyncStatusButton
+            isGuest={isGuest}
+            isSyncing={isSyncing}
+            syncStatus={syncStatus}
+            onSyncClick={onSyncClick}
+          />
+          <div className="px-4">
+            <ThemeSwitcher />
+          </div>
         </div>
         {/* User profile & Action */}
         <NavUserProfile

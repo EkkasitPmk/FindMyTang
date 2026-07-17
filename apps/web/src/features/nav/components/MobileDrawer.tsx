@@ -1,6 +1,7 @@
 import { Wallet, X } from "lucide-react";
 import NavLinks from "./NavLinks";
 import ThemeSwitcher from "@/shared/components/customs/ThemeSwitcher";
+import SyncStatusButton from "@/shared/components/customs/SyncStatusButton";
 import NavUserProfile from "./NavUserProfile";
 import { UserProfile } from "@/features/nav/types/auth.type";
 import { Button } from "@/shared/components/customs/Button";
@@ -12,6 +13,11 @@ interface MobileDrawerProps {
   user?: UserProfile | null;
   isLoading: boolean;
   onLogout: () => void;
+  isGuest: boolean;
+  isSyncing: boolean;
+  syncStatus: "synced" | "syncing" | "offline";
+  onSyncClick?: () => void;
+  onNavigate?: (e?: React.MouseEvent<HTMLAnchorElement>, href?: string) => void;
 }
 
 export default function MobileDrawer({
@@ -21,6 +27,11 @@ export default function MobileDrawer({
   user,
   isLoading,
   onLogout,
+  isGuest,
+  isSyncing,
+  syncStatus,
+  onSyncClick,
+  onNavigate,
 }: Readonly<MobileDrawerProps>) {
   if (!isOpen) return null;
 
@@ -61,14 +72,25 @@ export default function MobileDrawer({
           {/* Navigation list */}
           <NavLinks
             pathname={pathname}
-            onLinkClick={onClose}
+            onLinkClick={(e, href) => {
+              onNavigate?.(e, href);
+              onClose();
+            }}
             itemClassName="py-2"
           />
         </div>
 
         <div className="flex flex-col gap-4">
-          <div className="px-4">
-            <ThemeSwitcher />
+          <div className="flex flex-col gap-2">
+            <SyncStatusButton
+              isGuest={isGuest}
+              isSyncing={isSyncing}
+              syncStatus={syncStatus}
+              onSyncClick={onSyncClick}
+            />
+            <div className="px-4">
+              <ThemeSwitcher />
+            </div>
           </div>
           {/* User profile & Action */}
           <NavUserProfile

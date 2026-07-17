@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { toast } from "react-toastify";
 import { LogOut } from "lucide-react";
 import { useMeQuery, useLogoutMutation } from "../hooks/auth.hook";
@@ -11,10 +11,11 @@ import MobileDrawer from "../components/MobileDrawer";
 import ConfirmModal from "@/shared/components/customs/ConfirmModal";
 import LoadingModal from "@/shared/components/customs/LoadingModal";
 import { useConfirmModal } from "@/shared/lib/hooks/useConfirmModal.hook";
+import { useFeatureLockModal } from "@/shared/lib/hooks/useFeatureLockModal.hook";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function NavContainer() {
   const pathname = usePathname();
-  const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLoggingOutLocal, setIsLoggingOutLocal] = useState(false);
   const {
@@ -25,18 +26,60 @@ export default function NavContainer() {
   const isGuest = useGuestStore((state) => state.isGuest);
   const setGuestMode = useGuestStore((state) => state.setGuestMode);
   const clearGuestData = useGuestStore((state) => state.clearGuestData);
+  const openLockModal = useFeatureLockModal((state) => state.openModal);
+  const queryClient = useQueryClient();
+
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<
+    "synced" | "syncing" | "offline"
+  >("offline");
+
+  const handleSyncClick = () => {
+    if (isGuest) {
+      openLockModal("Cloud Sync & Backup");
+      return;
+    }
+
+    setIsSyncing(true);
+    setSyncStatus("syncing");
+
+    void queryClient
+      .refetchQueries()
+      .then(() => {
+        setIsSyncing(false);
+        setSyncStatus("synced");
+        toast.success("All data synced to cloud");
+      })
+      .catch(() => {
+        setIsSyncing(false);
+        setSyncStatus("offline");
+        toast.error("Cloud sync failed");
+      });
+  };
+
+  const handleNavigate = (
+    e?: React.MouseEvent<HTMLAnchorElement>,
+    href?: string,
+  ) => {
+    if (isGuest && href?.includes("/settings")) {
+      e?.preventDefault();
+      openLockModal("Account Settings & Cloud Backup");
+    }
+  };
 
   const { data: user, isLoading } = useMeQuery();
 
-  const { mutate: logoutUser, isPending: isLogoutPending } = useLogoutMutation({
-    onSuccess: () => {
-      toast.success("Successfully logged out");
-      router.push("/login");
-    },
-    onError: () => {
-      toast.error("Logout failed. Please try again.");
-    },
-  });
+  const { mutateAsync: logoutUserAsync, isPending: isLogoutPending } =
+    useLogoutMutation({
+      onSuccess: () => {
+        toast.success("Successfully logged out to offline mode");
+        window.location.href = "/home";
+      },
+      onError: () => {
+        toast.error("Logout failed. Please try again.");
+        setIsLoggingOutLocal(false);
+      },
+    });
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -54,16 +97,34 @@ export default function NavContainer() {
     };
   }, [logoutConfirmOpen, closeLogoutConfirm]);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     closeLogoutConfirm();
     if (isGuest) {
       setIsLoggingOutLocal(true);
+      await clearGuestData();
       setGuestMode(false);
-      clearGuestData();
+      queryClient.clear();
       toast.success("Guest session cleared");
-      router.push("/login");
+      window.location.href = "/login";
     } else {
-      logoutUser();
+      setIsLoggingOutLocal(true);
+      try {
+        // Clear local data and cache BEFORE switching to guest mode to prevent UI flash
+        await clearGuestData();
+        queryClient.clear();
+
+        // Set guest mode and seed default data
+        setGuestMode(true);
+        await useGuestStore.getState().seedDefaultGuestData();
+
+        // Logout from server, which will trigger a hard reload to /home
+        await logoutUserAsync();
+      } catch (error) {
+        console.error("Logout failed", error);
+        toast.error("Logout failed. Please try again.");
+      } finally {
+        setIsLoggingOutLocal(false);
+      }
     }
   };
 
@@ -77,6 +138,11 @@ export default function NavContainer() {
         user={user}
         isLoading={isLoading}
         onLogout={openLogoutConfirm}
+        isGuest={isGuest}
+        isSyncing={isSyncing}
+        syncStatus={syncStatus}
+        onSyncClick={handleSyncClick}
+        onNavigate={handleNavigate}
       />
 
       {/* Mobile Drawer Navigation overlay */}
@@ -87,6 +153,11 @@ export default function NavContainer() {
         user={user}
         isLoading={isLoading}
         onLogout={openLogoutConfirm}
+        isGuest={isGuest}
+        isSyncing={isSyncing}
+        syncStatus={syncStatus}
+        onSyncClick={handleSyncClick}
+        onNavigate={handleNavigate}
       />
 
       {/* Mobile Bottom Navigation Bar */}
@@ -108,11 +179,18 @@ export default function NavContainer() {
         onConfirm={handleLogout}
         icon={LogOut}
         title="Sign out?"
-        des="Are you sure you want to sign out of your account?"
+        des={
+          isGuest
+            ? "Are you sure you want to clear your local session?"
+            : "Are you sure you want to sign out?"
+        }
       />
 
       {/* Loading Modal for Logout */}
-      <LoadingModal isOpen={isLoggingOut} message="Signing out..." />
+      <LoadingModal
+        isOpen={isLoggingOut}
+        message={isGuest ? "Clearing session..." : "Signing out..."}
+      />
     </>
   );
 }

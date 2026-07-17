@@ -1,15 +1,16 @@
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
+import { AssetType } from "@/features/assets/types/assets.type";
+import { CategoryType } from "@/features/category/types/category.type";
+import { TransactionType } from "@/features/transactions/types/transaction.type";
 import { authService } from "../services/auth.service";
 import { SyncGuestRequest, SyncGuestResponse } from "../types/auth.type";
 import { useGuestStore } from "@/shared/lib/storages/guest.storage";
+import { db } from "@/shared/lib/storages/dexie.storage";
 import { toast } from "react-toastify";
 
 export const useSyncGuestMutation = () => {
   const clearGuestData = useGuestStore((state) => state.clearGuestData);
-  const assets = useGuestStore((state) => state.assets);
-  const categories = useGuestStore((state) => state.categories);
-  const transactions = useGuestStore((state) => state.transactions);
 
   return useMutation<
     SyncGuestResponse,
@@ -17,31 +18,43 @@ export const useSyncGuestMutation = () => {
     void
   >({
     mutationFn: async () => {
+      const assets = await db.assets.toArray();
+      const categories = await db.categories.toArray();
+      const transactions = await db.transactions.toArray();
+
       // แปลงข้อมูลจาก Local Guest Store ให้เข้าคู่กับ SyncGuestRequest (API Dto)
       const requestData: SyncGuestRequest = {
         assets: assets.map((asset) => ({
           localId: asset.id,
           name: asset.name,
-          type: asset.type,
+          type: asset.type as unknown as AssetType,
           balance: asset.balance,
           color: asset.color || undefined,
+          displayOrder: asset.displayOrder,
+          isArchived: asset.isArchived,
+          deletedAt: asset.deletedAt,
         })),
         categories: categories.map((cat) => ({
           localId: cat.id,
           name: cat.name,
-          type: cat.type,
+          type: cat.type as unknown as CategoryType,
           color: cat.color || undefined,
           icon: cat.icon || undefined,
+          displayOrder: cat.displayOrder,
+          isSystem: cat.isSystem,
+          deletedAt: cat.deletedAt,
         })),
         transactions: transactions.map((tx) => ({
           localId: tx.id,
           localAssetId: tx.assetId,
           localToAssetId: tx.toAssetId || undefined,
           localCategoryId: tx.categoryId || undefined,
-          type: tx.type,
+          type: tx.type as unknown as TransactionType,
           amount: tx.amount,
           note: tx.note || undefined,
-          date: tx.transactionDate, // map transactionDate -> date
+          date: tx.date,
+          attachmentUrl: tx.attachmentUrl || undefined,
+          deletedAt: tx.deletedAt,
         })),
       };
 
@@ -50,7 +63,7 @@ export const useSyncGuestMutation = () => {
     onSuccess: (data) => {
       if (data.success) {
         toast.success("ข้อมูล Guest ถูกซิงค์เรียบร้อยแล้ว");
-        clearGuestData(); // ล้างข้อมูล local หลังจากซิงค์สำเร็จ
+        void clearGuestData(); // ล้างข้อมูล local หลังจากซิงค์สำเร็จ
       }
     },
     onError: (error: AxiosError<{ message: string | string[] }>) => {
