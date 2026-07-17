@@ -65,10 +65,18 @@
 
 ### 1. สิ่งที่พัฒนาเสร็จสิ้นแล้ว (Completed)
 
-#### 📝 งานด้านเอกสารระบบและการวางแผน
+- **Sprint 0 (Foundation):** โครงสร้างระบบพื้นฐานทั้ง Frontend (Next.js, Tailwind, Zustand, TanStack Query) และ Backend (NestJS, PostgreSQL, Prisma, Auth Module) เสร็จสมบูรณ์
+- **Sprint 1 (Backend Core):** อัปเดต DB Schema และ API ของ NestJS สำหรับจัดการ Asset, Category, และ Transaction เสร็จสมบูรณ์
+- **Sprint 2 (Guest Mode & Sync):** พัฒนาระบบ Guest Mode แบบ Offline ฝั่ง Frontend ครอบคลุมระบบทั้งหมด และพัฒนากลไก Sync นำข้อมูล Local โยนขึ้น Cloud สมบูรณ์ (อ้างอิงจาก PR #12)
+- **Sprint 2 (Advanced Transactions):** พัฒนาระบบโอนเงินข้ามบัญชี (Transfer) และระบบปรับปรุงยอดบัญชี (Balance Adjustment) สมบูรณ์พร้อมเชื่อมต่อหน้าบ้านและหลังบ้าน
+- **Sprint 3 (Dashboard):** พัฒนาหน้า Dashboard เสร็จสมบูรณ์ (คำนวณ Net Worth, Net Flow รายเดือน, รายการบัญชี และ 5 ธุรกรรมล่าสุด)
+- **Refactor (Asset Module):** แยก method `findAll` ใน `AssetService` และ `AssetRepository` เป็น `findAllActive` และ `findAllIncludingDeleted` แทนการใช้พารามิเตอร์ `includeDeleted` พร้อมอัปเดต Controller และ Unit Tests ให้สอดคล้องกัน
 
-- จัดทําเอกสารภาพรวมสเปก [PRODUCT.md](file:///Users/torikiton/Desktop/PocketNote/docs/PRODUCT.md) และเอกสารสถาปัตยกรรมด้านเทคนิค [ARCHITECTURE.md](file:///Users/torikiton/Desktop/PocketNote/docs/ARCHITECTURE.md) เรียบร้อยแล้ว (อัปเดตสเปกใหม่รอบ 2 สำเร็จ)
-- ทบทวนและบรรลุข้อตกลงใหม่ (v2 Alignment): ยุบรวม Profile เข้ากับ User, ยกเลิก Guest ใน DB, ลบตาราง Session/SyncLog, เปลี่ยนวิธีเก็บรูปภาพแนบใน Transaction เป็นฟิลด์เดียว และปรับปรุงความสัมพันธ์สำหรับการ Soft Delete
-- **GEMINI.md Rule Update**: อัปเดตกฎเหล็กของ AI เอเจนท์ใน [GEMINI.md](file:///Users/torikiton/Desktop/PocketNote/GEMINI.md) เพื่อกำหนดชัดเจนว่าไม่มีการนำหลักการ Ponytail (Lazy Senior Developer) มาใช้กับงานหน้าบ้าน (Frontend Development) ยกเว้นในส่วนของ logic เท่านั้น เพื่อรักษามาตรฐานความประณีตและความพรีเมียมของ UI/UX ในระบบหน้าบ้านเสมอ
+### 2. งานที่จะต้องทำเป็นลำดับถัดไป (Next Actions)
 
-### 3. งานที่จะต้องทำเป็นลำดับถัดไป (Next Actions)
+งานหลักที่ต้องดำเนินการใน **Sprint 4: ระบบการวิเคราะห์ข้อมูลและรายงาน (Analytics & Insights)**:
+
+- **[ ] แผนภูมิรายจ่ายแยกตามหมวดหมู่ (Category Breakdown Chart):** แสดงสัดส่วนรายจ่ายในแต่ละหมวดหมู่ (Pie Chart / Donut Chart)
+- **[ ] แผนภูมิกระจายตัวสินทรัพย์ (Asset Distribution Chart):** แสดงสัดส่วนเงินที่กระจายอยู่ในแต่ละบัญชีหรือแต่ละประเภทสินทรัพย์
+- **[ ] สรุปแนวโน้มรายเดือน (Monthly Trends):** ดึงข้อมูลสรุปรายได้และรายจ่ายของเดือนมาโชว์เทียบกัน
+- **[ ] ระบบดูรายละเอียดเจาะลึก (Drill-down):** กดที่หมวดหมู่เพื่อดูรายการธุรกรรมย่อยที่เกิดในหมวดหมู่นั้นๆ
