@@ -128,6 +128,13 @@ export function TransactionListContainer({
 
   return (
     <>
+      {groupedTransactions.some((group) =>
+        group.items.some((transaction) => Boolean(transaction.deletedAt)),
+      ) && (
+        <p className="mb-2 px-4 text-xs text-secondary-text">
+          Deleted transactions are permanently removed after 30 days.
+        </p>
+      )}
       <TransactionList
         groupedTransactions={groupedTransactions}
         isLoadingTransactions={isLoadingTransactions}

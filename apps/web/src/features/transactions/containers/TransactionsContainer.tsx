@@ -25,6 +25,7 @@ import {
   useTransactionFormSync,
   useTransactionInitialization,
 } from "../hooks/transaction-form.hook";
+
 import ConfirmModal from "@/shared/components/customs/ConfirmModal";
 import { useConfirmModal } from "@/shared/lib/hooks/useConfirmModal.hook";
 import LoadingModal from "@/shared/components/customs/LoadingModal";
@@ -49,6 +50,7 @@ import { cn } from "@/shared/lib/utils/core.util";
 import { Button } from "@/shared/components/customs/Button";
 import { TransactionType } from "../types/transaction.type";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import imageCompression from "browser-image-compression";
 
 export default function TransactionsContainer() {
   const router = useRouter();
@@ -203,6 +205,9 @@ export default function TransactionsContainer() {
   const handlePresetClick = (daysToAdd: number) => {
     const newDate = new Date();
     newDate.setDate(newDate.getDate() + daysToAdd);
+    if (tempDate) {
+      newDate.setHours(tempDate.getHours(), tempDate.getMinutes(), 0, 0);
+    }
     setTempDate(newDate);
     setDisplayMonth(newDate);
   };
@@ -213,9 +218,27 @@ export default function TransactionsContainer() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0]);
+      const originalFile = e.target.files[0];
+      try {
+        const options = {
+          maxSizeMB: 0.5,
+          maxWidthOrHeight: 1280,
+          useWebWorker: true,
+          initialQuality: 0.8,
+        };
+        const compressedFile = await imageCompression(originalFile, options);
+        // imageCompression returns a File or Blob, ensure it's set as File
+        const newFile = new File([compressedFile], originalFile.name, {
+          type: compressedFile.type || originalFile.type,
+          lastModified: Date.now(),
+        });
+        setFile(newFile);
+      } catch (error) {
+        console.error("Error compressing image:", error);
+        setFile(originalFile); // Fallback to original if compression fails
+      }
     }
   };
 
@@ -232,6 +255,10 @@ export default function TransactionsContainer() {
   const handleSelectAPhoto = () => {
     setIsPhotoMenuOpen(false);
     fileInputRef.current?.click();
+  };
+
+  const handleEditCategoryClick = () => {
+    router.push("/categories");
   };
 
   const {
@@ -288,7 +315,7 @@ export default function TransactionsContainer() {
   };
 
   const { displayAmount, numericAmount } = getFormattedAmount(amountDigits);
-  const displayDate = formatDisplayDate(date);
+  const displayDate = formatDisplayDate(date, true);
 
   const { inputRef: amountInputRef, handleChange: handleCurrencyInput } =
     useCurrencyInput(displayAmount, handleAmountChange);
@@ -397,6 +424,7 @@ export default function TransactionsContainer() {
             onSelectCategory={(id) =>
               setValue("categoryId", id, { shouldValidate: true })
             }
+            onEditClick={handleEditCategoryClick}
             isLoadingCategoryList={isLoadingCategoryList}
           />
         )}

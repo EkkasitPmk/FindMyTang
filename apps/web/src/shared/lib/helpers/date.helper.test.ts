@@ -59,5 +59,16 @@ describe("date.helper", () => {
       const result = formatDisplayDate(new Date("2026-07-06T12:00:00Z"));
       expect(result).toMatch(/^2 days ago, /);
     });
+
+    it("includes time when includeTime is true", () => {
+      // The exact time format might depend on the runner's timezone,
+      // but since we mocked the system time and en-US locale is used,
+      // it should be formatted appropriately.
+      const d = new Date("2026-07-08T15:30:00Z"); // Using 15:30 UTC
+      const result = formatDisplayDate(d, true);
+      // It should end with something like "15:30" or "X:30" depending on timezone,
+      // let's just check that it contains a colon and 2 digits for minutes.
+      expect(result).toMatch(/\d{2}:\d{2}$/);
+    });
   });
 });

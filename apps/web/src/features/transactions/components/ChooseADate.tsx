@@ -23,6 +23,43 @@ export default function ChooseADate({
 }: Readonly<ChooseADateProps>) {
   const diffDays = getDiffDays(selectedDate);
 
+  const time = selectedDate
+    ? `${selectedDate.getHours().toString().padStart(2, "0")}:${selectedDate.getMinutes().toString().padStart(2, "0")}`
+    : "00:00";
+
+  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newTime = e.target.value;
+    if (selectedDate) {
+      let h = 0,
+        m = 0;
+      if (newTime) {
+        const parts = newTime.split(":");
+        h = Number(parts[0]) || 0;
+        m = Number(parts[1]) || 0;
+      }
+      const newDate = new Date(selectedDate);
+      newDate.setHours(h, m);
+      onSelectDate(newDate);
+    }
+  };
+
+  const handleDateSelect = (date: Date | undefined) => {
+    if (date) {
+      let h = 0,
+        m = 0;
+      if (time) {
+        const parts = time.split(":");
+        h = Number(parts[0]) || 0;
+        m = Number(parts[1]) || 0;
+      }
+      const newDate = new Date(date);
+      newDate.setHours(h, m);
+      onSelectDate(newDate);
+    } else {
+      onSelectDate(undefined);
+    }
+  };
+
   return (
     <Card
       className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 mx-auto w-fit max-w-74 data-[size=sm]:py-1 data-[size=sm]:gap-2 shadow-2xl z-50"
@@ -34,7 +71,7 @@ export default function ChooseADate({
           weekStartsOn={1}
           selected={selectedDate}
           captionLayout="dropdown"
-          onSelect={onSelectDate}
+          onSelect={handleDateSelect}
           month={displayMonth}
           onMonthChange={onMonthChange}
           fixedWeeks={false}
@@ -46,6 +83,18 @@ export default function ChooseADate({
             day: "h-8",
           }}
         />
+        <div className="flex items-center justify-center gap-2 mt-4 pt-4 border-t">
+          <label htmlFor="time-picker" className="text-sm font-medium">
+            Time:
+          </label>
+          <input
+            id="time-picker"
+            type="time"
+            value={time}
+            onChange={handleTimeChange}
+            className="border border-border rounded-md px-2 py-1 outline-none focus:ring-2 focus:ring-primary bg-surface transition-colors"
+          />
+        </div>
       </CardContent>
       <CardFooter className="flex flex-wrap gap-2 border-t rounded-b-none group-data-[size=sm]/card:py-2">
         {[
@@ -74,7 +123,7 @@ export default function ChooseADate({
       </CardFooter>
       <Button
         type="button"
-        className="mb-2 mx-2 py-4 bg-primary text-white"
+        className="mb-2 mx-2 py-5 bg-primary text-white"
         onClick={onConfirm}
       >
         Confirm

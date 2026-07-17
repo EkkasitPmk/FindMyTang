@@ -64,9 +64,19 @@ export function getTimeDisplay(transactionDate: string) {
       txDate.getMinutes() === 0 &&
       txDate.getSeconds() === 0);
 
-  if (isNoTime) {
-    return formatDisplayDate(txDate);
-  }
+  return formatDisplayDate(txDate, !isNoTime);
+}
+
+export function getTimeOnly(transactionDate: string) {
+  const txDate = new Date(transactionDate);
+  const dateString = String(transactionDate);
+  const isNoTime =
+    dateString.includes("T00:00:00") ||
+    (txDate.getHours() === 0 &&
+      txDate.getMinutes() === 0 &&
+      txDate.getSeconds() === 0);
+
+  if (isNoTime) return null;
 
   return txDate.toLocaleTimeString("en-US", {
     hour: "2-digit",

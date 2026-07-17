@@ -1,7 +1,6 @@
 import { cn } from "@/shared/lib/utils/core.util";
 import { getCategoryIcon } from "@/shared/lib/configs/category-icons.config";
 import { Plus } from "lucide-react";
-import Link from "next/link";
 import { Category } from "@/features/category/types/category.type";
 import { Button } from "@/shared/components/customs/Button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
@@ -12,6 +11,7 @@ interface TransactionCategoryListProps {
   categories: Category[];
   activeCategoryId: string | null;
   onSelectCategory: (id: string) => void;
+  onEditClick: () => void;
   isLoadingCategoryList: boolean;
 }
 
@@ -19,6 +19,7 @@ export default function TransactionCategoryList({
   categories,
   activeCategoryId,
   onSelectCategory,
+  onEditClick,
   isLoadingCategoryList,
 }: Readonly<TransactionCategoryListProps>) {
   return (
@@ -82,10 +83,11 @@ export default function TransactionCategoryList({
               </Button>
             );
           })}
-          {/* ปุ่มแก้ไข category กดแล้วไปยัง /categories */}
-          <Link
-            href="/categories"
-            className="flex flex-col items-center justify-center gap-1"
+          {/* ปุ่มแก้ไข category กดแล้วเรียก Callback ไปที่ Container */}
+          <Button
+            variant="unstyled"
+            onClick={onEditClick}
+            className="flex flex-col items-center justify-center gap-1 cursor-pointer"
           >
             <span className="p-3 rounded-xl bg-primary-light text-primary">
               <Plus size={18} />
@@ -93,7 +95,7 @@ export default function TransactionCategoryList({
             <span className="uppercase text-primary text-xs font-medium truncate">
               Edit
             </span>
-          </Link>
+          </Button>
         </div>
       )}
     </section>
