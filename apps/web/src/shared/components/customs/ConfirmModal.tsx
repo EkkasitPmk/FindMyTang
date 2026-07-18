@@ -118,7 +118,7 @@ export default function ConfirmModal({
 
           {withHardDeleteOption && (
             <div className="w-full flex flex-col gap-3 mt-2 text-left">
-              <label className="flex items-center gap-2 cursor-pointer group">
+              <label className="flex gap-2 cursor-pointer group">
                 <div
                   className={`w-4 h-4 rounded-sm border flex items-center justify-center transition-colors ${
                     isHardDelete
