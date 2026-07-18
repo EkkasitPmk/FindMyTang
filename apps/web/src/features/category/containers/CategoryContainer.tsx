@@ -23,6 +23,7 @@ import { CircleX } from "lucide-react";
 import ConfirmModal from "@/shared/components/customs/ConfirmModal";
 import CUCategoryModal from "../components/CUCategoryModal";
 import LoadingModal from "@/shared/components/customs/LoadingModal";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import CategoryGrid from "../components/CategoryGrid";
 import { reorderCategoriesList } from "../helpers/category.helper";
 import { handleFormError } from "@/shared/lib/helpers/form.helper";
@@ -30,6 +31,7 @@ import { AxiosError } from "axios";
 import { Button } from "@/shared/components/customs/Button";
 
 export default function CategoryContainer() {
+  const { t } = useTranslation();
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [activeTab, setActiveTab] = useState<"EXPENSE" | "INCOME">("EXPENSE");
   const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(
@@ -131,7 +133,7 @@ export default function CategoryContainer() {
 
   const { mutate: reorderCategories } = useReorderCategoriesMutation({
     onError: () => {
-      toast.error("Failed to update category order.");
+      toast.error(t("errUpdateCategoryOrder"));
     },
   });
 
@@ -204,7 +206,7 @@ export default function CategoryContainer() {
   const { mutate: createCategory, isPending: isCreating } =
     useCreateCategoryMutation({
       onSuccess: (data) => {
-        toast.success(`Category "${data.name}" created successfully!`);
+        toast.success(t("categoryCreatedSuccess").replace("{name}", data.name));
         setIsCUModalOpen(false);
       },
     });
@@ -212,7 +214,7 @@ export default function CategoryContainer() {
   const { mutate: updateCategory, isPending: isUpdating } =
     useUpdateCategoryMutation({
       onSuccess: (data) => {
-        toast.success(`Category "${data.name}" updated successfully!`);
+        toast.success(t("categoryUpdatedSuccess").replace("{name}", data.name));
         setEditingCategory(null);
         setIsCUModalOpen(false);
       },
@@ -221,7 +223,7 @@ export default function CategoryContainer() {
   const { mutate: deleteCategory, isPending: isDeleting } =
     useDeleteCategoryMutation({
       onSuccess: (data) => {
-        toast.success(`Category "${data.name}" deleted successfully!`);
+        toast.success(t("categoryDeletedSuccess").replace("{name}", data.name));
         if (editingCategory?.id === data.id) {
           cancelEdit();
         }
@@ -230,7 +232,7 @@ export default function CategoryContainer() {
         const message = err.response?.data?.message;
         const errorMsg = Array.isArray(message)
           ? message[0]
-          : message || "Failed to delete category.";
+          : message || t("errDeleteCategory");
         toast.error(errorMsg);
       },
     });
@@ -250,17 +252,12 @@ export default function CategoryContainer() {
   const onSubmit = (values: CreateCategoryFormValues) => {
     const mutationOptions = {
       onError: (err: AxiosError<ApiErrorResponse>) => {
-        handleFormError(
-          err,
-          setError,
-          "Failed to save category. Please check your inputs.",
-          {
-            name: "name",
-            type: "type",
-            color: "color",
-            icon: "icon",
-          },
-        );
+        handleFormError(err, setError, t("errSaveCategory"), {
+          name: "name",
+          type: "type",
+          color: "color",
+          icon: "icon",
+        });
       },
     };
 
@@ -304,8 +301,8 @@ export default function CategoryContainer() {
   return (
     <div className="space-y-2 px-4">
       <div className="mb-2">
-        <h2 className="text-xl font-bold">Category Management</h2>
-        <p className="text-sm">Organize your financial flows with precision.</p>
+        <h2 className="text-xl font-bold">{t("categoryManagement")}</h2>
+        <p className="text-sm">{t("categoryManagementDesc")}</p>
       </div>
 
       {/* Select Option Tab */}
@@ -320,7 +317,7 @@ export default function CategoryContainer() {
               : "border-transparent text-secondary-text hover:text-primary-text"
           }`}
         >
-          Expenses
+          {t("expenses")}
         </Button>
         <Button
           variant="unstyled"
@@ -332,7 +329,7 @@ export default function CategoryContainer() {
               : "border-transparent text-secondary-text hover:text-primary-text"
           }`}
         >
-          Income
+          {t("income")}
         </Button>
       </div>
       {/* Select Option Tab */}
@@ -386,9 +383,12 @@ export default function CategoryContainer() {
         onClose={() => setCategoryToDelete(null)}
         onConfirm={handleConfirmDelete}
         icon={CircleX}
-        title="Delete Category?"
-        des={`Are you sure you want to delete category "${categoryToDelete?.name}"?`}
-        confirmLabel="Delete"
+        title={t("deleteCategoryTitle")}
+        des={t("deleteCategoryDesc").replace(
+          "{name}",
+          categoryToDelete?.name || "",
+        )}
+        confirmLabel={t("delete")}
       />
 
       <LoadingModal isOpen={isCreating || isUpdating || isDeleting} />

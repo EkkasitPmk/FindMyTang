@@ -16,6 +16,7 @@ import { cn } from "@/shared/lib/utils/core.util";
 import { Input } from "@/shared/components/customs/Input";
 import { Button } from "@/shared/components/customs/Button";
 import { ModalForm } from "@/shared/components/customs/ModalForm";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 interface CUCategoryModalProps {
   isOpen: boolean;
@@ -50,6 +51,8 @@ export default function CUCategoryModal({
   selectedColor,
   selectedIconName,
 }: Readonly<CUCategoryModalProps>) {
+  const { t } = useTranslation();
+
   const handleCustomColorChange = (color: string) => {
     setCustomColor(color);
     setValue("color", color);
@@ -59,7 +62,7 @@ export default function CUCategoryModal({
     <ModalForm
       isOpen={isOpen}
       onClose={onClose}
-      title={category ? "Edit Category" : "New Category"}
+      title={category ? t("editCategory") : t("newCategory")}
       onSubmit={handleSubmit(onSubmit)}
       headerClassName="px-6 py-4 border-b border-border bg-surface"
       footerClassName="px-6 py-4 bg-background/50 border-t border-border mt-auto"
@@ -72,7 +75,7 @@ export default function CUCategoryModal({
             onClick={onClose}
             className="w-full border border-border rounded-md py-2 text-sm hover:bg-muted transition-colors cursor-pointer text-foreground bg-background"
           >
-            Cancel
+            {t("cancel")}
           </Button>
           <Button
             variant="unstyled"
@@ -81,18 +84,18 @@ export default function CUCategoryModal({
             className="w-full text-white rounded-md py-2 text-sm font-medium transition-all shadow-sm disabled:opacity-50 cursor-pointer"
             style={{ backgroundColor: selectedColor }}
           >
-            {isPending ? "Saving..." : "Save Category"}
+            {isPending ? t("saving") : t("saveCategory")}
           </Button>
         </>
       }
     >
       <div className="space-y-1">
         <p className="text-xs text-muted-foreground font-semibold">
-          CATEGORY NAME
+          {t("categoryNameLabel")}
         </p>
         <Input
           type="text"
-          placeholder="e.g. Coffee"
+          placeholder={t("egCoffee")}
           error={!!errors.name}
           {...register("name")}
         />
@@ -103,7 +106,7 @@ export default function CUCategoryModal({
 
       <div className="space-y-1">
         <p className="text-xs text-muted-foreground font-semibold">
-          TRANSACTION TYPE
+          {t("transactionType")}
         </p>
         {/* Select Option Tab */}
         <div className="flex gap-2">
@@ -119,7 +122,7 @@ export default function CUCategoryModal({
             )}
           >
             <CircleMinus size={16} />
-            Expense
+            {t("expense")}
           </Button>
           <Button
             variant="unstyled"
@@ -133,7 +136,7 @@ export default function CUCategoryModal({
             )}
           >
             <CirclePlus size={16} />
-            Income
+            {t("income")}
           </Button>
         </div>
         {errors.type && (
@@ -142,7 +145,9 @@ export default function CUCategoryModal({
       </div>
 
       <div className="space-y-1">
-        <p className="text-xs text-muted-foreground font-semibold">ICON</p>
+        <p className="text-xs text-muted-foreground font-semibold">
+          {t("icon")}
+        </p>
         <div className="grid grid-cols-6 place-items-center max-h-[16vh] overflow-auto border border-border rounded-md p-1 bg-background">
           {SELECTABLE_ICONS.map((iconName) => {
             const Icon = getCategoryIcon(iconName);
@@ -193,7 +198,7 @@ export default function CUCategoryModal({
       <div className="space-y-1">
         <div className="flex justify-between items-center">
           <p className="text-xs text-muted-foreground font-semibold">
-            ACCENT COLOR
+            {t("accentColor")}
           </p>
         </div>
         <div className="grid grid-cols-7 gap-2 p-3 max-h-[16vh] overflow-auto bg-surface-secondary/50 rounded-lg border border-border">
@@ -251,7 +256,9 @@ export default function CUCategoryModal({
           </div>
         </div>
         {errors.color && (
-          <p className="text-xs text-destructive mt-1">{errors.color.message}</p>
+          <p className="text-xs text-destructive mt-1">
+            {errors.color.message}
+          </p>
         )}
       </div>
     </ModalForm>

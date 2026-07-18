@@ -3,6 +3,7 @@ import { CircleX, Grip, Plus } from "lucide-react";
 import { getCategoryIcon } from "@/shared/lib/configs/category-icons.config";
 import { Button } from "@/shared/components/customs/Button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 const SKELETON_CATEGORIES = Array.from({ length: 12 }, (_, i) => i);
 
@@ -37,6 +38,8 @@ export default function CategoryGrid({
   onTouchMove,
   onTouchEnd,
 }: Readonly<CategoryGridProps>) {
+  const { t } = useTranslation();
+
   if (isLoading) {
     return (
       <div className="grid grid-cols-3 gap-2 overflow-auto max-h-[70vh]">
@@ -65,7 +68,7 @@ export default function CategoryGrid({
         <span className="bg-surface-secondary p-2 rounded-lg text-secondary-text">
           <Plus size={16} />
         </span>
-        <span className="text-xs font-medium truncate">New Category</span>
+        <span className="text-xs font-medium truncate">{t("newCategory")}</span>
       </Button>
       {/* New Category */}
 

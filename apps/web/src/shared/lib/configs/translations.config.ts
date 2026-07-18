@@ -116,6 +116,31 @@ export const translations = {
     guestDataSynced: "ซิงค์ข้อมูลผู้เยี่ยมชมสำเร็จ",
     localDataDiscarded: "ยกเลิกข้อมูลในเครื่องแล้ว",
 
+    // Category Feature
+    categoryManagement: "จัดการหมวดหมู่",
+    categoryManagementDesc: "จัดการหมวดหมู่รายรับรายจ่ายของคุณให้เป็นระเบียบ",
+    expenses: "รายจ่าย",
+    newCategory: "สร้างหมวดหมู่ใหม่",
+    editCategory: "แก้ไขหมวดหมู่",
+    categoryNameLabel: "ชื่อหมวดหมู่",
+    egCoffee: "เช่น กาแฟ",
+    transactionType: "ประเภทธุรกรรม",
+    icon: "ไอคอน",
+    accentColor: "สีสัญลักษณ์",
+    saveCategory: "บันทึกหมวดหมู่",
+    searchCategories: "ค้นหาหมวดหมู่...",
+    noCategoriesFound: "ไม่พบหมวดหมู่",
+    errLoadingCategories: "เกิดข้อผิดพลาดในการโหลดหมวดหมู่",
+    errUpdateCategoryOrder: "ไม่สามารถอัปเดตลำดับหมวดหมู่ได้",
+    categoryCreatedSuccess: 'สร้างหมวดหมู่ "{name}" สำเร็จ!',
+    categoryUpdatedSuccess: 'อัปเดตหมวดหมู่ "{name}" สำเร็จ!',
+    categoryDeletedSuccess: 'ลบหมวดหมู่ "{name}" สำเร็จ!',
+    errSaveCategory: "ไม่สามารถบันทึกหมวดหมู่ได้ โปรดตรวจสอบข้อมูลอีกครั้ง",
+    errDeleteCategory: "ไม่สามารถลบหมวดหมู่ได้",
+    deleteCategoryTitle: "ลบหมวดหมู่?",
+    deleteCategoryDesc:
+      'คุณแน่ใจหรือไม่ว่าต้องการลบหมวดหมู่ "{name}"? (รายการธุรกรรมในหมวดหมู่นี้จะไม่ถูกลบ)',
+
     // Assets Feature
     assetsTitle: "สินทรัพย์",
     recentTransactions: "รายการล่าสุด",
@@ -313,6 +338,31 @@ export const translations = {
     registerFailed: "Registration failed. Please try again.",
     guestDataSynced: "Guest data synced successfully",
     localDataDiscarded: "Local data discarded",
+
+    // Category Feature
+    categoryManagement: "Category Management",
+    categoryManagementDesc: "Organize your financial flows with precision.",
+    expenses: "Expenses",
+    newCategory: "New Category",
+    editCategory: "Edit Category",
+    categoryNameLabel: "CATEGORY NAME",
+    egCoffee: "e.g. Coffee",
+    transactionType: "TRANSACTION TYPE",
+    icon: "ICON",
+    accentColor: "ACCENT COLOR",
+    saveCategory: "Save Category",
+    searchCategories: "Search categories...",
+    noCategoriesFound: "No categories found.",
+    errLoadingCategories: "There was an error loading categories.",
+    errUpdateCategoryOrder: "Failed to update category order.",
+    categoryCreatedSuccess: 'Category "{name}" created successfully!',
+    categoryUpdatedSuccess: 'Category "{name}" updated successfully!',
+    categoryDeletedSuccess: 'Category "{name}" deleted successfully!',
+    errSaveCategory: "Failed to save category. Please check your inputs.",
+    errDeleteCategory: "Failed to delete category.",
+    deleteCategoryTitle: "Delete Category?",
+    deleteCategoryDesc:
+      'Are you sure you want to delete category "{name}"? (Transactions in this category will not be deleted)',
 
     // Assets Feature
     assetsTitle: "Assets",
