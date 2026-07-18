@@ -5,6 +5,8 @@ import { Button } from "@/shared/components/customs/Button";
 import { RotateCcw, Trash } from "lucide-react";
 import { useCachedImageUrl } from "@/shared/lib/hooks/useCachedImageUrl.hook";
 import { getTimeDisplay } from "@/shared/lib/helpers/transaction-item.helper";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { TranslationKey } from "@/shared/lib/configs/translations.config";
 
 export interface TransactionItemDetailsProps {
   transaction: TransactionResponse;
@@ -30,30 +32,38 @@ export function TransactionItemDetails({
   currentAssetId,
 }: Readonly<TransactionItemDetailsProps>) {
   const cachedAttachmentUrl = useCachedImageUrl(transaction.attachmentUrl);
-  const timeDisplay = getTimeDisplay(transaction.transactionDate);
+  const { t, locale } = useTranslation();
+
+  const timeDisplay = getTimeDisplay(transaction.transactionDate, locale, t);
 
   return (
     <div className="px-4 pb-3 text-sm space-y-px">
       {isIncomeOrExpense && (
         <>
           <div className="flex items-center justify-between">
-            <p className="text-secondary-text capitalize">Transaction Type:</p>
+            <p className="text-secondary-text capitalize">
+              {t("transactionType")}:
+            </p>
             <p className="capitalize font-medium">
-              {transaction.type.toLowerCase()}
+              {t(transaction.type.toLowerCase() as TranslationKey)}
             </p>
           </div>
           {!currentAssetId && (
             <div className="flex items-center justify-between">
-              <p className="text-secondary-text capitalize">Asset:</p>
+              <p className="text-secondary-text capitalize">{t("asset")}:</p>
               <p className="font-medium">{transaction.asset?.name || "-"}</p>
             </div>
           )}
           <div className="flex items-center justify-between">
-            <p className="text-secondary-text capitalize">Description:</p>
+            <p className="text-secondary-text capitalize">
+              {t("description")}:
+            </p>
             <p className="font-medium text-right">{transaction.note || "-"}</p>
           </div>
           <div className="flex items-center justify-between">
-            <p className="text-secondary-text capitalize">Category:</p>
+            <p className="text-secondary-text capitalize">
+              {t("categoryUppercase")}:
+            </p>
             <p className="font-medium">{transaction.category?.name || "-"}</p>
           </div>
         </>
@@ -62,10 +72,10 @@ export function TransactionItemDetails({
       {isAdjustment && (
         <>
           <div className="flex items-center justify-between">
-            <p className="text-secondary-text capitalize">Adjustment:</p>
+            <p className="text-secondary-text capitalize">{t("adjustment")}:</p>
             <p className="font-medium">
               {transaction.amount >= 0 ? "+" : ""}
-              {transaction.amount.toLocaleString("en-US", {
+              {transaction.amount.toLocaleString(locale, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}
@@ -73,12 +83,14 @@ export function TransactionItemDetails({
           </div>
           {!currentAssetId && (
             <div className="flex items-center justify-between">
-              <p className="text-secondary-text capitalize">Asset:</p>
+              <p className="text-secondary-text capitalize">{t("asset")}:</p>
               <p className="font-medium">{transaction.asset?.name || "-"}</p>
             </div>
           )}
           <div className="flex items-center justify-between">
-            <p className="text-secondary-text capitalize">Description:</p>
+            <p className="text-secondary-text capitalize">
+              {t("description")}:
+            </p>
             <p className="font-medium text-right">{transaction.note || "-"}</p>
           </div>
         </>
@@ -89,11 +101,15 @@ export function TransactionItemDetails({
           {!currentAssetId ? (
             <>
               <div className="flex items-center justify-between">
-                <p className="text-secondary-text capitalize">From Asset:</p>
+                <p className="text-secondary-text capitalize">
+                  {t("assetFrom")}:
+                </p>
                 <p className="font-medium">{transaction.asset?.name || "-"}</p>
               </div>
               <div className="flex items-center justify-between">
-                <p className="text-secondary-text capitalize">To Asset:</p>
+                <p className="text-secondary-text capitalize">
+                  {t("assetTo")}:
+                </p>
                 <p className="font-medium">
                   {transaction.toAsset?.name || "-"}
                 </p>
@@ -103,8 +119,8 @@ export function TransactionItemDetails({
             <div className="flex items-center justify-between">
               <p className="text-secondary-text capitalize">
                 {currentAssetId === transaction.toAssetId
-                  ? "Transfer (From):"
-                  : "Transfer (To):"}
+                  ? t("assetFrom") + ":"
+                  : t("assetTo") + ":"}
               </p>
               <p className="font-medium">
                 {currentAssetId === transaction.toAssetId
@@ -114,20 +130,22 @@ export function TransactionItemDetails({
             </div>
           )}
           <div className="flex items-center justify-between">
-            <p className="text-secondary-text capitalize">Description:</p>
+            <p className="text-secondary-text capitalize">
+              {t("description")}:
+            </p>
             <p className="font-medium text-right">{transaction.note || "-"}</p>
           </div>
         </>
       )}
 
       <div className="flex items-center justify-between">
-        <p className="text-secondary-text capitalize">Date:</p>
+        <p className="text-secondary-text capitalize">{t("date")}:</p>
         <p className="font-medium">{timeDisplay}</p>
       </div>
 
       {cachedAttachmentUrl && (
         <div className="mt-2 flex items-center justify-between">
-          <p className="text-secondary-text capitalize">Attachment:</p>
+          <p className="text-secondary-text capitalize">{t("attachment")}:</p>
           <button
             type="button"
             className={cn(
@@ -173,9 +191,7 @@ export function TransactionItemDetails({
             className="flex-1 py-2 text-center text-primary font-medium border border-border hover:bg-surface-secondary rounded-md transition-colors"
             onClick={() => onTransactionItemClick(transaction)}
           >
-            Edit{" "}
-            {transaction.type.charAt(0) +
-              transaction.type.slice(1).toLowerCase()}
+            {t("edit")} {t(transaction.type.toLowerCase() as TranslationKey)}
           </Button>
 
           {transaction.deletedAt && onRestoreClick && (
@@ -185,7 +201,7 @@ export function TransactionItemDetails({
               onClick={() => onRestoreClick(transaction)}
             >
               <RotateCcw size={16} />
-              Restore
+              {t("restore")}
             </Button>
           )}
         </div>
@@ -201,7 +217,7 @@ export function TransactionItemDetails({
             onClick={() => onDeleteClick?.(transaction)}
           >
             <Trash size={16} />
-            Delete
+            {t("delete")}
           </Button>
         </div>
       </div>

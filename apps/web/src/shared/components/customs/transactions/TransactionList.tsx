@@ -129,7 +129,7 @@ export function TransactionList({
 
               <span className={cn("text-base", netTotalColorClass)}>
                 {netTotalPrefix}฿
-                {Math.abs(netTotal).toLocaleString("en-US", {
+                {Math.abs(netTotal).toLocaleString(locale, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}

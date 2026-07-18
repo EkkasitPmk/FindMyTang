@@ -4,6 +4,7 @@ import { Button } from "@/shared/components/ui/button";
 import { getDiffDays } from "@/shared/lib/helpers/date.helper";
 import { cn } from "@/shared/lib/utils/core.util";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import type { Locale } from "react-day-picker";
 
 interface ChooseADateProps {
   selectedDate: Date | undefined;
@@ -12,6 +13,7 @@ interface ChooseADateProps {
   onMonthChange: (month: Date) => void;
   onConfirm: () => void;
   onPresetClick: (daysToAdd: number) => void;
+  locale?: Locale;
 }
 
 export default function ChooseADate({
@@ -21,41 +23,35 @@ export default function ChooseADate({
   onMonthChange,
   onConfirm,
   onPresetClick,
+  locale,
 }: Readonly<ChooseADateProps>) {
   const { t } = useTranslation();
   const diffDays = getDiffDays(selectedDate);
 
-  const time = selectedDate
-    ? `${selectedDate.getHours().toString().padStart(2, "0")}:${selectedDate.getMinutes().toString().padStart(2, "0")}`
-    : "00:00";
+  const hours = selectedDate ? selectedDate.getHours() : 0;
+  const minutes = selectedDate ? selectedDate.getMinutes() : 0;
 
-  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newTime = e.target.value;
-    if (selectedDate) {
-      let h = 0,
-        m = 0;
-      if (newTime) {
-        const parts = newTime.split(":");
-        h = Number(parts[0]) || 0;
-        m = Number(parts[1]) || 0;
-      }
-      const newDate = new Date(selectedDate);
-      newDate.setHours(h, m);
-      onSelectDate(newDate);
-    }
+  const applyTime = (h: number, m: number) => {
+    if (!selectedDate) return;
+    const newDate = new Date(selectedDate);
+    newDate.setHours(h, m);
+    onSelectDate(newDate);
+  };
+
+  const handleHourChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const h = Math.min(23, Math.max(0, Number(e.target.value) || 0));
+    applyTime(h, minutes);
+  };
+
+  const handleMinuteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const m = Math.min(59, Math.max(0, Number(e.target.value) || 0));
+    applyTime(hours, m);
   };
 
   const handleDateSelect = (date: Date | undefined) => {
     if (date) {
-      let h = 0,
-        m = 0;
-      if (time) {
-        const parts = time.split(":");
-        h = Number(parts[0]) || 0;
-        m = Number(parts[1]) || 0;
-      }
       const newDate = new Date(date);
-      newDate.setHours(h, m);
+      newDate.setHours(hours, minutes);
       onSelectDate(newDate);
     } else {
       onSelectDate(undefined);
@@ -77,25 +73,39 @@ export default function ChooseADate({
           month={displayMonth}
           onMonthChange={onMonthChange}
           fixedWeeks={false}
+          locale={locale}
           className="p-0 [--cell-size:--spacing(9.5)]"
           classNames={{
             month: "flex w-full flex-col gap-2",
             week: "mt-1 flex w-full",
             day_button: "data-[selected-single=true]:bg-primary h-8",
             day: "h-8",
+            today: "",
           }}
         />
         <div className="flex items-center justify-center gap-2 mt-4 pt-4 border-t">
-          <label htmlFor="time-picker" className="text-sm font-medium">
-            {t("time")}
-          </label>
-          <input
-            id="time-picker"
-            type="time"
-            value={time}
-            onChange={handleTimeChange}
-            className="border border-border rounded-md px-2 py-1 outline-none focus:ring-2 focus:ring-primary bg-surface transition-colors"
-          />
+          <label className="text-sm font-medium">{t("time")}</label>
+          <div className="flex items-center gap-1 border border-border rounded-md px-2 py-1 bg-surface focus-within:ring-2 focus-within:ring-primary transition-colors">
+            <input
+              id="time-hour"
+              type="number"
+              min={0}
+              max={23}
+              value={String(hours).padStart(2, "0")}
+              onChange={handleHourChange}
+              className="w-8 text-center bg-transparent outline-none"
+            />
+            <span className="font-medium">:</span>
+            <input
+              id="time-minute"
+              type="number"
+              min={0}
+              max={59}
+              value={String(minutes).padStart(2, "0")}
+              onChange={handleMinuteChange}
+              className="w-8 text-center bg-transparent outline-none"
+            />
+          </div>
         </div>
       </CardContent>
       <CardFooter className="flex flex-wrap gap-2 border-t rounded-b-none group-data-[size=sm]/card:py-2">

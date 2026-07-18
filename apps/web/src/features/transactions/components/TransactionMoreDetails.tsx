@@ -8,6 +8,7 @@ import { useImagePreview } from "@/shared/lib/hooks/useImagePreview.hook";
 import { Button } from "@/shared/components/customs/Button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import type { Locale } from "react-day-picker";
 
 interface TransactionMoreDetailsProps {
   isMoreDetailsOpen: boolean;
@@ -33,6 +34,7 @@ interface TransactionMoreDetailsProps {
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   register: UseFormRegister<CreateTransactionFormValues>;
   isLoadingTx?: boolean;
+  calendarLocale?: Locale;
 }
 
 export default function TransactionMoreDetails({
@@ -59,6 +61,7 @@ export default function TransactionMoreDetails({
   handleFileChange,
   register,
   isLoadingTx,
+  calendarLocale,
 }: Readonly<TransactionMoreDetailsProps>) {
   const { t } = useTranslation();
   const filePreview = useImagePreview(file);
@@ -236,6 +239,7 @@ export default function TransactionMoreDetails({
                       onMonthChange={setDisplayMonth}
                       onConfirm={onConfirmDate}
                       onPresetClick={onPresetClick}
+                      locale={calendarLocale}
                     />
                   </>
                 )}

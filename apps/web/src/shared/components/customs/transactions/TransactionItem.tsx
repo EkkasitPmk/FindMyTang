@@ -4,6 +4,7 @@ import { cn } from "@/shared/lib/utils/core.util";
 import { Button } from "@/shared/components/customs/Button";
 import { TransactionItemDetails } from "./TransactionItemDetails";
 import { TransactionIcon } from "./TransactionIcon";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import {
   getTransferDetails,
   getAmountDisplayConfig,
@@ -33,6 +34,7 @@ export function TransactionItem({
   currentAssetId,
   isLastItem,
 }: Readonly<TransactionItemProps>) {
+  const { locale } = useTranslation();
   const isAdjustment = transaction.type === "ADJUSTMENT";
   const isTransfer = transaction.type === "TRANSFER";
   const { isTransferIn, isTransferOut } = getTransferDetails(
@@ -90,7 +92,7 @@ export function TransactionItem({
           <div className="flex items-center justify-end gap-1">
             <span className={`text-base font-medium ${amountColorClass}`}>
               {amountPrefix}฿
-              {Math.abs(transaction.amount).toLocaleString("en-US", {
+              {Math.abs(transaction.amount).toLocaleString(locale, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}

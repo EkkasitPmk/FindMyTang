@@ -1,5 +1,6 @@
 import { formatDisplayDate } from "@/shared/lib/helpers/date.helper";
 import { TransactionResponse } from "@/features/transactions/types/transaction.type";
+import { TranslationKey } from "@/shared/lib/configs/translations.config";
 
 export function getTransferDetails(
   transaction: TransactionResponse,
@@ -55,7 +56,11 @@ export function getDisplayTitle(transaction: TransactionResponse) {
   return transaction.category?.name || transaction.note || transaction.type;
 }
 
-export function getTimeDisplay(transactionDate: string) {
+export function getTimeDisplay(
+  transactionDate: string,
+  locale?: string,
+  t?: (key: TranslationKey) => string,
+) {
   const txDate = new Date(transactionDate);
   const dateString = String(transactionDate);
   const isNoTime =
@@ -64,7 +69,7 @@ export function getTimeDisplay(transactionDate: string) {
       txDate.getMinutes() === 0 &&
       txDate.getSeconds() === 0);
 
-  return formatDisplayDate(txDate, !isNoTime);
+  return formatDisplayDate(txDate, !isNoTime, locale, t);
 }
 
 export function getTimeOnly(transactionDate: string) {

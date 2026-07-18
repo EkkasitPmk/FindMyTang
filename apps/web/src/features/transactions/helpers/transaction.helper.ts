@@ -8,6 +8,7 @@ import {
   CreateTransactionPayload,
 } from "../types/transaction.type";
 import { ApiErrorResponse } from "../hooks/transaction.hook";
+import { TranslationKey } from "@/shared/lib/configs/translations.config";
 
 interface SubmitTransactionParams {
   transactionType: TransactionType;
@@ -119,25 +120,26 @@ export const getActiveItemId = (
 export const getTransactionTypeOptions = (
   editId: string | null | undefined,
   existingType: TransactionType | undefined,
+  t: (key: TranslationKey) => string = (k) => k,
 ) => {
   if (editId) {
     if (existingType === "TRANSFER") {
-      return [{ label: "Transfer", value: "TRANSFER" }];
+      return [{ label: t("transfer"), value: "TRANSFER" }];
     }
     if (existingType === "ADJUSTMENT") {
-      return [{ label: "Adjustment", value: "ADJUSTMENT" }];
+      return [{ label: t("adjustment"), value: "ADJUSTMENT" }];
     }
     if (existingType === "EXPENSE" || existingType === "INCOME") {
       return [
-        { label: "Expense", value: "EXPENSE" },
-        { label: "Income", value: "INCOME" },
+        { label: t("expense"), value: "EXPENSE" },
+        { label: t("income"), value: "INCOME" },
       ];
     }
   }
   return [
-    { label: "Expense", value: "EXPENSE" },
-    { label: "Income", value: "INCOME" },
-    { label: "Transfer", value: "TRANSFER" },
-    { label: "Adjustment", value: "ADJUSTMENT" },
+    { label: t("expense"), value: "EXPENSE" },
+    { label: t("income"), value: "INCOME" },
+    { label: t("transfer"), value: "TRANSFER" },
+    { label: t("adjustment"), value: "ADJUSTMENT" },
   ];
 };

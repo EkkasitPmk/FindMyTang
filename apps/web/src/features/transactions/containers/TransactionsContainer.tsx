@@ -39,6 +39,7 @@ import {
   convertAmountToDigits,
 } from "@/shared/lib/utils/currency.util";
 import { formatDisplayDate } from "@/shared/lib/helpers/date.helper";
+import { th, enUS } from "date-fns/locale";
 import {
   submitTransaction,
   resolveDefaultTransactionType,
@@ -60,7 +61,7 @@ export default function TransactionsContainer() {
   const hasAssetId = searchParams.has("assetId");
   const defaultAssetId = searchParams.get("assetId") || null;
   const typeParam = searchParams.get("type");
-  const { t } = useTranslation();
+  const { t, locale, currentLanguage } = useTranslation();
 
   const {
     data: existingTx,
@@ -320,7 +321,8 @@ export default function TransactionsContainer() {
   };
 
   const { displayAmount, numericAmount } = getFormattedAmount(amountDigits);
-  const displayDate = formatDisplayDate(date, true);
+  const displayDate = formatDisplayDate(date, true, locale, t);
+  const calendarLocale = currentLanguage === "th" ? th : enUS;
 
   const { inputRef: amountInputRef, handleChange: handleCurrencyInput } =
     useCurrencyInput(displayAmount, handleAmountChange);
@@ -345,8 +347,8 @@ export default function TransactionsContainer() {
   };
 
   const transactionTypeOptions = useMemo(
-    () => getTransactionTypeOptions(editId, existingTx?.type),
-    [editId, existingTx?.type],
+    () => getTransactionTypeOptions(editId, existingTx?.type, t),
+    [editId, existingTx?.type, t],
   );
 
   let transactionTypeStr = "";
@@ -487,6 +489,7 @@ export default function TransactionsContainer() {
           handleFileChange={handleFileChange}
           register={register}
           isLoadingTx={!!(editId && (!mounted || isLoadingTx))}
+          calendarLocale={calendarLocale}
         />
 
         <section className="fixed bottom-16 left-0 right-0 mx-4 pb-4 bg-background pt-2">
