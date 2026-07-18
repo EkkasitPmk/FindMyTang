@@ -11,16 +11,7 @@ import { AssetType } from "../types/assets.type";
 import { Input } from "@/shared/components/customs/Input";
 import { Button } from "@/shared/components/customs/Button";
 import { ModalForm } from "@/shared/components/customs/ModalForm";
-
-const ASSET_COLORS = [
-  "#2563EB", // Primary
-  "#16A34A", // Income / Success
-  "#DC2626", // Expense / Danger
-  "#7C3AED", // Transfer
-  "#F59E0B", // Investment / Warning
-  "#0EA5E9", // Info
-  "#EA580C", // Accent
-];
+import { ASSET_COLORS } from "../configs/assets.config";
 
 interface AssetFormProps {
   register: UseFormRegister<CreateAssetFormValues>;

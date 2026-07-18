@@ -108,6 +108,10 @@ export default function ManageAssetsContainer() {
     isOpen: isBulkDeleteModalOpen,
     open: openBulkDeleteModal,
     close: closeBulkDeleteModal,
+    isHardDelete: isBulkHardDelete,
+    setIsHardDelete: setIsBulkHardDelete,
+    inputValue: bulkConfirmInput,
+    setInputValue: setBulkConfirmInput,
   } = useConfirmModal();
 
   const {
@@ -442,12 +446,22 @@ export default function ManageAssetsContainer() {
         isOpen={isBulkDeleteModalOpen}
         onClose={closeBulkDeleteModal}
         onConfirm={() => {
-          bulkDeleteAssets.mutate({ ids: Array.from(selectedIds) });
+          bulkDeleteAssets.mutate({
+            ids: Array.from(selectedIds),
+            hardDelete: isBulkHardDelete,
+          });
         }}
         icon={Trash2}
         title="Delete Selected Assets"
         des={`Are you sure you want to delete ${selectedIds.size} assets?`}
         confirmLabel="Delete All"
+        withHardDeleteOption={true}
+        hardDeleteCheckboxLabel="Delete permanently (Hard Delete)"
+        expectedInputToConfirm="DELETE"
+        isHardDelete={isBulkHardDelete}
+        onHardDeleteChange={setIsBulkHardDelete}
+        inputValue={bulkConfirmInput}
+        onInputChange={setBulkConfirmInput}
       />
 
       {/* Bulk Archive Confirm */}
