@@ -1,4 +1,5 @@
 import { Cloud, CloudOff, RefreshCw, CheckCircle2 } from "lucide-react";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 interface SyncStatusButtonProps {
   isGuest: boolean;
@@ -13,6 +14,8 @@ export default function SyncStatusButton({
   syncStatus,
   onSyncClick,
 }: Readonly<SyncStatusButtonProps>) {
+  const { t } = useTranslation();
+
   const getIcon = () => {
     if (isGuest) return <CloudOff size={14} className="text-disabled-text" />;
     if (isSyncing)
@@ -28,8 +31,8 @@ export default function SyncStatusButton({
   };
 
   const getStatusText = () => {
-    if (isSyncing) return "Syncing...";
-    if (syncStatus === "synced") return "Up to date";
+    if (isSyncing) return t("syncing");
+    if (syncStatus === "synced") return t("upToDate");
   };
 
   return (
@@ -43,7 +46,7 @@ export default function SyncStatusButton({
       </div>
       <div className="flex flex-col">
         <span className="text-xs font-medium text-primary-text leading-tight">
-          {isGuest ? "Local Storage" : "Cloud Sync"}
+          {isGuest ? t("localStorageLabel") : t("cloudSync")}
         </span>
         <span className="text-[10px] text-secondary-text leading-tight">
           {getStatusText()}

@@ -6,13 +6,14 @@ import { LogOut } from "lucide-react";
 import { useMeQuery, useLogoutMutation } from "../hooks/auth.hook";
 import { useGuestStore } from "@/shared/lib/storages/guest.storage";
 import DesktopSidebar from "../components/DesktopSidebar";
-import MobileBottomNav from "../components/MobileBottomNav";
 import MobileDrawer from "../components/MobileDrawer";
+import MobileBottomNav from "../components/MobileBottomNav";
 import ConfirmModal from "@/shared/components/customs/ConfirmModal";
 import LoadingModal from "@/shared/components/customs/LoadingModal";
 import { useConfirmModal } from "@/shared/lib/hooks/useConfirmModal.hook";
 import { useFeatureLockModal } from "@/shared/lib/hooks/useFeatureLockModal.hook";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 export default function NavContainer() {
   const pathname = usePathname();
@@ -28,6 +29,7 @@ export default function NavContainer() {
   const clearGuestData = useGuestStore((state) => state.clearGuestData);
   const openLockModal = useFeatureLockModal((state) => state.openModal);
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncStatus, setSyncStatus] = useState<
@@ -36,7 +38,7 @@ export default function NavContainer() {
 
   const handleSyncClick = () => {
     if (isGuest) {
-      openLockModal("Cloud Sync & Backup");
+      openLockModal(t("cloudSyncBackup"));
       return;
     }
 
@@ -48,12 +50,12 @@ export default function NavContainer() {
       .then(() => {
         setIsSyncing(false);
         setSyncStatus("synced");
-        toast.success("All data synced to cloud");
+        toast.success(t("allDataSynced"));
       })
       .catch(() => {
         setIsSyncing(false);
         setSyncStatus("offline");
-        toast.error("Cloud sync failed");
+        toast.error(t("cloudSyncFailed"));
       });
   };
 
@@ -63,7 +65,7 @@ export default function NavContainer() {
   ) => {
     if (isGuest && href?.includes("/settings")) {
       e?.preventDefault();
-      openLockModal("Account Settings & Cloud Backup");
+      openLockModal(t("accountSettingsBackup"));
     }
   };
 

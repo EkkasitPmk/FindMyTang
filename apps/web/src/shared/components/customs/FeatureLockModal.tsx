@@ -1,6 +1,7 @@
 import { Lock, X } from "lucide-react";
 import { Button } from "./Button";
 import { cn } from "@/shared/lib/utils/core.util";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 interface FeatureLockModalProps {
   isOpen: boolean;
@@ -15,6 +16,8 @@ export default function FeatureLockModal({
   onClose,
   onSignUp,
 }: Readonly<FeatureLockModalProps>) {
+  const { t } = useTranslation();
+
   if (!isOpen) return null;
 
   return (
@@ -49,11 +52,10 @@ export default function FeatureLockModal({
             <Lock className="w-8 h-8 text-primary" strokeWidth={1.5} />
           </div>
           <h3 className="text-xl font-bold text-primary-text mb-2">
-            Unlock {featureName}
+            {t("unlockFeature").replace("{featureName}", featureName)}
           </h3>
           <p className="text-sm text-secondary-text">
-            Sign up for a free account to access {featureName} and keep your
-            data synced across devices.
+            {t("unlockFeatureDesc").replace(/{featureName}/g, featureName)}
           </p>
         </div>
 
@@ -63,14 +65,14 @@ export default function FeatureLockModal({
             onClick={onSignUp}
             className="w-full py-2.5 font-medium"
           >
-            Sign up to unlock
+            {t("signUpToUnlock")}
           </Button>
           <Button
             variant="outline"
             onClick={onClose}
             className="w-full py-2.5 font-medium"
           >
-            Not now
+            {t("notNow")}
           </Button>
         </div>
       </div>
