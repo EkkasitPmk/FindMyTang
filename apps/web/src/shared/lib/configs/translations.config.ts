@@ -141,6 +141,44 @@ export const translations = {
     deleteCategoryDesc:
       'คุณแน่ใจหรือไม่ว่าต้องการลบหมวดหมู่ "{name}"? (รายการธุรกรรมในหมวดหมู่นี้จะไม่ถูกลบ)',
 
+    // Transactions Feature
+    editTransaction: "แก้ไขธุรกรรม",
+    saveTransactionStr: "บันทึก{type}",
+    transactionSavedSuccess: "บันทึก{type}สำเร็จ!",
+    transactionUpdatedSuccess: "อัปเดตธุรกรรมสำเร็จ!",
+    transactionDeletedSuccess: "ลบธุรกรรมสำเร็จ!",
+    transactionRestoredSuccess: "กู้คืนธุรกรรมสำเร็จ!",
+    deleteTransaction: "ลบธุรกรรม",
+    deleteTransactionDesc: "คุณแน่ใจหรือไม่ว่าต้องการลบธุรกรรมนี้?",
+    deletePermanentlyDesc:
+      "คุณแน่ใจหรือไม่ว่าต้องการลบธุรกรรมนี้อย่างถาวร? การดำเนินการนี้ไม่สามารถยกเลิกได้",
+    restoreTransaction: "กู้คืนธุรกรรม",
+    restoreTransactionDesc:
+      "คุณแน่ใจหรือไม่ว่าต้องการกู้คืนธุรกรรมนี้? ธุรกรรมนี้จะกลับมาใช้งานได้อีกครั้ง",
+    moreDetails: "รายละเอียดเพิ่มเติม",
+    lessDetails: "ย่อรายละเอียด",
+    description: "คำอธิบาย",
+    addANote: "เพิ่มบันทึก...",
+    attachment: "ไฟล์แนบ",
+    takeAPhoto: "ถ่ายรูป",
+    selectAPhoto: "เลือกรูปภาพ",
+    addPhoto: "เพิ่มรูปภาพ",
+    asset: "สินทรัพย์",
+    assetFrom: "สินทรัพย์ (ต้นทาง)",
+    assetTo: "สินทรัพย์ (ปลายทาง)",
+    categoryUppercase: "หมวดหมู่",
+    needTwoAssetsForTransfer:
+      "คุณต้องมีสินทรัพย์อย่างน้อย 2 รายการเพื่อทำการโอน",
+    time: "เวลา:",
+    today: "วันนี้",
+    tomorrow: "พรุ่งนี้",
+    in3Days: "ใน 3 วัน",
+    in1Week: "ใน 1 สัปดาห์",
+    in2Weeks: "ใน 2 สัปดาห์",
+    confirm: "ยืนยัน",
+    details: "รายละเอียด",
+    deletedTransactionsNotice: "ธุรกรรมที่ถูกลบจะถูกลบอย่างถาวรหลังจาก 30 วัน",
+
     // Assets Feature
     assetsTitle: "สินทรัพย์",
     recentTransactions: "รายการล่าสุด",
@@ -363,6 +401,45 @@ export const translations = {
     deleteCategoryTitle: "Delete Category?",
     deleteCategoryDesc:
       'Are you sure you want to delete category "{name}"? (Transactions in this category will not be deleted)',
+
+    // Transactions Feature
+    editTransaction: "Edit Transaction",
+    saveTransactionStr: "Save {type}",
+    transactionSavedSuccess: "{type} saved successfully!",
+    transactionUpdatedSuccess: "Transaction updated successfully!",
+    transactionDeletedSuccess: "Transaction deleted successfully!",
+    transactionRestoredSuccess: "Transaction restored successfully!",
+    deleteTransaction: "Delete Transaction",
+    deleteTransactionDesc: "Are you sure you want to delete this transaction?",
+    deletePermanentlyDesc:
+      "Are you sure you want to permanently delete this transaction? This action cannot be undone.",
+    restoreTransaction: "Restore Transaction",
+    restoreTransactionDesc:
+      "Are you sure you want to restore this transaction? It will be active again.",
+    moreDetails: "More Details",
+    lessDetails: "Less Details",
+    description: "DESCRIPTION",
+    addANote: "Add a note...",
+    attachment: "ATTACHMENT",
+    takeAPhoto: "Take a photo",
+    selectAPhoto: "Select a photo",
+    addPhoto: "Add Photo",
+    asset: "ASSET",
+    assetFrom: "ASSET (from)",
+    assetTo: "ASSET (to)",
+    categoryUppercase: "CATEGORY",
+    needTwoAssetsForTransfer:
+      "You need at least two assets to make a transfer.",
+    time: "Time:",
+    today: "Today",
+    tomorrow: "Tomorrow",
+    in3Days: "In 3 days",
+    in1Week: "In 1 week",
+    in2Weeks: "In 2 weeks",
+    confirm: "Confirm",
+    details: "DETAILS",
+    deletedTransactionsNotice:
+      "Deleted transactions are permanently removed after 30 days.",
 
     // Assets Feature
     assetsTitle: "Assets",

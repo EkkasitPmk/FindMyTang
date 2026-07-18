@@ -3,6 +3,7 @@ import { Calendar } from "@/shared/components/ui/calendar";
 import { Button } from "@/shared/components/ui/button";
 import { getDiffDays } from "@/shared/lib/helpers/date.helper";
 import { cn } from "@/shared/lib/utils/core.util";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 interface ChooseADateProps {
   selectedDate: Date | undefined;
@@ -21,6 +22,7 @@ export default function ChooseADate({
   onConfirm,
   onPresetClick,
 }: Readonly<ChooseADateProps>) {
+  const { t } = useTranslation();
   const diffDays = getDiffDays(selectedDate);
 
   const time = selectedDate
@@ -85,7 +87,7 @@ export default function ChooseADate({
         />
         <div className="flex items-center justify-center gap-2 mt-4 pt-4 border-t">
           <label htmlFor="time-picker" className="text-sm font-medium">
-            Time:
+            {t("time")}
           </label>
           <input
             id="time-picker"
@@ -98,11 +100,11 @@ export default function ChooseADate({
       </CardContent>
       <CardFooter className="flex flex-wrap gap-2 border-t rounded-b-none group-data-[size=sm]/card:py-2">
         {[
-          { label: "Today", value: 0 },
-          { label: "Tomorrow", value: 1 },
-          { label: "In 3 days", value: 3 },
-          { label: "In 1 week", value: 7 },
-          { label: "In 2 weeks", value: 14 },
+          { label: t("today"), value: 0 },
+          { label: t("tomorrow"), value: 1 },
+          { label: t("in3Days"), value: 3 },
+          { label: t("in1Week"), value: 7 },
+          { label: t("in2Weeks"), value: 14 },
         ].map((preset) => (
           <Button
             key={preset.value}
@@ -126,7 +128,7 @@ export default function ChooseADate({
         className="mb-2 mx-2 py-5 bg-primary text-white"
         onClick={onConfirm}
       >
-        Confirm
+        {t("confirm")}
       </Button>
     </Card>
   );

@@ -51,6 +51,7 @@ import { Button } from "@/shared/components/customs/Button";
 import { TransactionType } from "../types/transaction.type";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import imageCompression from "browser-image-compression";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 export default function TransactionsContainer() {
   const router = useRouter();
@@ -59,6 +60,7 @@ export default function TransactionsContainer() {
   const hasAssetId = searchParams.has("assetId");
   const defaultAssetId = searchParams.get("assetId") || null;
   const typeParam = searchParams.get("type");
+  const { t } = useTranslation();
 
   const {
     data: existingTx,
@@ -163,15 +165,18 @@ export default function TransactionsContainer() {
 
   const createTransaction = useCreateTransactionMutation({
     onSuccess: (data, variables) => {
-      const typeStr = variables.type.toLowerCase();
-      handleSuccess(
-        `${typeStr.charAt(0).toUpperCase() + typeStr.slice(1)} saved successfully!`,
-      );
+      let typeStr = variables.type.toLowerCase();
+      if (typeStr === "expense") typeStr = t("expense");
+      else if (typeStr === "income") typeStr = t("income");
+      else if (typeStr === "transfer") typeStr = t("transfer");
+      else if (typeStr === "adjustment") typeStr = t("adjustment");
+
+      handleSuccess(t("transactionSavedSuccess").replace("{type}", typeStr));
     },
   });
   const updateTransaction = useUpdateTransactionMutation({
     onSuccess: () => {
-      toast.success("Transaction updated successfully!");
+      toast.success(t("transactionUpdatedSuccess"));
       if (editId) {
         router.back();
       } else {
@@ -184,7 +189,7 @@ export default function TransactionsContainer() {
 
   const deleteTransaction = useDeleteTransactionMutation({
     onSuccess: () => {
-      toast.success("Transaction deleted successfully!");
+      toast.success(t("transactionDeletedSuccess"));
       router.back();
     },
   });
@@ -344,6 +349,21 @@ export default function TransactionsContainer() {
     [editId, existingTx?.type],
   );
 
+  let transactionTypeStr = "";
+  switch (transactionType) {
+    case "EXPENSE":
+      transactionTypeStr = t("expense");
+      break;
+    case "INCOME":
+      transactionTypeStr = t("income");
+      break;
+    case "TRANSFER":
+      transactionTypeStr = t("transfer");
+      break;
+    default:
+      transactionTypeStr = t("adjustment");
+  }
+
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
@@ -373,7 +393,7 @@ export default function TransactionsContainer() {
             hasAssetId ? "absolute left-1/2 -translate-x-1/2" : "",
           )}
         >
-          {editId ? "Edit Transaction" : "Add Transaction"}
+          {editId ? t("editTransaction") : t("addTransaction")}
         </p>
         {editId && (
           <Button
@@ -480,7 +500,7 @@ export default function TransactionsContainer() {
             }
             className="flex items-center justify-center gap-2 bg-primary w-full text-white py-3 rounded-xl text-base font-bold capitalize disabled:opacity-50"
           >
-            Save {transactionType.toLowerCase()}
+            {t("saveTransactionStr").replace("{type}", transactionTypeStr)}
             <ArrowRight size={18} />
           </Button>
         </section>
@@ -499,12 +519,13 @@ export default function TransactionsContainer() {
           }
         }}
         icon={Trash}
-        title="Delete Transaction"
-        des="Are you sure you want to delete this transaction? This action cannot be undone."
-        confirmLabel="Delete"
+        title={t("deleteTransaction")}
+        des={t("deleteTransactionDesc")}
+        confirmLabel={t("delete")}
         withHardDeleteOption={true}
         isHardDelete={isHardDelete}
         onHardDeleteChange={setIsHardDelete}
+        hardDeleteCheckboxLabel={t("deletePermanently")}
         inputValue={confirmInput}
         onInputChange={setConfirmInput}
       />

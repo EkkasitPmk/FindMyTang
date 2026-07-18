@@ -1,6 +1,7 @@
 import { Asset } from "@/features/assets/types/assets.type";
 import TransactionAssetItem from "./TransactionAssetItem";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 const SKELETON_ASSETS = Array.from({ length: 4 }, (_, i) => i);
 
@@ -23,6 +24,8 @@ export default function TransactionAssetList({
   transactionType,
   isLoadingAssetList,
 }: Readonly<TransactionAssetListProps>) {
+  const { t } = useTranslation();
+
   const renderAssetList = () => {
     if (isLoadingAssetList) {
       return (
@@ -39,7 +42,7 @@ export default function TransactionAssetList({
     if (assets.length === 0) {
       return (
         <p className="text-xs text-expense border border-error text-center py-4 rounded-md my-1">
-          No assets found. Please add an asset first.
+          {t("noAssetsFound")}
         </p>
       );
     }
@@ -78,7 +81,7 @@ export default function TransactionAssetList({
     if (availableAssets.length === 0) {
       return (
         <p className="text-xs text-expense border border-error text-center py-4 rounded-md">
-          You need at least two assets to make a transfer.
+          {t("needTwoAssetsForTransfer")}
         </p>
       );
     }
@@ -100,8 +103,7 @@ export default function TransactionAssetList({
   return (
     <section className="space-y-1">
       <p className="uppercase text-sm text-secondary-text font-medium">
-        ASSET
-        {transactionType === "TRANSFER" && " (from)"}
+        {transactionType === "TRANSFER" ? t("assetFrom") : t("asset")}
       </p>
 
       {renderAssetList()}
@@ -110,7 +112,7 @@ export default function TransactionAssetList({
         <>
           <div className="flex items-center gap-2 mt-2">
             <p className="uppercase text-sm text-secondary-text font-medium">
-              ASSET (to)
+              {t("assetTo")}
             </p>
           </div>
           {renderTransferAssetList()}

@@ -1,9 +1,10 @@
 import { cn } from "@/shared/lib/utils/core.util";
-import { getCategoryIcon } from "@/shared/lib/configs/category-icons.config";
 import { Plus } from "lucide-react";
+import { getCategoryIcon } from "@/shared/lib/configs/category-icons.config";
 import { Category } from "@/features/category/types/category.type";
 import { Button } from "@/shared/components/customs/Button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 const SKELETON_CATEGORIES = Array.from({ length: 12 }, (_, i) => i);
 
@@ -22,10 +23,12 @@ export default function TransactionCategoryList({
   onEditClick,
   isLoadingCategoryList,
 }: Readonly<TransactionCategoryListProps>) {
+  const { t } = useTranslation();
+
   return (
     <section className="space-y-1">
       <p className="uppercase text-sm text-secondary-text font-medium">
-        CATEGORY
+        {t("categoryUppercase")}
       </p>
       {isLoadingCategoryList ? (
         <div className="grid grid-cols-4 gap-y-2 overflow-auto max-h-[24vh] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
@@ -94,7 +97,7 @@ export default function TransactionCategoryList({
               <Plus size={18} />
             </span>
             <span className="uppercase text-primary text-xs font-medium truncate">
-              Edit
+              {t("edit")}
             </span>
           </Button>
         </div>

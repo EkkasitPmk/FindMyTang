@@ -17,6 +17,7 @@ import {
   GroupedTransaction,
   TransactionResponse,
 } from "@/features/transactions/types/transaction.type";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 interface TransactionListContainerProps {
   groupedTransactions: GroupedTransaction[];
@@ -42,6 +43,7 @@ export function TransactionListContainer({
   page,
 }: Readonly<TransactionListContainerProps>) {
   const router = useRouter();
+  const { t } = useTranslation();
 
   const [expandedTransactionId, setExpandedTransactionId] = useState<
     string | null
@@ -55,7 +57,7 @@ export function TransactionListContainer({
 
   const restoreTransaction = useUpdateTransactionMutation({
     onSuccess: () => {
-      toast.success("Transaction restored successfully!");
+      toast.success(t("transactionRestoredSuccess"));
     },
   });
 
@@ -73,7 +75,7 @@ export function TransactionListContainer({
 
   const deleteTransaction = useDeleteTransactionMutation({
     onSuccess: () => {
-      toast.success("Transaction deleted successfully!");
+      toast.success(t("transactionDeletedSuccess"));
     },
   });
 
@@ -132,7 +134,7 @@ export function TransactionListContainer({
         group.items.some((transaction) => Boolean(transaction.deletedAt)),
       ) && (
         <p className="mb-2 px-4 text-xs text-secondary-text">
-          Deleted transactions are permanently removed after 30 days.
+          {t("deletedTransactionsNotice")}
         </p>
       )}
       <TransactionList
@@ -184,9 +186,9 @@ export function TransactionListContainer({
           }
         }}
         icon={RotateCcw}
-        title="Restore Transaction"
-        des="Are you sure you want to restore this transaction? It will be active again."
-        confirmLabel="Restore"
+        title={t("restoreTransaction")}
+        des={t("restoreTransactionDesc")}
+        confirmLabel={t("restore")}
         variant="success"
       />
 
@@ -210,19 +212,20 @@ export function TransactionListContainer({
         icon={Trash}
         title={
           transactionToDelete?.deletedAt
-            ? "Delete Permanently"
-            : "Delete Transaction"
+            ? t("deletePermanently")
+            : t("deleteTransaction")
         }
         des={
           transactionToDelete?.deletedAt
-            ? "Are you sure you want to permanently delete this transaction? This action cannot be undone."
-            : "Are you sure you want to delete this transaction?"
+            ? t("deletePermanentlyDesc")
+            : t("deleteTransactionDesc")
         }
-        confirmLabel="Delete"
+        confirmLabel={t("delete")}
         variant="danger"
         withHardDeleteOption={!transactionToDelete?.deletedAt}
         isHardDelete={isHardDelete}
         onHardDeleteChange={setIsHardDelete}
+        hardDeleteCheckboxLabel={t("deletePermanently")}
       />
 
       <LoadingModal

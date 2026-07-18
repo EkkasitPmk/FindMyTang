@@ -7,6 +7,7 @@ import ChooseADate from "./ChooseADate";
 import { useImagePreview } from "@/shared/lib/hooks/useImagePreview.hook";
 import { Button } from "@/shared/components/customs/Button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 interface TransactionMoreDetailsProps {
   isMoreDetailsOpen: boolean;
@@ -59,6 +60,7 @@ export default function TransactionMoreDetails({
   register,
   isLoadingTx,
 }: Readonly<TransactionMoreDetailsProps>) {
+  const { t } = useTranslation();
   const filePreview = useImagePreview(file);
 
   const renderAttachment = () => {
@@ -142,7 +144,7 @@ export default function TransactionMoreDetails({
                 onTakeAPhoto();
               }}
             >
-              Take a photo
+              {t("takeAPhoto")}
             </Button>
             <Button
               variant="unstyled"
@@ -153,7 +155,7 @@ export default function TransactionMoreDetails({
                 onSelectAPhoto();
               }}
             >
-              Select a photo
+              {t("selectAPhoto")}
             </Button>
           </div>
         ) : (
@@ -164,7 +166,9 @@ export default function TransactionMoreDetails({
             className="w-full h-113 flex flex-col items-center justify-center gap-1 rounded-md border-2 border-border border-dashed hover:bg-surface-secondary/50 transition-colors cursor-pointer"
           >
             <Camera size={24} className="text-secondary-text" />
-            <p className="text-sm font-medium text-secondary-text">Add Photo</p>
+            <p className="text-sm font-medium text-secondary-text">
+              {t("addPhoto")}
+            </p>
           </Button>
         )}
       </div>
@@ -180,7 +184,7 @@ export default function TransactionMoreDetails({
           onClick={() => setIsMoreDetailsOpen(!isMoreDetailsOpen)}
           className="my-0 flex items-center justify-center gap-2 text-primary text-sm shrink-0"
         >
-          {isMoreDetailsOpen ? "Less Details" : "More Details"}
+          {isMoreDetailsOpen ? t("lessDetails") : t("moreDetails")}
           <ArrowDown
             size={16}
             className={cn(
@@ -194,7 +198,7 @@ export default function TransactionMoreDetails({
       {isMoreDetailsOpen && (
         <section className="space-y-1">
           <p className="uppercase text-sm text-secondary-text font-medium">
-            DETAILS
+            {t("details")}
           </p>
           <div className="space-y-3">
             {isLoadingTx ? (
@@ -208,8 +212,8 @@ export default function TransactionMoreDetails({
                   onClick={() => setIsCalendarOpen(!isCalendarOpen)}
                   className="flex flex-col flex-1 text-left"
                 >
-                  <span className="text-secondary-text text-xs font-medium">
-                    DATE
+                  <span className="text-secondary-text text-xs font-medium uppercase">
+                    {t("date")}
                   </span>
                   <span className="text-sm font-medium">{displayDate}</span>
                 </Button>
@@ -259,14 +263,14 @@ export default function TransactionMoreDetails({
                     <path d="M3 5h18" />
                     <path d="M9 19H3" />
                   </svg>
-                  <span className="text-secondary-text text-xs font-medium">
-                    DESCRIPTION
+                  <span className="text-secondary-text text-xs font-medium uppercase">
+                    {t("description")}
                   </span>
                 </div>
 
                 <textarea
                   id="note"
-                  placeholder="Add a note..."
+                  placeholder={t("addANote")}
                   className="w-full min-h-15 max-h-30 placeholder:text-secondary-text outline-none transition-all bg-surface"
                   {...register("note")}
                 ></textarea>
@@ -275,7 +279,7 @@ export default function TransactionMoreDetails({
 
             <div className="space-y-2">
               <p className="uppercase text-xs text-secondary-text font-medium">
-                ATTACHMENT
+                {t("attachment")}
               </p>
               {isLoadingTx ? (
                 <Skeleton className="w-full h-113 rounded-md" />
