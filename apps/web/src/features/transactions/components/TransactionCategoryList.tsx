@@ -86,6 +86,7 @@ export default function TransactionCategoryList({
           {/* ปุ่มแก้ไข category กดแล้วเรียก Callback ไปที่ Container */}
           <Button
             variant="unstyled"
+            type="button"
             onClick={onEditClick}
             className="flex flex-col items-center justify-center gap-1 cursor-pointer"
           >
