@@ -23,11 +23,12 @@ import {
   type DailySummary,
 } from "../helpers/calendar.helper";
 import { useJournalCalendar } from "../hooks/journal-calendar.hook";
-import { WEEKDAY_LABELS } from "@/shared/lib/configs/date.config";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 export default function JournalCalendarContainer() {
+  const { locale } = useTranslation();
   const { currentMonth, selectedDate, navigatorProps, handleSelectDate } =
-    useJournalCalendar();
+    useJournalCalendar(locale);
 
   const transactionListRef = useRef<HTMLDivElement>(null);
 
@@ -106,12 +107,16 @@ export default function JournalCalendarContainer() {
       // Only include transactions that belong to the current month in the list
       if (isSameMonth(new Date(dateKey), currentMonth)) {
         const items = transactionsByDate.get(dateKey)!;
-        const dateStr = format(new Date(dateKey), "dd MMM yyyy");
+        const dateStr = Intl.DateTimeFormat(locale, {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        }).format(new Date(dateKey));
         groups.push({ dateStr, items });
       }
     });
     return groups;
-  }, [transactionsByDate, currentMonth]);
+  }, [transactionsByDate, currentMonth, locale]);
 
   // Click on a date in the calendar -> scroll to that date's group
   const handleDateClick = useCallback(
@@ -126,7 +131,11 @@ export default function JournalCalendarContainer() {
       requestAnimationFrame(() => {
         const container = transactionListRef.current;
         if (!container) return;
-        const dateStr = format(date, "dd MMM yyyy");
+        const dateStr = Intl.DateTimeFormat(locale, {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        }).format(date);
         const target = container.querySelector(
           `[data-date-group="${dateStr}"]`,
         );
@@ -135,7 +144,7 @@ export default function JournalCalendarContainer() {
         }
       });
     },
-    [handleSelectDate, transactionsByDate],
+    [handleSelectDate, transactionsByDate, locale],
   );
 
   return (
@@ -145,11 +154,7 @@ export default function JournalCalendarContainer() {
         <MonthYearNavigator {...navigatorProps} />
 
         {/* Section 2: Calendar Grid */}
-        <JournalCalendarGrid
-          weeks={weeks}
-          weekdayLabels={WEEKDAY_LABELS}
-          onSelectDate={handleDateClick}
-        />
+        <JournalCalendarGrid weeks={weeks} onSelectDate={handleDateClick} />
       </div>
 
       <div

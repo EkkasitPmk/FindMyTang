@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { cn } from "@/shared/lib/utils/core.util";
 import { Button } from "@/shared/components/customs/Button";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 interface MonthYearNavigatorProps {
   isMonthOpen: boolean;
@@ -41,6 +42,8 @@ export default function MonthYearNavigator({
   onNextMonth,
   onGoToToday,
 }: Readonly<MonthYearNavigatorProps>) {
+  const { t } = useTranslation();
+
   return (
     <section className="flex items-center justify-between px-4">
       {/* Month & Year Selector */}
@@ -139,7 +142,7 @@ export default function MonthYearNavigator({
           onClick={onGoToToday}
           className="px-2 py-1 mr-1 rounded-lg text-xs font-semibold text-primary bg-primary-light/50 hover:bg-primary-light transition-colors cursor-pointer"
         >
-          Today
+          {t("today")}
         </Button>
         <Button
           variant="unstyled"

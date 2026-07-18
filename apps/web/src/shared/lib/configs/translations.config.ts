@@ -179,6 +179,27 @@ export const translations = {
     details: "รายละเอียด",
     deletedTransactionsNotice: "ธุรกรรมที่ถูกลบจะถูกลบอย่างถาวรหลังจาก 30 วัน",
 
+    typeToSearchTransactions: "พิมพ์เพื่อค้นหาธุรกรรม",
+    // Journal Feature
+    searchTransactions: "ค้นหาธุรกรรม...",
+    timeline: "ไทม์ไลน์",
+    calendar: "ปฏิทิน",
+    all: "ทั้งหมด",
+    recentJournal: "บันทึกล่าสุด",
+    seeAll: "ดูทั้งหมด",
+    financialTimelineStartsHere: "ไทม์ไลน์การเงินของคุณเริ่มต้นที่นี่",
+    logFirstTransactionJournal:
+      "บันทึกธุรกรรมแรกของคุณเพื่อดูรูปแบบการใช้จ่ายและประวัติการเงินของคุณ",
+    sun: "อา.",
+    mon: "จ.",
+    tue: "อ.",
+    wed: "พ.",
+    thu: "พฤ.",
+    fri: "ศ.",
+    sat: "ส.",
+    net: "สุทธิ",
+    amountStr: "จำนวนเงิน",
+
     // Assets Feature
     assetsTitle: "สินทรัพย์",
     recentTransactions: "รายการล่าสุด",
@@ -440,6 +461,27 @@ export const translations = {
     details: "DETAILS",
     deletedTransactionsNotice:
       "Deleted transactions are permanently removed after 30 days.",
+
+    typeToSearchTransactions: "Type to search transactions",
+    // Journal Feature
+    searchTransactions: "Search transactions...",
+    timeline: "Timeline",
+    calendar: "Calendar",
+    all: "All",
+    recentJournal: "Recent Journal",
+    seeAll: "See all",
+    financialTimelineStartsHere: "Your financial timeline starts here.",
+    logFirstTransactionJournal:
+      "Log your first transaction to see your spending patterns and history in action.",
+    sun: "Sun",
+    mon: "Mon",
+    tue: "Tue",
+    wed: "Wed",
+    thu: "Thu",
+    fri: "Fri",
+    sat: "Sat",
+    net: "Net",
+    amountStr: "Amount",
 
     // Assets Feature
     assetsTitle: "Assets",

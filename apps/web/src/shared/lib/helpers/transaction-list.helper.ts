@@ -10,23 +10,62 @@ export const calculateNetTotal = (items: TransactionResponse[]) => {
   }, 0);
 };
 
-export const getTopRowText = (diffDays: number | null) => {
-  if (diffDays === 0) return "Today";
-  if (diffDays === -1) return "Yesterday";
-  if (diffDays === 1) return "Tomorrow";
+const getFutureWeekText = (weeks: number, t: (key: string) => string) => {
+  const futureKeys: Record<number, string> = {
+    1: "in1Week",
+    2: "in2Weeks",
+    3: "in3Weeks",
+  };
+  return futureKeys[weeks]
+    ? t(futureKeys[weeks])
+    : t("inWeeks").replace("{weeks}", weeks.toString());
+};
 
-  if (diffDays !== null) {
-    if (diffDays % 7 === 0) {
-      const weeks = Math.abs(diffDays) / 7;
-      const suffix = weeks > 1 ? "s" : "";
-      if (diffDays > 0) return `In ${weeks} week${suffix}`;
-      return `${weeks} week${suffix} ago`;
-    }
-    if (diffDays > 0) return `In ${Math.abs(diffDays)} days`;
-    return `${Math.abs(diffDays)} days ago`;
+const getPastWeekText = (weeks: number, t: (key: string) => string) => {
+  return weeks === 1
+    ? t("oneWeekAgo")
+    : t("weeksAgo").replace("{weeks}", weeks.toString());
+};
+
+const getFutureDayText = (days: number, t: (key: string) => string) => {
+  const futureKeys: Record<number, string> = { 2: "in2Days", 3: "in3Days" };
+  return futureKeys[days]
+    ? t(futureKeys[days])
+    : t("inDays").replace("{days}", days.toString());
+};
+
+const getPastDayText = (days: number, t: (key: string) => string) => {
+  return t("daysAgo").replace("{days}", days.toString());
+};
+
+export const getTopRowText = (
+  diffDays: number | null,
+  t: (key: string) => string,
+) => {
+  if (diffDays === null) return "";
+
+  const exactMatches: Record<string, string> = {
+    "0": "today",
+    "-1": "yesterday",
+    "1": "tomorrow",
+  };
+
+  if (diffDays.toString() in exactMatches) {
+    return t(exactMatches[diffDays.toString()]);
   }
 
-  return "";
+  const absDays = Math.abs(diffDays);
+
+  if (absDays % 7 === 0) {
+    const weeks = absDays / 7;
+    return diffDays > 0
+      ? getFutureWeekText(weeks, t)
+      : getPastWeekText(weeks, t);
+  }
+
+  return diffDays > 0
+    ? getFutureDayText(absDays, t)
+    : getPastDayText(absDays, t);
 };
 
 export const getNetTotalConfig = (netTotal: number) => {

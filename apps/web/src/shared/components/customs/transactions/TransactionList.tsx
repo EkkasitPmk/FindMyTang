@@ -12,6 +12,8 @@ import {
 import { TransactionItem } from "./TransactionItem";
 import { cn } from "@/shared/lib/utils/core.util";
 import TransactionListSkeleton from "../../skeletons/TransactionListSkeleton";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { TranslationKey } from "@/shared/lib/configs/translations.config";
 
 const SKELETON_GROUPS = Array.from({ length: 3 }, (_, i) => i);
 
@@ -44,10 +46,12 @@ export function TransactionList({
   setExpandedTransactionId,
   onAttachmentClick,
 }: Readonly<TransactionListProps>) {
+  const { t, locale } = useTranslation();
+
   if (isSearchMode && !searchKeyword) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-disabled-text">
-        <p>Type to search transactions</p>
+        <p>{t("typeToSearchTransactions")}</p>
       </div>
     );
   }
@@ -85,9 +89,11 @@ export function TransactionList({
         const netTotal = calculateNetTotal(group.items);
         const txDate = new Date(group.items[0].transactionDate);
         const diffDays = getDiffDays(txDate);
-        const topRow = getTopRowText(diffDays);
+        const topRow = getTopRowText(diffDays, (key) =>
+          t(key as TranslationKey),
+        );
 
-        const bottomRow = txDate.toLocaleDateString("en-US", {
+        const bottomRow = txDate.toLocaleDateString(locale, {
           weekday: "long",
           month: "short",
           day: "numeric",

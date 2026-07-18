@@ -3,13 +3,14 @@ import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import { useTransactionsQuery } from "@/features/transactions/hooks/transaction.hook";
 import { TransactionListContainer } from "@/features/transactions/containers/TransactionListContainer";
 import { TransactionResponse } from "@/features/transactions/types/transaction.type";
-import { format } from "date-fns";
 import { useMemo } from "react";
 import Link from "next/link";
 import { cn } from "@/shared/lib/utils/core.util";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 export default function RecentJournalContainer() {
   const mounted = useMounted();
+  const { t, locale } = useTranslation();
 
   const { data: transactionsData, isPending: isTransactionsPending } =
     useTransactionsQuery({
@@ -26,7 +27,11 @@ export default function RecentJournalContainer() {
 
     transactionsData.items.forEach((tx) => {
       const date = new Date(tx.transactionDate);
-      const dateStr = format(date, "dd MMM yyyy");
+      const dateStr = Intl.DateTimeFormat(locale, {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }).format(date);
 
       if (!groupsMap.has(dateStr)) {
         groupsMap.set(dateStr, []);
@@ -38,7 +43,7 @@ export default function RecentJournalContainer() {
       dateStr,
       items,
     }));
-  }, [transactionsData]);
+  }, [transactionsData, locale]);
 
   return (
     <section
@@ -52,13 +57,13 @@ export default function RecentJournalContainer() {
           groupedTransactions.length > 0 && "px-4",
         )}
       >
-        <span className="text-lg font-medium">Recent Journal</span>
+        <span className="text-lg font-medium">{t("recentJournal")}</span>
         {groupedTransactions.length > 0 && (
           <Link
             href="/journal"
             className="flex items-center text-sm text-primary"
           >
-            See all
+            {t("seeAll")}
             <ChevronRight size={16} />
           </Link>
         )}
@@ -72,11 +77,10 @@ export default function RecentJournalContainer() {
             </span>
           </div>
           <span className="text-base font-normal text-secondary-text">
-            Your financial timeline starts here.
+            {t("financialTimelineStartsHere")}
           </span>
           <span className="text-base font-normal text-secondary-text text-center max-w-68">
-            Log your first transaction to see your spending patterns and history
-            in action.
+            {t("logFirstTransactionJournal")}
           </span>
         </div>
       ) : (

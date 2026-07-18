@@ -2,18 +2,28 @@ import { cn } from "@/shared/lib/utils/core.util";
 import { formatCompactAmount } from "../helpers/calendar.helper";
 import type { CalendarDay } from "../helpers/calendar.helper";
 import { Button } from "@/shared/components/customs/Button";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 interface JournalCalendarGridProps {
   weeks: CalendarDay[][];
-  weekdayLabels: readonly string[];
   onSelectDate: (date: Date) => void;
 }
 
 export default function JournalCalendarGrid({
   weeks,
-  weekdayLabels,
   onSelectDate,
 }: Readonly<JournalCalendarGridProps>) {
+  const { t, locale } = useTranslation();
+  const weekdayLabels = [
+    t("sun"),
+    t("mon"),
+    t("tue"),
+    t("wed"),
+    t("thu"),
+    t("fri"),
+    t("sat"),
+  ];
+
   return (
     <section className="w-full select-none">
       {/* Weekday header */}
@@ -23,7 +33,7 @@ export default function JournalCalendarGrid({
             key={day}
             className={cn(
               "text-center text-xs font-medium py-1",
-              day === "Sat" || day === "Sun"
+              day === t("sat") || day === t("sun")
                 ? "text-expense/70"
                 : "text-secondary-text",
             )}
@@ -92,22 +102,22 @@ export default function JournalCalendarGrid({
                     <div className="flex flex-col items-end mt-auto gap-px">
                       {day.summary.adjustment !== 0 && (
                         <span className="text-[9px] leading-2 text-info font-medium">
-                          {formatCompactAmount(day.summary.adjustment)}
+                          {formatCompactAmount(day.summary.adjustment, locale)}
                         </span>
                       )}
                       {day.summary.transfer !== 0 && (
                         <span className="text-[9px] leading-2 text-transfer font-medium">
-                          {formatCompactAmount(day.summary.transfer)}
+                          {formatCompactAmount(day.summary.transfer, locale)}
                         </span>
                       )}
                       {day.summary.income !== 0 && (
                         <span className="text-[9px] leading-2 text-income font-medium">
-                          {formatCompactAmount(day.summary.income)}
+                          {formatCompactAmount(day.summary.income, locale)}
                         </span>
                       )}
                       {day.summary.expense !== 0 && (
                         <span className="text-[9px] leading-2 text-expense font-medium">
-                          {formatCompactAmount(day.summary.expense)}
+                          {formatCompactAmount(day.summary.expense, locale)}
                         </span>
                       )}
                     </div>

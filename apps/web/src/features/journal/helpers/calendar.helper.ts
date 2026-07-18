@@ -39,14 +39,17 @@ export interface CalendarDay {
  * - >= 10,000 และ < 1,000,000: ใช้ K (เช่น 10K, 150.5K)
  * - >= 1,000,000: ใช้ M (เช่น 1.5M, 2M)
  */
-export function formatCompactAmount(amount: number): string {
+export function formatCompactAmount(
+  amount: number,
+  locale: string = "en-US",
+): string {
   const abs = Math.abs(amount);
   const sign = amount < 0 ? "-" : "";
 
   if (abs < 10_000) {
     return (
       sign +
-      abs.toLocaleString("en-US", {
+      abs.toLocaleString(locale, {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
@@ -240,16 +243,16 @@ export function getContributionBgClass(
   return summary.net > 0 ? incomeClasses[level] : expenseClasses[level];
 }
 
-export function formatAmount(value: number): string {
-  return `฿${Math.abs(value).toLocaleString("en-US", {
+export function formatAmount(value: number, locale: string = "en-US"): string {
+  return `฿${Math.abs(value).toLocaleString(locale, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })}`;
 }
 
-export function formatNet(value: number): string {
+export function formatNet(value: number, locale: string = "en-US"): string {
   const sign = value >= 0 ? "+" : "-";
-  return `${sign}฿${Math.abs(value).toLocaleString("en-US", {
+  return `${sign}฿${Math.abs(value).toLocaleString(locale, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })}`;

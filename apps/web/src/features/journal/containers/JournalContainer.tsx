@@ -10,9 +10,10 @@ import MenuCheckboxItem from "@/shared/components/customs/MenuCheckboxItem";
 import { useClickOutside } from "@/shared/lib/hooks/useClickOutside.hook";
 import { useInfiniteTransactionsQuery } from "@/features/transactions/hooks/transaction.hook";
 import { TransactionResponse } from "@/features/transactions/types/transaction.type";
-import { format } from "date-fns";
 import { Button } from "@/shared/components/customs/Button";
 import JournalCalendarContainer from "./JournalCalendarContainer";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { TranslationKey } from "@/shared/lib/configs/translations.config";
 import {
   JOURNAL_TRANSACTION_TYPES,
   JournalTransactionType,
@@ -21,6 +22,7 @@ import {
 type ViewMode = "timeline" | "calendar";
 
 export default function JournalContainer() {
+  const { t, locale } = useTranslation();
   const [viewMode, setViewMode] = useState<ViewMode>("timeline");
   const [searchKeyword, setSearchKeyword] = useState("");
   const [selectedType, setSelectedType] =
@@ -87,7 +89,11 @@ export default function JournalContainer() {
 
     filteredItems.forEach((tx) => {
       const date = new Date(tx.transactionDate);
-      const dateStr = format(date, "dd MMM yyyy");
+      const dateStr = Intl.DateTimeFormat(locale, {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }).format(date);
 
       if (!groupsMap.has(dateStr)) {
         groupsMap.set(dateStr, []);
@@ -99,7 +105,7 @@ export default function JournalContainer() {
       dateStr,
       items,
     }));
-  }, [transactionsData, searchKeyword]);
+  }, [transactionsData, searchKeyword, locale]);
 
   return (
     <div className="flex flex-col h-[calc(100vh-84px)] bg-background space-y-2">
@@ -107,8 +113,8 @@ export default function JournalContainer() {
       <div className="px-4">
         <SegmentedControl<ViewMode>
           options={[
-            { label: "Timeline", value: "timeline" },
-            { label: "Calendar", value: "calendar" },
+            { label: t("timeline"), value: "timeline" },
+            { label: t("calendar"), value: "calendar" },
           ]}
           value={viewMode}
           onChange={setViewMode}
@@ -126,7 +132,7 @@ export default function JournalContainer() {
               </div>
               <Input
                 type="text"
-                placeholder="Search transactions..."
+                placeholder={t("searchTransactions")}
                 value={searchKeyword}
                 onChange={(e) => setSearchKeyword(e.target.value)}
                 className="pl-10 pr-10 h-10 text-sm"
@@ -157,7 +163,9 @@ export default function JournalContainer() {
                         : "bg-surface border border-border text-secondary-text hover:bg-surface-secondary",
                     )}
                   >
-                    {type.label}
+                    {type.value === "all"
+                      ? t("all")
+                      : t(type.value as TranslationKey)}
                   </Button>
                 ))}
               </div>
@@ -186,7 +194,7 @@ export default function JournalContainer() {
                       className="relative flex items-center justify-between w-full"
                     >
                       <div className="flex flex-col text-left">
-                        <span className="text-sm">Date</span>
+                        <span className="text-sm">{t("date")}</span>
                       </div>
                       <ChevronRight
                         size={16}
@@ -200,7 +208,7 @@ export default function JournalContainer() {
                       {openSortSubMenu === "DATE" && (
                         <div className="absolute top-full right-0 w-full bg-surface flex flex-col py-1 shadow-md rounded-md z-50 border border-border">
                           <MenuCheckboxItem
-                            label="Newest First"
+                            label={t("newestFirst")}
                             labelSize="sm"
                             isSelected={sortType === "DATE_NEWEST"}
                             onClick={() => {
@@ -209,7 +217,7 @@ export default function JournalContainer() {
                             }}
                           />
                           <MenuCheckboxItem
-                            label="Oldest First"
+                            label={t("oldestFirst")}
                             labelSize="sm"
                             isSelected={sortType === "DATE_OLDEST"}
                             onClick={() => {
@@ -230,7 +238,7 @@ export default function JournalContainer() {
                       className="relative flex items-center justify-between w-full"
                     >
                       <div className="flex flex-col text-left">
-                        <span className="text-sm">Amount</span>
+                        <span className="text-sm">{t("amountStr")}</span>
                       </div>
                       <ChevronRight
                         size={16}
@@ -244,7 +252,7 @@ export default function JournalContainer() {
                       {openSortSubMenu === "MONEY" && (
                         <div className="absolute top-full right-0 w-full bg-surface flex flex-col py-1 shadow-md rounded-md z-50 border border-border">
                           <MenuCheckboxItem
-                            label="Highest Amount"
+                            label={t("highestAmount")}
                             labelSize="sm"
                             isSelected={sortType === "AMOUNT_HIGHEST"}
                             onClick={() => {
@@ -253,7 +261,7 @@ export default function JournalContainer() {
                             }}
                           />
                           <MenuCheckboxItem
-                            label="Lowest Amount"
+                            label={t("lowestAmount")}
                             labelSize="sm"
                             isSelected={sortType === "AMOUNT_LOWEST"}
                             onClick={() => {

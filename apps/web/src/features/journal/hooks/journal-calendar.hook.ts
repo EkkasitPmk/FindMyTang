@@ -1,10 +1,12 @@
 import { useState, useRef, useCallback, useMemo } from "react";
-import { addMonths, subMonths, setMonth, setYear, format } from "date-fns";
+import { addMonths, subMonths, setMonth, setYear } from "date-fns";
 import { useClickOutside } from "@/shared/lib/hooks/useClickOutside.hook";
-import { MONTHS } from "@/shared/lib/configs/date.config";
 import { useTransactionYearsQuery } from "@/features/transactions/hooks/transaction.hook";
 
-export function useJournalCalendar(initialDate: Date = new Date()) {
+export function useJournalCalendar(
+  locale: string = "en-US",
+  initialDate: Date = new Date(),
+) {
   const [currentMonth, setCurrentMonth] = useState(initialDate);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
@@ -74,11 +76,19 @@ export function useJournalCalendar(initialDate: Date = new Date()) {
       isYearOpen,
       monthRef,
       yearRef,
-      monthLabel: format(currentMonth, "MMMM").toUpperCase(),
-      yearLabel: format(currentMonth, "yyyy"),
+      monthLabel: Intl.DateTimeFormat(locale, { month: "long" })
+        .format(currentMonth)
+        .toUpperCase(),
+      yearLabel: Intl.DateTimeFormat(locale, { year: "numeric" }).format(
+        currentMonth,
+      ),
       selectedMonthIndex: currentMonth.getMonth(),
       selectedYear: currentMonth.getFullYear(),
-      months: MONTHS,
+      months: Array.from({ length: 12 }, (_, i) =>
+        Intl.DateTimeFormat(locale, { month: "long" }).format(
+          new Date(2000, i, 1),
+        ),
+      ),
       years,
       onMonthToggle: handleMonthToggle,
       onYearToggle: handleYearToggle,
