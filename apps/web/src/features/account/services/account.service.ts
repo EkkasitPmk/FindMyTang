@@ -25,3 +25,7 @@ export const changePasswordApi = async (
   );
   return response.data;
 };
+
+export const deleteAccountApi = async (): Promise<void> => {
+  await http.delete("/users");
+};

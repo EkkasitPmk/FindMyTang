@@ -8,6 +8,7 @@ import { useMeQuery } from "@/features/nav/hooks/auth.hook";
 import {
   useUpdateProfileMutation,
   useChangePasswordMutation,
+  useDeleteAccountMutation,
 } from "../hooks/account.hook";
 import {
   changePasswordSchema,
@@ -19,10 +20,13 @@ import ChangePasswordModal from "../components/ChangePasswordModal";
 import AvatarSection from "../components/AvatarSection";
 import PersonalInfoForm from "../components/PersonalInfoForm";
 import ConfirmModal from "@/shared/components/customs/ConfirmModal";
+import LoadingModal from "@/shared/components/customs/LoadingModal";
 import { useConfirmModal } from "@/shared/lib/hooks/useConfirmModal.hook";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { Button } from "@/shared/components/customs/Button";
 import { handleFormError } from "@/shared/lib/helpers/form.helper";
+import { useQueryClient } from "@tanstack/react-query";
+import { useGuestStore } from "@/shared/lib/storages/guest.storage";
 
 export default function AccountContainer() {
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
@@ -30,6 +34,10 @@ export default function AccountContainer() {
     isOpen: isDeleteModalOpen,
     open: openDeleteModal,
     close: closeDeleteModal,
+    isHardDelete: isDeleteModalHardDelete,
+    setIsHardDelete: setIsDeleteModalHardDelete,
+    inputValue: deleteModalInputValue,
+    setInputValue: setDeleteModalInputValue,
   } = useConfirmModal();
   const [isSelectingAvatar, setIsSelectingAvatar] = useState(false);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
@@ -37,6 +45,9 @@ export default function AccountContainer() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  const clearGuestData = useGuestStore((state) => state.clearGuestData);
+  const setGuestMode = useGuestStore((state) => state.setGuestMode);
   const { data: user, isLoading } = useMeQuery();
 
   const { mutate: updateProfile, isPending: isUpdating } =
@@ -128,9 +139,25 @@ export default function AccountContainer() {
     updateProfile({ displayName: values.displayName });
   };
 
+  const { mutate: deleteAccount, isPending: isDeletingAccount } =
+    useDeleteAccountMutation({
+      onSuccess: async () => {
+        closeDeleteModal();
+        await clearGuestData();
+        setGuestMode(false);
+        queryClient.clear();
+        window.location.href = "/login";
+      },
+      onError: (error) => {
+        const errorMsg =
+          error.response?.data?.message || "Failed to delete account";
+        toast.error(Array.isArray(errorMsg) ? errorMsg[0] : errorMsg);
+        closeDeleteModal();
+      },
+    });
+
   const handleConfirmDeleteAccount = () => {
-    closeDeleteModal();
-    toast.info(t("deleteAccountInfo"));
+    deleteAccount();
   };
 
   if (isLoading) {
@@ -237,8 +264,17 @@ export default function AccountContainer() {
           title={t("deleteAccountTitle")}
           des={t("deleteAccountDesc")}
           confirmLabel={t("deleteBtn")}
+          withHardDeleteOption={true}
+          isHardDelete={isDeleteModalHardDelete}
+          onHardDeleteChange={setIsDeleteModalHardDelete}
+          inputValue={deleteModalInputValue}
+          onInputChange={setDeleteModalInputValue}
+          expectedInputToConfirm="DELETE"
+          hardDeleteCheckboxLabel={t("deleteAccountCheckbox")}
         />
       )}
+
+      <LoadingModal isOpen={isDeletingAccount} message="กำลังลบบัญชี..." />
     </>
   );
 }

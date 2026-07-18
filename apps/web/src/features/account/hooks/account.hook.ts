@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   updateProfileApi,
   changePasswordApi,
+  deleteAccountApi,
 } from "../services/account.service";
 import {
   UpdateProfileRequest,
@@ -49,6 +50,16 @@ export const useChangePasswordMutation = (options?: {
     ChangePasswordRequest
   >({
     mutationFn: changePasswordApi,
+    ...options,
+  });
+};
+
+export const useDeleteAccountMutation = (options?: {
+  onSuccess?: () => void;
+  onError?: (error: AxiosError<ApiErrorResponse>) => void;
+}) => {
+  return useMutation<void, AxiosError<ApiErrorResponse>, void>({
+    mutationFn: deleteAccountApi,
     ...options,
   });
 };
