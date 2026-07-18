@@ -3,9 +3,11 @@ import { useAssets } from "../../assets/hooks/assets.hook";
 import { useThisMonthSummary } from "../hooks/summary.hook";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 export default function FinancialSnapshotContainer() {
   const mounted = useMounted();
+  const { t, locale } = useTranslation();
 
   const { data: assets, isPending: isAssetsPending } = useAssets();
   const { data: summary, isPending: isSummaryPending } = useThisMonthSummary();
@@ -20,7 +22,7 @@ export default function FinancialSnapshotContainer() {
     return (
       <div className="flex flex-col px-3 py-4 bg-surface rounded-md border border-border gap-2 min-h-27.5 justify-center">
         <span className="text-xs font-medium uppercase tracking-widest text-secondary-text">
-          FINANCIAL SNAPSHOT
+          {t("financialSnapshot")}
         </span>
         <Skeleton className="h-8 w-48 mb-1" />
         <Skeleton className="h-5 w-40" />
@@ -34,12 +36,12 @@ export default function FinancialSnapshotContainer() {
     return (
       <div className="flex flex-col px-3 py-4 bg-surface rounded-md border border-border gap-2">
         <span className="text-xs font-medium uppercase tracking-widest text-secondary-text">
-          FINANCIAL SNAPSHOT
+          {t("financialSnapshot")}
         </span>
         <span className="text-3xl font-bold">฿ 0</span>
         <div className="flex items-center gap-1">
           <span className="text-sm text-primary font-medium">
-            Start recording your transactions.
+            {t("startRecordingTransactions")}
           </span>
         </div>
       </div>
@@ -49,11 +51,11 @@ export default function FinancialSnapshotContainer() {
   return (
     <section className="flex flex-col px-3 py-4 bg-surface rounded-md border border-border gap-2">
       <span className="text-xs font-medium uppercase tracking-widest text-secondary-text">
-        FINANCIAL SNAPSHOT
+        {t("financialSnapshot")}
       </span>
       <span className="text-3xl font-bold text-primary-text">
         ฿{" "}
-        {netWorth.toLocaleString(undefined, {
+        {netWorth.toLocaleString(locale, {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         })}
@@ -64,22 +66,22 @@ export default function FinancialSnapshotContainer() {
             <ArrowUp className="text-income" size={16} />
             <span className="text-sm text-income font-medium">
               +
-              {netChange.toLocaleString(undefined, {
+              {netChange.toLocaleString(locale, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}{" "}
-              This month
+              {t("thisMonth")}
             </span>
           </>
         ) : (
           <>
             <ArrowDown className="text-expense" size={16} />
             <span className="text-sm text-expense font-medium">
-              {Math.abs(netChange).toLocaleString(undefined, {
+              {Math.abs(netChange).toLocaleString(locale, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}{" "}
-              This month
+              {t("thisMonth")}
             </span>
           </>
         )}

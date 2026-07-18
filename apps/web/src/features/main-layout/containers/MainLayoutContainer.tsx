@@ -61,7 +61,7 @@ export default function MainLayoutContainer({
     if (path === "/assets/new") return t("newAssets");
     if (path === "/settings/account") return t("account");
     if (path === "/settings") return t("navSettings");
-    if (path === "/assets") return assetName || "Manage Assets";
+    if (path === "/assets") return assetName || t("manageAssets");
     return "";
   };
   const mobileTitle = getMobileTitle(pathname);
@@ -175,7 +175,7 @@ export default function MainLayoutContainer({
               <div className="flex items-center px-4 pb-2 z-40 bg-background/90 backdrop-blur-sm border-b border-border/50 h-10">
                 <Input
                   autoFocus
-                  placeholder="Search by note or category..."
+                  placeholder={t("searchByNoteOrCategory")}
                   value={searchKeyword}
                   onChange={(e) => setSearchKeyword(e.target.value)}
                   className="h-8 text-sm flex-1 bg-surface"
