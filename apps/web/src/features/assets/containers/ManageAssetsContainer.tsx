@@ -24,10 +24,12 @@ import { Skeleton } from "@/shared/components/ui/skeleton";
 import { Button } from "@/shared/components/customs/Button";
 import { reorderList } from "../helpers/asset.helper";
 import { cn } from "@/shared/lib/utils/core.util";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 const SKELETON_ITEMS = Array.from({ length: 4 }, (_, i) => i);
 
 export default function ManageAssetsContainer() {
+  const { t } = useTranslation();
   const mounted = useMounted();
 
   const { data: assets, isPending } = useAssets({ includeDeleted: true });
@@ -313,10 +315,10 @@ export default function ManageAssetsContainer() {
         {deletedAssets.length > 0 && (
           <div className="space-y-1 pt-4 border-t border-border">
             <span className="text-xs font-medium text-disabled-text uppercase tracking-wider px-1">
-              Archived / Deleted
+              {t("archivedDeleted")}
             </span>
             <p className="px-1 text-xs text-secondary-text">
-              Deleted items are permanently removed after 30 days.
+              {t("deletedItemsDesc")}
             </p>
             {deletedAssets.map((asset) => (
               <ManageAssetItem
@@ -348,7 +350,7 @@ export default function ManageAssetsContainer() {
         {/* Empty state */}
         {localActiveAssets.length === 0 && deletedAssets.length === 0 && (
           <div className="flex flex-col items-center justify-center h-[70vh] text-secondary-text text-base">
-            No assets found.
+            {t("noAssetsFound")}
           </div>
         )}
       </section>
@@ -357,7 +359,7 @@ export default function ManageAssetsContainer() {
       {isEditingList && (
         <div className="fixed bottom-0 left-0 right-0 bg-surface border-t border-border p-4 shadow-[0_-4px_10px_-4px_rgba(0,0,0,0.1)] z-50 flex items-center justify-between gap-2 overflow-x-auto">
           <span className="text-sm font-medium text-secondary-text whitespace-nowrap pl-2">
-            {selectedIds.size} selected
+            {selectedIds.size} {t("selected")}
           </span>
           <div className="flex gap-2 min-w-max">
             {hasActiveSelected && (
@@ -368,7 +370,7 @@ export default function ManageAssetsContainer() {
                 onClick={openBulkArchiveModal}
               >
                 <Archive size={16} className="mr-1.5 inline" />
-                Archive
+                {t("archive")}
               </Button>
             )}
             {hasDeletedSelected && (
@@ -379,7 +381,7 @@ export default function ManageAssetsContainer() {
                 onClick={openBulkRestoreModal}
               >
                 <RotateCcw size={16} className="mr-1.5 inline" />
-                Restore
+                {t("restore")}
               </Button>
             )}
             <Button
@@ -389,7 +391,7 @@ export default function ManageAssetsContainer() {
               onClick={openBulkDeleteModal}
             >
               <Trash2 size={16} className="mr-1.5 inline" />
-              Delete
+              {t("delete")}
             </Button>
           </div>
         </div>
@@ -418,9 +420,12 @@ export default function ManageAssetsContainer() {
           }
         }}
         icon={Archive}
-        title="Archive Asset"
-        des={`Are you sure you want to archive "${assetToArchive?.name || ""}"? You can restore it later.`}
-        confirmLabel="Archive"
+        title={t("archiveConfirmTitle")}
+        des={t("archiveConfirmDesc").replace(
+          "{assetName}",
+          assetToArchive?.name || "",
+        )}
+        confirmLabel={t("archive")}
         variant="warning"
       />
 
@@ -435,9 +440,9 @@ export default function ManageAssetsContainer() {
           }
         }}
         icon={RotateCcw}
-        title="Restore Asset"
+        title={t("restore")}
         des={`Are you sure you want to restore "${assetToRestore?.name || ""}"? It will be active again.`}
-        confirmLabel="Restore"
+        confirmLabel={t("restore")}
         variant="success"
       />
 
@@ -452,11 +457,14 @@ export default function ManageAssetsContainer() {
           });
         }}
         icon={Trash2}
-        title="Delete Selected Assets"
-        des={`Are you sure you want to delete ${selectedIds.size} assets?`}
-        confirmLabel="Delete All"
+        title={t("deleteSelectedAssets")}
+        des={t("deleteSelectedAssetsDesc").replace(
+          "{count}",
+          selectedIds.size.toString(),
+        )}
+        confirmLabel={t("deleteAll")}
         withHardDeleteOption={true}
-        hardDeleteCheckboxLabel="Delete permanently (Hard Delete)"
+        hardDeleteCheckboxLabel={t("deletePermanently")}
         expectedInputToConfirm="DELETE"
         isHardDelete={isBulkHardDelete}
         onHardDeleteChange={setIsBulkHardDelete}
@@ -472,9 +480,12 @@ export default function ManageAssetsContainer() {
           bulkArchiveAssets.mutate({ ids: Array.from(selectedIds) });
         }}
         icon={Archive}
-        title="Archive Selected Assets"
-        des={`Are you sure you want to archive ${selectedIds.size} assets?`}
-        confirmLabel="Archive All"
+        title={t("archiveSelectedAssets")}
+        des={t("archiveSelectedAssetsDesc").replace(
+          "{count}",
+          selectedIds.size.toString(),
+        )}
+        confirmLabel={t("archiveAll")}
         variant="warning"
       />
 
@@ -486,9 +497,12 @@ export default function ManageAssetsContainer() {
           bulkRestoreAssets.mutate({ ids: Array.from(selectedIds) });
         }}
         icon={RotateCcw}
-        title="Restore Selected Assets"
-        des={`Are you sure you want to restore ${selectedIds.size} assets?`}
-        confirmLabel="Restore All"
+        title={t("restoreSelectedAssets")}
+        des={t("restoreSelectedAssetsDesc").replace(
+          "{count}",
+          selectedIds.size.toString(),
+        )}
+        confirmLabel={t("restoreAll")}
         variant="success"
       />
 
@@ -511,15 +525,25 @@ export default function ManageAssetsContainer() {
           }
         }}
         icon={Trash2}
-        title={assetToDelete?.deletedAt ? "Delete Permanently" : "Delete Asset"}
+        title={
+          assetToDelete?.deletedAt
+            ? t("deletePermanentlyModalTitle")
+            : t("deleteConfirmTitle")
+        }
         des={
           assetToDelete?.deletedAt
-            ? `Are you sure you want to permanently delete "${assetToDelete?.name || ""}"? This action cannot be undone.`
-            : `Are you sure you want to delete "${assetToDelete?.name || ""}"?`
+            ? t("deletePermanentlyModalDesc").replace(
+                "{assetName}",
+                assetToDelete?.name || "",
+              )
+            : t("deleteConfirmDesc").replace(
+                "{assetName}",
+                assetToDelete?.name || "",
+              )
         }
-        confirmLabel="Delete"
+        confirmLabel={t("delete")}
         withHardDeleteOption={!assetToDelete?.deletedAt}
-        hardDeleteCheckboxLabel="Delete permanently (Hard Delete)"
+        hardDeleteCheckboxLabel={t("deletePermanently")}
         expectedInputToConfirm={assetToDelete?.name || ""}
         isHardDelete={isHardDelete}
         onHardDeleteChange={setIsHardDelete}

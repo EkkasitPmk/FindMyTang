@@ -12,6 +12,7 @@ import { Input } from "@/shared/components/customs/Input";
 import { Button } from "@/shared/components/customs/Button";
 import { ModalForm } from "@/shared/components/customs/ModalForm";
 import { ASSET_COLORS } from "../configs/assets.config";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 interface AssetFormProps {
   register: UseFormRegister<CreateAssetFormValues>;
@@ -48,18 +49,20 @@ export default function AssetForm({
   onBlurBalance,
   isEdit = false,
 }: Readonly<AssetFormProps>) {
-  let submitButtonText = "Create Asset";
+  const { t } = useTranslation();
+
+  let submitButtonText = t("createAsset");
   if (isPending) {
-    submitButtonText = "Saving...";
+    submitButtonText = t("saving");
   } else if (isEdit) {
-    submitButtonText = "Save Changes";
+    submitButtonText = t("saveChanges");
   }
 
   return (
     <ModalForm
       isOpen={true}
       onClose={() => onClose?.()}
-      title={isEdit ? "Edit Asset" : "Create New Asset"}
+      title={isEdit ? t("editAsset") : t("createNewAsset")}
       onSubmit={handleSubmit(onSubmit)}
       footer={
         <>
@@ -69,7 +72,7 @@ export default function AssetForm({
             onClick={onClose}
             className="w-full border border-border rounded-lg py-2.5 text-sm font-medium hover:bg-surface-secondary transition-colors cursor-pointer text-secondary-text bg-surface shadow-sm"
           >
-            Cancel
+            {t("cancel")}
           </Button>
           <Button
             variant="unstyled"
@@ -84,9 +87,7 @@ export default function AssetForm({
       }
     >
       <p className="text-sm text-secondary-text">
-        {isEdit
-          ? "Update your financial account or wallet details."
-          : "Add a new financial account or wallet to track your balance."}
+        {isEdit ? t("updateAssetDesc") : t("createAssetDesc")}
       </p>
 
       {/* Type */}
@@ -95,7 +96,7 @@ export default function AssetForm({
           htmlFor="type"
           className="text-sm font-semibold text-secondary-text"
         >
-          Asset Type
+          {t("assetType")}
         </label>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none z-10">
@@ -173,7 +174,7 @@ export default function AssetForm({
           htmlFor="name"
           className="text-sm font-semibold text-secondary-text"
         >
-          Asset Name
+          {t("assetName")}
         </label>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
@@ -182,7 +183,7 @@ export default function AssetForm({
           <Input
             id="name"
             type="text"
-            placeholder="e.g. Cash, Main Bank"
+            placeholder={t("assetNamePlaceholder")}
             className="pl-10"
             error={!!errors.name}
             {...register("name")}
@@ -202,7 +203,7 @@ export default function AssetForm({
             htmlFor="balance"
             className="text-sm font-semibold text-secondary-text"
           >
-            Initial Balance
+            {t("initialBalance")}
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -234,7 +235,7 @@ export default function AssetForm({
       {/* Color Selection */}
       <div className="flex flex-col gap-1.5">
         <p className="text-sm font-semibold text-secondary-text flex items-center justify-between">
-          Theme Color
+          {t("themeColor")}
         </p>
         <div className="grid grid-cols-7 gap-2 p-3 bg-surface-secondary/50 rounded-lg border border-border">
           {ASSET_COLORS.map((color) => (

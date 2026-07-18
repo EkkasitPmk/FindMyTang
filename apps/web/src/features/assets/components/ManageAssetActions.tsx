@@ -1,5 +1,6 @@
 import { Edit2, Archive, RefreshCw, Trash2, ArrowUpCircle } from "lucide-react";
 import { Button } from "@/shared/components/customs/Button";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 interface ManageAssetActionsProps {
   isDeleted: boolean;
@@ -20,6 +21,8 @@ export default function ManageAssetActions({
   onRestore,
   onDelete,
 }: Readonly<ManageAssetActionsProps>) {
+  const { t } = useTranslation();
+
   if (isDeleted) {
     return (
       <>
@@ -33,7 +36,7 @@ export default function ManageAssetActions({
           }}
         >
           <RefreshCw size={14} className="mr-2" />
-          Restore
+          {t("restore")}
         </Button>
         <Button
           size="sm"
@@ -45,7 +48,7 @@ export default function ManageAssetActions({
           }}
         >
           <Trash2 size={14} className="mr-2" />
-          Delete Permanently
+          {t("deletePermanently")}
         </Button>
       </>
     );
@@ -63,7 +66,7 @@ export default function ManageAssetActions({
         }}
       >
         <Edit2 size={14} className="mr-2" />
-        Edit
+        {t("edit")}
       </Button>
 
       {isArchived ? (
@@ -77,7 +80,7 @@ export default function ManageAssetActions({
           }}
         >
           <ArrowUpCircle size={14} className="mr-2" />
-          Unarchive
+          {t("unarchive")}
         </Button>
       ) : (
         <Button
@@ -90,7 +93,7 @@ export default function ManageAssetActions({
           }}
         >
           <Archive size={14} className="mr-2" />
-          Archive
+          {t("archive")}
         </Button>
       )}
 
@@ -104,7 +107,7 @@ export default function ManageAssetActions({
         }}
       >
         <Trash2 size={14} className="mr-2" />
-        Delete
+        {t("delete")}
       </Button>
     </>
   );

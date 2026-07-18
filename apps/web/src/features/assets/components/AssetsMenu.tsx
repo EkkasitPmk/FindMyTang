@@ -12,6 +12,7 @@ import MenuItem from "@/shared/components/customs/MenuItem";
 import MenuCheckboxItem from "@/shared/components/customs/MenuCheckboxItem";
 import { RefObject } from "react";
 import { Button } from "@/shared/components/customs/Button";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 interface AssetsMenuProps {
   isOpen: boolean;
@@ -76,6 +77,7 @@ export default function AssetsMenu({
   onSortSubMenuToggle,
   onSortSelect,
 }: Readonly<AssetsMenuProps>) {
+  const { t } = useTranslation();
   return (
     <>
       <div className="relative" ref={menuRef}>
@@ -97,7 +99,7 @@ export default function AssetsMenu({
               className="flex items-center gap-2"
             >
               <Search size={16} className="text-secondary-text" />
-              <span className="text-base">Search</span>
+              <span className="text-base">{t("search")}</span>
             </MenuItem>
             <MenuItem
               onClick={(e) => {
@@ -109,7 +111,7 @@ export default function AssetsMenu({
               <div className="flex items-center gap-2">
                 <Funnel size={16} className="text-secondary-text" />
                 <div className="flex flex-col text-left">
-                  <span className="text-base">Filter</span>
+                  <span className="text-base">{t("filter")}</span>
                   <span className="text-[10px] text-secondary-text leading-tight">
                     {filterLabel}
                   </span>
@@ -123,31 +125,31 @@ export default function AssetsMenu({
               {isFilterOpen && (
                 <div className="absolute top-full left-0 w-full bg-surface flex flex-col py-1 shadow-md rounded-md z-50 border border-border">
                   <MenuCheckboxItem
-                    label="No Filter"
+                    label={t("noFilter")}
                     labelSize="base"
                     isSelected={filterType === "ALL"}
                     onClick={() => onFilterSelect("ALL")}
                   />
                   <MenuCheckboxItem
-                    label="Income"
+                    label={t("income")}
                     labelSize="base"
                     isSelected={filterType === "INCOME"}
                     onClick={() => onFilterSelect("INCOME")}
                   />
                   <MenuCheckboxItem
-                    label="Expense"
+                    label={t("expense")}
                     labelSize="base"
                     isSelected={filterType === "EXPENSE"}
                     onClick={() => onFilterSelect("EXPENSE")}
                   />
                   <MenuCheckboxItem
-                    label="Transfer"
+                    label={t("transfer")}
                     labelSize="base"
                     isSelected={filterType === "TRANSFER"}
                     onClick={() => onFilterSelect("TRANSFER")}
                   />
                   <MenuCheckboxItem
-                    label="Adjustment"
+                    label={t("adjustment")}
                     labelSize="base"
                     isSelected={filterType === "ADJUSTMENT"}
                     onClick={() => onFilterSelect("ADJUSTMENT")}
@@ -165,7 +167,7 @@ export default function AssetsMenu({
               <div className="flex items-center gap-2">
                 <ArrowUpDown size={16} className="text-secondary-text" />
                 <div className="flex flex-col text-left">
-                  <span className="text-base">Sort</span>
+                  <span className="text-base">{t("sort")}</span>
                   <span className="text-[10px] text-secondary-text leading-tight">
                     {sortLabel}
                   </span>
@@ -179,7 +181,7 @@ export default function AssetsMenu({
               {isSortOpen && (
                 <div className="absolute top-full left-0 w-full bg-surface flex flex-col py-1 shadow-md rounded-md z-50 border border-border">
                   <MenuCheckboxItem
-                    label="Date"
+                    label={t("date")}
                     labelSize="base"
                     isSelected={
                       sortType === "DATE_NEWEST" || sortType === "DATE_OLDEST"
@@ -189,13 +191,13 @@ export default function AssetsMenu({
                     isSubMenuOpen={openSortSubMenu === "DATE"}
                   >
                     <MenuCheckboxItem
-                      label="Newest First"
+                      label={t("newestFirst")}
                       labelSize="base"
                       isSelected={sortType === "DATE_NEWEST"}
                       onClick={() => onSortSelect("DATE_NEWEST")}
                     />
                     <MenuCheckboxItem
-                      label="Oldest First"
+                      label={t("oldestFirst")}
                       labelSize="base"
                       isSelected={sortType === "DATE_OLDEST"}
                       onClick={() => onSortSelect("DATE_OLDEST")}
@@ -203,7 +205,7 @@ export default function AssetsMenu({
                   </MenuCheckboxItem>
 
                   <MenuCheckboxItem
-                    label="Money"
+                    label={t("money")}
                     labelSize="base"
                     isSelected={
                       sortType === "AMOUNT_HIGHEST" ||
@@ -214,13 +216,13 @@ export default function AssetsMenu({
                     isSubMenuOpen={openSortSubMenu === "MONEY"}
                   >
                     <MenuCheckboxItem
-                      label="Highest Amount"
+                      label={t("highestAmount")}
                       labelSize="base"
                       isSelected={sortType === "AMOUNT_HIGHEST"}
                       onClick={() => onSortSelect("AMOUNT_HIGHEST")}
                     />
                     <MenuCheckboxItem
-                      label="Lowest Amount"
+                      label={t("lowestAmount")}
                       labelSize="base"
                       isSelected={sortType === "AMOUNT_LOWEST"}
                       onClick={() => onSortSelect("AMOUNT_LOWEST")}
@@ -240,7 +242,7 @@ export default function AssetsMenu({
               className="text-base flex items-center gap-2"
             >
               <Archive size={16} className="text-secondary-text" />
-              <span>Archive Asset</span>
+              <span>{t("archiveAsset")}</span>
             </MenuItem>
             <MenuItem
               onClick={() => {
@@ -250,7 +252,7 @@ export default function AssetsMenu({
               className="text-expense text-base flex items-center gap-2"
             >
               <Trash2 size={16} className="text-expense" />
-              <span>Delete Asset</span>
+              <span>{t("deleteAsset")}</span>
             </MenuItem>
           </div>
         )}
@@ -261,9 +263,9 @@ export default function AssetsMenu({
         onClose={() => setIsArchiveModalOpen(false)}
         onConfirm={onArchive}
         icon={Archive}
-        title="Archive Asset"
-        des={`Are you sure you want to archive "${assetName || "this asset"}"? You can restore it later.`}
-        confirmLabel="Archive"
+        title={t("archiveConfirmTitle")}
+        des={t("archiveConfirmDesc").replace("{assetName}", assetName || "")}
+        confirmLabel={t("archive")}
         variant="warning"
       />
 
@@ -272,11 +274,11 @@ export default function AssetsMenu({
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={(isHardDelete) => onDelete(isHardDelete)}
         icon={Trash2}
-        title="Delete Asset"
-        des={`Are you sure you want to delete ${assetName || "this asset"}? This action cannot be undone.`}
-        confirmLabel="Delete"
+        title={t("deleteConfirmTitle")}
+        des={t("deleteConfirmDesc").replace("{assetName}", assetName || "")}
+        confirmLabel={t("delete")}
         withHardDeleteOption={true}
-        hardDeleteCheckboxLabel="Delete permanently (Hard Delete)"
+        hardDeleteCheckboxLabel={t("deletePermanently")}
         expectedInputToConfirm={assetName || ""}
         isHardDelete={isHardDelete}
         onHardDeleteChange={setIsHardDelete}

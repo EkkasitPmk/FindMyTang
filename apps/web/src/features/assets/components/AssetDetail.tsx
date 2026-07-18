@@ -7,6 +7,8 @@ import { DropdownSelect } from "@/shared/components/customs/DropdownSelect";
 import { Dispatch, SetStateAction, RefObject } from "react";
 import { TransactionListContainer } from "@/features/transactions/containers/TransactionListContainer";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { TranslationKey } from "@/shared/lib/configs/translations.config";
 
 const DEFAULT_ASSET_COLOR = "#2563EB";
 const SKELETON_GROUPS = Array.from({ length: 3 }, (_, i) => i);
@@ -47,6 +49,7 @@ interface AssetDetailProps {
   fetchNextPage?: () => void;
   hasNextPage?: boolean;
   isFetchingNextPage?: boolean;
+  translateDropdownItem: (item: string) => string;
 }
 
 export default function AssetDetail({
@@ -85,8 +88,10 @@ export default function AssetDetail({
   fetchNextPage,
   hasNextPage,
   isFetchingNextPage,
+  translateDropdownItem,
 }: Readonly<AssetDetailProps>) {
-  const viewOptionsList = ["Recent Transactions", "Show deleted items"];
+  const { t, locale } = useTranslation();
+  const viewOptionsList = ["recentTransactions", "showDeletedItems"];
 
   if (isLoading) {
     return (
@@ -130,7 +135,7 @@ export default function AssetDetail({
               className="font-semibold text-lg tracking-widest uppercase"
               style={{ color: asset?.color || undefined }}
             >
-              balance
+              {t("balance")}
             </p>
           </div>
           <div className="flex items-center gap-1.5">
@@ -141,7 +146,7 @@ export default function AssetDetail({
               ฿
             </span>
             <p className="text-3xl font-extrabold tracking-tight text-primary-text">
-              {(asset?.balance ?? 0).toLocaleString("en-US", {
+              {(asset?.balance ?? 0).toLocaleString(locale, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}
@@ -154,42 +159,56 @@ export default function AssetDetail({
         <section className="mb-2 px-4">
           <DropdownSelect
             ref={viewOptionRef}
-            options={viewOptionsList}
-            selected={viewOption}
+            options={viewOptionsList.map((opt) => t(opt as TranslationKey))}
+            selected={t(viewOption as TranslationKey)}
             isOpen={isViewOptionOpen}
             onToggle={onViewOptionToggle}
             themeColor={asset?.color}
-            onSelect={onViewOptionSelect}
+            onSelect={(selectedLabel) => {
+              const originalKey =
+                viewOptionsList.find(
+                  (opt) => t(opt as TranslationKey) === selectedLabel,
+                ) || viewOptionsList[0];
+              onViewOptionSelect(originalKey);
+            }}
             className="w-full text-base font-medium"
           />
 
           {groupedTransactions?.length > 0 && (
             <>
-              <span className="text-secondary-text text-sm">Period</span>
+              <span className="text-secondary-text text-sm">{t("period")}</span>
 
               <div className="flex items-center justify-between gap-4">
                 <DropdownSelect
                   ref={monthRef}
-                  options={months}
-                  selected={selected}
+                  options={months.map(translateDropdownItem)}
+                  selected={translateDropdownItem(selected)}
                   isOpen={isMonthOpen}
                   onToggle={() => setIsMonthOpen(!isMonthOpen)}
                   themeColor={asset?.color}
-                  onSelect={(month) => {
-                    handleSelect(month);
+                  onSelect={(translatedMonth) => {
+                    const originalKey =
+                      months.find(
+                        (opt) => translateDropdownItem(opt) === translatedMonth,
+                      ) || months[0];
+                    if (originalKey) handleSelect(originalKey);
                     setIsMonthOpen(false);
                   }}
                   className="grow"
                 />
                 <DropdownSelect
                   ref={yearRef}
-                  options={years}
-                  selected={selectedYear}
+                  options={years.map(translateDropdownItem)}
+                  selected={translateDropdownItem(selectedYear)}
                   isOpen={isYearOpen}
                   onToggle={() => setIsYearOpen(!isYearOpen)}
                   themeColor={asset?.color}
-                  onSelect={(year) => {
-                    handleSelectYear(year);
+                  onSelect={(translatedYear) => {
+                    const originalKey =
+                      years.find(
+                        (opt) => translateDropdownItem(opt) === translatedYear,
+                      ) || years[0];
+                    if (originalKey) handleSelectYear(originalKey);
                     setIsYearOpen(false);
                   }}
                   className="grow"
@@ -205,13 +224,17 @@ export default function AssetDetail({
           <div className="flex items-end justify-end">
             <DropdownSelect
               ref={yearRef}
-              options={years}
-              selected={selectedYear}
+              options={years.map(translateDropdownItem)}
+              selected={translateDropdownItem(selectedYear)}
               isOpen={isYearOpen}
               onToggle={() => setIsYearOpen(!isYearOpen)}
               themeColor={asset?.color}
-              onSelect={(year) => {
-                handleSelectYear(year);
+              onSelect={(translatedYear) => {
+                const originalKey =
+                  years.find(
+                    (opt) => translateDropdownItem(opt) === translatedYear,
+                  ) || years[0];
+                if (originalKey) handleSelectYear(originalKey);
                 setIsYearOpen(false);
               }}
             />
@@ -240,7 +263,7 @@ export default function AssetDetail({
               className="w-[25%] flex flex-col items-center justify-center border border-border py-1.5 rounded-md hover:bg-surface-secondary cursor-pointer"
             >
               <Pencil size={18} />
-              <span className="text-sm mt-px">Edit</span>
+              <span className="text-sm mt-px">{t("edit")}</span>
             </Button>
             <div
               className={cn(
@@ -259,7 +282,7 @@ export default function AssetDetail({
                     : "rounded-tr-none rounded-br-none",
                 )}
               >
-                Add Transaction
+                {t("addTransaction")}
               </Button>
 
               <div className="h-full w-px bg-background" />
@@ -305,28 +328,28 @@ export default function AssetDetail({
                       onClick={onAddExpenseClick}
                       className="w-full py-2 text-sm hover:bg-black/10 border-b border-border/20 font-medium"
                     >
-                      Expense
+                      {t("expense")}
                     </Button>
                     <Button
                       variant="unstyled"
                       onClick={onAddIncomeClick}
                       className="w-full py-2 text-sm hover:bg-black/10 border-b border-border/20 font-medium"
                     >
-                      Income
+                      {t("income")}
                     </Button>
                     <Button
                       variant="unstyled"
                       onClick={onTransferClick}
                       className="w-full py-2 text-sm hover:bg-black/10 border-b border-border/20 font-medium"
                     >
-                      Transfer
+                      {t("transfer")}
                     </Button>
                     <Button
                       variant="unstyled"
                       onClick={onAdjustmentClick}
                       className="w-full py-2 text-sm hover:bg-black/10 font-medium"
                     >
-                      Adjustment
+                      {t("adjustment")}
                     </Button>
                   </div>
                 </>

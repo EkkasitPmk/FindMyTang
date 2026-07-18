@@ -6,6 +6,7 @@ import { cn } from "@/shared/lib/utils/core.util";
 import { getManageAssetItemClasses } from "../helpers/asset.helper";
 import ManageAssetActions from "./ManageAssetActions";
 import ManageAssetDragHandle from "./ManageAssetDragHandle";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 interface ManageAssetItemProps {
   asset: Asset;
@@ -50,6 +51,7 @@ export default function ManageAssetItem({
   onTouchMove,
   onTouchEnd,
 }: Readonly<ManageAssetItemProps>) {
+  const { t, locale } = useTranslation();
   const isDeleted = Boolean(asset.deletedAt);
   const isArchived = Boolean(asset.isArchived) && !isDeleted;
   const isInactive = isDeleted || isArchived;
@@ -102,7 +104,7 @@ export default function ManageAssetItem({
       </span>
       {isInactive && (
         <span className="text-[11px] text-secondary-text font-medium">
-          {isDeleted ? "Deleted" : "Archived"}
+          {isDeleted ? t("deleted") : t("archived")}
         </span>
       )}
     </div>
@@ -110,7 +112,9 @@ export default function ManageAssetItem({
 
   const assetRightControls = (
     <div className="flex items-center gap-2">
-      <span className={balanceClass}>฿ {asset.balance.toLocaleString()}</span>
+      <span className={balanceClass}>
+        ฿ {asset.balance.toLocaleString(locale)}
+      </span>
       {isEditingList ? (
         <ManageAssetDragHandle
           index={index}

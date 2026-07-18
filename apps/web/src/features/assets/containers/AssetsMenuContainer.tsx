@@ -12,6 +12,7 @@ import { useClickOutside } from "@/shared/lib/hooks/useClickOutside.hook";
 import { useConfirmModal } from "@/shared/lib/hooks/useConfirmModal.hook";
 import AssetsMenu from "../components/AssetsMenu";
 import LoadingModal from "@/shared/components/customs/LoadingModal";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 export default function AssetsMenuContainer() {
   const [isOpen, setIsOpen] = useState(false);
@@ -34,6 +35,8 @@ export default function AssetsMenuContainer() {
     inputValue,
     setInputValue,
   } = useConfirmModal();
+
+  const { t } = useTranslation();
 
   const {
     isOpen: isArchiveModalOpen,
@@ -126,30 +129,30 @@ export default function AssetsMenuContainer() {
   const filterLabel = (() => {
     switch (filterType) {
       case "INCOME":
-        return "Income";
+        return t("income");
       case "EXPENSE":
-        return "Expense";
+        return t("expense");
       case "TRANSFER":
-        return "Transfer";
+        return t("transfer");
       case "ADJUSTMENT":
-        return "Adjustment";
+        return t("adjustment");
       default:
-        return "No Filter";
+        return t("noFilter");
     }
   })();
 
   const sortLabel = (() => {
     switch (sortType) {
       case "DATE_NEWEST":
-        return "Newest (Date)";
+        return t("newestFirst");
       case "DATE_OLDEST":
-        return "Oldest (Date)";
+        return t("oldestFirst");
       case "AMOUNT_HIGHEST":
-        return "Highest Amount";
+        return t("highestAmount");
       case "AMOUNT_LOWEST":
-        return "Lowest Amount";
+        return t("lowestAmount");
       default:
-        return "Newest (Date)";
+        return t("newestFirst");
     }
   })();
 

@@ -8,6 +8,7 @@ import { Button } from "@/shared/components/customs/Button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import { usePathname } from "next/navigation";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 const SKELETON_ASSETS = Array.from({ length: 3 }, (_, i) => i);
 
@@ -21,6 +22,7 @@ export default function ListAssetsContainer({
   id,
 }: Readonly<ListAssetsContainerProps>) {
   const pathname = usePathname();
+  const { t, locale } = useTranslation();
 
   const mounted = useMounted();
 
@@ -98,7 +100,7 @@ export default function ListAssetsContainer({
                 <div className="flex items-center gap-1">
                   <span className="font-semibold text-base text-primary-text">
                     ฿{" "}
-                    {asset.balance.toLocaleString(undefined, {
+                    {asset.balance.toLocaleString(locale, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     })}
@@ -120,7 +122,7 @@ export default function ListAssetsContainer({
           </span>
         </div>
         <span className="text-base font-normal text-secondary-text">
-          No assets linked yet
+          {t("noAssetsLinked")}
         </span>
         <Button
           variant="unstyled"
@@ -129,7 +131,7 @@ export default function ListAssetsContainer({
           onClick={onAddAsset}
         >
           <Link2 size={18} />
-          <span>Add Asset</span>
+          <span>{t("addAsset")}</span>
         </Button>
       </div>
     );
@@ -146,7 +148,7 @@ export default function ListAssetsContainer({
               href="/assets"
               className="text-lg font-medium hover:text-primary transition-colors cursor-pointer flex items-center gap-1 group"
             >
-              Assets
+              {t("assetsTitle")}
               <ChevronRight
                 size={18}
                 className="text-disabled-text group-hover:text-primary transition-colors"
@@ -157,7 +159,7 @@ export default function ListAssetsContainer({
               type="button"
               className="flex items-center justify-center bg-surface-secondary hover:bg-border transition-colors p-1 rounded-full cursor-pointer"
               onClick={onAddAsset}
-              aria-label="Add Asset"
+              aria-label={t("addAsset")}
             >
               <Plus size={18} className="text-secondary-text" />
             </Button>
@@ -167,13 +169,13 @@ export default function ListAssetsContainer({
 
           <div className="flex gap-4">
             <div className="flex flex-col grow w-full px-4 py-3 rounded-md bg-surface border border-border/30">
-              <span className="text-sm font-medium">Income</span>
+              <span className="text-sm font-medium">{t("income")}</span>
               {isSummaryLoading ? (
                 <Skeleton className="h-6 w-24" />
               ) : (
                 <span className="text-base font-bold">
                   ฿{" "}
-                  {summary?.income?.toLocaleString(undefined, {
+                  {summary?.income?.toLocaleString(locale, {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   }) ?? "0.00"}
@@ -181,13 +183,13 @@ export default function ListAssetsContainer({
               )}
             </div>
             <div className="flex flex-col grow w-full px-4 py-3 rounded-md bg-surface border border-border/30">
-              <span className="text-sm font-medium">Expense</span>
+              <span className="text-sm font-medium">{t("expense")}</span>
               {isSummaryLoading ? (
                 <Skeleton className="h-6 w-24" />
               ) : (
                 <span className="text-base font-bold">
                   ฿{" "}
-                  {summary?.expense?.toLocaleString(undefined, {
+                  {summary?.expense?.toLocaleString(locale, {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   }) ?? "0.00"}

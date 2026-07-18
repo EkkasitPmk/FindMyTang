@@ -13,6 +13,7 @@ import { useClickOutside } from "@/shared/lib/hooks/useClickOutside.hook";
 import EditAssetsContainer from "./EditAssetsContainer";
 import AssetDetail from "../components/AssetDetail";
 import ManageAssetsContainer from "./ManageAssetsContainer";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 export default function AssetDetailContainer() {
   const searchParams = useSearchParams();
@@ -20,6 +21,7 @@ export default function AssetDetailContainer() {
   const id = searchParams.get("id");
 
   const mounted = useMounted();
+  const { t, locale } = useTranslation();
 
   const { data: assets, isPending: isAssetsPending } = useAssets();
   const isLoading = !mounted || isAssetsPending;
@@ -35,7 +37,7 @@ export default function AssetDetailContainer() {
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
-  const [viewOption, setViewOption] = useState("Recent Transactions");
+  const [viewOption, setViewOption] = useState("recentTransactions");
   const [isViewOptionOpen, setIsViewOptionOpen] = useState(false);
   const viewOptionRef = useRef<HTMLDivElement>(null);
   useClickOutside(
@@ -48,7 +50,7 @@ export default function AssetDetailContainer() {
 
   const { data: availableDatesData } = useAvailableDatesQuery(
     asset?.id,
-    viewOption === "Show deleted items",
+    viewOption === "showDeletedItems",
   );
   const availableYears = useMemo(
     () =>
@@ -138,7 +140,7 @@ export default function AssetDetailContainer() {
     asset
       ? {
           assetId: asset.id,
-          isDeleted: viewOption === "Show deleted items",
+          isDeleted: viewOption === "showDeletedItems",
           sortType,
           type: filterType === "ALL" ? undefined : filterType,
           searchKeyword: isSearchMode ? searchKeyword : undefined,
@@ -180,6 +182,28 @@ export default function AssetDetailContainer() {
       }
     },
     [id, router, searchParams],
+  );
+
+  const translateDropdownItem = useCallback(
+    (item: string) => {
+      if (item === "Select") return t("selectOption");
+      if (item === "All time") return t("allTime");
+
+      const monthIndex = (MONTHS as readonly string[]).indexOf(item);
+      if (monthIndex !== -1) {
+        const d = new Date(2000, monthIndex, 1);
+        return d.toLocaleString(locale, { month: "long" });
+      }
+
+      if (!Number.isNaN(Number(item))) {
+        const year = Number(item);
+        if (locale === "th-TH") return (year + 543).toString();
+        return year.toString();
+      }
+
+      return item;
+    },
+    [t, locale],
   );
 
   return (
@@ -237,6 +261,7 @@ export default function AssetDetailContainer() {
             fetchNextPage={fetchNextPage}
             hasNextPage={hasNextPage}
             isFetchingNextPage={isFetchingNextPage}
+            translateDropdownItem={translateDropdownItem}
           />
           {isEditModalOpen && asset && (
             <EditAssetsContainer
