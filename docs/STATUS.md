@@ -69,11 +69,8 @@
 - **Sprint 1 (Backend Core):** อัปเดต DB Schema และ API ของ NestJS สำหรับจัดการ Asset, Category, และ Transaction เสร็จสมบูรณ์
 - **Sprint 2 (Guest Mode & Sync):** พัฒนาระบบ Guest Mode แบบ Offline ฝั่ง Frontend ครอบคลุมระบบทั้งหมด และพัฒนากลไก Sync นำข้อมูล Local โยนขึ้น Cloud สมบูรณ์ (อ้างอิงจาก PR #12)
 - **Sprint 2 (Advanced Transactions):** พัฒนาระบบโอนเงินข้ามบัญชี (Transfer) และระบบปรับปรุงยอดบัญชี (Balance Adjustment) สมบูรณ์พร้อมเชื่อมต่อหน้าบ้านและหลังบ้าน
-- **Sprint 2 (Profile Settings):** พัฒนาระบบลบบัญชีผู้ใช้ (Delete Account) แบบ Hard Delete พร้อมระบบพิมพ์ยืนยัน (Type to Confirm) เคลียร์แคชล้างคุกกี้ และหน้า UI อย่างสมบูรณ์
+- **Sprint 2 (Profile Settings):** พัฒนาระบบลบบัญชีผู้ใช้ (Delete Account) แบบ Hard Delete, ระบบการเปลี่ยนรหัสผ่าน (Change Password) และหน้า UI การจัดการบัญชีอย่างสมบูรณ์
 - **Sprint 3 (Dashboard):** พัฒนาหน้า Dashboard เสร็จสมบูรณ์ (คำนวณ Net Worth, Net Flow รายเดือน, รายการบัญชี และ 5 ธุรกรรมล่าสุด)
-- **Refactor (Asset Module):** แยก method `findAll` ใน `AssetService` และ `AssetRepository` เป็น `findAllActive` และ `findAllIncludingDeleted` แทนการใช้พารามิเตอร์ `includeDeleted` พร้อมอัปเดต Controller และ Unit Tests ให้สอดคล้องกัน
-
-### 2. งานที่จะต้องทำเป็นลำดับถัดไป (Next Actions)
 
 งานหลักที่ต้องดำเนินการใน **Sprint 4: ระบบการวิเคราะห์ข้อมูลและรายงาน (Analytics & Insights)**:
 

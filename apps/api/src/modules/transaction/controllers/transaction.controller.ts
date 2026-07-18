@@ -88,6 +88,12 @@ export class TransactionController {
     );
   }
 
+  @Get("years")
+  @UseGuards(JwtAuthGuard)
+  async getAvailableYears(@CurrentUser() user: User) {
+    return this.transactionService.getAvailableYears(user.id);
+  }
+
   @Get(":id")
   @UseGuards(JwtAuthGuard)
   async findOne(@CurrentUser() user: User, @Param("id") id: string) {
@@ -103,12 +109,6 @@ export class TransactionController {
     @UploadedFile() file?: Express.Multer.File,
   ) {
     return toResponse(await this.transactionService.create(user.id, dto, file));
-  }
-
-  @Get("years")
-  @UseGuards(JwtAuthGuard)
-  async getAvailableYears(@CurrentUser() user: User) {
-    return this.transactionService.getAvailableYears(user.id);
   }
 
   @Get()
