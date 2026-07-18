@@ -13,6 +13,7 @@ import { Button } from "@/shared/components/customs/Button";
 import { ModalForm } from "@/shared/components/customs/ModalForm";
 import { ASSET_COLORS } from "../configs/assets.config";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { TranslationKey } from "@/shared/lib/configs/translations.config";
 
 interface AssetFormProps {
   register: UseFormRegister<CreateAssetFormValues>;
@@ -113,7 +114,9 @@ export default function AssetForm({
                 : "border-border/20 focus:border-primary/50 focus:ring-2 focus:ring-primary/20",
             )}
           >
-            <span className="font-medium text-secondary-text">{selected}</span>
+            <span className="font-medium text-secondary-text">
+              {t(`assetType${selected}` as TranslationKey)}
+            </span>
             <svg
               className={`w-5 h-5 transition-transform duration-200 ${isOpen ? "rotate-0 text-primary" : "-rotate-90 text-disabled-text"}`}
               xmlns="http://www.w3.org/2000/svg"
@@ -150,7 +153,7 @@ export default function AssetForm({
                       selected === type ? currentColor : undefined,
                       16,
                     )}
-                    <span>{type}</span>
+                    <span>{t(`assetType${type}` as TranslationKey)}</span>
                   </div>
                   {selected === type && (
                     <Check size={16} className="text-primary" />

@@ -9,6 +9,7 @@ import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import { usePathname } from "next/navigation";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { TranslationKey } from "@/shared/lib/configs/translations.config";
 
 const SKELETON_ASSETS = Array.from({ length: 3 }, (_, i) => i);
 
@@ -94,7 +95,9 @@ export default function ListAssetsContainer({
                     <span className="text-base font-semibold">
                       {asset.name}
                     </span>
-                    <span className="text-xs">{asset.type}</span>
+                    <span className="text-xs">
+                      {t(`assetType${asset.type}` as TranslationKey)}
+                    </span>
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
