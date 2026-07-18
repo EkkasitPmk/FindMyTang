@@ -8,6 +8,8 @@ import {
 import { RegisterFormValues } from "../schemas/register.schema";
 import { Input } from "@/shared/components/customs/Input";
 import { Button } from "@/shared/components/customs/Button";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { TranslationKey } from "@/shared/lib/configs/translations.config";
 
 interface RegisterFormProps {
   register: UseFormRegister<RegisterFormValues>;
@@ -32,6 +34,8 @@ export default function RegisterForm({
   onToggleShowPassword,
   onToggleShowConfirmPassword,
 }: Readonly<RegisterFormProps>) {
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen flex flex-col justify-center bg-background py-8 px-4 sm:px-6 lg:px-8">
       {/* Main Registration Content */}
@@ -39,11 +43,9 @@ export default function RegisterForm({
         {/* Header Section */}
         <div className="text-center select-none">
           <h1 className="text-xl sm:text-2xl text-primary-text font-bold tracking-tight">
-            Create Account
+            {t("registerTitle")}
           </h1>
-          <p className="text-sm text-secondary-text">
-            Start tracking your financial journey
-          </p>
+          <p className="text-sm text-secondary-text">{t("registerSubtitle")}</p>
         </div>
 
         {/* Form Section */}
@@ -52,14 +54,14 @@ export default function RegisterForm({
           <div className="flex flex-col gap-1.5">
             <Input
               type="text"
-              placeholder="Display Name"
+              placeholder={t("displayNamePlaceholder")}
               className="bg-surface-secondary"
               error={!!errors.displayName}
               {...register("displayName")}
             />
             {errors.displayName && (
               <p className="text-xs text-expense font-medium">
-                {errors.displayName.message}
+                {t(errors.displayName.message as TranslationKey)}
               </p>
             )}
           </div>
@@ -68,14 +70,14 @@ export default function RegisterForm({
           <div className="flex flex-col gap-1.5">
             <Input
               type="email"
-              placeholder="Email address"
+              placeholder={t("emailPlaceholder")}
               className="bg-surface-secondary"
               error={!!errors.email}
               {...register("email")}
             />
             {errors.email && (
               <p className="text-xs text-expense font-medium">
-                {errors.email.message}
+                {t(errors.email.message as TranslationKey)}
               </p>
             )}
           </div>
@@ -85,7 +87,7 @@ export default function RegisterForm({
             <div className="relative">
               <Input
                 type={showPassword ? "text" : "password"}
-                placeholder="Password"
+                placeholder={t("passwordPlaceholder")}
                 className="pr-12 bg-surface-secondary"
                 error={!!errors.password}
                 {...register("password")}
@@ -105,7 +107,7 @@ export default function RegisterForm({
             </div>
             {errors.password && (
               <p className="text-xs text-expense font-medium">
-                {errors.password.message}
+                {t(errors.password.message as TranslationKey)}
               </p>
             )}
           </div>
@@ -115,7 +117,7 @@ export default function RegisterForm({
             <div className="relative">
               <Input
                 type={showConfirmPassword ? "text" : "password"}
-                placeholder="Confirm Password"
+                placeholder={t("confirmPasswordPlaceholder")}
                 className="pr-12 bg-surface-secondary"
                 error={!!errors.confirmPassword}
                 {...register("confirmPassword")}
@@ -135,7 +137,7 @@ export default function RegisterForm({
             </div>
             {errors.confirmPassword && (
               <p className="text-xs text-expense font-medium">
-                {errors.confirmPassword.message}
+                {t(errors.confirmPassword.message as TranslationKey)}
               </p>
             )}
           </div>
@@ -153,26 +155,26 @@ export default function RegisterForm({
                 htmlFor="terms"
                 className="text-sm text-secondary-text cursor-pointer select-none"
               >
-                I agree to the{" "}
+                {t("agreeTo")}{" "}
                 <Link
                   href="#"
                   className="text-primary font-medium hover:underline"
                 >
-                  Terms of Service
+                  {t("termsOfService")}
                 </Link>{" "}
-                and{" "}
+                {t("and")}{" "}
                 <Link
                   href="#"
                   className="text-primary font-medium hover:underline"
                 >
-                  Privacy Policy
+                  {t("privacyPolicy")}
                 </Link>
                 .
               </label>
             </div>
             {errors.agreeToTerms && (
               <p className="text-xs text-expense font-medium">
-                {errors.agreeToTerms.message}
+                {t(errors.agreeToTerms.message as TranslationKey)}
               </p>
             )}
           </div>
@@ -184,7 +186,7 @@ export default function RegisterForm({
             disabled={isPending}
             className="w-full h-12 bg-primary text-white text-base rounded-lg font-semibold hover:bg-primary-hover active:scale-[0.98] active-press transition-all shadow-sm flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
-            {isPending ? "Creating Account..." : "Create Account"}
+            {isPending ? t("registering") : t("signUpBtn")}
           </Button>
         </form>
 
@@ -196,12 +198,12 @@ export default function RegisterForm({
         {/* Footer Section */}
         <footer className="w-full flex flex-col items-center z-10 pt-2 select-none">
           <p className="text-sm text-secondary-text">
-            Already have an account?{" "}
+            {t("alreadyHaveAccount")}{" "}
             <Link
               href="/login"
               className="text-primary font-bold hover:underline"
             >
-              Sign in
+              {t("signInHere")}
             </Link>
           </p>
         </footer>

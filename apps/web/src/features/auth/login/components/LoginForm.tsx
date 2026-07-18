@@ -8,6 +8,8 @@ import {
 import { LoginFormValues } from "../schemas/login.schema";
 import { Input } from "@/shared/components/customs/Input";
 import { Button } from "@/shared/components/customs/Button";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { TranslationKey } from "@/shared/lib/configs/translations.config";
 
 interface LoginFormProps {
   register: UseFormRegister<LoginFormValues>;
@@ -32,6 +34,8 @@ export default function LoginForm({
   showPassword,
   onToggleShowPassword,
 }: Readonly<LoginFormProps>) {
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen flex flex-col justify-center bg-background py-8 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-sm mx-auto bg-surface p-8 sm:p-10 border border-border/60 rounded-2xl shadow-sm animate-subtle-pop space-y-6">
@@ -51,11 +55,9 @@ export default function LoginForm({
         {/* Header Section */}
         <div className="text-center select-none">
           <h1 className="text-xl sm:text-2xl text-primary-text font-bold tracking-tight">
-            Welcome Back
+            {t("loginWelcome")}
           </h1>
-          <p className="text-sm text-secondary-text">
-            Log in to your Financial Command Center
-          </p>
+          <p className="text-sm text-secondary-text">{t("loginSubtitle")}</p>
         </div>
 
         {/* Login Form */}
@@ -67,14 +69,14 @@ export default function LoginForm({
           <div className="flex flex-col gap-1.5">
             <Input
               className="bg-surface-secondary"
-              placeholder="Email address"
+              placeholder={t("emailPlaceholder")}
               type="email"
               error={!!errors.email}
               {...register("email")}
             />
             {errors.email && (
               <p className="text-xs text-expense font-medium">
-                {errors.email.message}
+                {t(errors.email.message as TranslationKey)}
               </p>
             )}
           </div>
@@ -84,7 +86,7 @@ export default function LoginForm({
             <div className="relative">
               <Input
                 className="pr-12 bg-surface-secondary"
-                placeholder="Password"
+                placeholder={t("passwordPlaceholder")}
                 type={showPassword ? "text" : "password"}
                 error={!!errors.password}
                 {...register("password")}
@@ -104,7 +106,7 @@ export default function LoginForm({
             </div>
             {errors.password && (
               <p className="text-xs text-expense font-medium">
-                {errors.password.message}
+                {t(errors.password.message as TranslationKey)}
               </p>
             )}
             <div className="flex justify-end pt-0.5">
@@ -112,7 +114,7 @@ export default function LoginForm({
                 className="text-xs text-secondary-text hover:text-primary transition-colors"
                 href="/forgot-password"
               >
-                Forgot password?
+                {t("forgotPassword")}
               </Link>
             </div>
           </div>
@@ -124,7 +126,7 @@ export default function LoginForm({
             type="submit"
             disabled={isPending}
           >
-            {isPending ? "Logging In..." : "Log In"}
+            {isPending ? t("loggingIn") : t("signInBtn")}
           </Button>
         </form>
 
@@ -132,7 +134,7 @@ export default function LoginForm({
         <div className="relative flex items-center select-none py-1">
           <div className="grow border-t border-border/80" />
           <span className="px-4 text-xs font-semibold text-secondary-text uppercase tracking-widest">
-            or
+            {t("or")}
           </span>
           <div className="grow border-t border-border/80" />
         </div>
@@ -169,7 +171,7 @@ export default function LoginForm({
                 fill="#EA4335"
               />
             </svg>
-            Continue with Google
+            {t("continueWithGoogle")}
           </Button>
 
           <Button
@@ -179,19 +181,19 @@ export default function LoginForm({
             onClick={onGuestLogin}
           >
             <User className="w-5 h-5 text-secondary-text" strokeWidth={2} />
-            Continue as Guest
+            {t("continueAsGuest")}
           </Button>
         </div>
 
         {/* Footer Link */}
         <div className="text-center select-none">
           <p className="text-sm text-secondary-text">
-            {"Don't have an account? "}
+            {t("noAccount")}{" "}
             <Link
               className="text-primary font-semibold hover:underline"
               href="/register"
             >
-              Sign up
+              {t("signUpHere")}
             </Link>
           </p>
         </div>

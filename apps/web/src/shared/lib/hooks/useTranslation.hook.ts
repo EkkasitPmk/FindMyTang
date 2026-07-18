@@ -46,9 +46,12 @@ export function useTranslation() {
     }
   };
 
+  const locale = currentLanguage === "th" ? "th-TH" : "en-US";
+
   return {
     t,
     currentLanguage,
+    locale,
     changeLanguage,
     isPending: updateProfile.isPending,
   };

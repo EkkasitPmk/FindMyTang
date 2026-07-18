@@ -2,21 +2,19 @@ import * as z from "zod";
 
 export const registerSchema = z
   .object({
-    displayName: z.string().min(1, "Display name is required"),
-    email: z
-      .email({ error: "Invalid email format" })
-      .min(1, "Email is required"),
+    displayName: z.string().min(1, "errDisplayNameRequired"),
+    email: z.email("errInvalidEmail").min(1, "errEmailRequired"),
     password: z
       .string()
-      .min(1, "Password is required")
-      .min(8, "Password must be at least 8 characters long"),
-    confirmPassword: z.string().min(1, "Confirm password is required"),
+      .min(1, "errPasswordRequired")
+      .min(8, "errPasswordLength"),
+    confirmPassword: z.string().min(1, "errConfirmPasswordRequired"),
     agreeToTerms: z.boolean().refine((val) => val === true, {
-      error: "You must agree to the Terms of Service and Privacy Policy",
+      message: "errAgreeTermsRequired",
     }),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    error: "Passwords do not match",
+    message: "errPasswordsNotMatch",
     path: ["confirmPassword"],
   });
 

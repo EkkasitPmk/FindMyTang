@@ -9,8 +9,10 @@ import { registerSchema, RegisterFormValues } from "../schemas/register.schema";
 import RegisterForm from "../components/RegisterForm";
 import { handleFormError } from "@/shared/lib/helpers/form.helper";
 import LoadingModal from "@/shared/components/customs/LoadingModal";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 export default function RegisterContainer() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -35,24 +37,19 @@ export default function RegisterContainer() {
   const { mutate: registerUser, isPending } = useRegisterMutation({
     onSuccess: () => {
       setIsRedirecting(true);
-      toast.success("Registration successful! Redirecting to login...");
+      toast.success(t("registerSuccess"));
       // Redirect to login page on success
       router.push("/login");
     },
     onError: (error) => {
-      handleFormError(
-        error,
-        setError,
-        "Registration failed. Please try again.",
-        {
-          email: "email",
-          "display name": "displayName",
-          displayname: "displayName",
-          "confirm password": "confirmPassword", // NOSONAR
-          confirmpassword: "confirmPassword", // NOSONAR
-          password: "password", // NOSONAR
-        },
-      );
+      handleFormError(error, setError, t("registerFailed"), {
+        email: "email",
+        "display name": "displayName",
+        displayname: "displayName",
+        "confirm password": "confirmPassword", // NOSONAR
+        confirmpassword: "confirmPassword", // NOSONAR
+        password: "password", // NOSONAR
+      });
     },
   });
 
@@ -82,7 +79,7 @@ export default function RegisterContainer() {
       />
       <LoadingModal
         isOpen={isPending || isRedirecting}
-        message="Registering..."
+        message={t("registering")}
       />
     </>
   );

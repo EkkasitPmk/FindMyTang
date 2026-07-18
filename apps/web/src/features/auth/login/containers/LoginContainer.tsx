@@ -14,8 +14,10 @@ import { useSyncGuestMutation } from "../../hooks/sync-guest.hook";
 import GuestMigrationModal from "@/shared/components/customs/GuestMigrationModal";
 import { handleFormError } from "@/shared/lib/helpers/form.helper";
 import LoadingModal from "@/shared/components/customs/LoadingModal";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 export default function LoginContainer() {
+  const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [showMigration, setShowMigration] = useState(false);
@@ -45,19 +47,14 @@ export default function LoginContainer() {
         setShowMigration(true);
         return;
       }
-      toast.success("Login successful! Redirecting...");
+      toast.success(t("loginSuccess"));
       window.location.href = "/home";
     },
     onError: (error) => {
-      handleFormError(
-        error,
-        setError,
-        "Login failed. Please check your credentials.",
-        {
-          email: "email",
-          password: "password", // NOSONAR
-        },
-      );
+      handleFormError(error, setError, t("loginFailed"), {
+        email: "email",
+        password: "password", // NOSONAR
+      });
     },
   });
 
@@ -66,9 +63,7 @@ export default function LoginContainer() {
       if (merge) await syncGuest.mutateAsync();
       else await clearGuestData();
       setShowMigration(false);
-      toast.success(
-        merge ? "Guest data synced successfully" : "Local data discarded",
-      );
+      toast.success(merge ? t("guestDataSynced") : t("localDataDiscarded"));
       window.location.href = "/home";
     } catch {
       // The mutation displays the API error; keep the choice open for retry.
@@ -109,7 +104,7 @@ export default function LoginContainer() {
       />
       <LoadingModal
         isOpen={(isPending || isRedirecting) && !showMigration}
-        message="Logging in..."
+        message={t("loggingIn")}
       />
       <GuestMigrationModal
         isOpen={showMigration}
