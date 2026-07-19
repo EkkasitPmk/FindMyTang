@@ -19,13 +19,14 @@ export default function ShowProfileContainer() {
 
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour >= 12 && hour < 17) return "Good Afternoon ⛅️";
-    if (hour >= 17) return "Good Evening 🌙";
-    return "Good Morning ☀️";
+    if (hour >= 12 && hour < 17) return { text: "Good Afternoon", icon: "⛅️" };
+    if (hour >= 17) return { text: "Good Evening", icon: "🌙" };
+    return { text: "Good Morning", icon: "☀️" };
   };
 
   const displayName = isGuest ? "Guest" : user?.displayName || "User";
-  const currentDate = mounted ? format(new Date(), "d MMMM yyyy") : "";
+  const currentDate = mounted ? format(new Date(), "EEEE, d MMMM") : "";
+  const greeting = getGreeting();
 
   return (
     <header
@@ -50,19 +51,18 @@ export default function ShowProfileContainer() {
           <Avatar url={user?.avatarUrl} size={40} />
         </Link>
         <div className="flex flex-col">
-          {isLoading && !isGuest ? (
+          {!mounted || (isLoading && !isGuest) ? (
             <Skeleton className="h-5 w-32 mb-1" />
           ) : (
             <h1 className="text-base font-medium leading-tight line-clamp-1">
-              {getGreeting().split(" ")[0]} {getGreeting().split(" ")[1]}{" "}
-              {displayName} {getGreeting().split(" ")[2]}
+              {greeting.text}, {displayName} {greeting.icon}
             </h1>
           )}
 
-          {mounted ? (
-            <p className="text-body-sm">{currentDate}</p>
-          ) : (
+          {!mounted || (isLoading && !isGuest) ? (
             <Skeleton className="h-4 w-24" />
+          ) : (
+            <p className="text-sm text-secondary-text">{currentDate}</p>
           )}
         </div>
       </div>
