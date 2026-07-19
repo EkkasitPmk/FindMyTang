@@ -102,6 +102,15 @@ export const translations = {
     account: "บัญชี",
 
     // Auth
+    signOut: "ออกจากระบบ",
+    signOutConfirmTitle: "ออกจากระบบ?",
+    signOutConfirmDesc: "คุณแน่ใจหรือไม่ว่าต้องการออกจากระบบ?",
+    clearSessionDesc: "คุณแน่ใจหรือไม่ว่าต้องการล้างข้อมูลในเครื่องทั้งหมด?",
+    clearingSession: "กำลังล้างข้อมูล...",
+    signingOut: "กำลังออกจากระบบ...",
+    logoutSuccessOffline: "ออกจากระบบสำเร็จ! กลับสู่โหมดออฟไลน์",
+    logoutFailed: "การออกจากระบบล้มเหลว โปรดลองอีกครั้ง",
+    guestSessionCleared: "ล้างข้อมูลผู้ใช้ชั่วคราวสำเร็จ",
     loginTitle: "เข้าสู่ระบบ",
     loginWelcome: "ยินดีต้อนรับกลับมา",
     loginSubtitle: "เข้าสู่ศูนย์บัญชาการทางการเงินของคุณ",
@@ -420,6 +429,15 @@ export const translations = {
     account: "Account",
 
     // Auth
+    signOut: "Sign out",
+    signOutConfirmTitle: "Sign out?",
+    signOutConfirmDesc: "Are you sure you want to sign out?",
+    clearSessionDesc: "Are you sure you want to clear your local session?",
+    clearingSession: "Clearing session...",
+    signingOut: "Signing out...",
+    logoutSuccessOffline: "Successfully logged out to offline mode",
+    logoutFailed: "Logout failed. Please try again.",
+    guestSessionCleared: "Guest session cleared",
     loginTitle: "Sign In",
     loginWelcome: "Welcome Back",
     loginSubtitle: "Log in to your Financial Command Center",

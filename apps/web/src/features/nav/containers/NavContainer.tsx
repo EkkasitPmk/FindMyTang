@@ -74,11 +74,11 @@ export default function NavContainer() {
   const { mutateAsync: logoutUserAsync, isPending: isLogoutPending } =
     useLogoutMutation({
       onSuccess: () => {
-        toast.success("Successfully logged out to offline mode");
+        toast.success(t("logoutSuccessOffline"));
         window.location.href = "/home";
       },
       onError: () => {
-        toast.error("Logout failed. Please try again.");
+        toast.error(t("logoutFailed"));
         setIsLoggingOutLocal(false);
       },
     });
@@ -106,7 +106,7 @@ export default function NavContainer() {
       await clearGuestData();
       setGuestMode(false);
       queryClient.clear();
-      toast.success("Guest session cleared");
+      toast.success(t("guestSessionCleared"));
       window.location.href = "/login";
     } else {
       setIsLoggingOutLocal(true);
@@ -123,7 +123,7 @@ export default function NavContainer() {
         await logoutUserAsync();
       } catch (error) {
         console.error("Logout failed", error);
-        toast.error("Logout failed. Please try again.");
+        toast.error(t("logoutFailed"));
       } finally {
         setIsLoggingOutLocal(false);
       }
@@ -180,18 +180,14 @@ export default function NavContainer() {
         onClose={closeLogoutConfirm}
         onConfirm={handleLogout}
         icon={LogOut}
-        title="Sign out?"
-        des={
-          isGuest
-            ? "Are you sure you want to clear your local session?"
-            : "Are you sure you want to sign out?"
-        }
+        title={t("signOutConfirmTitle")}
+        des={isGuest ? t("clearSessionDesc") : t("signOutConfirmDesc")}
       />
 
       {/* Loading Modal for Logout */}
       <LoadingModal
         isOpen={isLoggingOut}
-        message={isGuest ? "Clearing session..." : "Signing out..."}
+        message={isGuest ? t("clearingSession") : t("signingOut")}
       />
     </>
   );
