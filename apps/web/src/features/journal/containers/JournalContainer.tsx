@@ -108,7 +108,7 @@ export default function JournalContainer() {
   }, [transactionsData, searchKeyword, locale]);
 
   return (
-    <div className="flex flex-col h-[calc(100vh-84px)] bg-background space-y-2">
+    <div className="flex flex-col h-[calc(100vh-82px)] bg-background space-y-2">
       {/* 1. ใส่ Timeline สลับ Calendar */}
       <div className="px-4">
         <SegmentedControl<ViewMode>
@@ -279,18 +279,17 @@ export default function JournalContainer() {
           </section>
 
           {/* 4. แสดง transaction เรียงลงมาแบบปกติ และมี Lazy Load ด้วย Intersection Observer */}
-          <div className="flex-1 overflow-y-auto relative">
-            <TransactionListContainer
-              groupedTransactions={groupedTransactions}
-              isLoadingTransactions={isLoadingTransactions}
-              isFetchingNextPage={isFetchingNextPage}
-              hasNextPage={hasNextPage}
-              fetchNextPage={fetchNextPage}
-              isSearchMode={searchKeyword.length > 0}
-              searchKeyword={searchKeyword}
-              page="journal"
-            />
-          </div>
+          <TransactionListContainer
+            groupedTransactions={groupedTransactions}
+            isLoadingTransactions={isLoadingTransactions}
+            isFetchingNextPage={isFetchingNextPage}
+            hasNextPage={hasNextPage}
+            fetchNextPage={fetchNextPage}
+            isSearchMode={searchKeyword.length > 0}
+            searchKeyword={searchKeyword}
+            page="journal"
+            useVirtualization={true}
+          />
         </>
       ) : (
         <JournalCalendarContainer />

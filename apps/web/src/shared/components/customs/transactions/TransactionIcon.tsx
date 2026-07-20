@@ -21,7 +21,7 @@ export function TransactionIcon({
           className="absolute inset-0 opacity-[0.15]"
           style={{ backgroundColor: transaction.category.color }}
         />
-        <span className="relative z-10 flex items-center justify-center">
+        <span className="relative flex items-center justify-center">
           {React.createElement(icon, { size: 18 })}
         </span>
       </span>

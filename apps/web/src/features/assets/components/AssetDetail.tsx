@@ -219,9 +219,9 @@ export default function AssetDetail({
         </section>
       )}
 
-      <section className="flex-1 overflow-y-auto relative m-0">
+      <section className="flex-1 relative flex flex-col min-h-0 m-0">
         {isSearchMode && (
-          <div className="flex items-end justify-end">
+          <div className="flex items-end justify-end shrink-0">
             <DropdownSelect
               ref={yearRef}
               options={years.map(translateDropdownItem)}
@@ -250,6 +250,7 @@ export default function AssetDetail({
           fetchNextPage={fetchNextPage}
           hasNextPage={hasNextPage}
           isFetchingNextPage={isFetchingNextPage}
+          useVirtualization={true}
         />
       </section>
 

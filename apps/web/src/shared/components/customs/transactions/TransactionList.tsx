@@ -3,16 +3,14 @@ import {
   GroupedTransaction,
   TransactionResponse,
 } from "@/features/transactions/types/transaction.type";
-import { getDiffDays } from "@/shared/lib/helpers/date.helper";
-import {
-  calculateNetTotal,
-  getTopRowText,
-  getNetTotalConfig,
-} from "@/shared/lib/helpers/transaction-list.helper";
 import { TransactionItem } from "./TransactionItem";
+import { TransactionGroupHeader } from "./TransactionGroupHeader";
+import { renderGroupContent } from "./TransactionVirtuosoGroup";
+import { renderItemContent } from "./TransactionVirtuosoItem";
 import { cn } from "@/shared/lib/utils/core.util";
 import TransactionListSkeleton from "../../skeletons/TransactionListSkeleton";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { GroupedVirtuoso } from "react-virtuoso";
 import { TranslationKey } from "@/shared/lib/configs/translations.config";
 
 const SKELETON_GROUPS = Array.from({ length: 3 }, (_, i) => i);
@@ -30,6 +28,22 @@ export interface TransactionListProps {
   expandedTransactionId: string | null;
   setExpandedTransactionId: (id: string | null) => void;
   onAttachmentClick: (url: string) => void;
+  useVirtualization?: boolean;
+  onEndReached?: () => void;
+}
+
+export interface VirtuosoContext {
+  groupedTransactions: GroupedTransaction[];
+  flatItems: TransactionResponse[];
+  t: (key: TranslationKey) => string;
+  locale: string;
+  assetId?: string;
+  expandedTransactionId: string | null;
+  setExpandedTransactionId: (id: string | null) => void;
+  onTransactionItemClick: (transaction: TransactionResponse) => void;
+  onRestoreClick?: (transaction: TransactionResponse) => void;
+  onDeleteClick?: (transaction: TransactionResponse) => void;
+  onAttachmentClick?: (url: string) => void;
 }
 
 export function TransactionList({
@@ -45,8 +59,25 @@ export function TransactionList({
   expandedTransactionId,
   setExpandedTransactionId,
   onAttachmentClick,
+  useVirtualization = false,
+  onEndReached,
 }: Readonly<TransactionListProps>) {
   const { t, locale } = useTranslation();
+  const flatItems = groupedTransactions?.flatMap((group) => group.items) || [];
+
+  const virtuosoContext: VirtuosoContext = {
+    groupedTransactions,
+    flatItems,
+    t,
+    locale,
+    assetId,
+    expandedTransactionId,
+    setExpandedTransactionId,
+    onTransactionItemClick,
+    onRestoreClick,
+    onDeleteClick,
+    onAttachmentClick,
+  };
 
   if (isSearchMode && !searchKeyword) {
     return (
@@ -83,75 +114,63 @@ export function TransactionList({
     );
   }
 
+  if (useVirtualization) {
+    if (!groupedTransactions?.length) {
+      return (
+        <div className="p-4 text-center text-secondary-text bg-surface">
+          {isSearchMode
+            ? "No matching transactions found"
+            : "No transactions found"}
+        </div>
+      );
+    }
+
+    const groupCounts = groupedTransactions.map((group) => group.items.length);
+
+    return (
+      <section className="bg-surface h-full">
+        <GroupedVirtuoso
+          className="h-full w-full"
+          groupCounts={groupCounts}
+          endReached={onEndReached}
+          context={virtuosoContext}
+          groupContent={renderGroupContent}
+          itemContent={renderItemContent}
+        />
+      </section>
+    );
+  }
+
   return (
     <section className="bg-surface space-y-2">
-      {groupedTransactions.map((group) => {
-        const netTotal = calculateNetTotal(group.items);
-        const txDate = new Date(group.items[0].transactionDate);
-        const diffDays = getDiffDays(txDate);
-        const topRow = getTopRowText(diffDays, (key) =>
-          t(key as TranslationKey),
-        );
-
-        const bottomRow = txDate.toLocaleDateString(locale, {
-          weekday: "long",
-          month: "short",
-          day: "numeric",
-          year:
-            txDate.getFullYear() !== new Date().getFullYear()
-              ? "numeric"
-              : undefined,
-        });
-
-        const { colorClass: netTotalColorClass, prefix: netTotalPrefix } =
-          getNetTotalConfig(netTotal);
-
-        return (
-          <div
-            key={group.dateStr}
-            className="relative"
-            data-date-group={group.dateStr}
-          >
-            <div
-              className={cn(
-                "sticky top-0 bg-surface z-10 py-1.5 px-4",
-                "flex justify-between items-center",
-              )}
-            >
-              <div className="flex flex-col">
-                <span className="text-base font-medium text-primary-text">
-                  {topRow}
-                </span>
-                <span className="text-sm font-normal text-secondary-text capitalize">
-                  {bottomRow}
-                </span>
-              </div>
-
-              <span className={cn("text-base", netTotalColorClass)}>
-                {netTotalPrefix}฿
-                {Math.abs(netTotal).toLocaleString(locale, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
-              </span>
-            </div>
-            {group.items.map((transaction, txIndex) => (
-              <TransactionItem
-                key={transaction.id}
-                transaction={transaction}
-                isLastItem={txIndex === group.items.length - 1}
-                currentAssetId={assetId}
-                expandedTransactionId={expandedTransactionId}
-                setExpandedTransactionId={setExpandedTransactionId}
-                onTransactionItemClick={onTransactionItemClick}
-                onRestoreClick={onRestoreClick}
-                onDeleteClick={onDeleteClick}
-                onAttachmentClick={onAttachmentClick}
-              />
-            ))}
-          </div>
-        );
-      })}
+      {groupedTransactions.map((group) => (
+        <div
+          key={group.dateStr}
+          className="relative"
+          data-date-group={group.dateStr}
+        >
+          <TransactionGroupHeader
+            group={group}
+            t={t}
+            locale={locale}
+            className="sticky top-0 bg-surface z-10 py-1.5 px-4"
+          />
+          {group.items.map((transaction, txIndex) => (
+            <TransactionItem
+              key={transaction.id}
+              transaction={transaction}
+              isLastItem={txIndex === group.items.length - 1}
+              currentAssetId={assetId}
+              expandedTransactionId={expandedTransactionId}
+              setExpandedTransactionId={setExpandedTransactionId}
+              onTransactionItemClick={onTransactionItemClick}
+              onRestoreClick={onRestoreClick}
+              onDeleteClick={onDeleteClick}
+              onAttachmentClick={onAttachmentClick}
+            />
+          ))}
+        </div>
+      ))}
       {!groupedTransactions?.length && (
         <div className="p-4 text-center text-secondary-text">
           {isSearchMode

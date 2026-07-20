@@ -18,6 +18,7 @@ import {
   TransactionResponse,
 } from "@/features/transactions/types/transaction.type";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { cn } from "@/shared/lib/utils/core.util";
 
 interface TransactionListContainerProps {
   groupedTransactions: GroupedTransaction[];
@@ -29,6 +30,7 @@ interface TransactionListContainerProps {
   searchKeyword?: string;
   assetId?: string;
   page?: "asset" | "journal" | "recent";
+  useVirtualization?: boolean;
 }
 
 export function TransactionListContainer({
@@ -41,6 +43,7 @@ export function TransactionListContainer({
   searchKeyword,
   assetId,
   page,
+  useVirtualization = false,
 }: Readonly<TransactionListContainerProps>) {
   const router = useRouter();
   const { t } = useTranslation();
@@ -129,32 +132,41 @@ export function TransactionListContainer({
   );
 
   return (
-    <>
+    <div className={cn("flex flex-col", useVirtualization ? "h-full" : "")}>
       {groupedTransactions.some((group) =>
         group.items.some((transaction) => Boolean(transaction.deletedAt)),
       ) && (
-        <p className="mb-2 px-4 text-xs text-secondary-text">
+        <p className="mb-2 px-4 text-xs text-secondary-text shrink-0">
           {t("deletedTransactionsNotice")}
         </p>
       )}
-      <TransactionList
-        groupedTransactions={groupedTransactions}
-        isLoadingTransactions={isLoadingTransactions}
-        onTransactionItemClick={handleTransactionItemClick}
-        onRestoreClick={handleRestoreClick}
-        onDeleteClick={handleDeleteClick}
-        isSearchMode={isSearchMode}
-        searchKeyword={searchKeyword}
-        assetId={assetId}
-        page={page}
-        expandedTransactionId={expandedTransactionId}
-        setExpandedTransactionId={setExpandedTransactionId}
-        onAttachmentClick={setPreviewImageUrl}
-      />
+
+      <div className={cn(useVirtualization ? "flex-1 min-h-0" : "")}>
+        <TransactionList
+          groupedTransactions={groupedTransactions}
+          isLoadingTransactions={isLoadingTransactions}
+          onTransactionItemClick={handleTransactionItemClick}
+          onRestoreClick={handleRestoreClick}
+          onDeleteClick={handleDeleteClick}
+          isSearchMode={isSearchMode}
+          searchKeyword={searchKeyword}
+          assetId={assetId}
+          page={page}
+          expandedTransactionId={expandedTransactionId}
+          setExpandedTransactionId={setExpandedTransactionId}
+          onAttachmentClick={setPreviewImageUrl}
+          useVirtualization={useVirtualization}
+          onEndReached={() => {
+            if (hasNextPage && fetchNextPage) {
+              fetchNextPage();
+            }
+          }}
+        />
+      </div>
 
       {/* Trigger for Lazy load */}
-      {hasNextPage && fetchNextPage && (
-        <div ref={observerTarget} className="my-4">
+      {hasNextPage && fetchNextPage && !useVirtualization && (
+        <div ref={observerTarget} className="my-4 shrink-0">
           {isFetchingNextPage && (
             <div className="space-y-1">
               <TransactionListSkeleton />
@@ -237,6 +249,6 @@ export function TransactionListContainer({
         onClose={() => setPreviewImageUrl(null)}
         imageUrl={previewImageUrl || ""}
       />
-    </>
+    </div>
   );
 }
