@@ -6,8 +6,10 @@ import { MonthlyTrendsContainer } from "./MonthlyTrendsContainer";
 import { AssetDistributionContainer } from "./AssetDistributionContainer";
 import { PieChart, TrendingUp, Wallet } from "lucide-react";
 import CreateAssetsContainer from "@/features/assets/containers/CreateAssetsContainer";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 export default function AnalyticsContainer() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<"category" | "trends" | "assets">(
     "category",
   );
@@ -16,17 +18,17 @@ export default function AnalyticsContainer() {
   const tabs = [
     {
       value: "category",
-      label: "Report",
+      label: t("reportTab"),
       icon: <PieChart className="w-4 h-4" />,
     },
     {
       value: "trends",
-      label: "Trends",
+      label: t("trendsTab"),
       icon: <TrendingUp className="w-4 h-4" />,
     },
     {
       value: "assets",
-      label: "Assets",
+      label: t("assetsTab"),
       icon: <Wallet className="w-4 h-4" />,
     },
   ];
