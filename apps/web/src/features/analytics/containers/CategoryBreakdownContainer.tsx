@@ -7,8 +7,10 @@ import { CategoryBreakdownChart } from "../components/CategoryBreakdownChart";
 import { CategoryList } from "../components/CategoryList";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { SegmentedControl } from "@/shared/components/customs/SegmentedControl";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 export const CategoryBreakdownContainer = () => {
+  const { t } = useTranslation();
   const currentDate = new Date();
   const [month, setMonth] = useState(currentDate.getMonth() + 1);
   const [year, setYear] = useState(currentDate.getFullYear());
@@ -90,10 +92,10 @@ export const CategoryBreakdownContainer = () => {
           <div className="m-0 px-4">
             <SegmentedControl
               options={[
-                { value: "EXPENSE", label: "Expense" },
-                { value: "INCOME", label: "Income" },
-                { value: "TRANSFER", label: "Transfer" },
-                { value: "ADJUSTMENT", label: "Adjustment" },
+                { value: "EXPENSE", label: t("expense") },
+                { value: "INCOME", label: t("income") },
+                { value: "TRANSFER", label: t("transfer") },
+                { value: "ADJUSTMENT", label: t("adjustment") },
               ]}
               value={type}
               onChange={(val) =>
@@ -109,7 +111,7 @@ export const CategoryBreakdownContainer = () => {
             />
           </div>
 
-          <CategoryList data={data!.breakdown} />
+          <CategoryList data={data!.breakdown} month={month} year={year} />
         </>
       )}
     </div>
