@@ -1,8 +1,9 @@
 "use client";
 import Link from "next/link";
-import { ChevronRight, Landmark, Link2, Plus } from "lucide-react";
+import { ChevronRight, Plus } from "lucide-react";
 import { useAssets } from "../hooks/assets.hook";
 import { getAssetIcon } from "../components/AssetIcon";
+import { EmptyAssetList } from "../../../shared/components/customs/EmptyAssetList";
 import { useThisMonthSummary } from "@/features/home/hooks/summary.hook";
 import { AssetIconWrapper } from "@/shared/components/customs/AssetIconWrapper";
 import { Button } from "@/shared/components/customs/Button";
@@ -104,27 +105,7 @@ export default function ListAssetsContainer({
       }
     }
 
-    return (
-      <div className="bg-surface flex flex-col items-center gap-3 py-8 rounded-md border-2 border-border border-dashed">
-        <div className="flex items-center">
-          <span className="bg-surface-secondary p-4 rounded-full">
-            <Landmark className="text-secondary-text" size={24} />
-          </span>
-        </div>
-        <span className="text-base font-normal text-secondary-text">
-          {t("noAssetsLinked")}
-        </span>
-        <Button
-          variant="unstyled"
-          type="button"
-          className="flex items-center gap-2 text-primary font-medium cursor-pointer hover:underline bg-transparent border-none p-0"
-          onClick={onAddAsset}
-        >
-          <Link2 size={18} />
-          <span>{t("addAsset")}</span>
-        </Button>
-      </div>
-    );
+    return <EmptyAssetList onAddAsset={onAddAsset} />;
   };
 
   return (

@@ -5,11 +5,13 @@ import { CategoryBreakdownContainer } from "./CategoryBreakdownContainer";
 import { MonthlyTrendsContainer } from "./MonthlyTrendsContainer";
 import { AssetDistributionContainer } from "./AssetDistributionContainer";
 import { PieChart, TrendingUp, Wallet } from "lucide-react";
+import CreateAssetsContainer from "@/features/assets/containers/CreateAssetsContainer";
 
 export default function AnalyticsContainer() {
   const [activeTab, setActiveTab] = useState<"category" | "trends" | "assets">(
     "category",
   );
+  const [isCreateAssetOpen, setIsCreateAssetOpen] = useState(false);
 
   const tabs = [
     {
@@ -52,8 +54,16 @@ export default function AnalyticsContainer() {
       <div className="flex-1 overflow-y-auto hide-scrollbar">
         {activeTab === "category" && <CategoryBreakdownContainer />}
         {activeTab === "trends" && <MonthlyTrendsContainer />}
-        {activeTab === "assets" && <AssetDistributionContainer />}
+        {activeTab === "assets" && (
+          <AssetDistributionContainer
+            onAddAsset={() => setIsCreateAssetOpen(true)}
+          />
+        )}
       </div>
+
+      {isCreateAssetOpen && (
+        <CreateAssetsContainer onClose={() => setIsCreateAssetOpen(false)} />
+      )}
     </div>
   );
 }

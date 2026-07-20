@@ -4,8 +4,15 @@ import { useAssetDistribution } from "../hooks/assets.hook";
 import { AssetDistributionBar } from "../components/AssetDistributionBar";
 import { AssetTypeList } from "../components/AssetTypeList";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { EmptyAssetList } from "@/shared/components/customs/EmptyAssetList";
 
-export const AssetDistributionContainer = () => {
+interface AssetDistributionContainerProps {
+  onAddAsset?: () => void;
+}
+
+export const AssetDistributionContainer = ({
+  onAddAsset,
+}: AssetDistributionContainerProps) => {
   const { data, isLoading } = useAssetDistribution();
   const [expandedTypes, setExpandedTypes] = useState<Record<string, boolean>>(
     {},
@@ -14,6 +21,14 @@ export const AssetDistributionContainer = () => {
   const handleToggleExpand = (type: string) => {
     setExpandedTypes((prev) => ({ ...prev, [type]: !prev[type] }));
   };
+
+  if (data?.distribution.length === 0) {
+    return (
+      <div className="px-4">
+        <EmptyAssetList onAddAsset={onAddAsset} />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full animate-in fade-in duration-300">

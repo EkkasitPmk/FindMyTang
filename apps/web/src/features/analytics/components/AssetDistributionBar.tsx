@@ -10,8 +10,6 @@ export const AssetDistributionBar = ({
   data,
   totalAssets,
 }: AssetDistributionBarProps) => {
-  if (data.length === 0) return null;
-
   return (
     <div className="bg-surface rounded-xl border p-5">
       <div className="mb-4">
