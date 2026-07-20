@@ -1,7 +1,8 @@
 import { MonthlyTrendItem } from "../types/analytics.type";
 import { formatCurrency } from "@/shared/lib/utils/currency.util";
 import { format } from "date-fns";
-import { th } from "date-fns/locale";
+import { th, enUS } from "date-fns/locale";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 interface MonthlyTrendsTableProps {
   data: MonthlyTrendItem[];
@@ -9,6 +10,9 @@ interface MonthlyTrendsTableProps {
 }
 
 export const MonthlyTrendsTable = ({ data, year }: MonthlyTrendsTableProps) => {
+  const { t, currentLanguage } = useTranslation();
+  const dateLocale = currentLanguage === "th" ? th : enUS;
+
   const validData = [...data].reverse();
 
   if (validData.length === 0) return null;
@@ -17,12 +21,12 @@ export const MonthlyTrendsTable = ({ data, year }: MonthlyTrendsTableProps) => {
     <div className="bg-transparent sm:bg-surface sm:rounded-xl sm:border sm:overflow-hidden">
       {/* Desktop Header */}
       <div className="hidden sm:grid grid-cols-6 gap-2 p-3 bg-surface-secondary border-b text-xs font-semibold text-secondary-text">
-        <div>Month</div>
-        <div className="text-right text-income">Income</div>
-        <div className="text-right text-expense">Expense</div>
-        <div className="text-right text-(--semantic-transfer)">Transfer</div>
-        <div className="text-right text-(--semantic-highlight)">Adjust</div>
-        <div className="text-right">Net Flow</div>
+        <div>{t("monthLabel")}</div>
+        <div className="text-right text-income">{t("income")}</div>
+        <div className="text-right text-expense">{t("expense")}</div>
+        <div className="text-right text-(--semantic-transfer)">{t("transfer")}</div>
+        <div className="text-right text-(--semantic-highlight)">{t("adjustment")}</div>
+        <div className="text-right">{t("netFlow")}</div>
       </div>
 
       <div className="flex flex-col gap-3 px-4 pb-4 sm:gap-0 sm:divide-y sm:divide-border">
@@ -36,7 +40,7 @@ export const MonthlyTrendsTable = ({ data, year }: MonthlyTrendsTableProps) => {
               <div className="flex justify-between items-center pb-3 border-b">
                 <span className="font-semibold text-sm">
                   {format(new Date(year, item.month - 1), "MMMM", {
-                    locale: th,
+                    locale: dateLocale,
                   })}
                 </span>
                 <span
@@ -48,25 +52,25 @@ export const MonthlyTrendsTable = ({ data, year }: MonthlyTrendsTableProps) => {
               </div>
               <div className="flex flex-col gap-2 text-xs">
                 <div className="flex justify-between items-center">
-                  <span className="text-secondary-text">Income</span>
+                  <span className="text-secondary-text">{t("income")}</span>
                   <span className="text-income font-medium">
                     {formatCurrency(item.income)}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-secondary-text">Expense</span>
+                  <span className="text-secondary-text">{t("expense")}</span>
                   <span className="text-expense font-medium">
                     {formatCurrency(item.expense)}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-secondary-text">Transfer</span>
+                  <span className="text-secondary-text">{t("transfer")}</span>
                   <span className="text-(--semantic-transfer) font-medium">
                     {formatCurrency(item.transfer || 0)}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-secondary-text">Adjust</span>
+                  <span className="text-secondary-text">{t("adjustment")}</span>
                   <span className="text-(--semantic-highlight) font-medium">
                     {formatCurrency(item.adjust || 0)}
                   </span>
@@ -78,7 +82,7 @@ export const MonthlyTrendsTable = ({ data, year }: MonthlyTrendsTableProps) => {
             <div className="hidden sm:grid grid-cols-6 gap-2 p-3 text-[13px] items-center hover:bg-surface-secondary/30 transition-colors">
               <div className="font-medium">
                 {format(new Date(year, item.month - 1), "MMM yy", {
-                  locale: th,
+                  locale: dateLocale,
                 })}
               </div>
               <div className="text-right">{formatCurrency(item.income)}</div>
