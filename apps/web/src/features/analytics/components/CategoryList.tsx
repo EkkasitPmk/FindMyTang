@@ -4,24 +4,29 @@ import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { TransactionIcon } from "@/shared/components/customs/transactions/TransactionIcon";
 import { TransactionResponse } from "@/features/transactions/types/transaction.type";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 interface CategoryListProps {
   data: CategoryBreakdownItem[];
+  month: number;
+  year: number;
 }
 
-export const CategoryList = ({ data }: CategoryListProps) => {
+export const CategoryList = ({ data, month, year }: CategoryListProps) => {
+  const { t } = useTranslation();
+
   if (data.length === 0) return null;
 
   return (
     <div className="space-y-1 px-4 pb-4">
-      <p className="text-primary-text text-base">Category list</p>
+      <p className="text-primary-text text-base">{t("categoryList")}</p>
       {data.map((item, index) => {
         const color = item.categoryColor || `var(--chart-${(index % 5) + 1})`;
 
         return (
           <Link
             key={item.categoryId}
-            href={`/analytics/category/${item.categoryId}`}
+            href={`/analytics/category/${item.categoryId}?month=${month}&year=${year}`}
             className="flex items-center justify-between px-3 py-2 bg-surface rounded-xl border active-press transition-transform"
           >
             <div className="flex items-center gap-3">
@@ -43,7 +48,8 @@ export const CategoryList = ({ data }: CategoryListProps) => {
                   {item.categoryName}
                 </p>
                 <p className="text-[12px] text-secondary-text">
-                  {item.percentage.toFixed(1)}% • {item.transactionCount} items
+                  {item.percentage.toFixed(1)}% • {item.transactionCount}{" "}
+                  {t("items")}
                 </p>
               </div>
             </div>
