@@ -1,5 +1,6 @@
 import { AssetDistributionGroup } from "../types/analytics.type";
 import { formatCurrency } from "@/shared/lib/utils/currency.util";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 interface AssetDistributionBarProps {
   data: AssetDistributionGroup[];
@@ -10,11 +11,13 @@ export const AssetDistributionBar = ({
   data,
   totalAssets,
 }: AssetDistributionBarProps) => {
+  const { t } = useTranslation();
+
   return (
     <div className="bg-surface rounded-xl border p-5">
       <div className="mb-4">
         <p className="text-sm font-medium text-secondary-text mb-1">
-          Total Assets
+          {t("totalAssets")}
         </p>
         <p className="text-3xl font-bold text-primary-text">
           {formatCurrency(totalAssets)}
