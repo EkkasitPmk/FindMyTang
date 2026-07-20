@@ -42,7 +42,7 @@ export default function CategoryGrid({
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-3 gap-2 overflow-auto max-h-[70vh]">
+      <div className="grid grid-cols-3 gap-2 overflow-auto max-h-[75vh]">
         {SKELETON_CATEGORIES.map((id) => (
           <div
             key={`skeleton-${id}`}
@@ -57,7 +57,7 @@ export default function CategoryGrid({
   }
 
   return (
-    <div className="grid grid-cols-3 gap-2 overflow-auto max-h-[70vh]">
+    <div className="grid grid-cols-3 gap-2 overflow-auto max-h-[75vh]">
       {/* New Category */}
       <Button
         variant="unstyled"

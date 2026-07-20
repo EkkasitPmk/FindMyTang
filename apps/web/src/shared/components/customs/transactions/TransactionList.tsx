@@ -117,7 +117,7 @@ export function TransactionList({
   if (useVirtualization) {
     if (!groupedTransactions?.length) {
       return (
-        <div className="p-4 text-center text-secondary-text bg-surface">
+        <div className="text-secondary-text h-100 flex items-center justify-center">
           {isSearchMode
             ? "No matching transactions found"
             : "No transactions found"}
@@ -142,7 +142,12 @@ export function TransactionList({
   }
 
   return (
-    <section className="bg-surface space-y-2">
+    <section
+      className={cn(
+        "bg-surface space-y-2",
+        !groupedTransactions?.length && "bg-transparent",
+      )}
+    >
       {groupedTransactions.map((group) => (
         <div
           key={group.dateStr}
@@ -172,7 +177,7 @@ export function TransactionList({
         </div>
       ))}
       {!groupedTransactions?.length && (
-        <div className="p-4 text-center text-secondary-text">
+        <div className="text-secondary-text h-50 flex items-center justify-center">
           {isSearchMode
             ? "No matching transactions found"
             : "No transactions found"}

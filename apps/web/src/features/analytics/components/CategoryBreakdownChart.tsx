@@ -20,7 +20,7 @@ export const CategoryBreakdownChart = ({
 }: CategoryBreakdownChartProps) => {
   if (data.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-50 text-secondary-text">
+      <div className="flex flex-col items-center justify-center h-80 text-secondary-text">
         No data for this month
       </div>
     );

@@ -268,14 +268,15 @@ export default function ManageAssetsContainer() {
       <section
         className={cn(
           "px-4 space-y-4",
-          localActiveAssets.length === 0 && deletedAssets.length === 0
-            ? ""
-            : "my-2 pb-24",
+          localActiveAssets.length === 0 &&
+            deletedAssets.length === 0 &&
+            "my-2 pb-4",
+          isEditingList ? "pb-18" : "pb-4",
         )}
       >
         {/* Active Assets */}
         {localActiveAssets.length > 0 && (
-          <div className="space-y-1">
+          <div className="space-y-1 pt-2">
             {localActiveAssets.map((asset, index) => (
               <ManageAssetItem
                 key={asset.id}
@@ -313,7 +314,12 @@ export default function ManageAssetsContainer() {
 
         {/* Deleted Assets Section */}
         {deletedAssets.length > 0 && (
-          <div className="space-y-1 pt-4 border-t border-border">
+          <div
+            className={cn(
+              "space-y-1",
+              localActiveAssets.length !== 0 && "pt-2 border-t border-border",
+            )}
+          >
             <span className="text-xs font-medium text-disabled-text uppercase tracking-wider px-1">
               {t("archivedDeleted")}
             </span>

@@ -45,7 +45,7 @@ export const MonthlyTrendsChart = ({
 
   if (chartData.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-75 w-full mb-6 text-secondary-text">
+      <div className="flex flex-col items-center justify-center h-100 w-full mb-6 text-secondary-text">
         No data for this year
       </div>
     );
