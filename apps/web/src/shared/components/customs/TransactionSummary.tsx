@@ -1,26 +1,33 @@
 import { cn } from "@/shared/lib/utils/core.util";
-import { formatAmount, formatNet } from "../helpers/calendar.helper";
+import { formatAmount, formatNet } from "@/shared/lib/utils/currency.util";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
-interface MonthlySummaryProps {
+export interface TransactionSummaryProps {
   income: number;
   expense: number;
   transfer: number;
   adjustment: number;
   net: number;
+  className?: string;
 }
 
-export function MonthlySummary({
+export function TransactionSummary({
   income,
   expense,
   transfer,
   adjustment,
   net,
-}: Readonly<MonthlySummaryProps>) {
+  className,
+}: Readonly<TransactionSummaryProps>) {
   const { t, locale } = useTranslation();
 
   return (
-    <section className="bg-surface border-b border-border px-4 py-2.5 flex items-center overflow-x-auto gap-5 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none shadow-sm">
+    <section
+      className={cn(
+        "bg-surface border-b border-border px-4 py-2 flex items-center overflow-x-auto hide-scrollbar gap-4 shadow-sm",
+        className,
+      )}
+    >
       {/* Net Amount - Always visible first */}
       <div className="flex flex-col shrink-0">
         <span className="text-[11px] font-medium text-secondary-text uppercase tracking-wider">

@@ -13,7 +13,7 @@ import { TransactionListContainer } from "@/features/transactions/containers/Tra
 import { GroupedTransaction } from "@/features/transactions/types/transaction.type";
 import MonthYearNavigator from "../components/MonthYearNavigator";
 import JournalCalendarGrid from "../components/JournalCalendarGrid";
-import { MonthlySummary } from "../components/MonthlySummary";
+import { TransactionSummary } from "@/shared/components/customs/TransactionSummary";
 import {
   groupTransactionsByDate,
   calculateDailySummary,
@@ -163,7 +163,7 @@ export default function JournalCalendarContainer() {
       >
         {/* Section 3: Monthly Summary */}
         <div className="mb-1 shrink-0">
-          <MonthlySummary
+          <TransactionSummary
             income={monthlySummary.income}
             expense={monthlySummary.expense}
             transfer={monthlySummary.transfer}
