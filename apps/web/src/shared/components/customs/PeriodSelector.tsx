@@ -1,7 +1,8 @@
 import { Button } from "@/shared/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { format } from "date-fns";
-import { enUS } from "date-fns/locale";
+import { th, enUS } from "date-fns/locale";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 interface PeriodSelectorProps {
   mode: "month" | "year";
@@ -20,6 +21,8 @@ export const PeriodSelector = ({
   onNext,
   disableNext = false,
 }: PeriodSelectorProps) => {
+  const { t, currentLanguage } = useTranslation();
+  const dateLocale = currentLanguage === "th" ? th : enUS;
   const date = new Date(year, month - 1);
 
   return (
@@ -34,8 +37,8 @@ export const PeriodSelector = ({
       </Button>
       <span className="font-semibold text-[15px]">
         {mode === "month"
-          ? format(date, "MMMM yyyy", { locale: enUS })
-          : `Year ${year}`}
+          ? format(date, "MMMM yyyy", { locale: dateLocale })
+          : `${t("yearLabel")} ${year}`}
       </span>
       <Button
         variant="ghost"
