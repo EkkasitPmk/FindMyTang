@@ -1,5 +1,9 @@
+"use client";
+
 import { Loader2 } from "lucide-react";
 import { cn } from "@/shared/lib/utils/core.util";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 interface LoadingModalProps {
   isOpen: boolean;
@@ -12,9 +16,15 @@ export default function LoadingModal({
   message = "Saving...",
   className,
 }: Readonly<LoadingModalProps>) {
-  if (!isOpen) return null;
+  const [mounted, setMounted] = useState(false);
 
-  return (
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!isOpen || !mounted) return null;
+
+  const modalContent = (
     <div className="fixed inset-0 z-9999 flex items-center justify-center bg-black/40 backdrop-blur-sm">
       <div
         className={cn(
@@ -29,4 +39,6 @@ export default function LoadingModal({
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }

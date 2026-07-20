@@ -1,4 +1,6 @@
+import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import { LucideIcon, Check } from "lucide-react";
+import { createPortal } from "react-dom";
 
 interface ConfirmModalProps {
   isOpen: boolean;
@@ -35,9 +37,9 @@ export default function ConfirmModal({
   inputValue = "",
   onInputChange,
 }: Readonly<ConfirmModalProps>) {
-  if (!isOpen) {
-    return null;
-  }
+  const mounted = useMounted();
+
+  if (!isOpen || !mounted) return null;
 
   const isConfirmDisabled =
     withHardDeleteOption &&
@@ -90,7 +92,7 @@ export default function ConfirmModal({
 
   const colors = colorMap[variant];
 
-  return (
+  const modalContent = (
     <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-primary-text/20 backdrop-blur-xs transition-opacity duration-300">
       {/* Click outside to close */}
       <div
@@ -184,4 +186,6 @@ export default function ConfirmModal({
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }
