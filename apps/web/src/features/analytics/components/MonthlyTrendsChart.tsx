@@ -17,7 +17,8 @@ import {
 import { MonthlyTrendItem } from "../types/analytics.type";
 import { formatCurrency } from "@/shared/lib/utils/currency.util";
 import { format } from "date-fns";
-import { th } from "date-fns/locale";
+import { th, enUS } from "date-fns/locale";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 interface MonthlyTrendsChartProps {
   data: MonthlyTrendItem[];
@@ -35,8 +36,11 @@ export const MonthlyTrendsChart = ({
   year,
   activeTypes,
 }: MonthlyTrendsChartProps) => {
+  const { t, currentLanguage } = useTranslation();
+  const dateLocale = currentLanguage === "th" ? th : enUS;
+
   const chartData = data.map((item) => ({
-    name: format(new Date(year, item.month - 1), "MMM", { locale: th }),
+    name: format(new Date(year, item.month - 1), "MMM", { locale: dateLocale }),
     income: item.income,
     expense: item.expense,
     transfer: item.transfer,
@@ -46,7 +50,7 @@ export const MonthlyTrendsChart = ({
   if (chartData.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-100 w-full mb-6 text-secondary-text">
-        No data for this year
+        {t("noDataForThisYear")}
       </div>
     );
   }
@@ -54,25 +58,25 @@ export const MonthlyTrendsChart = ({
   const chartConfig: ChartConfig = {
     ...(activeTypes.income && {
       income: {
-        label: "Income",
+        label: t("income"),
         color: "var(--semantic-income)",
       },
     }),
     ...(activeTypes.expense && {
       expense: {
-        label: "Expense",
+        label: t("expense"),
         color: "var(--semantic-expense)",
       },
     }),
     ...(activeTypes.transfer && {
       transfer: {
-        label: "Transfer",
+        label: t("transfer"),
         color: "var(--semantic-transfer)",
       },
     }),
     ...(activeTypes.adjust && {
       adjust: {
-        label: "Adjustment",
+        label: t("adjustment"),
         color: "var(--semantic-highlight)",
       },
     }),
