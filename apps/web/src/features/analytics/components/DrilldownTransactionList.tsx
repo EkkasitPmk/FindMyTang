@@ -1,10 +1,11 @@
 import { DrilldownTransaction } from "../types/analytics.type";
 import { formatCurrency } from "@/shared/lib/utils/currency.util";
 import { format } from "date-fns";
-import { enUS } from "date-fns/locale";
+import { th, enUS } from "date-fns/locale";
 import { Asset } from "@/features/assets/types/assets.type";
 import { TransactionIcon } from "@/shared/components/customs/transactions/TransactionIcon";
 import { TransactionResponse } from "@/features/transactions/types/transaction.type";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 interface DrilldownTransactionListProps {
   transactions: DrilldownTransaction[];
@@ -22,10 +23,13 @@ export const DrilldownTransactionList = ({
   category,
   assets,
 }: DrilldownTransactionListProps) => {
+  const { t, currentLanguage } = useTranslation();
+  const dateLocale = currentLanguage === "th" ? th : enUS;
+
   if (transactions.length === 0) {
     return (
       <div className="text-center text-secondary-text py-10">
-        No transactions this month
+        {t("noTransactionsThisMonth")}
       </div>
     );
   }
@@ -46,7 +50,7 @@ export const DrilldownTransactionList = ({
       {Object.entries(grouped).map(([date, txs]) => (
         <div key={date}>
           <div className="text-sm font-medium text-secondary-text mb-2 ml-2">
-            {format(new Date(date), "MMM d, yyyy", { locale: enUS })}
+            {format(new Date(date), "MMM d, yyyy", { locale: dateLocale })}
           </div>
           <div className="bg-surface rounded-xl border overflow-hidden divide-y divide-border">
             {txs.map((tx) => {
@@ -74,7 +78,7 @@ export const DrilldownTransactionList = ({
                     />
                     <div className="flex flex-col gap-1">
                       <p className="text-[14px] font-medium text-primary-text leading-none">
-                        {tx.note || "No note"}
+                        {tx.note || t("noNote")}
                       </p>
                       <span
                         className="inline-flex items-center w-fit px-1.5 py-0.5 rounded-md text-[10px] font-semibold tracking-wide"
