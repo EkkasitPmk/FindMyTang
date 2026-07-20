@@ -197,7 +197,13 @@ export default function TransactionsContainer() {
 
   const [tempDate, setTempDate] = useState<Date | undefined>(date);
 
-  // displayMonth state is now managed above during render
+  const [prevDate, setPrevDate] = useState<Date>(date);
+
+  if (date !== prevDate) {
+    setPrevDate(date);
+    setTempDate(date);
+    setDisplayMonth(date);
+  }
 
   const handleConfirmDate = () => {
     if (tempDate) {
