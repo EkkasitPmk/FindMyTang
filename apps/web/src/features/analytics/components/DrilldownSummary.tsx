@@ -1,0 +1,54 @@
+import { DrilldownSummary as IDrilldownSummary } from "../types/analytics.type";
+import { formatCurrency } from "@/shared/lib/utils/currency.util";
+
+interface DrilldownSummaryProps {
+  summary: IDrilldownSummary;
+  color: string;
+}
+
+export const DrilldownSummary = ({ summary, color }: DrilldownSummaryProps) => {
+  const isUp = summary.percentageChange > 0;
+
+  return (
+    <div className="bg-surface rounded-xl border px-4 py-3">
+      <div className="text-sm text-secondary-text font-medium">
+        Total This Month
+      </div>
+      <div className="text-3xl font-bold" style={{ color }}>
+        {formatCurrency(summary.currentMonth)}
+      </div>
+      <div className="text-sm text-secondary-text">
+        {summary.percentageOfTotal.toFixed(1)}% of total
+      </div>
+
+      <div
+        className={`inline-flex my-2 items-center px-2 py-1 rounded-md text-xs font-medium ${isUp ? "bg-expense-light text-expense" : "bg-income-light text-income"}`}
+      >
+        {isUp ? "↑" : "↓"} {Math.abs(summary.percentageChange).toFixed(1)}% from
+        last month
+      </div>
+
+      <div className="flex h-6 w-full gap-1">
+        <div
+          className="h-full rounded-md transition-all"
+          style={{
+            backgroundColor: color,
+            width: `${Math.max(10, Math.min(100, (summary.currentMonth / Math.max(summary.currentMonth, summary.previousMonth)) * 100))}%`,
+          }}
+          title={`This Month: ${formatCurrency(summary.currentMonth)}`}
+        />
+        <div
+          className="h-full bg-surface-secondary rounded-md transition-all"
+          style={{
+            width: `${Math.max(10, Math.min(100, (summary.previousMonth / Math.max(summary.currentMonth, summary.previousMonth)) * 100))}%`,
+          }}
+          title={`Last Month: ${formatCurrency(summary.previousMonth)}`}
+        />
+      </div>
+      <div className="flex justify-between text-[11px] text-secondary-text px-1 mt-1">
+        <span>This Month</span>
+        <span>Last Month</span>
+      </div>
+    </div>
+  );
+};

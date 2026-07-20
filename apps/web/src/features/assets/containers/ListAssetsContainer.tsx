@@ -4,6 +4,7 @@ import { ChevronRight, Landmark, Link2, Plus } from "lucide-react";
 import { useAssets } from "../hooks/assets.hook";
 import { getAssetIcon } from "../components/AssetIcon";
 import { useThisMonthSummary } from "@/features/home/hooks/summary.hook";
+import { AssetIconWrapper } from "@/shared/components/customs/AssetIconWrapper";
 import { Button } from "@/shared/components/customs/Button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
@@ -74,23 +75,9 @@ export default function ListAssetsContainer({
                 }}
               >
                 <div className="flex items-center gap-3">
-                  <span
-                    className={
-                      asset.color
-                        ? "p-2.5 rounded-full"
-                        : "bg-surface-secondary p-2.5 rounded-full"
-                    }
-                    style={
-                      asset.color
-                        ? {
-                            backgroundColor: `${asset.color}1a`,
-                            color: asset.color,
-                          }
-                        : undefined
-                    }
-                  >
+                  <AssetIconWrapper color={asset.color}>
                     {getAssetIcon(asset.type, asset.color)}
-                  </span>
+                  </AssetIconWrapper>
                   <div className="flex flex-col text-primary-text">
                     <span className="text-base font-semibold">
                       {asset.name}

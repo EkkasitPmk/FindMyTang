@@ -242,18 +242,3 @@ export function getContributionBgClass(
 
   return summary.net > 0 ? incomeClasses[level] : expenseClasses[level];
 }
-
-export function formatAmount(value: number, locale: string = "en-US"): string {
-  return `฿${Math.abs(value).toLocaleString(locale, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`;
-}
-
-export function formatNet(value: number, locale: string = "en-US"): string {
-  const sign = value >= 0 ? "+" : "-";
-  return `${sign}฿${Math.abs(value).toLocaleString(locale, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`;
-}
