@@ -6,7 +6,7 @@ import {
 } from "@/shared/components/ui/chart";
 import { CategoryBreakdownItem } from "../types/analytics.type";
 import { formatCurrency } from "@/shared/lib/utils/currency.util";
-
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { CategoryBreakdownChartLabel } from "./CategoryBreakdownChartLabel";
 
 interface CategoryBreakdownChartProps {
@@ -18,10 +18,12 @@ export const CategoryBreakdownChart = ({
   data,
   totalAmount,
 }: CategoryBreakdownChartProps) => {
+  const { t } = useTranslation();
+
   if (data.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-80 text-secondary-text">
-        No data for this month
+        {t("noTransactionsThisMonth")}
       </div>
     );
   }
@@ -47,8 +49,8 @@ export const CategoryBreakdownChart = ({
               data={chartData}
               cx="50%"
               cy="50%"
-              innerRadius={55}
-              outerRadius={70}
+              innerRadius={60}
+              outerRadius={80}
               paddingAngle={2}
               minAngle={10}
               dataKey="totalAmount"
@@ -69,7 +71,7 @@ export const CategoryBreakdownChart = ({
 
       {/* Center Total Amount */}
       <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-        <span className="text-xs text-secondary-text">Total</span>
+        <span className="text-xs text-secondary-text">{t("totalLabel")}</span>
         <span className="text-lg font-bold text-primary-text">
           {formatCurrency(totalAmount)}
         </span>
