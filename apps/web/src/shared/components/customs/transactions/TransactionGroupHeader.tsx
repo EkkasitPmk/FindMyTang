@@ -40,8 +40,12 @@ export function TransactionGroupHeader({
   return (
     <div className={cn("flex justify-between items-center", className)}>
       <div className="flex flex-col">
-        <span className="text-base font-medium text-primary-text">
-          {topRow}
+        <span className="text-base font-medium text-primary-text flex items-center gap-1">
+          {topRow}{" "}
+          <span className="text-secondary-text text-xs">
+            • {group.items.length}{" "}
+            {group.items.length === 1 ? t("item") : t("items")}
+          </span>
         </span>
         <span className="text-sm font-normal text-secondary-text capitalize">
           {bottomRow}
