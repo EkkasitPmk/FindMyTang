@@ -204,29 +204,29 @@ describe("transaction.helper", () => {
   describe("getTransactionTypeOptions", () => {
     it("should return limited options for editing TRANSFER", () => {
       const options = getTransactionTypeOptions("edit-id", "TRANSFER");
-      expect(options).toEqual([{ label: "Transfer", value: "TRANSFER" }]);
+      expect(options).toEqual([{ label: "transfer", value: "TRANSFER" }]);
     });
 
     it("should return limited options for editing ADJUSTMENT", () => {
       const options = getTransactionTypeOptions("edit-id", "ADJUSTMENT");
-      expect(options).toEqual([{ label: "Adjustment", value: "ADJUSTMENT" }]);
+      expect(options).toEqual([{ label: "adjustment", value: "ADJUSTMENT" }]);
     });
 
     it("should return Expense and Income for editing EXPENSE or INCOME", () => {
       const options1 = getTransactionTypeOptions("edit-id", "EXPENSE");
       expect(options1).toEqual([
-        { label: "Expense", value: "EXPENSE" },
-        { label: "Income", value: "INCOME" },
+        { label: "expense", value: "EXPENSE" },
+        { label: "income", value: "INCOME" },
       ]);
     });
 
     it("should return all options when not editing", () => {
       const options = getTransactionTypeOptions(null, undefined);
       expect(options).toEqual([
-        { label: "Expense", value: "EXPENSE" },
-        { label: "Income", value: "INCOME" },
-        { label: "Transfer", value: "TRANSFER" },
-        { label: "Adjustment", value: "ADJUSTMENT" },
+        { label: "expense", value: "EXPENSE" },
+        { label: "income", value: "INCOME" },
+        { label: "transfer", value: "TRANSFER" },
+        { label: "adjustment", value: "ADJUSTMENT" },
       ]);
     });
   });
