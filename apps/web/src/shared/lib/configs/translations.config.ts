@@ -215,6 +215,8 @@ export const translations = {
     deletedTransactionsNotice: "ธุรกรรมที่ถูกลบจะถูกลบอย่างถาวรหลังจาก 30 วัน",
 
     typeToSearchTransactions: "พิมพ์เพื่อค้นหาธุรกรรม",
+    item: "รายการ",
+    items: "รายการ",
     // Journal Feature
     searchTransactions: "ค้นหาธุรกรรม...",
     timeline: "ไทม์ไลน์",
@@ -322,6 +324,22 @@ export const translations = {
     errConfirmPasswordRequired: "กรุณายืนยันรหัสผ่าน",
     errAgreeTermsRequired: "คุณต้องยอมรับข้อตกลงและนโยบายความเป็นส่วนตัว",
     errPasswordsNotMatch: "รหัสผ่านไม่ตรงกัน",
+    // Analytics Feature
+    categoryList: "รายการหมวดหมู่",
+    reportTab: "รายงาน",
+    trendsTab: "แนวโน้ม",
+    assetsTab: "สินทรัพย์",
+    monthLabel: "เดือน",
+    yearLabel: "ปี",
+    totalLabel: "รวม",
+    netFlow: "ยอดสุทธิ",
+    noDataForThisYear: "ไม่มีข้อมูลสำหรับปีนี้",
+    totalThisMonth: "ยอดรวมเดือนนี้",
+    ofTotal: "ของทั้งหมด",
+    fromLastMonth: "จากเดือนที่แล้ว",
+    lastMonth: "เดือนที่แล้ว",
+    noTransactionsThisMonth: "ไม่มีรายการในเดือนนี้",
+    noNote: "ไม่มีบันทึก",
   },
   en: {
     // Navigation / Layout
@@ -543,6 +561,8 @@ export const translations = {
       "Deleted transactions are permanently removed after 30 days.",
 
     typeToSearchTransactions: "Type to search transactions",
+    item: "item",
+    items: "items",
     // Journal Feature
     searchTransactions: "Search transactions...",
     timeline: "Timeline",
@@ -652,6 +672,22 @@ export const translations = {
     errAgreeTermsRequired:
       "You must agree to the Terms of Service and Privacy Policy",
     errPasswordsNotMatch: "Passwords do not match",
+    // Analytics Feature
+    categoryList: "Category list",
+    reportTab: "Report",
+    trendsTab: "Trends",
+    assetsTab: "Assets",
+    monthLabel: "Month",
+    yearLabel: "Year",
+    totalLabel: "Total",
+    netFlow: "Net Flow",
+    noDataForThisYear: "No data for this year",
+    totalThisMonth: "Total This Month",
+    ofTotal: "of total",
+    fromLastMonth: "from last month",
+    lastMonth: "Last Month",
+    noTransactionsThisMonth: "No transactions this month",
+    noNote: "No note",
   },
 } as const;
 
