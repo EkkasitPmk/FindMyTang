@@ -7,20 +7,15 @@ import { useAssets } from "@/features/assets/hooks/assets.hook";
 
 interface DrilldownContainerProps {
   categoryId: string;
+  month: number;
+  year: number;
 }
 
-export const DrilldownContainer = ({ categoryId }: DrilldownContainerProps) => {
-  const searchParams =
-    typeof window !== "undefined"
-      ? new URLSearchParams(window.location.search)
-      : null;
-  const month = searchParams?.get("month")
-    ? Number.parseInt(searchParams.get("month") as string)
-    : new Date().getMonth() + 1;
-  const year = searchParams?.get("year")
-    ? Number.parseInt(searchParams.get("year") as string)
-    : new Date().getFullYear();
-
+export const DrilldownContainer = ({
+  categoryId,
+  month,
+  year,
+}: DrilldownContainerProps) => {
   const { data, isLoading } = useDrilldown(categoryId, month, year);
   const { data: assets } = useAssets();
 
@@ -72,7 +67,7 @@ export const DrilldownContainer = ({ categoryId }: DrilldownContainerProps) => {
         </div>
       ) : (
         <div className="flex flex-col animate-in fade-in duration-300">
-          <div className="px-4 space-y-4 pb-4">
+          <div className="px-4 space-y-4 pb-4 py-2">
             <DrilldownSummary
               summary={data!.summary}
               color={data!.category.color || "var(--chart-1)"}
