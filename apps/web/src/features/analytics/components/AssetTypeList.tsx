@@ -4,6 +4,8 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { getAssetIcon } from "@/features/assets/components/AssetIcon";
 import { AssetType } from "@/features/assets/types/assets.type";
 import { AssetIconWrapper } from "@/shared/components/customs/AssetIconWrapper";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { TranslationKey } from "@/shared/lib/configs/translations.config";
 
 interface AssetTypeListProps {
   data: AssetDistributionGroup[];
@@ -16,6 +18,8 @@ export const AssetTypeList = ({
   expandedTypes,
   onToggleExpand,
 }: AssetTypeListProps) => {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-2 pb-4">
       {data.map((group, index) => {
@@ -40,7 +44,8 @@ export const AssetTypeList = ({
                 </AssetIconWrapper>
                 <div className="text-left">
                   <p className="text-[15px] font-medium text-primary-text">
-                    {group.assetType}
+                    {t(`assetType${group.assetType}` as TranslationKey) ||
+                      group.assetType}
                   </p>
                   <p className="text-[12px] text-secondary-text">
                     {group.percentage.toFixed(1)}%
