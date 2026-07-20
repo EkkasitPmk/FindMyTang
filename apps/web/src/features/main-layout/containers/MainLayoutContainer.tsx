@@ -5,9 +5,15 @@ import NavContainer from "@/features/nav/containers/NavContainer";
 import TopAppBarMobile from "@/shared/components/customs/TopAppBarMobile";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { X, Plus } from "lucide-react";
-import { useCategoryUIStore } from "@/features/category/hooks/category.hook";
+import {
+  useCategoryUIStore,
+  useCategories,
+} from "@/features/category/hooks/category.hook";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { cn } from "@/shared/lib/utils/core.util";
+import { TransactionIcon } from "@/shared/components/customs/transactions/TransactionIcon";
+import { TransactionResponse } from "@/features/transactions/types/transaction.type";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 import AssetsMenuContainer from "@/features/assets/containers/AssetsMenuContainer";
 import CreateAssetsContainer from "@/features/assets/containers/CreateAssetsContainer";
 import {
@@ -56,12 +62,53 @@ export default function MainLayoutContainer({
   ].includes(pathname);
   const shouldShowTopAppBar = !isMainTab;
 
-  const getMobileTitle = (path: string) => {
+  const categoryIdMatch = new RegExp(/\/analytics\/category\/(.+)/).exec(
+    pathname,
+  );
+  const categoryId = categoryIdMatch ? categoryIdMatch[1] : null;
+  const { data: categories } = useCategories();
+  const currentCategory = categories?.find((c) => c.id === categoryId);
+
+  const getMobileTitle = (path: string): React.ReactNode => {
     if (path === "/categories") return t("manageCategories");
     if (path === "/assets/new") return t("newAssets");
     if (path === "/settings/account") return t("account");
     if (path === "/settings") return t("navSettings");
     if (path === "/assets") return assetName || t("manageAssets");
+    if (path.startsWith("/analytics/category/")) {
+      if (currentCategory) {
+        return (
+          <div className="flex flex-col items-center">
+            <div className="flex items-center gap-1.5">
+              <TransactionIcon
+                transaction={
+                  {
+                    type: "EXPENSE",
+                    category: {
+                      id: currentCategory.id,
+                      name: currentCategory.name,
+                      icon: currentCategory.icon,
+                      color: currentCategory.color || "var(--primary-text)",
+                    },
+                  } as TransactionResponse
+                }
+              />
+              <span className="text-base font-bold text-primary-text leading-none">
+                {currentCategory.name}
+              </span>
+            </div>
+          </div>
+        );
+      }
+      return (
+        <div className="flex flex-col items-center">
+          <div className="flex items-center gap-1.5 mt-0.5">
+            <Skeleton className="w-8.5 h-8.5 rounded-lg shrink-0" />
+            <Skeleton className="w-16 h-4 rounded" />
+          </div>
+        </div>
+      );
+    }
     return "";
   };
   const mobileTitle = getMobileTitle(pathname);
@@ -123,9 +170,13 @@ export default function MainLayoutContainer({
     return null;
   };
 
-  let mainContentClassName = "px-0 py-3 md:p-8";
+  let mainContentClassName = "px-0 md:p-8";
   if (isMainTab) {
-    if (pathname === "/transaction" || pathname === "/journal") {
+    if (
+      pathname === "/transaction" ||
+      pathname === "/journal" ||
+      pathname === "/analytics"
+    ) {
       mainContentClassName = cn("md:p-8 pb-20", "py-3");
     } else {
       mainContentClassName = cn("md:p-8 pb-20", "py-3 pt-15");
@@ -147,16 +198,11 @@ export default function MainLayoutContainer({
         <div className="flex-1 flex flex-col min-w-0">
           {isMainTab &&
             pathname !== "/transaction" &&
-            pathname !== "/journal" && <ShowProfileContainer />}
+            pathname !== "/journal" &&
+            pathname !== "/analytics" && <ShowProfileContainer />}
 
-          {/* Child Content */}
-          <main
-            className={cn(
-              "flex-1 overflow-y-auto max-h-screen w-full mx-auto md:pb-8",
-              mainContentClassName,
-            )}
-          >
-            {shouldShowTopAppBar && !isSearchMode && (
+          {shouldShowTopAppBar && !isSearchMode && (
+            <div className="fixed w-full top-0 z-40 bg-background/80 backdrop-blur-md">
               <TopAppBarMobile
                 title={mobileTitle}
                 showBackButton={pathname !== "/settings"}
@@ -169,30 +215,38 @@ export default function MainLayoutContainer({
                 }}
                 rightAction={renderRightAction()}
               />
-            )}
+            </div>
+          )}
 
-            {shouldShowTopAppBar && isSearchMode && (
-              <div className="flex items-center px-4 pb-2 z-40 bg-background/90 backdrop-blur-sm border-b border-border/50 h-10">
-                <Input
-                  autoFocus
-                  placeholder={t("searchByNoteOrCategory")}
-                  value={searchKeyword}
-                  onChange={(e) => setSearchKeyword(e.target.value)}
-                  className="h-8 text-sm flex-1 bg-surface"
-                />
-                <Button
-                  variant="unstyled"
-                  onClick={() => {
-                    setSearchMode(false);
-                    setSearchKeyword("");
-                  }}
-                  className="ml-2 text-secondary-text cursor-pointer p-1 shrink-0"
-                >
-                  <X size={20} />
-                </Button>
-              </div>
-            )}
+          {shouldShowTopAppBar && isSearchMode && (
+            <div className="sticky top-0 flex items-center px-4 pb-2 pt-2 z-40 bg-background/90 backdrop-blur-sm border-b border-border/50 h-14">
+              <Input
+                autoFocus
+                placeholder={t("searchByNoteOrCategory")}
+                value={searchKeyword}
+                onChange={(e) => setSearchKeyword(e.target.value)}
+                className="h-8 text-sm flex-1 bg-surface"
+              />
+              <Button
+                variant="unstyled"
+                onClick={() => {
+                  setSearchMode(false);
+                  setSearchKeyword("");
+                }}
+                className="ml-2 text-secondary-text cursor-pointer p-1 shrink-0"
+              >
+                <X size={20} />
+              </Button>
+            </div>
+          )}
 
+          {/* Child Content */}
+          <main
+            className={cn(
+              "flex-1 overflow-y-auto max-h-screen w-full mx-auto md:pb-8 pt-15",
+              mainContentClassName,
+            )}
+          >
             {children}
 
             {isCreateAssetModalOpen && (
