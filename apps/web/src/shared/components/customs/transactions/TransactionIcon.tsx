@@ -14,13 +14,16 @@ export function TransactionIcon({
     const icon = getCategoryIcon(transaction.category.icon);
     return (
       <span
-        className="rounded-lg p-2"
-        style={{
-          color: transaction.category.color,
-          backgroundColor: `${transaction.category.color}22`,
-        }}
+        className="rounded-lg p-2 relative inline-flex items-center justify-center overflow-hidden shrink-0"
+        style={{ color: transaction.category.color }}
       >
-        {React.createElement(icon, { size: 18 })}
+        <span
+          className="absolute inset-0 opacity-[0.15]"
+          style={{ backgroundColor: transaction.category.color }}
+        />
+        <span className="relative z-10 flex items-center justify-center">
+          {React.createElement(icon, { size: 18 })}
+        </span>
       </span>
     );
   }
