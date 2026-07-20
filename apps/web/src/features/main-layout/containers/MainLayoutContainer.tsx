@@ -170,17 +170,19 @@ export default function MainLayoutContainer({
     return null;
   };
 
-  let mainContentClassName = "px-0 md:p-8";
+  let mainContentClassName = "px-0 py-3";
   if (isMainTab) {
     if (
       pathname === "/transaction" ||
       pathname === "/journal" ||
       pathname === "/analytics"
     ) {
-      mainContentClassName = cn("md:p-8 pb-20", "py-3");
+      mainContentClassName = cn("py-3");
     } else {
-      mainContentClassName = cn("md:p-8 pb-20", "py-3 pt-15");
+      mainContentClassName = cn("pt-15");
     }
+  } else if (shouldShowTopAppBar) {
+    mainContentClassName = cn("pt-12");
   }
 
   return (
@@ -243,7 +245,7 @@ export default function MainLayoutContainer({
           {/* Child Content */}
           <main
             className={cn(
-              "flex-1 overflow-y-auto max-h-screen w-full mx-auto md:pb-8 pt-15",
+              "flex-1 overflow-y-auto max-h-screen w-full mx-auto",
               mainContentClassName,
             )}
           >
