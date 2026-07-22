@@ -1,4 +1,4 @@
-import { TransactionResponse } from "@/features/transactions/types/transaction.type";
+import { TransactionResponse } from "@/shared/lib/types/transaction.type";
 
 export const calculateNetTotal = (items: TransactionResponse[]) => {
   return items.reduce((acc, transaction) => {

@@ -1,7 +1,7 @@
 import {
   GroupedTransaction,
   TransactionResponse,
-} from "@/features/transactions/types/transaction.type";
+} from "@/shared/lib/types/transaction.type";
 import { TransactionItem } from "./TransactionItem";
 import { VirtuosoContext } from "./TransactionList";
 import { cn } from "@/shared/lib/utils/core.util";

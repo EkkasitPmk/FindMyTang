@@ -1,15 +1,7 @@
 import Dexie, { type Table } from "dexie";
+import { AssetType } from "../types/asset.type";
 
 // Define the types (matching the Prisma schema roughly, but for frontend usage)
-
-export enum AssetType {
-  CASH = "CASH",
-  BANK = "BANK",
-  E_WALLET = "E_WALLET",
-  INVESTMENT = "INVESTMENT",
-  CRYPTO = "CRYPTO",
-  OTHER = "OTHER",
-}
 
 export enum CategoryType {
   INCOME = "INCOME",

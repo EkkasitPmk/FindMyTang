@@ -1,4 +1,4 @@
-import { GroupedTransaction } from "@/features/transactions/types/transaction.type";
+import { GroupedTransaction } from "@/shared/lib/types/transaction.type";
 import { TranslationKey } from "@/shared/lib/configs/translations.config";
 import { TransactionGroupHeader } from "./TransactionGroupHeader";
 import { VirtuosoContext } from "./TransactionList";

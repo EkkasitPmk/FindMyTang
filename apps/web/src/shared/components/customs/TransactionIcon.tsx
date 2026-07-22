@@ -1,6 +1,6 @@
 import React from "react";
 import { ArrowRightLeft, SlidersHorizontal } from "lucide-react";
-import { TransactionResponse } from "@/features/transactions/types/transaction.type";
+import { TransactionResponse } from "@/shared/lib/types/transaction.type";
 import { getCategoryIcon } from "@/shared/lib/configs/category-icons.config";
 
 export interface TransactionIconProps {

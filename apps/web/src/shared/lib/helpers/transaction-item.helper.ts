@@ -1,5 +1,5 @@
 import { formatDisplayDate } from "@/shared/lib/helpers/date.helper";
-import { TransactionResponse } from "@/features/transactions/types/transaction.type";
+import { TransactionResponse } from "@/shared/lib/types/transaction.type";
 import { TranslationKey } from "@/shared/lib/configs/translations.config";
 
 export function getTransferDetails(
