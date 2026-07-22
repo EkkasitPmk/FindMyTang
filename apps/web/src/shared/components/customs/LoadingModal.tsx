@@ -1,9 +1,8 @@
 "use client";
-
 import { Loader2 } from "lucide-react";
 import { cn } from "@/shared/lib/utils/core.util";
-import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 
 interface LoadingModalProps {
   isOpen: boolean;
@@ -16,11 +15,7 @@ export default function LoadingModal({
   message = "Saving...",
   className,
 }: Readonly<LoadingModalProps>) {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useMounted();
 
   if (!isOpen || !mounted) return null;
 

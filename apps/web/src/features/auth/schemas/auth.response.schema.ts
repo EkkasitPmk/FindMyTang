@@ -3,12 +3,14 @@ import { userSchema } from "@/shared/lib/schemas/user.schema";
 
 export const loginResponseSchema = z.object({
   user: userSchema,
-  token: z.string(),
+  token: z.string().optional(),
 });
 
 export const registerResponseSchema = z.object({
-  user: userSchema,
-  token: z.string(),
+  id: z.string(),
+  email: z.string().nullable().optional(),
+  displayName: z.string().nullable().optional(),
+  createdAt: z.string().optional(),
 });
 
 export const syncGuestTransactionItemSchema = z.object({
