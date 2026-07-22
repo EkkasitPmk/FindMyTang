@@ -4,7 +4,13 @@ import {
   resolveDefaultTransactionType,
   createDefaultFormValues,
   getActiveItemId,
-  getTransactionTypeOptions,
+  getTypeLabel,
+  parseErrorMessage,
+  checkIsLoading,
+  checkIsTxLoading,
+  checkIsSubmitting,
+  isCategoryType,
+  getLoadingModalProps,
 } from "./transaction.helper";
 import { TransactionResponse } from "@/shared/lib/types/transaction.type";
 
@@ -201,33 +207,85 @@ describe("transaction.helper", () => {
     });
   });
 
-  describe("getTransactionTypeOptions", () => {
-    it("should return limited options for editing TRANSFER", () => {
-      const options = getTransactionTypeOptions("edit-id", "TRANSFER");
-      expect(options).toEqual([{ label: "transfer", value: "TRANSFER" }]);
+  describe("getTypeLabel", () => {
+    it("should return translated label when key exists", () => {
+      const mockT = vi.fn((k) => `translated_${k}`);
+      expect(getTypeLabel("EXPENSE", mockT)).toBe("translated_expense");
     });
 
-    it("should return limited options for editing ADJUSTMENT", () => {
-      const options = getTransactionTypeOptions("edit-id", "ADJUSTMENT");
-      expect(options).toEqual([{ label: "adjustment", value: "ADJUSTMENT" }]);
+    it("should return lowercase type when key is not found", () => {
+      const mockT = vi.fn((k) => k);
+      expect(getTypeLabel("UNKNOWN", mockT)).toBe("unknown");
+    });
+  });
+
+  describe("parseErrorMessage", () => {
+    it("should return first message from array if message is an array", () => {
+      const err = {
+        response: { data: { message: ["Array error"] } },
+      } as unknown as Parameters<typeof parseErrorMessage>[0];
+      expect(parseErrorMessage(err, "fallback")).toBe("Array error");
     });
 
-    it("should return Expense and Income for editing EXPENSE or INCOME", () => {
-      const options1 = getTransactionTypeOptions("edit-id", "EXPENSE");
-      expect(options1).toEqual([
-        { label: "expense", value: "EXPENSE" },
-        { label: "income", value: "INCOME" },
-      ]);
+    it("should return message string if available", () => {
+      const err = {
+        response: { data: { message: "String error" } },
+      } as unknown as Parameters<typeof parseErrorMessage>[0];
+      expect(parseErrorMessage(err, "fallback")).toBe("String error");
     });
 
-    it("should return all options when not editing", () => {
-      const options = getTransactionTypeOptions(null, undefined);
-      expect(options).toEqual([
-        { label: "expense", value: "EXPENSE" },
-        { label: "income", value: "INCOME" },
-        { label: "transfer", value: "TRANSFER" },
-        { label: "adjustment", value: "ADJUSTMENT" },
-      ]);
+    it("should return fallback when response error message is missing", () => {
+      const err = {} as unknown as Parameters<typeof parseErrorMessage>[0];
+      expect(parseErrorMessage(err, "fallback")).toBe("fallback");
+    });
+  });
+
+  describe("loading and status helpers", () => {
+    it("checkIsLoading should check mounted, isPending, and isFetching", () => {
+      expect(checkIsLoading(false, false, false)).toBe(true);
+      expect(checkIsLoading(true, true, false)).toBe(true);
+      expect(checkIsLoading(true, false, true)).toBe(true);
+      expect(checkIsLoading(true, false, false)).toBe(false);
+    });
+
+    it("checkIsTxLoading should return true only if editId exists and loading", () => {
+      expect(checkIsTxLoading(true, null, true, true)).toBe(false);
+      expect(checkIsTxLoading(true, "tx-1", true, false)).toBe(true);
+      expect(checkIsTxLoading(true, "tx-1", false, false)).toBe(false);
+    });
+
+    it("checkIsSubmitting should return true if any mutation pending", () => {
+      expect(checkIsSubmitting(true, false, false)).toBe(true);
+      expect(checkIsSubmitting(false, true, false)).toBe(true);
+      expect(checkIsSubmitting(false, false, true)).toBe(true);
+      expect(checkIsSubmitting(false, false, false)).toBe(false);
+    });
+
+    it("isCategoryType should correctly identify EXPENSE and INCOME", () => {
+      expect(isCategoryType("EXPENSE")).toBe(true);
+      expect(isCategoryType("INCOME")).toBe(true);
+      expect(isCategoryType("TRANSFER")).toBe(false);
+      expect(isCategoryType("ADJUSTMENT")).toBe(false);
+    });
+
+    it("getLoadingModalProps should format props correctly", () => {
+      const modalState = {
+        isOpen: true,
+        status: "success" as const,
+        message: "Done",
+      };
+      expect(getLoadingModalProps(modalState, false)).toEqual({
+        isOpen: true,
+        status: "success",
+        message: "Done",
+      });
+
+      const closedModal = { isOpen: false, status: "loading" as const };
+      expect(getLoadingModalProps(closedModal, true)).toEqual({
+        isOpen: true,
+        status: "loading",
+        message: undefined,
+      });
     });
   });
 });

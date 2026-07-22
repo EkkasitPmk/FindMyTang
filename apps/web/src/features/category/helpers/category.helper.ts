@@ -14,3 +14,14 @@ export const reorderCategoriesList = (
   const otherTabCategories = categories.filter((c) => c.type !== activeTab);
   return [...updatedTabCategories, ...otherTabCategories];
 };
+
+export function getTargetIndexFromTouch(e: React.TouchEvent): number | null {
+  const touch = e.touches[0];
+  if (!touch) return null;
+  const el = document
+    .elementFromPoint(touch.clientX, touch.clientY)
+    ?.closest("[data-index]") as HTMLElement | null;
+  if (!el) return null;
+  const idx = Number.parseInt(el.dataset.index ?? "", 10);
+  return Number.isNaN(idx) ? null : idx;
+}
