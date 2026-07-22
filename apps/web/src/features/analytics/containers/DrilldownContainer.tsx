@@ -3,7 +3,7 @@ import { useDrilldown } from "../hooks/drilldown.hook";
 import { DrilldownSummary } from "../components/DrilldownSummary";
 import { DrilldownTransactionList } from "../components/DrilldownTransactionList";
 import { Skeleton } from "@/shared/components/ui/skeleton";
-import { useAssets } from "@/features/assets/hooks/assets.hook";
+import { useAssets } from "@/shared/lib/hooks/useAssets.hook";
 
 interface DrilldownContainerProps {
   categoryId: string;

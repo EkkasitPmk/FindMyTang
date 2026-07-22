@@ -4,7 +4,8 @@ import http from "@/shared/lib/api/http";
 import {
   AssetDistributionResponse,
   AssetDistributionItem,
-} from "../types/analytics.type";
+  assetDistributionResponseSchema,
+} from "../schemas/analytics.response.schema";
 
 export const getAssetDistributionApi =
   async (): Promise<AssetDistributionResponse> => {
@@ -24,6 +25,7 @@ export const getAssetDistributionApi =
         existing.assets.push({
           id: a.id,
           name: a.name,
+          color: a.color || null,
           balance: a.balance,
         });
         typeMap.set(a.type, existing);
@@ -38,10 +40,13 @@ export const getAssetDistributionApi =
         }))
         .sort((a, b) => b.totalBalance - a.totalBalance);
 
-      return { totalAssets, distribution };
+      return assetDistributionResponseSchema.parse({
+        totalAssets,
+        distribution,
+      });
     }
 
     const response =
       await http.get<AssetDistributionResponse>("/analytics/assets");
-    return response.data;
+    return assetDistributionResponseSchema.parse(response.data);
   };

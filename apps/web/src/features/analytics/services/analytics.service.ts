@@ -1,5 +1,8 @@
 import http from "@/shared/lib/api/http";
-import { CategoryBreakdownResponse } from "../types/analytics.type";
+import {
+  CategoryBreakdownResponse,
+  categoryBreakdownResponseSchema,
+} from "../schemas/analytics.response.schema";
 import { useGuestStore } from "@/shared/lib/storages/guest.storage";
 import { db } from "@/shared/lib/storages/dexie.storage";
 
@@ -10,7 +13,7 @@ export const getCategoryBreakdownApi = async (
 ): Promise<CategoryBreakdownResponse> => {
   if (useGuestStore.getState().isGuest) {
     const startOfMonthStr = `${year}-${String(month).padStart(2, "0")}-01`;
-    const endOfMonth = new Date(year, month, 0); // Last day of month
+    const endOfMonth = new Date(year, month, 0);
     const endOfMonthStr = `${year}-${String(month).padStart(2, "0")}-${String(endOfMonth.getDate()).padStart(2, "0")}T23:59:59`;
 
     const transactions = await db.transactions
@@ -67,10 +70,10 @@ export const getCategoryBreakdownApi = async (
       })
       .sort((a, b) => b.totalAmount - a.totalAmount);
 
-    return {
+    return categoryBreakdownResponseSchema.parse({
       summary: { income, expense, transfer, adjust, net: income - expense },
       breakdown,
-    };
+    });
   }
 
   const response = await http.get<CategoryBreakdownResponse>(
@@ -79,7 +82,5 @@ export const getCategoryBreakdownApi = async (
       params: { month, year, type },
     },
   );
-  return response.data;
+  return categoryBreakdownResponseSchema.parse(response.data);
 };
-
-// ... other endpoints later

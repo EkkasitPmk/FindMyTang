@@ -1,7 +1,10 @@
 import { useGuestStore } from "@/shared/lib/storages/guest.storage";
 import { db } from "@/shared/lib/storages/dexie.storage";
 import http from "@/shared/lib/api/http";
-import { MonthlyTrendsResponse } from "../types/analytics.type";
+import {
+  MonthlyTrendsResponse,
+  monthlyTrendsResponseSchema,
+} from "../schemas/analytics.response.schema";
 
 export const getMonthlyTrendsApi = async (
   year: number,
@@ -39,11 +42,11 @@ export const getMonthlyTrendsApi = async (
       }
     });
 
-    return { year, months };
+    return monthlyTrendsResponseSchema.parse({ year, months });
   }
 
   const response = await http.get<MonthlyTrendsResponse>("/analytics/trends", {
     params: { year },
   });
-  return response.data;
+  return monthlyTrendsResponseSchema.parse(response.data);
 };

@@ -1,7 +1,10 @@
 import { useGuestStore } from "@/shared/lib/storages/guest.storage";
 import { db } from "@/shared/lib/storages/dexie.storage";
 import http from "@/shared/lib/api/http";
-import { DrilldownResponse } from "../types/analytics.type";
+import {
+  DrilldownResponse,
+  drilldownResponseSchema,
+} from "../schemas/analytics.response.schema";
 
 export const getDrilldownApi = async (
   categoryId: string,
@@ -76,7 +79,7 @@ export const getDrilldownApi = async (
       })
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-    return {
+    return drilldownResponseSchema.parse({
       category: {
         id: category?.id || categoryId,
         name: category?.name || "Unknown",
@@ -92,7 +95,7 @@ export const getDrilldownApi = async (
           totalAllType > 0 ? (currentTotal / totalAllType) * 100 : 0,
       },
       transactions: formattedTxs,
-    };
+    });
   }
 
   const response = await http.get<DrilldownResponse>(
@@ -101,5 +104,5 @@ export const getDrilldownApi = async (
       params: { month, year },
     },
   );
-  return response.data;
+  return drilldownResponseSchema.parse(response.data);
 };
