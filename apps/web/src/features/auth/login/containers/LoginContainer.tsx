@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "react-toastify";
 import { useLoginMutation } from "../hooks/login.hook";
 import { loginSchema, LoginFormValues } from "../schemas/login.form.schema";
 import LoginForm from "../components/LoginForm";
@@ -15,12 +14,14 @@ import GuestMigrationModal from "@/shared/components/customs/GuestMigrationModal
 import { handleFormError } from "@/shared/lib/helpers/form.helper";
 import LoadingModal from "@/shared/components/customs/LoadingModal";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { useModalState } from "@/shared/lib/hooks/useModalState.hook";
 
 export default function LoginContainer() {
   const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [showMigration, setShowMigration] = useState(false);
+  const { modalState, setModalState, resetModalState } = useModalState();
   const setGuestMode = useGuestStore((state) => state.setGuestMode);
   const clearGuestData = useGuestStore((state) => state.clearGuestData);
   const syncGuest = useSyncGuestMutation();
@@ -41,14 +42,17 @@ export default function LoginContainer() {
   const { mutate: loginUser, isPending } = useLoginMutation({
     onSuccess: async () => {
       setGuestMode(false);
-      setIsRedirecting(true);
       const hasLocalData = (await getGuestDataCount()) > 0;
       if (hasLocalData) {
         setShowMigration(true);
         return;
       }
-      toast.success(t("loginSuccess"));
-      window.location.href = "/home";
+      setModalState({
+        isOpen: true,
+        status: "success",
+        message: t("loginSuccess"),
+        shouldRedirect: true,
+      });
     },
     onError: (error) => {
       handleFormError(error, setError, t("loginFailed"), {
@@ -58,13 +62,26 @@ export default function LoginContainer() {
     },
   });
 
+  const handleModalClose = () => {
+    const shouldRedirect = modalState.shouldRedirect;
+    resetModalState();
+    if (shouldRedirect) {
+      setIsRedirecting(true);
+      window.location.href = "/home";
+    }
+  };
+
   const finishMigration = async (merge: boolean) => {
     try {
       if (merge) await syncGuest.mutateAsync();
       else await clearGuestData();
       setShowMigration(false);
-      toast.success(merge ? t("guestDataSynced") : t("localDataDiscarded"));
-      window.location.href = "/home";
+      setModalState({
+        isOpen: true,
+        status: "success",
+        message: merge ? t("guestDataSynced") : t("localDataDiscarded"),
+        shouldRedirect: true,
+      });
     } catch {
       // The mutation displays the API error; keep the choice open for retry.
     }
@@ -103,8 +120,12 @@ export default function LoginContainer() {
         onToggleShowPassword={() => setShowPassword(!showPassword)}
       />
       <LoadingModal
-        isOpen={(isPending || isRedirecting) && !showMigration}
-        message={t("loggingIn")}
+        isOpen={
+          modalState.isOpen || ((isPending || isRedirecting) && !showMigration)
+        }
+        status={modalState.isOpen ? modalState.status : "loading"}
+        message={modalState.isOpen ? modalState.message : t("loggingIn")}
+        onClose={handleModalClose}
       />
       <GuestMigrationModal
         isOpen={showMigration}

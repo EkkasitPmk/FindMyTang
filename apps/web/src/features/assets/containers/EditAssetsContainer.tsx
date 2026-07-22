@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "react-toastify";
 import {
   createAssetSchema,
   CreateAssetFormValues,
@@ -12,6 +11,7 @@ import { Asset, AssetType } from "@/shared/lib/types/asset.type";
 import AssetForm from "../components/AssetForm";
 import LoadingModal from "@/shared/components/customs/LoadingModal";
 import { handleFormError } from "@/shared/lib/helpers/form.helper";
+import { useModalState } from "@/shared/lib/hooks/useModalState.hook";
 
 interface EditAssetsContainerProps {
   asset: Asset;
@@ -23,6 +23,9 @@ export default function EditAssetsContainer({
   onClose,
 }: Readonly<EditAssetsContainerProps>) {
   const [isSelectOpen, setIsSelectOpen] = useState(false);
+  const { modalState, setModalState, resetModalState } = useModalState<{
+    updatedName?: string;
+  }>();
 
   const assetTypeList = Object.values(AssetType);
 
@@ -36,9 +39,16 @@ export default function EditAssetsContainer({
     formState: { errors },
   } = useForm<CreateAssetFormValues>({
     resolver: zodResolver(createAssetSchema),
+    defaultValues: {
+      name: asset.name,
+      type: asset.type,
+      balance: asset.balance.toString(),
+      color: asset.color || "#2563EB",
+    },
     values: {
       name: asset.name,
       type: asset.type,
+      balance: asset.balance.toString(),
       color: asset.color || "#2563EB",
     },
     resetOptions: {
@@ -56,8 +66,12 @@ export default function EditAssetsContainer({
 
   const { mutate: updateAsset, isPending } = useUpdateAssetMutation({
     onSuccess: (data) => {
-      toast.success(`Asset "${data.name}" updated successfully!`);
-      if (onClose) onClose(data.name);
+      setModalState({
+        isOpen: true,
+        status: "success",
+        message: `Asset "${data.name}" updated successfully!`,
+        updatedName: data.name,
+      });
     },
     onError: (error) => {
       handleFormError(
@@ -70,8 +84,21 @@ export default function EditAssetsContainer({
           balance: "balance",
         },
       );
+      setModalState({
+        isOpen: true,
+        status: "error",
+        message: "Failed to update asset.",
+      });
     },
   });
+
+  const handleModalClose = () => {
+    const name = modalState.updatedName;
+    resetModalState();
+    if (modalState.status === "success" && onClose) {
+      onClose(name);
+    }
+  };
 
   const onSubmit = (values: CreateAssetFormValues) => {
     updateAsset({
@@ -80,6 +107,7 @@ export default function EditAssetsContainer({
         name: values.name,
         type: values.type,
         color: values.color,
+        balance: Number(values.balance),
       },
     });
   };
@@ -110,7 +138,12 @@ export default function EditAssetsContainer({
         onSelectColor={(color) => setValue("color", color)}
         onBlurBalance={handleBlurBalance}
       />
-      <LoadingModal isOpen={isPending} />
+      <LoadingModal
+        isOpen={modalState.isOpen || isPending}
+        status={modalState.isOpen ? modalState.status : "loading"}
+        message={modalState.isOpen ? modalState.message : undefined}
+        onClose={handleModalClose}
+      />
     </>
   );
 }

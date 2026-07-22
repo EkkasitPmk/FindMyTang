@@ -17,6 +17,7 @@ import { toast } from "react-toastify";
 import { useConfirmModal } from "@/shared/lib/hooks/useConfirmModal.hook";
 import ConfirmModal from "@/shared/components/customs/ConfirmModal";
 import LoadingModal from "@/shared/components/customs/LoadingModal";
+import { useModalState } from "@/shared/lib/hooks/useModalState.hook";
 import ManageAssetItem from "../components/ManageAssetItem";
 import EditAssetsContainer from "./EditAssetsContainer";
 import { RotateCcw, Trash2, Archive } from "lucide-react";
@@ -49,6 +50,7 @@ export default function ManageAssetsContainer() {
 
   // Multiple selection
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const { modalState, setModalState, resetModalState } = useModalState();
 
   useEffect(() => {
     return () => {
@@ -129,19 +131,49 @@ export default function ManageAssetsContainer() {
   } = useConfirmModal();
 
   const restoreAsset = useRestoreAssetMutation({
-    onSuccess: () => toast.success("Asset restored successfully!"),
-    onError: () => toast.error("Failed to restore asset."),
+    onSuccess: () =>
+      setModalState({
+        isOpen: true,
+        status: "success",
+        message: "Asset restored successfully!",
+      }),
+    onError: () =>
+      setModalState({
+        isOpen: true,
+        status: "error",
+        message: "Failed to restore asset.",
+      }),
   });
 
   const deleteAsset = useDeleteAssetMutation({
-    onSuccess: () => toast.success("Asset deleted successfully!"),
-    onError: () => toast.error("Failed to delete asset."),
+    onSuccess: () =>
+      setModalState({
+        isOpen: true,
+        status: "success",
+        message: "Asset deleted successfully!",
+      }),
+    onError: () =>
+      setModalState({
+        isOpen: true,
+        status: "error",
+        message: "Failed to delete asset.",
+      }),
   });
 
   const { mutate: updateAsset, isPending: isUpdatingAsset } =
     useUpdateAssetMutation({
-      onSuccess: () => toast.success("Asset updated successfully!"),
-      onError: () => toast.error("Failed to update asset."),
+      onSuccess: () =>
+        setModalState({
+          isOpen: true,
+          status: "success",
+          message: "Asset updated successfully!",
+        }),
+      onError: () =>
+        setModalState({
+          isOpen: true,
+          status: "error",
+          message: "Failed to update asset.",
+        }),
     });
 
   const { mutate: reorderAssets } = useReorderAssetsMutation({
@@ -150,29 +182,56 @@ export default function ManageAssetsContainer() {
 
   const bulkDeleteAssets = useBulkDeleteAssetsMutation({
     onSuccess: () => {
-      toast.success("Assets deleted successfully!");
+      setModalState({
+        isOpen: true,
+        status: "success",
+        message: "Assets deleted successfully!",
+      });
       setSelectedIds(new Set());
       closeBulkDeleteModal();
     },
-    onError: () => toast.error("Failed to delete assets."),
+    onError: () =>
+      setModalState({
+        isOpen: true,
+        status: "error",
+        message: "Failed to delete assets.",
+      }),
   });
 
   const bulkArchiveAssets = useBulkArchiveAssetsMutation({
     onSuccess: () => {
-      toast.success("Assets archived successfully!");
+      setModalState({
+        isOpen: true,
+        status: "success",
+        message: "Assets archived successfully!",
+      });
       setSelectedIds(new Set());
       closeBulkArchiveModal();
     },
-    onError: () => toast.error("Failed to archive assets."),
+    onError: () =>
+      setModalState({
+        isOpen: true,
+        status: "error",
+        message: "Failed to archive assets.",
+      }),
   });
 
   const bulkRestoreAssets = useBulkRestoreAssetsMutation({
     onSuccess: () => {
-      toast.success("Assets restored successfully!");
+      setModalState({
+        isOpen: true,
+        status: "success",
+        message: "Assets restored successfully!",
+      });
       setSelectedIds(new Set());
       closeBulkRestoreModal();
     },
-    onError: () => toast.error("Failed to restore assets."),
+    onError: () =>
+      setModalState({
+        isOpen: true,
+        status: "error",
+        message: "Failed to restore assets.",
+      }),
   });
 
   const selectedAssetsList = assets?.filter((a) => selectedIds.has(a.id)) ?? [];
@@ -559,6 +618,7 @@ export default function ManageAssetsContainer() {
 
       <LoadingModal
         isOpen={
+          modalState.isOpen ||
           restoreAsset.isPending ||
           deleteAsset.isPending ||
           isUpdatingAsset ||
@@ -566,6 +626,9 @@ export default function ManageAssetsContainer() {
           bulkArchiveAssets.isPending ||
           bulkRestoreAssets.isPending
         }
+        status={modalState.isOpen ? modalState.status : "loading"}
+        message={modalState.isOpen ? modalState.message : undefined}
+        onClose={resetModalState}
       />
     </>
   );

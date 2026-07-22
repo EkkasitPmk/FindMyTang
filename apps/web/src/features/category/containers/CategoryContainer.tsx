@@ -24,8 +24,12 @@ import ConfirmModal from "@/shared/components/customs/ConfirmModal";
 import CUCategoryModal from "../components/CUCategoryModal";
 import LoadingModal from "@/shared/components/customs/LoadingModal";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { useModalState } from "@/shared/lib/hooks/useModalState.hook";
 import CategoryGrid from "../components/CategoryGrid";
-import { reorderCategoriesList } from "../helpers/category.helper";
+import {
+  getTargetIndexFromTouch,
+  reorderCategoriesList,
+} from "../helpers/category.helper";
 import { handleFormError } from "@/shared/lib/helpers/form.helper";
 import { AxiosError } from "axios";
 import { Button } from "@/shared/components/customs/Button";
@@ -38,6 +42,7 @@ export default function CategoryContainer() {
     null,
   );
   const [isCUModalOpen, setIsCUModalOpen] = useState(false);
+  const { modalState, setModalState, resetModalState } = useModalState();
 
   const {
     register,
@@ -57,24 +62,7 @@ export default function CategoryContainer() {
     },
   });
   const [customColor, setCustomColor] = useState<string>("#e11d48");
-  const [prevIsOpen, setPrevIsOpen] = useState(false);
-  const [prevCategory, setPrevCategory] = useState<Category | null>(null);
 
-  // Sync state with editing category when opened or edited category changes (Render Phase Sync)
-  if (isCUModalOpen !== prevIsOpen || editingCategory !== prevCategory) {
-    setPrevIsOpen(isCUModalOpen);
-    setPrevCategory(editingCategory);
-    if (isCUModalOpen) {
-      if (
-        editingCategory?.color &&
-        !PREMIUM_COLORS.includes(editingCategory.color)
-      ) {
-        setCustomColor(editingCategory.color);
-      } else {
-        setCustomColor("#e11d48");
-      }
-    }
-  }
   const transactionType = useWatch({ control, name: "type" }) || "EXPENSE";
   const selectedColor =
     useWatch({ control, name: "color" }) || PREMIUM_COLORS[0];
@@ -116,19 +104,15 @@ export default function CategoryContainer() {
   const { data: categories, isPending } = useCategories();
   const isCategoriesLoading = !mounted || isPending;
 
-  const [localCategories, setLocalCategories] = useState<Category[]>([]);
-  const [prevCategories, setPrevCategories] = useState<Category[] | undefined>(
-    undefined,
+  const [prevCategories, setPrevCategories] = useState(categories);
+  const [localCategories, setLocalCategories] = useState<Category[]>(
+    categories ?? [],
   );
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
-  if (categories !== prevCategories) {
+  if (prevCategories !== categories) {
     setPrevCategories(categories);
-    if (categories) {
-      setLocalCategories(categories);
-    } else {
-      setLocalCategories([]);
-    }
+    setLocalCategories(categories ?? []);
   }
 
   const { mutate: reorderCategories } = useReorderCategoriesMutation({
@@ -167,25 +151,8 @@ export default function CategoryContainer() {
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (draggedIndex === null) return;
-    const touch = e.touches[0];
-    if (!touch) return;
-
-    const elementUnderTouch = document.elementFromPoint(
-      touch.clientX,
-      touch.clientY,
-    );
-    if (!elementUnderTouch) return;
-
-    const itemElement = elementUnderTouch.closest(
-      "[data-index]",
-    ) as HTMLElement | null;
-    if (!itemElement) return;
-
-    const targetIndexAttr = itemElement.dataset.index;
-    if (targetIndexAttr === undefined) return;
-
-    const targetIndex = Number.parseInt(targetIndexAttr, 10);
-    if (Number.isNaN(targetIndex) || draggedIndex === targetIndex) return;
+    const targetIndex = getTargetIndexFromTouch(e);
+    if (targetIndex === null || draggedIndex === targetIndex) return;
 
     setLocalCategories(
       reorderCategoriesList(
@@ -206,7 +173,11 @@ export default function CategoryContainer() {
   const { mutate: createCategory, isPending: isCreating } =
     useCreateCategoryMutation({
       onSuccess: (data) => {
-        toast.success(t("categoryCreatedSuccess").replace("{name}", data.name));
+        setModalState({
+          isOpen: true,
+          status: "success",
+          message: t("categoryCreatedSuccess").replace("{name}", data.name),
+        });
         setIsCUModalOpen(false);
       },
     });
@@ -214,7 +185,11 @@ export default function CategoryContainer() {
   const { mutate: updateCategory, isPending: isUpdating } =
     useUpdateCategoryMutation({
       onSuccess: (data) => {
-        toast.success(t("categoryUpdatedSuccess").replace("{name}", data.name));
+        setModalState({
+          isOpen: true,
+          status: "success",
+          message: t("categoryUpdatedSuccess").replace("{name}", data.name),
+        });
         setEditingCategory(null);
         setIsCUModalOpen(false);
       },
@@ -223,7 +198,11 @@ export default function CategoryContainer() {
   const { mutate: deleteCategory, isPending: isDeleting } =
     useDeleteCategoryMutation({
       onSuccess: (data) => {
-        toast.success(t("categoryDeletedSuccess").replace("{name}", data.name));
+        setModalState({
+          isOpen: true,
+          status: "success",
+          message: t("categoryDeletedSuccess").replace("{name}", data.name),
+        });
         if (editingCategory?.id === data.id) {
           cancelEdit();
         }
@@ -233,9 +212,31 @@ export default function CategoryContainer() {
         const errorMsg = Array.isArray(message)
           ? message[0]
           : message || t("errDeleteCategory");
-        toast.error(errorMsg);
+        setModalState({
+          isOpen: true,
+          status: "error",
+          message: errorMsg,
+        });
       },
     });
+
+  const openCreateModal = () => {
+    setEditingCategory(null);
+    setCustomColor("#e11d48");
+    setIsCUModalOpen(true);
+  };
+
+  const openEditModal = (category: Category) => {
+    setEditingCategory(category);
+
+    const color =
+      category.color && !PREMIUM_COLORS.includes(category.color)
+        ? category.color
+        : "#e11d48";
+
+    setCustomColor(color);
+    setIsCUModalOpen(true);
+  };
 
   const handleDelete = (category: Category) => {
     // ponytail: Sets category state to open custom ConfirmModal.
@@ -287,10 +288,6 @@ export default function CategoryContainer() {
     }
   };
 
-  const startEdit = (category: Category) => {
-    setEditingCategory(category);
-  };
-
   const cancelEdit = () => {
     setEditingCategory(null);
   };
@@ -340,14 +337,8 @@ export default function CategoryContainer() {
         isLoading={isCategoriesLoading}
         isEditingList={isEditingList}
         draggedIndex={draggedIndex}
-        onNewCategoryClick={() => {
-          setEditingCategory(null);
-          setIsCUModalOpen(true);
-        }}
-        onCategoryClick={(category) => {
-          startEdit(category);
-          setIsCUModalOpen(true);
-        }}
+        onNewCategoryClick={openCreateModal}
+        onCategoryClick={openEditModal}
         onDeleteClick={handleDelete}
         onDragStart={handleDragStart}
         onDragOver={handleDragOver}
@@ -362,6 +353,7 @@ export default function CategoryContainer() {
         onClose={() => {
           setIsCUModalOpen(false);
           setEditingCategory(null);
+          setCustomColor("#e11d48");
         }}
         category={editingCategory}
         onSubmit={onSubmit}
@@ -391,7 +383,12 @@ export default function CategoryContainer() {
         confirmLabel={t("delete")}
       />
 
-      <LoadingModal isOpen={isCreating || isUpdating || isDeleting} />
+      <LoadingModal
+        isOpen={modalState.isOpen || isCreating || isUpdating || isDeleting}
+        status={modalState.isOpen ? modalState.status : "loading"}
+        message={modalState.isOpen ? modalState.message : undefined}
+        onClose={resetModalState}
+      />
     </div>
   );
 }

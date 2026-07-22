@@ -22,6 +22,7 @@ import PersonalInfoForm from "../components/PersonalInfoForm";
 import ConfirmModal from "@/shared/components/customs/ConfirmModal";
 import LoadingModal from "@/shared/components/customs/LoadingModal";
 import { useConfirmModal } from "@/shared/lib/hooks/useConfirmModal.hook";
+import { useModalState } from "@/shared/lib/hooks/useModalState.hook";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { Button } from "@/shared/components/customs/Button";
 import { handleFormError } from "@/shared/lib/helpers/form.helper";
@@ -43,6 +44,7 @@ export default function AccountContainer() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const { modalState, setModalState, resetModalState } = useModalState();
 
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -53,12 +55,20 @@ export default function AccountContainer() {
   const { mutate: updateProfile, isPending: isUpdating } =
     useUpdateProfileMutation({
       onSuccess: () => {
-        toast.success(t("profileUpdated"));
+        setModalState({
+          isOpen: true,
+          status: "success",
+          message: t("profileUpdated"),
+        });
       },
       onError: (error) => {
         const errorMsg =
           error.response?.data?.message || "Failed to update profile";
-        toast.error(Array.isArray(errorMsg) ? errorMsg[0] : errorMsg);
+        setModalState({
+          isOpen: true,
+          status: "error",
+          message: Array.isArray(errorMsg) ? errorMsg[0] : errorMsg,
+        });
       },
     });
 
@@ -141,20 +151,37 @@ export default function AccountContainer() {
 
   const { mutate: deleteAccount, isPending: isDeletingAccount } =
     useDeleteAccountMutation({
-      onSuccess: async () => {
-        closeDeleteModal();
-        await clearGuestData();
-        setGuestMode(false);
-        queryClient.clear();
-        window.location.href = "/login";
+      onSuccess: () => {
+        setModalState({
+          isOpen: true,
+          status: "success",
+          message: "Account deleted successfully",
+          shouldRedirect: true,
+        });
       },
       onError: (error) => {
         const errorMsg =
           error.response?.data?.message || "Failed to delete account";
-        toast.error(Array.isArray(errorMsg) ? errorMsg[0] : errorMsg);
+        setModalState({
+          isOpen: true,
+          status: "error",
+          message: Array.isArray(errorMsg) ? errorMsg[0] : errorMsg,
+        });
         closeDeleteModal();
       },
     });
+
+  const handleModalClose = async () => {
+    const shouldRedirect = modalState.shouldRedirect;
+    resetModalState();
+    if (shouldRedirect) {
+      closeDeleteModal();
+      await clearGuestData();
+      setGuestMode(false);
+      queryClient.clear();
+      window.location.href = "/login";
+    }
+  };
 
   const handleConfirmDeleteAccount = () => {
     deleteAccount();
@@ -172,6 +199,15 @@ export default function AccountContainer() {
         </div>
       </div>
     );
+  }
+
+  let loadingMessage: string | undefined;
+  if (modalState.isOpen) {
+    loadingMessage = modalState.message;
+  } else if (isDeletingAccount) {
+    loadingMessage = t("deletingAccount");
+  } else {
+    loadingMessage = t("updating") || "Updating...";
   }
 
   return (
@@ -274,7 +310,12 @@ export default function AccountContainer() {
         />
       )}
 
-      <LoadingModal isOpen={isDeletingAccount} message="กำลังลบบัญชี..." />
+      <LoadingModal
+        isOpen={modalState.isOpen || isUpdating || isDeletingAccount}
+        status={modalState.isOpen ? modalState.status : "loading"}
+        message={loadingMessage}
+        onClose={handleModalClose}
+      />
     </>
   );
 }

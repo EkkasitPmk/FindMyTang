@@ -138,13 +138,14 @@ export default function JournalContainer() {
                 className="pl-10 pr-10 h-10 text-sm"
               />
               {searchKeyword.length > 0 && (
-                <button
+                <Button
+                  variant="unstyled"
                   type="button"
                   onClick={() => setSearchKeyword("")}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center text-secondary-text/60 hover:text-primary transition-colors cursor-pointer"
                 >
                   <X className="h-4 w-4" />
-                </button>
+                </Button>
               )}
             </div>
 

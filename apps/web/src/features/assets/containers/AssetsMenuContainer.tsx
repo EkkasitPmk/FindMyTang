@@ -6,13 +6,13 @@ import {
   useUpdateAssetMutation,
   useAssetUIStore,
 } from "../hooks/assets.hook";
-import { toast } from "react-toastify";
 import { useClickOutside } from "@/shared/lib/hooks/useClickOutside.hook";
 import { useConfirmModal } from "@/shared/lib/hooks/useConfirmModal.hook";
 import AssetsMenu from "../components/AssetsMenu";
 import LoadingModal from "@/shared/components/customs/LoadingModal";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { useAssets } from "@/shared/lib/hooks/useAssets.hook";
+import { useModalState } from "@/shared/lib/hooks/useModalState.hook";
 
 export default function AssetsMenuContainer() {
   const [isOpen, setIsOpen] = useState(false);
@@ -52,28 +52,53 @@ export default function AssetsMenuContainer() {
   const { data: assets } = useAssets();
   const currentAsset = assets?.find((a) => a.id === id);
   const name = currentAsset?.name || nameParam;
+  const { modalState, setModalState, resetModalState } = useModalState();
 
   const { mutate: deleteAsset, isPending: isDeletingAsset } =
     useDeleteAssetMutation({
       onSuccess: () => {
-        toast.success("Asset deleted successfully!");
-        router.push("/");
+        setModalState({
+          isOpen: true,
+          status: "success",
+          message: "Asset deleted successfully!",
+          shouldRedirect: true,
+        });
       },
       onError: () => {
-        toast.error("Failed to delete asset.");
+        setModalState({
+          isOpen: true,
+          status: "error",
+          message: "Failed to delete asset.",
+        });
       },
     });
 
   const { mutate: updateAsset, isPending: isUpdatingAsset } =
     useUpdateAssetMutation({
       onSuccess: () => {
-        toast.success("Asset archived successfully!");
-        router.push("/");
+        setModalState({
+          isOpen: true,
+          status: "success",
+          message: "Asset archived successfully!",
+          shouldRedirect: true,
+        });
       },
       onError: () => {
-        toast.error("Failed to archive asset.");
+        setModalState({
+          isOpen: true,
+          status: "error",
+          message: "Failed to archive asset.",
+        });
       },
     });
+
+  const handleModalClose = () => {
+    const shouldRedirect = modalState.shouldRedirect;
+    resetModalState();
+    if (shouldRedirect) {
+      router.push("/");
+    }
+  };
 
   const handleDelete = (isHardDelete?: boolean) => {
     if (id) {
@@ -202,7 +227,12 @@ export default function AssetsMenuContainer() {
         onSortSubMenuToggle={handleSortSubMenuToggle}
         onSortSelect={handleSortSelect}
       />
-      <LoadingModal isOpen={isDeletingAsset || isUpdatingAsset} />
+      <LoadingModal
+        isOpen={modalState.isOpen || isDeletingAsset || isUpdatingAsset}
+        status={modalState.isOpen ? modalState.status : "loading"}
+        message={modalState.isOpen ? modalState.message : undefined}
+        onClose={handleModalClose}
+      />
     </>
   );
 }

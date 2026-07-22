@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "react-toastify";
 import {
   createAssetSchema,
   CreateAssetFormValues,
@@ -12,6 +11,7 @@ import AssetForm from "../components/AssetForm";
 import LoadingModal from "@/shared/components/customs/LoadingModal";
 import { handleFormError } from "@/shared/lib/helpers/form.helper";
 import { AssetType } from "@/shared/lib/types/asset.type";
+import { useModalState } from "@/shared/lib/hooks/useModalState.hook";
 
 interface CreateAssetsContainerProps {
   onClose?: () => void;
@@ -22,6 +22,7 @@ export default function CreateAssetsContainer({
 }: Readonly<CreateAssetsContainerProps>) {
   const [isSelectOpen, setIsSelectOpen] = useState(false);
   const [selected, setSelected] = useState<string>(AssetType.CASH);
+  const { modalState, setModalState, resetModalState } = useModalState();
 
   const assetTypeList = Object.values(AssetType);
 
@@ -54,9 +55,11 @@ export default function CreateAssetsContainer({
 
   const { mutate: createAsset, isPending } = useCreateAssetMutation({
     onSuccess: (data) => {
-      toast.success(`Asset "${data.name}" created successfully!`);
-      reset();
-      if (onClose) onClose();
+      setModalState({
+        isOpen: true,
+        status: "success",
+        message: `Asset "${data.name}" created successfully!`,
+      });
     },
     onError: (error) => {
       handleFormError(
@@ -69,8 +72,21 @@ export default function CreateAssetsContainer({
           balance: "balance",
         },
       );
+      setModalState({
+        isOpen: true,
+        status: "error",
+        message: "Failed to create asset.",
+      });
     },
   });
+
+  const handleModalClose = () => {
+    resetModalState();
+    if (modalState.status === "success") {
+      reset();
+      if (onClose) onClose();
+    }
+  };
 
   const onSubmit = (values: CreateAssetFormValues) => {
     const balanceNum =
@@ -113,7 +129,12 @@ export default function CreateAssetsContainer({
         onSelectColor={(color) => setValue("color", color)}
         onBlurBalance={handleBlurBalance}
       />
-      <LoadingModal isOpen={isPending} />
+      <LoadingModal
+        isOpen={modalState.isOpen || isPending}
+        status={modalState.isOpen ? modalState.status : "loading"}
+        message={modalState.isOpen ? modalState.message : undefined}
+        onClose={handleModalClose}
+      />
     </>
   );
 }
