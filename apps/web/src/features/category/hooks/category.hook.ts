@@ -1,20 +1,18 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { create } from "zustand";
 import {
   createCategoryApi,
   deleteCategory,
-  getCategoriesApi,
   reorderCategoriesApi,
   updateCategory,
 } from "../services/category.service";
-import { Category, CreateCategoryRequest } from "../types/category.type";
+import {
+  Category,
+  CreateCategoryRequest,
+} from "@/shared/lib/types/category.type";
 import { AxiosError } from "axios";
 
-export interface ApiErrorResponse {
-  message: string | string[];
-  error: string;
-  statusCode: number;
-}
+import { ApiErrorResponse } from "@/shared/lib/types/api.type";
 
 export const useCreateCategoryMutation = (options?: {
   onSuccess?: (data: Category) => void;
@@ -53,13 +51,6 @@ export const useUpdateCategoryMutation = (options?: {
       void queryClient.invalidateQueries({ queryKey: ["categories"] });
       options?.onSuccess?.(data);
     },
-  });
-};
-
-export const useCategories = () => {
-  return useQuery<Category[], AxiosError<ApiErrorResponse>>({
-    queryKey: ["categories"],
-    queryFn: getCategoriesApi,
   });
 };
 

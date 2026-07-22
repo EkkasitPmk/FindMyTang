@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { reorderCategoriesList } from "./category.helper";
-import { Category } from "../types/category.type";
+import { Category } from "@/shared/lib/types/category.type";
 
 vi.mock("react-toastify", () => ({ toast: { error: vi.fn() } }));
 

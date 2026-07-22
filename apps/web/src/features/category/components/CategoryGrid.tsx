@@ -1,4 +1,4 @@
-import { Category } from "../types/category.type";
+import { Category } from "@/shared/lib/types/category.type";
 import { CircleX, Grip, Plus } from "lucide-react";
 import { getCategoryIcon } from "@/shared/lib/configs/category-icons.config";
 import { Button } from "@/shared/components/customs/Button";
