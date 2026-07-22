@@ -1,4 +1,4 @@
-import { Asset } from "@/features/assets/types/assets.type";
+import { Asset } from "@/shared/lib/types/asset.type";
 import TransactionAssetItem from "./TransactionAssetItem";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";

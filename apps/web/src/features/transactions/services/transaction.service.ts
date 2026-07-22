@@ -1,12 +1,12 @@
 import http from "@/shared/lib/api/http";
 import {
   CreateTransactionPayload,
-  TransactionResponse,
   TransactionQuery,
-  PaginatedTransactionResponse,
   UpdateTransactionRequest,
+  TransactionResponse,
+  PaginatedTransactionResponse,
   TransactionType,
-} from "../types/transaction.type";
+} from "@/shared/lib/types/transaction.type";
 import { useGuestStore } from "@/shared/lib/storages/guest.storage";
 import {
   db,
@@ -14,6 +14,10 @@ import {
   TransactionType as DexieTransactionType,
 } from "@/shared/lib/storages/dexie.storage";
 import { v4 as uuidv4 } from "uuid";
+import {
+  transactionResponseSchema,
+  paginatedTransactionResponseSchema,
+} from "../schemas/transaction.response.schema";
 
 const mapLocalToTransactionResponse = async (
   t: LocalTransaction,
@@ -175,14 +179,14 @@ const createCloudTransactionApi = async (
       formData,
     );
 
-    return response.data;
+    return transactionResponseSchema.parse(response.data);
   }
 
   const response = await http.post<TransactionResponse>(
     "/transactions",
     payload,
   );
-  return response.data;
+  return transactionResponseSchema.parse(response.data);
 };
 
 export const createTransactionApi = async (
@@ -244,17 +248,17 @@ export const getTransactionsApi = async (query?: TransactionQuery) => {
       paginatedData.map((t) => mapLocalToTransactionResponse(t)),
     );
 
-    return {
+    return paginatedTransactionResponseSchema.parse({
       items: mappedItems,
       meta: { total, page, limit, totalPages },
-    };
+    });
   }
 
   const { data } = await http.get<PaginatedTransactionResponse>(
     "/transactions",
     { params: query },
   );
-  return data;
+  return paginatedTransactionResponseSchema.parse(data);
 };
 
 export const getAvailableDatesApi = async (
@@ -412,14 +416,14 @@ const updateCloudTransactionApi = async (
       formData,
     );
 
-    return response.data;
+    return transactionResponseSchema.parse(response.data);
   }
 
   const response = await http.patch<TransactionResponse>(
     `/transactions/${id}`,
     payload,
   );
-  return response.data;
+  return transactionResponseSchema.parse(response.data);
 };
 
 export const updateTransactionApi = async (

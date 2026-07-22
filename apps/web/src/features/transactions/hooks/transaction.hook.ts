@@ -22,14 +22,10 @@ import {
   UpdateTransactionRequest,
   TransactionType,
   CreateTransactionPayload,
-} from "../types/transaction.type";
+} from "@/shared/lib/types/transaction.type";
 import { AxiosError } from "axios";
 
-export interface ApiErrorResponse {
-  message: string | string[];
-  error: string;
-  statusCode: number;
-}
+import { ApiErrorResponse } from "@/shared/lib/types/api.type";
 
 const invalidateQueries = (queryClient: QueryClient) => {
   queryClient.invalidateQueries({ queryKey: ["assets"] }).catch(() => {});

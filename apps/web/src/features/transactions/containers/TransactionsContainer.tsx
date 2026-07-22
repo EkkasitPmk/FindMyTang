@@ -5,8 +5,7 @@ import { ArrowRight, ChevronLeft, Trash } from "lucide-react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useCategories } from "@/features/category/hooks/category.hook";
-import { useAssets } from "@/features/assets/hooks/assets.hook";
+import { useCategories } from "@/shared/lib/hooks/useCategories.hook";
 import {
   useCreateTransactionMutation,
   useTransactionQuery,
@@ -16,7 +15,7 @@ import {
 import {
   createTransactionSchema,
   CreateTransactionFormValues,
-} from "../schemas/transaction.schema";
+} from "../schemas/transaction.form.schema";
 import { toast } from "react-toastify";
 import TransactionCategoryList from "../components/TransactionCategoryList";
 import TransactionAssetList from "../components/TransactionAssetList";
@@ -49,10 +48,12 @@ import {
 } from "../helpers/transaction.helper";
 import { cn } from "@/shared/lib/utils/core.util";
 import { Button } from "@/shared/components/customs/Button";
-import { TransactionType } from "../types/transaction.type";
+import { TransactionType } from "@/shared/lib/types/transaction.type";
+import { Category } from "@/shared/lib/types/category.type";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import imageCompression from "browser-image-compression";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { useAssets } from "@/shared/lib/hooks/useAssets.hook";
 
 export default function TransactionsContainer() {
   const router = useRouter();
@@ -282,7 +283,9 @@ export default function TransactionsContainer() {
     !mounted || isCategoryPending || isCategoryFetching;
   const filteredCategories = useMemo(
     () =>
-      categories?.filter((c) => c.type === (transactionType as string)) || [],
+      categories?.filter(
+        (c: Category) => c.type === (transactionType as string),
+      ) || [],
     [categories, transactionType],
   );
 

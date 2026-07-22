@@ -1,13 +1,13 @@
 import { UseMutationResult } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { CreateTransactionFormValues } from "../schemas/transaction.schema";
+import { CreateTransactionFormValues } from "../schemas/transaction.form.schema";
 import {
   TransactionResponse,
   TransactionType,
   UpdateTransactionRequest,
   CreateTransactionPayload,
-} from "../types/transaction.type";
-import { ApiErrorResponse } from "../hooks/transaction.hook";
+} from "@/shared/lib/types/transaction.type";
+import { ApiErrorResponse } from "@/shared/lib/types/api.type";
 import { TranslationKey } from "@/shared/lib/configs/translations.config";
 
 interface SubmitTransactionParams {
