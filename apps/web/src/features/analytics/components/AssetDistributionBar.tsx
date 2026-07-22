@@ -1,4 +1,4 @@
-import { AssetDistributionGroup } from "../types/analytics.type";
+import { AssetDistributionGroup } from "../schemas/analytics.response.schema";
 import { formatCurrency } from "@/shared/lib/utils/currency.util";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 

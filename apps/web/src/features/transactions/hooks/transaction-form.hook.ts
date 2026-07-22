@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { UseFormSetValue } from "react-hook-form";
-import { CreateTransactionFormValues } from "../schemas/transaction.schema";
+import { CreateTransactionFormValues } from "../schemas/transaction.form.schema";
 import {
   TransactionResponse,
   TransactionType,
-} from "../types/transaction.type";
+} from "@/shared/lib/types/transaction.type";
 
 interface UseTransactionFormSyncParams {
   transactionType: TransactionType;

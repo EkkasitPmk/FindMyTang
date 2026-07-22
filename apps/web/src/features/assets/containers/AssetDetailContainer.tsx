@@ -2,7 +2,9 @@
 import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useAssets, useAssetUIStore } from "../hooks/assets.hook";
+import { useAssets } from "@/shared/lib/hooks/useAssets.hook";
+import { useAssetUIStore } from "../hooks/assets.hook";
+import { Asset } from "@/shared/lib/types/asset.type";
 import {
   useInfiniteTransactionsQuery,
   useAvailableDatesQuery,
@@ -46,7 +48,7 @@ export default function AssetDetailContainer() {
     isViewOptionOpen,
   );
 
-  const asset = assets?.find((a) => a.id === id) || assets?.[0];
+  const asset = assets?.find((a: Asset) => a.id === id) || assets?.[0];
 
   const { data: availableDatesData } = useAvailableDatesQuery(
     asset?.id,

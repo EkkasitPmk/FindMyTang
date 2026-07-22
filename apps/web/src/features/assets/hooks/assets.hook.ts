@@ -1,13 +1,11 @@
 import {
   useMutation,
-  useQuery,
   useQueryClient,
   QueryClient,
 } from "@tanstack/react-query";
 import { create } from "zustand";
 import {
   createAssetApi,
-  getAssetsApi,
   updateAssetApi,
   deleteAssetApi,
   restoreAssetApi,
@@ -21,15 +19,10 @@ import {
   UpdateAssetRequest,
   CreateAssetResponse,
   Asset,
-} from "../types/assets.type";
+} from "@/shared/lib/types/asset.type";
 import { AxiosError } from "axios";
-import { useGuestStore } from "@/shared/lib/storages/guest.storage";
 
-export interface ApiErrorResponse {
-  message: string | string[];
-  error: string;
-  statusCode: number;
-}
+import { ApiErrorResponse } from "@/shared/lib/types/api.type";
 
 const invalidateQueries = (queryClient: QueryClient) => {
   queryClient.invalidateQueries({ queryKey: ["assets"] }).catch(() => {});
@@ -85,16 +78,6 @@ export const useUpdateAssetMutation = (options?: {
       ]);
       options?.onSuccess?.(data);
     },
-  });
-};
-
-export const useAssets = (options?: { includeDeleted?: boolean }) => {
-  const includeDeleted = options?.includeDeleted ?? false;
-  const isGuest = useGuestStore((state) => state.isGuest);
-
-  return useQuery<Asset[], AxiosError<ApiErrorResponse>>({
-    queryKey: ["assets", { includeDeleted, isGuest }],
-    queryFn: () => getAssetsApi(includeDeleted),
   });
 };
 

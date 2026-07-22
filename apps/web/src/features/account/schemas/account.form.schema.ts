@@ -28,4 +28,3 @@ export const updateProfileSchema = z.object({
 });
 
 export type UpdateProfileFormValues = z.infer<typeof updateProfileSchema>;
-

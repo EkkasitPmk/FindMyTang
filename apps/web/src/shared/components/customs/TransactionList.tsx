@@ -2,13 +2,13 @@ import { Skeleton } from "@/shared/components/ui/skeleton";
 import {
   GroupedTransaction,
   TransactionResponse,
-} from "@/features/transactions/types/transaction.type";
+} from "@/shared/lib/types/transaction.type";
 import { TransactionItem } from "./TransactionItem";
 import { TransactionGroupHeader } from "./TransactionGroupHeader";
 import { renderGroupContent } from "./TransactionVirtuosoGroup";
 import { renderItemContent } from "./TransactionVirtuosoItem";
 import { cn } from "@/shared/lib/utils/core.util";
-import TransactionListSkeleton from "../../skeletons/TransactionListSkeleton";
+import TransactionListSkeleton from "../skeletons/TransactionListSkeleton";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { GroupedVirtuoso } from "react-virtuoso";
 import { TranslationKey } from "@/shared/lib/configs/translations.config";
@@ -160,20 +160,22 @@ export function TransactionList({
             locale={locale}
             className="sticky top-0 bg-surface z-10 py-1.5 px-4"
           />
-          {group.items.map((transaction, txIndex) => (
-            <TransactionItem
-              key={transaction.id}
-              transaction={transaction}
-              isLastItem={txIndex === group.items.length - 1}
-              currentAssetId={assetId}
-              expandedTransactionId={expandedTransactionId}
-              setExpandedTransactionId={setExpandedTransactionId}
-              onTransactionItemClick={onTransactionItemClick}
-              onRestoreClick={onRestoreClick}
-              onDeleteClick={onDeleteClick}
-              onAttachmentClick={onAttachmentClick}
-            />
-          ))}
+          {group.items.map(
+            (transaction: TransactionResponse, txIndex: number) => (
+              <TransactionItem
+                key={transaction.id}
+                transaction={transaction}
+                isLastItem={txIndex === group.items.length - 1}
+                currentAssetId={assetId}
+                expandedTransactionId={expandedTransactionId}
+                setExpandedTransactionId={setExpandedTransactionId}
+                onTransactionItemClick={onTransactionItemClick}
+                onRestoreClick={onRestoreClick}
+                onDeleteClick={onDeleteClick}
+                onAttachmentClick={onAttachmentClick}
+              />
+            ),
+          )}
         </div>
       ))}
       {!groupedTransactions?.length && (

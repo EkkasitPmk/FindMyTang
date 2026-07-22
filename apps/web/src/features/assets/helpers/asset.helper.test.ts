@@ -3,7 +3,7 @@ import { processAssetTransactions } from "./asset.helper";
 import {
   TransactionResponse,
   TransactionType,
-} from "../../transactions/types/transaction.type";
+} from "@/shared/lib/types/transaction.type";
 import { formatDisplayDate } from "@/shared/lib/helpers/date.helper";
 
 vi.mock("react-toastify", () => ({ toast: { error: vi.fn() } }));

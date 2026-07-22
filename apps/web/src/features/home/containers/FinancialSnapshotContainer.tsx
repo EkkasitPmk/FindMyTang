@@ -1,5 +1,5 @@
 import { ArrowUp, ArrowDown } from "lucide-react";
-import { useAssets } from "../../assets/hooks/assets.hook";
+import { useAssets } from "@/shared/lib/hooks/useAssets.hook";
 import { useThisMonthSummary } from "../hooks/summary.hook";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useMounted } from "@/shared/lib/hooks/useMounted.hook";

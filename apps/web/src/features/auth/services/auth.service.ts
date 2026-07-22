@@ -1,5 +1,6 @@
 import http from "@/shared/lib/api/http";
 import { SyncGuestRequest, SyncGuestResponse } from "../types/auth.type";
+import { syncGuestResponseSchema } from "../schemas/auth.response.schema";
 
 export const authService = {
   syncGuest: async (data: SyncGuestRequest): Promise<SyncGuestResponse> => {
@@ -7,6 +8,6 @@ export const authService = {
       "/auth/sync-guest",
       data,
     );
-    return response.data;
+    return syncGuestResponseSchema.parse(response.data);
   },
 };

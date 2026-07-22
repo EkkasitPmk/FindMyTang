@@ -6,7 +6,7 @@ import {
   getActiveItemId,
   getTransactionTypeOptions,
 } from "./transaction.helper";
-import { TransactionResponse } from "../types/transaction.type";
+import { TransactionResponse } from "@/shared/lib/types/transaction.type";
 
 describe("transaction.helper", () => {
   describe("submitTransaction", () => {

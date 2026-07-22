@@ -6,12 +6,12 @@ import { toast } from "react-toastify";
 import {
   createAssetSchema,
   CreateAssetFormValues,
-} from "../schemas/assets.schema";
+} from "../schemas/assets.form.schema";
 import { useCreateAssetMutation } from "../hooks/assets.hook";
-import { AssetType } from "../types/assets.type";
 import AssetForm from "../components/AssetForm";
 import LoadingModal from "@/shared/components/customs/LoadingModal";
 import { handleFormError } from "@/shared/lib/helpers/form.helper";
+import { AssetType } from "@/shared/lib/types/asset.type";
 
 interface CreateAssetsContainerProps {
   onClose?: () => void;

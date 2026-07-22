@@ -5,8 +5,8 @@ import {
   FieldErrors,
 } from "react-hook-form";
 import { CircleMinus, CirclePlus, Check } from "lucide-react";
-import { Category } from "../types/category.type";
-import { CreateCategoryFormValues } from "../schemas/category.schema";
+import { Category } from "@/shared/lib/types/category.type";
+import { CreateCategoryFormValues } from "../schemas/category.form.schema";
 import { PREMIUM_COLORS } from "../configs/category.config";
 import {
   getCategoryIcon,

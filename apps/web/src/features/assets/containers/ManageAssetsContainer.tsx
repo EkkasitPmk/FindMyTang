@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useAssets } from "@/shared/lib/hooks/useAssets.hook";
 import {
-  useAssets,
   useDeleteAssetMutation,
   useRestoreAssetMutation,
   useUpdateAssetMutation,
@@ -11,7 +11,7 @@ import {
   useBulkArchiveAssetsMutation,
   useBulkRestoreAssetsMutation,
 } from "../hooks/assets.hook";
-import { Asset } from "../types/assets.type";
+import { Asset } from "@/shared/lib/types/asset.type";
 import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import { toast } from "react-toastify";
 import { useConfirmModal } from "@/shared/lib/hooks/useConfirmModal.hook";

@@ -1,3 +1,8 @@
+import {
+  TransactionResponse as ZodTransactionResponse,
+  PaginatedTransactionResponse as ZodPaginatedTransactionResponse,
+} from "@/features/transactions/schemas/transaction.response.schema";
+
 export interface CreateExpenseRequest {
   assetId: string;
   categoryId: string;
@@ -57,39 +62,7 @@ export interface UpdateTransactionRequest {
 
 export type TransactionType = "INCOME" | "EXPENSE" | "TRANSFER" | "ADJUSTMENT";
 
-export interface TransactionResponse {
-  id: string;
-  type: TransactionType;
-  amount: number;
-  note?: string;
-  transactionDate: string;
-  assetId: string;
-  toAssetId?: string | null;
-  categoryId?: string;
-  attachmentUrl?: string | null;
-  asset?: {
-    id: string;
-    name: string;
-    type: string;
-    balance: number;
-  };
-  toAsset?: {
-    id: string;
-    name: string;
-    type: string;
-    balance: number;
-  } | null;
-  category?: {
-    id: string;
-    name: string;
-    type: string;
-    color?: string;
-    icon?: string;
-  };
-  createdAt: string;
-  updatedAt: string;
-  deletedAt?: string;
-}
+export type TransactionResponse = ZodTransactionResponse;
 
 export interface TransactionQuery {
   page?: number;
@@ -104,15 +77,7 @@ export interface TransactionQuery {
   searchKeyword?: string;
 }
 
-export interface PaginatedTransactionResponse {
-  items: TransactionResponse[];
-  meta: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-}
+export type PaginatedTransactionResponse = ZodPaginatedTransactionResponse;
 
 export interface GroupedTransaction {
   dateStr: string;

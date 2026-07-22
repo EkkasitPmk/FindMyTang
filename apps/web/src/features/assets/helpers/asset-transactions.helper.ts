@@ -1,4 +1,4 @@
-import { TransactionResponse } from "../../transactions/types/transaction.type";
+import { TransactionResponse } from "@/shared/lib/types/transaction.type";
 import { formatDisplayDate } from "@/shared/lib/helpers/date.helper";
 import { MONTHS } from "@/shared/lib/configs/date.config";
 

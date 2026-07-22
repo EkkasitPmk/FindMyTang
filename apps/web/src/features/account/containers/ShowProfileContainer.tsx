@@ -3,7 +3,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/shared/lib/utils/core.util";
 import Avatar from "@/shared/components/customs/Avatar";
-import { useMeQuery } from "@/features/nav/hooks/auth.hook";
+import { useMeQuery } from "@/shared/lib/hooks/useMeQuery.hook";
 import { useIsGuest } from "@/shared/lib/storages/guest.storage";
 import { format } from "date-fns";
 import { Skeleton } from "@/shared/components/ui/skeleton";

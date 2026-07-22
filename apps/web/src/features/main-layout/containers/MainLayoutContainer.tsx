@@ -5,23 +5,20 @@ import NavContainer from "@/features/nav/containers/NavContainer";
 import TopAppBarMobile from "@/shared/components/customs/TopAppBarMobile";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { X, Plus } from "lucide-react";
-import {
-  useCategoryUIStore,
-  useCategories,
-} from "@/features/category/hooks/category.hook";
+import { useCategories } from "@/shared/lib/hooks/useCategories.hook";
+import { useCategoryUIStore } from "@/features/category/hooks/category.hook";
+import { Category } from "@/shared/lib/types/category.type";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { cn } from "@/shared/lib/utils/core.util";
-import { TransactionIcon } from "@/shared/components/customs/transactions/TransactionIcon";
-import { TransactionResponse } from "@/features/transactions/types/transaction.type";
+import { TransactionIcon } from "@/shared/components/customs/TransactionIcon";
+import { TransactionResponse } from "@/shared/lib/types/transaction.type";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import AssetsMenuContainer from "@/features/assets/containers/AssetsMenuContainer";
 import CreateAssetsContainer from "@/features/assets/containers/CreateAssetsContainer";
-import {
-  useAssetUIStore,
-  useAssets,
-} from "@/features/assets/hooks/assets.hook";
+import { useAssetUIStore } from "@/features/assets/hooks/assets.hook";
 import { Button } from "@/shared/components/customs/Button";
 import { Input } from "@/shared/components/customs/Input";
+import { useAssets } from "@/shared/lib/hooks/useAssets.hook";
 
 export default function MainLayoutContainer({
   children,
@@ -67,7 +64,9 @@ export default function MainLayoutContainer({
   );
   const categoryId = categoryIdMatch ? categoryIdMatch[1] : null;
   const { data: categories } = useCategories();
-  const currentCategory = categories?.find((c) => c.id === categoryId);
+  const currentCategory = categories?.find(
+    (c: Category) => c.id === categoryId,
+  );
 
   const getMobileTitle = (path: string): React.ReactNode => {
     if (path === "/categories") return t("manageCategories");

@@ -7,18 +7,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   createCategorySchema,
   CreateCategoryFormValues,
-} from "../schemas/category.schema";
+} from "../schemas/category.form.schema";
 import { PREMIUM_COLORS } from "../configs/category.config";
+import { useCategories } from "@/shared/lib/hooks/useCategories.hook";
 import {
   useCreateCategoryMutation,
   useUpdateCategoryMutation,
-  useCategories,
   useDeleteCategoryMutation,
   useCategoryUIStore,
   useReorderCategoriesMutation,
-  ApiErrorResponse,
 } from "../hooks/category.hook";
-import { Category } from "../types/category.type";
+import { ApiErrorResponse } from "@/shared/lib/types/api.type";
+import { Category } from "@/shared/lib/types/category.type";
 import { CircleX } from "lucide-react";
 import ConfirmModal from "@/shared/components/customs/ConfirmModal";
 import CUCategoryModal from "../components/CUCategoryModal";

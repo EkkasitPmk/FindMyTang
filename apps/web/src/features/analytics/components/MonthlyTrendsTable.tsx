@@ -1,4 +1,4 @@
-import { MonthlyTrendItem } from "../types/analytics.type";
+import { MonthlyTrendItem } from "../schemas/analytics.response.schema";
 import { formatCurrency } from "@/shared/lib/utils/currency.util";
 import { format } from "date-fns";
 import { th, enUS } from "date-fns/locale";
@@ -24,8 +24,12 @@ export const MonthlyTrendsTable = ({ data, year }: MonthlyTrendsTableProps) => {
         <div>{t("monthLabel")}</div>
         <div className="text-right text-income">{t("income")}</div>
         <div className="text-right text-expense">{t("expense")}</div>
-        <div className="text-right text-(--semantic-transfer)">{t("transfer")}</div>
-        <div className="text-right text-(--semantic-highlight)">{t("adjustment")}</div>
+        <div className="text-right text-(--semantic-transfer)">
+          {t("transfer")}
+        </div>
+        <div className="text-right text-(--semantic-highlight)">
+          {t("adjustment")}
+        </div>
         <div className="text-right">{t("netFlow")}</div>
       </div>
 

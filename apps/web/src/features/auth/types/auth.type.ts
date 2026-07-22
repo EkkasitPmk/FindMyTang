@@ -1,48 +1,41 @@
-import { AssetType } from "@/features/assets/types/assets.type";
-import { CategoryType } from "@/features/category/types/category.type";
-import { TransactionType } from "@/features/transactions/types/transaction.type";
-
-export interface SyncAssetItem {
-  localId: string;
-  name: string;
-  type: AssetType;
-  balance?: number;
-  color?: string;
-  displayOrder?: number;
-  isArchived?: boolean;
-  deletedAt?: string | null;
-}
-
-export interface SyncCategoryItem {
-  localId: string;
-  name: string;
-  type: CategoryType;
-  color?: string;
-  icon?: string;
-  displayOrder?: number;
-  isSystem?: boolean;
-  deletedAt?: string | null;
-}
-
-export interface SyncTransactionItem {
-  localId: string;
-  localAssetId: string;
-  localToAssetId?: string;
-  localCategoryId?: string;
-  type: TransactionType;
-  amount: number;
-  note?: string;
-  date: string;
-  attachmentUrl?: string | null;
-  deletedAt?: string | null;
-}
+import { SyncGuestResponse as ZodSyncGuestResponse } from "../schemas/auth.response.schema";
 
 export interface SyncGuestRequest {
-  assets: SyncAssetItem[];
-  categories: SyncCategoryItem[];
-  transactions: SyncTransactionItem[];
+  assets?: Array<{
+    id?: string;
+    localId?: string;
+    name: string;
+    type: string;
+    balance?: number;
+    color?: string | null;
+    isArchived?: boolean;
+    displayOrder?: number;
+  }>;
+  categories?: Array<{
+    id?: string;
+    localId?: string;
+    name: string;
+    type: string;
+    color?: string | null;
+    icon?: string | null;
+    isSystem?: boolean;
+    displayOrder?: number;
+  }>;
+  transactions?: Array<{
+    id?: string;
+    localId?: string;
+    type: string;
+    amount: number;
+    date: string;
+    assetId?: string;
+    localAssetId?: string;
+    toAssetId?: string | null;
+    localToAssetId?: string | null;
+    categoryId?: string | null;
+    localCategoryId?: string | null;
+    note?: string | null;
+    attachmentUrl?: string | null;
+  }>;
 }
 
-export interface SyncGuestResponse {
-  success: boolean;
-}
+export type SyncGuestResponse = ZodSyncGuestResponse;

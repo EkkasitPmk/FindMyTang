@@ -1,8 +1,8 @@
 "use client";
 import Link from "next/link";
 import { ChevronRight, Plus } from "lucide-react";
-import { useAssets } from "../hooks/assets.hook";
-import { getAssetIcon } from "../components/AssetIcon";
+import { useAssets } from "@/shared/lib/hooks/useAssets.hook";
+import { getAssetIcon } from "@/shared/components/customs/AssetIcon";
 import { EmptyAssetList } from "../../../shared/components/customs/EmptyAssetList";
 import { useThisMonthSummary } from "@/features/home/hooks/summary.hook";
 import { AssetIconWrapper } from "@/shared/components/customs/AssetIconWrapper";

@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
 import { useLoginMutation } from "../hooks/login.hook";
-import { loginSchema, LoginFormValues } from "../schemas/login.schema";
+import { loginSchema, LoginFormValues } from "../schemas/login.form.schema";
 import LoginForm from "../components/LoginForm";
 import {
   getGuestDataCount,

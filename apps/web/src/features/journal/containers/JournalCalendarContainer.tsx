@@ -10,7 +10,10 @@ import {
 } from "date-fns";
 import { useTransactionsQuery } from "@/features/transactions/hooks/transaction.hook";
 import { TransactionListContainer } from "@/features/transactions/containers/TransactionListContainer";
-import { GroupedTransaction } from "@/features/transactions/types/transaction.type";
+import {
+  GroupedTransaction,
+  TransactionResponse,
+} from "@/shared/lib/types/transaction.type";
 import MonthYearNavigator from "../components/MonthYearNavigator";
 import JournalCalendarGrid from "../components/JournalCalendarGrid";
 import { TransactionSummary } from "@/shared/components/customs/TransactionSummary";
@@ -84,7 +87,7 @@ export default function JournalCalendarContainer() {
 
   const currentMonthTransactions = useMemo(
     () =>
-      allTransactions.filter((tx) =>
+      allTransactions.filter((tx: TransactionResponse) =>
         isSameMonth(new Date(tx.transactionDate), currentMonth),
       ),
     [allTransactions, currentMonth],

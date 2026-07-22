@@ -1,10 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { loginApi } from "../services/login.service";
-import {
-  LoginRequest,
-  LoginResponse,
-  ApiErrorResponse,
-} from "../types/login.type";
+import { LoginRequest, LoginResponse } from "../types/login.type";
+import { ApiErrorResponse } from "@/shared/lib/types/api.type";
 import { AxiosError } from "axios";
 
 export const useLoginMutation = (options?: {

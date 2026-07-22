@@ -1,4 +1,4 @@
-import { DrilldownSummary as IDrilldownSummary } from "../types/analytics.type";
+import { DrilldownSummary as IDrilldownSummary } from "../schemas/analytics.response.schema";
 import { formatCurrency } from "@/shared/lib/utils/currency.util";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 

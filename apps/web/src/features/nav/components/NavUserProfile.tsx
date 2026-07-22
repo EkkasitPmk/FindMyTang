@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { LogIn, LogOut } from "lucide-react";
 import Avatar from "@/shared/components/customs/Avatar";
-import { UserProfile } from "@/features/nav/types/auth.type";
+import { UserProfile } from "@/shared/lib/types/user.type";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { cn } from "@/shared/lib/utils/core.util";
 import { Button } from "@/shared/components/customs/Button";

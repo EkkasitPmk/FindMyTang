@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { TransactionList } from "@/shared/components/customs/transactions/TransactionList";
+import { TransactionList } from "@/shared/components/customs/TransactionList";
 import TransactionListSkeleton from "@/shared/components/skeletons/TransactionListSkeleton";
 import ConfirmModal from "@/shared/components/customs/ConfirmModal";
 import LoadingModal from "@/shared/components/customs/LoadingModal";
@@ -14,9 +14,9 @@ import {
 import { toast } from "react-toastify";
 import { RotateCcw, Trash } from "lucide-react";
 import {
-  GroupedTransaction,
   TransactionResponse,
-} from "@/features/transactions/types/transaction.type";
+  GroupedTransaction,
+} from "@/shared/lib/types/transaction.type";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { cn } from "@/shared/lib/utils/core.util";
 
@@ -134,7 +134,9 @@ export function TransactionListContainer({
   return (
     <div className={cn("flex flex-col", useVirtualization ? "h-full" : "")}>
       {groupedTransactions.some((group) =>
-        group.items.some((transaction) => Boolean(transaction.deletedAt)),
+        group.items.some((transaction: TransactionResponse) =>
+          Boolean(transaction.deletedAt),
+        ),
       ) && (
         <p className="mb-2 px-4 text-xs text-secondary-text shrink-0">
           {t("deletedTransactionsNotice")}

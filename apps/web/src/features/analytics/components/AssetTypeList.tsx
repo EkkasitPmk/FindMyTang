@@ -1,8 +1,8 @@
-import { AssetDistributionGroup } from "../types/analytics.type";
+import { AssetDistributionGroup } from "../schemas/analytics.response.schema";
 import { formatCurrency } from "@/shared/lib/utils/currency.util";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { getAssetIcon } from "@/features/assets/components/AssetIcon";
-import { AssetType } from "@/features/assets/types/assets.type";
+import { getAssetIcon } from "@/shared/components/customs/AssetIcon";
+import { AssetType } from "@/shared/lib/types/asset.type";
 import { AssetIconWrapper } from "@/shared/components/customs/AssetIconWrapper";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { TranslationKey } from "@/shared/lib/configs/translations.config";

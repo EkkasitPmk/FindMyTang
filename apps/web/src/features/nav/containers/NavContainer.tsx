@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { toast } from "react-toastify";
 import { LogOut } from "lucide-react";
-import { useMeQuery, useLogoutMutation } from "../hooks/auth.hook";
+import { useLogoutMutation } from "../hooks/auth.hook";
 import { useGuestStore } from "@/shared/lib/storages/guest.storage";
 import DesktopSidebar from "../components/DesktopSidebar";
 import MobileDrawer from "../components/MobileDrawer";
@@ -14,6 +14,7 @@ import { useConfirmModal } from "@/shared/lib/hooks/useConfirmModal.hook";
 import { useFeatureLockModal } from "@/shared/lib/hooks/useFeatureLockModal.hook";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { useMeQuery } from "@/shared/lib/hooks/useMeQuery.hook";
 
 export default function NavContainer() {
   const pathname = usePathname();

@@ -4,10 +4,10 @@ import {
   TranslationKey,
   Language,
 } from "../configs/translations.config";
-import { useMeQuery } from "@/features/nav/hooks/auth.hook";
 import { useUpdateProfileMutation } from "@/features/account/hooks/account.hook";
 import { useIsGuest } from "@/shared/lib/storages/guest.storage";
 import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
+import { useMeQuery } from "./useMeQuery.hook";
 
 export function useTranslation() {
   const isGuest = useIsGuest();

@@ -1,6 +1,6 @@
 import { cn } from "@/shared/lib/utils/core.util";
 import { Coins, Landmark } from "lucide-react";
-import { Asset } from "@/features/assets/types/assets.type";
+import { Asset } from "@/shared/lib/types/asset.type";
 import { Button } from "@/shared/components/customs/Button";
 
 interface TransactionAssetItemProps {

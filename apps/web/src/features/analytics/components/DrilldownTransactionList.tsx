@@ -1,10 +1,10 @@
-import { DrilldownTransaction } from "../types/analytics.type";
+import { DrilldownTransaction } from "../schemas/analytics.response.schema";
 import { formatCurrency } from "@/shared/lib/utils/currency.util";
 import { format } from "date-fns";
 import { th, enUS } from "date-fns/locale";
-import { Asset } from "@/features/assets/types/assets.type";
-import { TransactionIcon } from "@/shared/components/customs/transactions/TransactionIcon";
-import { TransactionResponse } from "@/features/transactions/types/transaction.type";
+import { Asset } from "@/shared/lib/types/asset.type";
+import { TransactionIcon } from "@/shared/components/customs/TransactionIcon";
+import { TransactionResponse } from "@/shared/lib/types/transaction.type";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 interface DrilldownTransactionListProps {

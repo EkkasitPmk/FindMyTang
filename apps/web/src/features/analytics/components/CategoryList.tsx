@@ -1,9 +1,9 @@
-import { CategoryBreakdownItem } from "../types/analytics.type";
+import { CategoryBreakdownItem } from "../schemas/analytics.response.schema";
 import { formatCurrency } from "@/shared/lib/utils/currency.util";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { TransactionIcon } from "@/shared/components/customs/transactions/TransactionIcon";
-import { TransactionResponse } from "@/features/transactions/types/transaction.type";
+import { TransactionIcon } from "@/shared/components/customs/TransactionIcon";
+import { TransactionResponse } from "@/shared/lib/types/transaction.type";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 interface CategoryListProps {

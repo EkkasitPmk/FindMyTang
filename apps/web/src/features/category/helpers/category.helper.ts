@@ -1,4 +1,4 @@
-import { Category } from "../types/category.type";
+import { Category } from "@/shared/lib/types/category.type";
 
 export const reorderCategoriesList = (
   categories: Category[],

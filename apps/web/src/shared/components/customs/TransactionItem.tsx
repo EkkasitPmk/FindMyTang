@@ -1,5 +1,5 @@
 import { ChevronDown } from "lucide-react";
-import { TransactionResponse } from "@/features/transactions/types/transaction.type";
+import { TransactionResponse } from "@/shared/lib/types/transaction.type";
 import { cn } from "@/shared/lib/utils/core.util";
 import { Button } from "@/shared/components/customs/Button";
 import { TransactionItemDetails } from "./TransactionItemDetails";

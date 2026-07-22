@@ -1,15 +1,22 @@
 import http from "@/shared/lib/api/http";
-import { Category, CreateCategoryRequest } from "../types/category.type";
+import { CreateCategoryRequest } from "@/shared/lib/types/category.type";
 import { useGuestStore } from "@/shared/lib/storages/guest.storage";
 import {
   db,
   CategoryType as DexieCategoryType,
 } from "@/shared/lib/storages/dexie.storage";
 import { v4 as uuidv4 } from "uuid";
+import {
+  categoryResponseSchema,
+  categoryListResponseSchema,
+  reorderCategoryResponseSchema,
+  CategoryResponse,
+  ReorderCategoryResponse,
+} from "../schemas/category.response.schema";
 
 export const createCategoryApi = async (
   data: CreateCategoryRequest,
-): Promise<Category> => {
+): Promise<CategoryResponse> => {
   if (useGuestStore.getState().isGuest) {
     const newCategory = {
       id: uuidv4(),
@@ -23,27 +30,27 @@ export const createCategoryApi = async (
       syncStatus: "pending" as const,
     };
     await db.categories.add(newCategory);
-    return newCategory as unknown as Category;
+    return categoryResponseSchema.parse(newCategory);
   }
-  const response = await http.post<Category>("/categories", data);
-  return response.data;
+  const response = await http.post("/categories", data);
+  return categoryResponseSchema.parse(response.data);
 };
 
-export const getCategoriesApi = async (): Promise<Category[]> => {
+export const getCategoriesApi = async (): Promise<CategoryResponse[]> => {
   if (useGuestStore.getState().isGuest) {
     const categories = await db.categories
       .filter((c) => !c.deletedAt)
       .sortBy("displayOrder");
-    return categories as unknown as Category[];
+    return categoryListResponseSchema.parse(categories);
   }
-  const response = await http.get<Category[]>("/categories");
-  return response.data;
+  const response = await http.get("/categories");
+  return categoryListResponseSchema.parse(response.data);
 };
 
 export const updateCategory = async (
   id: string,
   data: Partial<CreateCategoryRequest>,
-): Promise<Category> => {
+): Promise<CategoryResponse> => {
   if (useGuestStore.getState().isGuest) {
     const existing = await db.categories.get(id);
     if (!existing) throw new Error("Category not found");
@@ -57,13 +64,13 @@ export const updateCategory = async (
       syncStatus: "pending" as const,
     };
     await db.categories.put(updated);
-    return updated as unknown as Category;
+    return categoryResponseSchema.parse(updated);
   }
-  const response = await http.patch<Category>(`/categories/${id}`, data);
-  return response.data;
+  const response = await http.patch(`/categories/${id}`, data);
+  return categoryResponseSchema.parse(response.data);
 };
 
-export const deleteCategory = async (id: string): Promise<Category> => {
+export const deleteCategory = async (id: string): Promise<CategoryResponse> => {
   if (useGuestStore.getState().isGuest) {
     const existing = await db.categories.get(id);
     if (!existing) throw new Error("Category not found");
@@ -71,15 +78,15 @@ export const deleteCategory = async (id: string): Promise<Category> => {
     existing.updatedAt = new Date().toISOString();
     existing.syncStatus = "pending";
     await db.categories.put(existing);
-    return existing as unknown as Category;
+    return categoryResponseSchema.parse(existing);
   }
-  const response = await http.delete<Category>(`/categories/${id}`);
-  return response.data;
+  const response = await http.delete(`/categories/${id}`);
+  return categoryResponseSchema.parse(response.data);
 };
 
 export const reorderCategoriesApi = async (
   ids: string[],
-): Promise<{ success: boolean }> => {
+): Promise<ReorderCategoryResponse> => {
   if (useGuestStore.getState().isGuest) {
     await db.transaction("rw", db.categories, async () => {
       for (let i = 0; i < ids.length; i++) {
@@ -92,11 +99,8 @@ export const reorderCategoriesApi = async (
         }
       }
     });
-    return { success: true };
+    return reorderCategoryResponseSchema.parse({ success: true });
   }
-  const response = await http.patch<{ success: boolean }>(
-    "/categories/reorder",
-    { ids },
-  );
-  return response.data;
+  const response = await http.patch("/categories/reorder", { ids });
+  return reorderCategoryResponseSchema.parse(response.data);
 };

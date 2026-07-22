@@ -2,7 +2,7 @@ import { ClipboardPenLine, ChevronRight } from "lucide-react";
 import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import { useTransactionsQuery } from "@/features/transactions/hooks/transaction.hook";
 import { TransactionListContainer } from "@/features/transactions/containers/TransactionListContainer";
-import { TransactionResponse } from "@/features/transactions/types/transaction.type";
+import { TransactionResponse } from "@/shared/lib/types/transaction.type";
 import { useMemo } from "react";
 import Link from "next/link";
 import { cn } from "@/shared/lib/utils/core.util";
@@ -25,7 +25,7 @@ export default function RecentJournalContainer() {
 
     const groupsMap = new Map<string, TransactionResponse[]>();
 
-    transactionsData.items.forEach((tx) => {
+    transactionsData.items.forEach((tx: TransactionResponse) => {
       const date = new Date(tx.transactionDate);
       const dateStr = Intl.DateTimeFormat(locale, {
         day: "2-digit",

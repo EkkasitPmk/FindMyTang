@@ -4,7 +4,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/shared/components/ui/chart";
-import { CategoryBreakdownItem } from "../types/analytics.type";
+import { CategoryBreakdownItem } from "../schemas/analytics.response.schema";
 import { formatCurrency } from "@/shared/lib/utils/currency.util";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { CategoryBreakdownChartLabel } from "./CategoryBreakdownChartLabel";
