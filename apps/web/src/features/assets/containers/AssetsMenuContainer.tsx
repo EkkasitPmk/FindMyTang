@@ -5,7 +5,6 @@ import {
   useDeleteAssetMutation,
   useUpdateAssetMutation,
   useAssetUIStore,
-  useAssets,
 } from "../hooks/assets.hook";
 import { toast } from "react-toastify";
 import { useClickOutside } from "@/shared/lib/hooks/useClickOutside.hook";
@@ -13,6 +12,7 @@ import { useConfirmModal } from "@/shared/lib/hooks/useConfirmModal.hook";
 import AssetsMenu from "../components/AssetsMenu";
 import LoadingModal from "@/shared/components/customs/LoadingModal";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { useAssets } from "@/shared/lib/hooks/useAssets.hook";
 
 export default function AssetsMenuContainer() {
   const [isOpen, setIsOpen] = useState(false);

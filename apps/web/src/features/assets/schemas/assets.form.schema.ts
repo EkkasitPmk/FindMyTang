@@ -1,5 +1,5 @@
 import * as z from "zod";
-import { AssetType } from "../types/assets.type";
+import { AssetType } from "@/shared/lib/types/asset.type";
 
 export const createAssetSchema = z.object({
   name: z
@@ -9,7 +9,7 @@ export const createAssetSchema = z.object({
     .refine((val) => val.trim().length > 0, {
       message: "Asset name must not be empty or whitespace only",
     }),
-  type: z.enum(AssetType),
+  type: z.enum(Object.values(AssetType) as [AssetType, ...AssetType[]]),
   balance: z
     .union([z.number(), z.string(), z.null(), z.undefined()])
     .refine(

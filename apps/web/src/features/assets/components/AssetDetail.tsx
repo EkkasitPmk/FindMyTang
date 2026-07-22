@@ -1,6 +1,6 @@
 import { ChevronRight, Pencil } from "lucide-react";
-import { Asset } from "../types/assets.type";
-import { GroupedTransaction } from "../../transactions/types/transaction.type";
+import { Asset } from "@/shared/lib/types/asset.type";
+import { GroupedTransaction } from "@/shared/lib/types/transaction.type";
 import { cn } from "@/shared/lib/utils/core.util";
 import { Button } from "@/shared/components/customs/Button";
 import { DropdownSelect } from "@/shared/components/customs/DropdownSelect";

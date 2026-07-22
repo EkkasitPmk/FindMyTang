@@ -3,11 +3,11 @@ import {
   FieldErrors,
   UseFormHandleSubmit,
 } from "react-hook-form";
-import { CreateAssetFormValues } from "../schemas/assets.schema";
+import { CreateAssetFormValues } from "../schemas/assets.form.schema";
 import { Check, Tag } from "lucide-react";
 import { cn } from "@/shared/lib/utils/core.util";
-import { getAssetIcon } from "../components/AssetIcon";
-import { AssetType } from "../types/assets.type";
+import { getAssetIcon } from "@/shared/components/customs/AssetIcon";
+import { AssetType } from "@/shared/lib/types/asset.type";
 import { Input } from "@/shared/components/customs/Input";
 import { Button } from "@/shared/components/customs/Button";
 import { ModalForm } from "@/shared/components/customs/ModalForm";

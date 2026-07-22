@@ -6,9 +6,9 @@ import { toast } from "react-toastify";
 import {
   createAssetSchema,
   CreateAssetFormValues,
-} from "../schemas/assets.schema";
+} from "../schemas/assets.form.schema";
 import { useUpdateAssetMutation } from "../hooks/assets.hook";
-import { Asset, AssetType } from "../types/assets.type";
+import { Asset, AssetType } from "@/shared/lib/types/asset.type";
 import AssetForm from "../components/AssetForm";
 import LoadingModal from "@/shared/components/customs/LoadingModal";
 import { handleFormError } from "@/shared/lib/helpers/form.helper";

@@ -1,5 +1,5 @@
-import { TransactionResponse } from "../../transactions/types/transaction.type";
-import { Asset } from "../types/assets.type";
+import { TransactionResponse } from "@/shared/lib/types/transaction.type";
+import { Asset } from "@/shared/lib/types/asset.type";
 import {
   getAvailableYears,
   applyTypeFilter,
