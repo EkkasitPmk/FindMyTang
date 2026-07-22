@@ -41,7 +41,7 @@ export default function LoginForm({
       <div className="w-full max-w-sm mx-auto bg-surface p-8 sm:p-10 border border-border/60 rounded-2xl shadow-sm animate-subtle-pop space-y-6">
         {/* Brand Logo Section */}
         <div className="text-center flex flex-col items-center space-y-2 mb-4">
-          <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center select-none shadow-sm active-press">
+          <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center select-none shadow-sm">
             <Landmark className="text-white w-6 h-6" strokeWidth={2} />
           </div>
           <div className="flex items-baseline gap-1 select-none">
@@ -122,7 +122,7 @@ export default function LoginForm({
           {/* Primary Action Button */}
           <Button
             variant="unstyled"
-            className="w-full h-12 bg-primary text-white font-semibold text-base rounded-lg flex items-center justify-center active:scale-[0.98] transition-all hover:bg-primary-hover cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full h-12 bg-primary text-white font-semibold text-base rounded-lg flex items-center justify-center transition-all hover:bg-primary-hover cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             type="submit"
             disabled={isPending}
           >
@@ -143,7 +143,7 @@ export default function LoginForm({
         <div className="flex flex-col space-y-3">
           <Button
             variant="unstyled"
-            className="w-full h-12 border border-border bg-surface text-primary-text font-medium rounded-lg flex items-center justify-center gap-2.5 active:scale-[0.98] transition-all hover:bg-surface-secondary cursor-pointer"
+            className="w-full h-12 border border-border bg-surface text-primary-text font-medium rounded-lg flex items-center justify-center gap-2.5 transition-all hover:bg-surface-secondary cursor-pointer"
             type="button"
             onClick={onGoogleLogin}
           >
@@ -176,7 +176,7 @@ export default function LoginForm({
 
           <Button
             variant="unstyled"
-            className="w-full h-12 bg-surface-secondary hover:bg-border/40 text-primary-text font-semibold rounded-lg flex items-center justify-center gap-2.5 active:scale-[0.98] transition-all cursor-pointer"
+            className="w-full h-12 bg-surface-secondary hover:bg-border/40 text-primary-text font-semibold rounded-lg flex items-center justify-center gap-2.5 transition-all cursor-pointer"
             type="button"
             onClick={onGuestLogin}
           >

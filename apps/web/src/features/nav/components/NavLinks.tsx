@@ -36,7 +36,7 @@ export default function NavLinks({
             href={item.href}
             onClick={(e) => onLinkClick?.(e, item.href)}
             className={cn(
-              "flex items-center gap-3 px-4 rounded-md text-sm font-medium transition-all duration-200 active-press",
+              "flex items-center gap-3 px-4 rounded-md text-sm font-medium transition-all duration-200",
               isActive
                 ? "bg-primary-light/50 text-primary border border-primary-light"
                 : "text-secondary-text hover:text-primary-text hover:bg-surface-secondary border border-transparent",

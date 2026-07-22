@@ -80,7 +80,7 @@ export default function AssetForm({
             type="submit"
             disabled={isPending}
             style={{ backgroundColor: currentColor }}
-            className="w-full text-white rounded-lg py-2.5 text-sm font-medium transition-all shadow-md disabled:opacity-50 cursor-pointer hover:opacity-90 hover:shadow-lg active:scale-[0.98]"
+            className="w-full text-white rounded-lg py-2.5 text-sm font-medium transition-all shadow-md disabled:opacity-50 cursor-pointer hover:opacity-90 hover:shadow-lg"
           >
             {submitButtonText}
           </Button>
@@ -247,7 +247,7 @@ export default function AssetForm({
               key={color}
               type="button"
               onClick={() => onSelectColor?.(color)}
-              className="w-8 h-8 mx-auto rounded-full flex items-center justify-center transition-transform hover:scale-110 active:scale-95 focus:outline-none"
+              className="w-8 h-8 mx-auto rounded-full flex items-center justify-center transition-transform hover:scale-110 focus:outline-none"
               style={{ backgroundColor: color }}
               aria-label={`Select color ${color}`}
             >

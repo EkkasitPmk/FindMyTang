@@ -71,7 +71,7 @@ export default function ShowProfileContainer() {
       {/* <div className="hidden">
         <Button variant="unstyled"
           aria-label="Notifications"
-          className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-variant transition-colors active:scale-95 duration-200"
+          className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-variant transition-colors duration-200"
         >
           <span className="material-symbols-outlined text-secondary-text">
             notifications

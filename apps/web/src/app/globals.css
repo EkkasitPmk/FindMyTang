@@ -32,18 +32,6 @@
   --color-highlight-light: var(--semantic-highlight-light);
 }
 
-/* Micro-animations and interaction updates */
-.active-press {
-  transition:
-    transform 0.1s ease,
-    opacity 0.1s ease;
-}
-
-.active-press:active {
-  transform: scale(0.98);
-  opacity: 0.9;
-}
-
 .ambient-shadow {
   box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.04);
 }

@@ -165,7 +165,7 @@ export default function ConfirmModal({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2.5 px-4 rounded-md border border-border hover:bg-surface-secondary text-secondary-text text-xs font-semibold active-press transition-colors cursor-pointer"
+              className="flex-1 py-2.5 px-4 rounded-md border border-border hover:bg-surface-secondary text-secondary-text text-xs font-semibold transition-colors cursor-pointer"
             >
               Cancel
             </button>
@@ -176,7 +176,7 @@ export default function ConfirmModal({
               className={`flex-1 py-2.5 px-4 rounded-md text-xs font-semibold transition-colors ${
                 isConfirmDisabled
                   ? `${colors.disabledBg} text-white/70 cursor-not-allowed`
-                  : `${colors.bg} ${colors.hoverBg} text-white active-press cursor-pointer`
+                  : `${colors.bg} ${colors.hoverBg} text-white cursor-pointer`
               }`}
             >
               {confirmLabel}

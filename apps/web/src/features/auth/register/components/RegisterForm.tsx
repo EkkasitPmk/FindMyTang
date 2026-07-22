@@ -184,7 +184,7 @@ export default function RegisterForm({
             variant="unstyled"
             type="submit"
             disabled={isPending}
-            className="w-full h-12 bg-primary text-white text-base rounded-lg font-semibold hover:bg-primary-hover active:scale-[0.98] active-press transition-all shadow-sm flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            className="w-full h-12 bg-primary text-white text-base rounded-lg font-semibold hover:bg-primary-hover transition-all shadow-sm flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             {isPending ? t("registering") : t("signUpBtn")}
           </Button>

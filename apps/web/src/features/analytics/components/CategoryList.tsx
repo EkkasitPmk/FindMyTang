@@ -27,7 +27,7 @@ export const CategoryList = ({ data, month, year }: CategoryListProps) => {
           <Link
             key={item.categoryId}
             href={`/analytics/category/${item.categoryId}?month=${month}&year=${year}`}
-            className="flex items-center justify-between px-3 py-2 bg-surface rounded-xl border active-press transition-transform"
+            className="flex items-center justify-between px-3 py-2 bg-surface rounded-xl border transition-colors"
           >
             <div className="flex items-center gap-3">
               <TransactionIcon

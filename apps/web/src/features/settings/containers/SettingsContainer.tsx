@@ -4,10 +4,7 @@ import {
   User,
   Shield,
   Globe,
-  HelpCircle,
   ChevronRight,
-  Download,
-  Trash2,
   Lock,
   Tag,
   Wallet,
@@ -26,15 +23,15 @@ export default function SettingsContainer({
   const { t, currentLanguage, changeLanguage } = useTranslation();
   const isGuest = useIsGuest();
 
-  const handleExportData = () => {
-    alert(t("exportAlert"));
-  };
+  // const handleExportData = () => {
+  //   alert(t("exportAlert"));
+  // };
 
-  const handleResetData = () => {
-    if (confirm(t("resetConfirm"))) {
-      alert(t("resetAlert"));
-    }
-  };
+  // const handleResetData = () => {
+  //   if (confirm(t("resetConfirm"))) {
+  //     alert(t("resetAlert"));
+  //   }
+  // };
 
   return (
     <div className="space-y-6 px-4 py-2 animate-in fade-in duration-300">
@@ -82,7 +79,7 @@ export default function SettingsContainer({
           <Link
             href="/login"
             onClick={onClose}
-            className="w-full py-2 px-3 rounded-md bg-primary hover:bg-primary-hover text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors active-press shadow-sm"
+            className="w-full py-2 px-3 rounded-md bg-primary hover:bg-primary-hover text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors shadow-sm"
           >
             <Lock className="w-3.5 h-3.5" strokeWidth={2} />
             {t("connectBtn")}
@@ -111,7 +108,7 @@ export default function SettingsContainer({
               <Button
                 variant="unstyled"
                 onClick={() => changeLanguage("en")}
-                className={`py-1 px-2.5 rounded-md text-[10px] font-bold transition-all active-press cursor-pointer ${
+                className={`py-1 px-2.5 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
                   currentLanguage === "en"
                     ? "bg-primary-text text-surface"
                     : "bg-surface-secondary text-secondary-text hover:text-primary-text"
@@ -122,7 +119,7 @@ export default function SettingsContainer({
               <Button
                 variant="unstyled"
                 onClick={() => changeLanguage("th")}
-                className={`py-1 px-2.5 rounded-md text-[10px] font-bold transition-all active-press cursor-pointer ${
+                className={`py-1 px-2.5 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
                   currentLanguage === "th"
                     ? "bg-primary-text text-surface"
                     : "bg-surface-secondary text-secondary-text hover:text-primary-text"

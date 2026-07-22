@@ -36,7 +36,7 @@ export default function MobileBottomNav({
               variant="unstyled"
               key={item.href}
               onClick={onMenuOpen}
-              className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-md text-[10px] font-semibold transition-all active-press cursor-pointer outline-none ${
+              className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-md text-[10px] font-semibold transition-all cursor-pointer outline-none ${
                 isMoreActive
                   ? "text-primary"
                   : "text-secondary-text hover:text-primary-text"
@@ -67,7 +67,7 @@ export default function MobileBottomNav({
                 lastClickTimeRef.current = now;
               }
             }}
-            className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-md text-[10px] font-semibold transition-all active-press ${
+            className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-md text-[10px] font-semibold transition-all ${
               isActive
                 ? "text-primary"
                 : "text-secondary-text hover:text-primary-text"

@@ -210,7 +210,7 @@ export default function CUCategoryModal({
                 key={color}
                 type="button"
                 onClick={() => setValue("color", color)}
-                className="w-8 h-8 mx-auto rounded-full flex items-center justify-center transition-transform hover:scale-110 active:scale-95 focus:outline-none cursor-pointer"
+                className="w-8 h-8 mx-auto rounded-full flex items-center justify-center transition-transform hover:scale-110 focus:outline-none cursor-pointer"
                 style={{ backgroundColor: color }}
                 aria-label={`Select color ${color}`}
               >
@@ -227,7 +227,7 @@ export default function CUCategoryModal({
             <Button
               variant="unstyled"
               type="button"
-              className="w-full h-full rounded-full flex items-center justify-center transition-transform hover:scale-110 active:scale-95 focus:outline-none cursor-pointer"
+              className="w-full h-full rounded-full flex items-center justify-center transition-transform hover:scale-110 focus:outline-none cursor-pointer"
               style={{
                 backgroundImage:
                   "linear-gradient(45deg, #ff007f, #ff7f00, #ffeb00, #00ff7f, #007fff, #7f00ff, #ff007f)",

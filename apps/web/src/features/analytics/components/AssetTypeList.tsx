@@ -32,7 +32,7 @@ export const AssetTypeList = ({
           >
             <button
               onClick={() => onToggleExpand(group.assetType)}
-              className="w-full flex items-center justify-between p-4 active-press transition-colors hover:bg-surface-secondary"
+              className="w-full flex items-center justify-between p-4 transition-colors hover:bg-surface-secondary"
             >
               <div className="flex items-center gap-3">
                 <AssetIconWrapper color={`var(--chart-${(index % 5) + 1})`}>
