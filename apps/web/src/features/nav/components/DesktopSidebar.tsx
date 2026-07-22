@@ -3,7 +3,7 @@ import NavLinks from "./NavLinks";
 import ThemeSwitcher from "@/shared/components/customs/ThemeSwitcher";
 import SyncStatusButton from "@/shared/components/customs/SyncStatusButton";
 import NavUserProfile from "./NavUserProfile";
-import { UserProfile } from "@/features/nav/types/auth.type";
+import { UserProfile } from "@/shared/lib/types/user.type";
 
 interface DesktopSidebarProps {
   pathname: string;
