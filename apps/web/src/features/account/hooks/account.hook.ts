@@ -11,12 +11,7 @@ import {
   ChangePasswordResponse,
 } from "../types/account.type";
 import { AxiosError } from "axios";
-
-export interface ApiErrorResponse {
-  message: string | string[];
-  error: string;
-  statusCode: number;
-}
+import { ApiErrorResponse } from "@/shared/lib/types/api.type";
 
 export const useUpdateProfileMutation = (options?: {
   onSuccess?: (data: UpdateProfileResponse) => void;

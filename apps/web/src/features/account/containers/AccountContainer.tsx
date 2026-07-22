@@ -4,7 +4,7 @@ import { ChevronRight, RotateCcwKey, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMeQuery } from "@/features/nav/hooks/auth.hook";
+import { useMeQuery } from "@/shared/lib/hooks/useMeQuery.hook";
 import {
   useUpdateProfileMutation,
   useChangePasswordMutation,
@@ -15,7 +15,7 @@ import {
   updateProfileSchema,
   ChangePasswordFormValues,
   UpdateProfileFormValues,
-} from "../schemas/account.schema";
+} from "../schemas/account.form.schema";
 import ChangePasswordModal from "../components/ChangePasswordModal";
 import AvatarSection from "../components/AvatarSection";
 import PersonalInfoForm from "../components/PersonalInfoForm";
