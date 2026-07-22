@@ -30,9 +30,9 @@ export const AssetDistributionContainer = ({
     );
   }
 
-  return (
-    <div className="flex flex-col h-full animate-in fade-in duration-300">
-      {isLoading ? (
+  const renderContent = () => {
+    if (isLoading) {
+      return (
         <div className="px-4 space-y-2">
           {/* Asset Distribution Bar Skeleton */}
           <div className="bg-surface rounded-xl border p-5">
@@ -70,19 +70,29 @@ export const AssetDistributionContainer = ({
             ))}
           </div>
         </div>
-      ) : (
-        <div className="px-4 space-y-2">
-          <AssetDistributionBar
-            data={data!.distribution}
-            totalAssets={data!.totalAssets}
-          />
-          <AssetTypeList
-            data={data!.distribution}
-            expandedTypes={expandedTypes}
-            onToggleExpand={handleToggleExpand}
-          />
-        </div>
-      )}
+      );
+    }
+
+    if (!data) return null;
+
+    return (
+      <div className="px-4 space-y-2">
+        <AssetDistributionBar
+          data={data.distribution}
+          totalAssets={data.totalAssets}
+        />
+        <AssetTypeList
+          data={data.distribution}
+          expandedTypes={expandedTypes}
+          onToggleExpand={handleToggleExpand}
+        />
+      </div>
+    );
+  };
+
+  return (
+    <div className="flex flex-col h-full animate-in fade-in duration-300">
+      {renderContent()}
     </div>
   );
 };

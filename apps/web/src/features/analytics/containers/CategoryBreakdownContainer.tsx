@@ -46,6 +46,67 @@ export const CategoryBreakdownContainer = () => {
     else totalAmount = data.summary.adjust || 0;
   }
 
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <div className="space-y-3">
+          <Skeleton className="h-14 w-full rounded-none" />
+          <div className="px-4">
+            <Skeleton className="h-9 w-full rounded-md" />
+          </div>
+          <Skeleton className="h-46 w-full rounded-none" />
+          <div className="space-y-1 px-4">
+            <Skeleton className="h-4 w-30 rounded-xl" />
+            <Skeleton className="h-15 w-full rounded-xl" />
+            <Skeleton className="h-15 w-full หrounded-xl" />
+            <Skeleton className="h-15 w-full rounded-xl" />
+          </div>
+        </div>
+      );
+    }
+
+    if (!data) return null;
+
+    return (
+      <>
+        <div className="mb-3">
+          <TransactionSummary
+            className="border-b-0 shadow-none"
+            income={data.summary.income || 0}
+            expense={data.summary.expense || 0}
+            transfer={data.summary.transfer || 0}
+            adjustment={data.summary.adjust || 0}
+            net={data.summary.net || 0}
+          />
+        </div>
+
+        <div className="m-0 px-4">
+          <SegmentedControl
+            options={[
+              { value: "EXPENSE", label: t("expense") },
+              { value: "INCOME", label: t("income") },
+              { value: "TRANSFER", label: t("transfer") },
+              { value: "ADJUSTMENT", label: t("adjustment") },
+            ]}
+            value={type}
+            onChange={(val) =>
+              setType(val as "EXPENSE" | "INCOME" | "TRANSFER" | "ADJUSTMENT")
+            }
+          />
+        </div>
+
+        <div className="m-0">
+          <CategoryBreakdownChart
+            data={data.breakdown}
+            totalAmount={totalAmount}
+          />
+        </div>
+
+        <CategoryList data={data.breakdown} month={month} year={year} />
+      </>
+    );
+  };
+
   return (
     <div className="flex flex-col h-full space-y-3">
       <div className="px-4">
@@ -62,58 +123,7 @@ export const CategoryBreakdownContainer = () => {
         />
       </div>
 
-      {isLoading ? (
-        <div className="space-y-3">
-          <Skeleton className="h-14 w-full rounded-none" />
-          <div className="px-4">
-            <Skeleton className="h-9 w-full rounded-md" />
-          </div>
-          <Skeleton className="h-46 w-full rounded-none" />
-          <div className="space-y-1 px-4">
-            <Skeleton className="h-4 w-30 rounded-xl" />
-            <Skeleton className="h-15 w-full rounded-xl" />
-            <Skeleton className="h-15 w-full หrounded-xl" />
-            <Skeleton className="h-15 w-full rounded-xl" />
-          </div>
-        </div>
-      ) : (
-        <>
-          <div className="mb-3">
-            <TransactionSummary
-              className="border-b-0 shadow-none"
-              income={data!.summary.income || 0}
-              expense={data!.summary.expense || 0}
-              transfer={data!.summary.transfer || 0}
-              adjustment={data!.summary.adjust || 0}
-              net={data!.summary.net || 0}
-            />
-          </div>
-
-          <div className="m-0 px-4">
-            <SegmentedControl
-              options={[
-                { value: "EXPENSE", label: t("expense") },
-                { value: "INCOME", label: t("income") },
-                { value: "TRANSFER", label: t("transfer") },
-                { value: "ADJUSTMENT", label: t("adjustment") },
-              ]}
-              value={type}
-              onChange={(val) =>
-                setType(val as "EXPENSE" | "INCOME" | "TRANSFER" | "ADJUSTMENT")
-              }
-            />
-          </div>
-
-          <div className="m-0">
-            <CategoryBreakdownChart
-              data={data!.breakdown}
-              totalAmount={totalAmount}
-            />
-          </div>
-
-          <CategoryList data={data!.breakdown} month={month} year={year} />
-        </>
-      )}
+      {renderContent()}
     </div>
   );
 };

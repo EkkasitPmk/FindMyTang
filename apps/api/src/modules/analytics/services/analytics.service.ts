@@ -99,6 +99,8 @@ export class AnalyticsService {
       month: i + 1,
       income: 0,
       expense: 0,
+      transfer: 0,
+      adjust: 0,
       net: 0,
     }));
 
@@ -109,6 +111,10 @@ export class AnalyticsService {
         months[monthIndex].income += amount;
       } else if (t.type === "EXPENSE") {
         months[monthIndex].expense += amount;
+      } else if (t.type === "TRANSFER") {
+        months[monthIndex].transfer += amount;
+      } else if (t.type === "ADJUSTMENT") {
+        months[monthIndex].adjust += amount;
       }
       months[monthIndex].net =
         months[monthIndex].income - months[monthIndex].expense;

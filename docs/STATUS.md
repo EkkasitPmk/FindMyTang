@@ -71,7 +71,10 @@
 - **Sprint 2 (Advanced Transactions):** พัฒนาระบบโอนเงินข้ามบัญชี (Transfer) และระบบปรับปรุงยอดบัญชี (Balance Adjustment) สมบูรณ์พร้อมเชื่อมต่อหน้าบ้านและหลังบ้าน
 - **Sprint 2 (Profile Settings):** พัฒนาระบบลบบัญชีผู้ใช้ (Delete Account) แบบ Hard Delete, ระบบการเปลี่ยนรหัสผ่าน (Change Password) และหน้า UI การจัดการบัญชีอย่างสมบูรณ์
 - **Sprint 3 (Dashboard):** พัฒนาหน้า Dashboard เสร็จสมบูรณ์ (คำนวณ Net Worth, Net Flow รายเดือน, รายการบัญชี และ 5 ธุรกรรมล่าสุด)
-- **Sprint 4 (Analytics & Insights):** พัฒนาระบบรายงานการเงินเสร็จสมบูรณ์ ประกอบด้วย Category Breakdown, Asset Distribution, Monthly Trends และระบบ Drill-down ดูธุรกรรมย่อย
+
+---
+
+### 2. สิ่งที่จะต้องทำเป็นลำดับถัดไป (Next Actions)
 
 งานหลักที่ต้องดำเนินการใน **Sprint 5: ความปลอดภัยและฟังก์ชันเสริมระบบคลาวด์ (Security & Cloud Features)**:
 

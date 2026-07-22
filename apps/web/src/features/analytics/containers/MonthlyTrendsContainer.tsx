@@ -12,19 +12,9 @@ export const MonthlyTrendsContainer = () => {
 
   const { data, isLoading } = useMonthlyTrends(year);
 
-  return (
-    <div className="flex flex-col h-full animate-in fade-in duration-300">
-      <div className="px-4">
-        <PeriodSelector
-          mode="year"
-          year={year}
-          onPrev={() => setYear((y) => y - 1)}
-          onNext={() => setYear((y) => y + 1)}
-          disableNext={year >= currentYear}
-        />
-      </div>
-
-      {isLoading ? (
+  const renderContent = () => {
+    if (isLoading) {
+      return (
         <div className="space-y-2 mt-2">
           {/* Chart Skeleton */}
           <Skeleton className="h-50 w-full rounded-none" />
@@ -100,35 +90,51 @@ export const MonthlyTrendsContainer = () => {
             </div>
           </div>
         </div>
-      ) : (
-        (() => {
-          const validMonths = data!.months.filter(
-            (item) =>
-              item.income > 0 ||
-              item.expense > 0 ||
-              item.transfer > 0 ||
-              item.adjust > 0,
-          );
+      );
+    }
 
-          const activeTypes = {
-            income: validMonths.some((m) => m.income > 0),
-            expense: validMonths.some((m) => m.expense > 0),
-            transfer: validMonths.some((m) => m.transfer > 0),
-            adjust: validMonths.some((m) => m.adjust > 0),
-          };
+    if (!data) return null;
 
-          return (
-            <div className="space-y-2 my-2">
-              <MonthlyTrendsChart
-                data={validMonths}
-                year={data!.year}
-                activeTypes={activeTypes}
-              />
-              <MonthlyTrendsTable data={validMonths} year={data!.year} />
-            </div>
-          );
-        })()
-      )}
+    const validMonths = (data.months ?? []).filter(
+      (item) =>
+        item.income > 0 ||
+        item.expense > 0 ||
+        item.transfer > 0 ||
+        item.adjust > 0,
+    );
+
+    const activeTypes = {
+      income: validMonths.some((m) => m.income > 0),
+      expense: validMonths.some((m) => m.expense > 0),
+      transfer: validMonths.some((m) => m.transfer > 0),
+      adjust: validMonths.some((m) => m.adjust > 0),
+    };
+
+    return (
+      <div className="space-y-2 my-2">
+        <MonthlyTrendsChart
+          data={validMonths}
+          year={data.year}
+          activeTypes={activeTypes}
+        />
+        <MonthlyTrendsTable data={validMonths} year={data.year} />
+      </div>
+    );
+  };
+
+  return (
+    <div className="flex flex-col h-full animate-in fade-in duration-300">
+      <div className="px-4">
+        <PeriodSelector
+          mode="year"
+          year={year}
+          onPrev={() => setYear((y) => y - 1)}
+          onNext={() => setYear((y) => y + 1)}
+          disableNext={year >= currentYear}
+        />
+      </div>
+
+      {renderContent()}
     </div>
   );
 };

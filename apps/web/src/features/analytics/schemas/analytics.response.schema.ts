@@ -25,8 +25,8 @@ export const monthlyTrendItemSchema = z.object({
   month: z.number(),
   income: z.number(),
   expense: z.number(),
-  transfer: z.number(),
-  adjust: z.number(),
+  transfer: z.number().optional().default(0),
+  adjust: z.number().optional().default(0),
   net: z.number(),
 });
 
