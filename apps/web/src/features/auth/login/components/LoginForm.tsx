@@ -5,7 +5,7 @@ import {
   FieldErrors,
   UseFormHandleSubmit,
 } from "react-hook-form";
-import { LoginFormValues } from "../schemas/login.schema";
+import { LoginFormValues } from "../schemas/login.form.schema";
 import { Input } from "@/shared/components/customs/Input";
 import { Button } from "@/shared/components/customs/Button";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";

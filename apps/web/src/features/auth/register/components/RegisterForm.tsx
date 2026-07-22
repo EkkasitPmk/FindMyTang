@@ -5,7 +5,7 @@ import {
   FieldErrors,
   UseFormHandleSubmit,
 } from "react-hook-form";
-import { RegisterFormValues } from "../schemas/register.schema";
+import { RegisterFormValues } from "../schemas/register.form.schema";
 import { Input } from "@/shared/components/customs/Input";
 import { Button } from "@/shared/components/customs/Button";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";

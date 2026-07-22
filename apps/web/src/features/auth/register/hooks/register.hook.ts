@@ -1,10 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { registerApi } from "../services/register.service";
-import {
-  RegisterRequest,
-  RegisterResponse,
-  ApiErrorResponse,
-} from "../types/register.type";
+import { RegisterRequest, RegisterResponse } from "../types/register.type";
+import { ApiErrorResponse } from "@/shared/lib/types/api.type";
 import { AxiosError } from "axios";
 
 export const useRegisterMutation = (options?: {

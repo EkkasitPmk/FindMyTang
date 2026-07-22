@@ -5,7 +5,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { useRegisterMutation } from "../hooks/register.hook";
-import { registerSchema, RegisterFormValues } from "../schemas/register.schema";
+import {
+  registerSchema,
+  RegisterFormValues,
+} from "../schemas/register.form.schema";
 import RegisterForm from "../components/RegisterForm";
 import { handleFormError } from "@/shared/lib/helpers/form.helper";
 import LoadingModal from "@/shared/components/customs/LoadingModal";

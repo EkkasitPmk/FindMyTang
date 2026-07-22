@@ -1,8 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { AssetType } from "@/features/assets/types/assets.type";
-import { CategoryType } from "@/features/category/types/category.type";
-import { TransactionType } from "@/features/transactions/types/transaction.type";
+import { AssetType } from "@/shared/lib/types/asset.type";
+import { CategoryType } from "@/shared/lib/types/category.type";
+import { TransactionType } from "@/shared/lib/types/transaction.type";
 import { authService } from "../services/auth.service";
 import { SyncGuestRequest, SyncGuestResponse } from "../types/auth.type";
 import { useGuestStore } from "@/shared/lib/storages/guest.storage";
