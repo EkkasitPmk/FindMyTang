@@ -10,7 +10,7 @@ import {
   isToday,
 } from "date-fns";
 
-import { TransactionResponse } from "@/features/transactions/types/transaction.type";
+import { TransactionResponse } from "@/shared/lib/types/transaction.type";
 
 export interface DailySummary {
   income: number;

@@ -9,7 +9,7 @@ import MenuItem from "@/shared/components/customs/MenuItem";
 import MenuCheckboxItem from "@/shared/components/customs/MenuCheckboxItem";
 import { useClickOutside } from "@/shared/lib/hooks/useClickOutside.hook";
 import { useInfiniteTransactionsQuery } from "@/features/transactions/hooks/transaction.hook";
-import { TransactionResponse } from "@/features/transactions/types/transaction.type";
+import { TransactionResponse } from "@/shared/lib/types/transaction.type";
 import { Button } from "@/shared/components/customs/Button";
 import JournalCalendarContainer from "./JournalCalendarContainer";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
