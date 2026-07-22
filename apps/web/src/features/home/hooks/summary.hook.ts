@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { TodaySummary } from "../types/summary.type";
+import { TodaySummaryResponse } from "../schemas/home.response.schema";
 import { getThisMonthSummaryApi } from "../services/summary.service";
 
 export const useThisMonthSummary = () => {
-  return useQuery<TodaySummary, AxiosError>({
+  return useQuery<TodaySummaryResponse, AxiosError>({
     queryKey: ["summary", "monthly"],
     queryFn: getThisMonthSummaryApi,
   });
