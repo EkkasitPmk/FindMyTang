@@ -55,7 +55,7 @@ export default function FeatureLockModal({
             {t("unlockFeature").replace("{featureName}", featureName)}
           </h3>
           <p className="text-sm text-secondary-text">
-            {t("unlockFeatureDesc").replace(/{featureName}/g, featureName)}
+            {t("unlockFeatureDesc").replaceAll("{featureName}", featureName)}
           </p>
         </div>
 

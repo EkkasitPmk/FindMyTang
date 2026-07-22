@@ -6,6 +6,7 @@ import { AssetType } from "@/shared/lib/types/asset.type";
 import { AssetIconWrapper } from "@/shared/components/customs/AssetIconWrapper";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { TranslationKey } from "@/shared/lib/configs/translations.config";
+import { Button } from "@/shared/components/customs/Button";
 
 interface AssetTypeListProps {
   data: AssetDistributionGroup[];
@@ -30,7 +31,8 @@ export const AssetTypeList = ({
             key={group.assetType}
             className="bg-surface rounded-xl border overflow-hidden"
           >
-            <button
+            <Button
+              variant="unstyled"
               onClick={() => onToggleExpand(group.assetType)}
               className="w-full flex items-center justify-between p-4 transition-colors hover:bg-surface-secondary"
             >
@@ -62,7 +64,7 @@ export const AssetTypeList = ({
                   <ChevronDown className="w-4 h-4 text-disabled-text" />
                 )}
               </div>
-            </button>
+            </Button>
 
             {isExpanded && (
               <div className="px-4 pb-4 pt-1 border-t border-border bg-surface-secondary/50">

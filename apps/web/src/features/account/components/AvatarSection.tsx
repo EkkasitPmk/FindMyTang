@@ -4,7 +4,6 @@ import Avatar from "@/shared/components/customs/Avatar";
 import { AVATARS } from "../configs/account.config";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { Button } from "@/shared/components/customs/Button";
-import LoadingModal from "@/shared/components/customs/LoadingModal";
 
 interface AvatarSectionProps {
   user:
@@ -111,11 +110,6 @@ export default function AvatarSection({
           </div>
         </>
       )}
-
-      <LoadingModal
-        isOpen={isUpdating}
-        message={t("updating") || "Updating..."}
-      />
     </section>
   );
 }

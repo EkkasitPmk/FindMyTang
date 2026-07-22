@@ -1,5 +1,6 @@
 import { cn } from "@/shared/lib/utils/core.util";
 import React from "react";
+import { Button } from "@/shared/components/customs/Button";
 
 export interface SegmentedControlOption<T extends string> {
   label: React.ReactNode;
@@ -27,7 +28,8 @@ export function SegmentedControl<T extends string>({
       )}
     >
       {options.map((option) => (
-        <button
+        <Button
+          variant="unstyled"
           key={option.value}
           type="button"
           onClick={() => onChange(option.value)}
@@ -37,7 +39,7 @@ export function SegmentedControl<T extends string>({
           )}
         >
           {option.label}
-        </button>
+        </Button>
       ))}
     </section>
   );

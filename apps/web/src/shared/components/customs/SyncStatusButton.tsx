@@ -1,5 +1,6 @@
 import { Cloud, CloudOff, RefreshCw, CheckCircle2 } from "lucide-react";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { Button } from "@/shared/components/customs/Button";
 
 interface SyncStatusButtonProps {
   isGuest: boolean;
@@ -36,7 +37,8 @@ export default function SyncStatusButton({
   };
 
   return (
-    <button
+    <Button
+      variant="unstyled"
       onClick={onSyncClick}
       className="flex items-center justify-center gap-2 p-2 rounded-lg shrink-0 cursor-pointer hover:bg-surface-secondary/80 transition-all text-sm group"
       aria-label="Sync status"
@@ -52,6 +54,6 @@ export default function SyncStatusButton({
           {getStatusText()}
         </span>
       </div>
-    </button>
+    </Button>
   );
 }

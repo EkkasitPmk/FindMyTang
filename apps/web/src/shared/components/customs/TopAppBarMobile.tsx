@@ -1,5 +1,6 @@
 import { cn } from "@/shared/lib/utils/core.util";
 import { ChevronLeft } from "lucide-react";
+import { Button } from "@/shared/components/customs/Button";
 
 interface TopAppBarMobileProps {
   title: React.ReactNode;
@@ -23,13 +24,14 @@ export default function TopAppBarMobile({
       )}
     >
       {showBackButton && onBack && (
-        <button
+        <Button
+          variant="unstyled"
           type="button"
           onClick={onBack}
           className="p-1 ml-1 cursor-pointer"
         >
           <ChevronLeft size={24} />
-        </button>
+        </Button>
       )}
       <div className="absolute left-1/2 -translate-x-1/2 text-base font-medium flex items-center justify-center">
         {title}
