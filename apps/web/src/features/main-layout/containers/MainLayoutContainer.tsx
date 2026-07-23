@@ -171,6 +171,7 @@ export default function MainLayoutContainer({
   };
 
   let mainContentClassName = "px-0 py-3";
+  let mainOverflowClassName = "overflow-y-auto max-h-screen";
   if (isMainTab) {
     if (
       pathname === "/transaction" ||
@@ -178,6 +179,7 @@ export default function MainLayoutContainer({
       pathname === "/analytics"
     ) {
       mainContentClassName = cn("py-3");
+      mainOverflowClassName = "overflow-hidden h-full";
     } else {
       mainContentClassName = cn("pt-15");
     }
@@ -246,7 +248,8 @@ export default function MainLayoutContainer({
             {/* Child Content */}
             <main
               className={cn(
-                "flex-1 overflow-y-auto max-h-screen w-full mx-auto",
+                "flex-1 w-full mx-auto",
+                mainOverflowClassName,
                 mainContentClassName,
               )}
             >
