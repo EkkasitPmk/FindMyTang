@@ -4,6 +4,8 @@ import { Button } from "@/shared/components/customs/Button";
 import { getDiffDays } from "@/shared/lib/helpers/date.helper";
 import { cn } from "@/shared/lib/utils/core.util";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
+import { createPortal } from "react-dom";
 import type { Locale } from "react-day-picker";
 
 interface ChooseADateProps {
@@ -12,6 +14,7 @@ interface ChooseADateProps {
   displayMonth: Date | undefined;
   onMonthChange: (month: Date) => void;
   onConfirm: () => void;
+  onClose?: () => void;
   onPresetClick: (daysToAdd: number) => void;
   locale?: Locale;
 }
@@ -22,14 +25,18 @@ export default function ChooseADate({
   displayMonth,
   onMonthChange,
   onConfirm,
+  onClose,
   onPresetClick,
   locale,
 }: Readonly<ChooseADateProps>) {
+  const mounted = useMounted();
   const { t } = useTranslation();
   const diffDays = getDiffDays(selectedDate);
 
   const hours = selectedDate ? selectedDate.getHours() : 0;
   const minutes = selectedDate ? selectedDate.getMinutes() : 0;
+
+  if (!mounted) return null;
 
   const applyTime = (h: number, m: number) => {
     if (!selectedDate) return;
@@ -58,89 +65,108 @@ export default function ChooseADate({
     }
   };
 
-  return (
-    <Card
-      className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 mx-auto w-fit max-w-74 data-[size=sm]:py-1 data-[size=sm]:gap-2 shadow-2xl z-50"
-      size="sm"
-    >
-      <CardContent>
-        <Calendar
-          mode="single"
-          weekStartsOn={1}
-          selected={selectedDate}
-          captionLayout="dropdown"
-          onSelect={handleDateSelect}
-          month={displayMonth}
-          onMonthChange={onMonthChange}
-          fixedWeeks={false}
-          locale={locale}
-          className="p-0 [--cell-size:--spacing(9.5)]"
-          classNames={{
-            month: "flex w-full flex-col gap-2",
-            week: "mt-1 flex w-full",
-            day_button: "data-[selected-single=true]:bg-primary h-8",
-            day: "h-8",
-            today: "",
-          }}
-        />
-        <div className="flex items-center justify-center gap-2 mt-4 pt-4 border-t">
-          <label className="text-sm font-medium">{t("time")}</label>
-          <div className="flex items-center gap-1 border border-border rounded-md px-2 py-1 bg-surface focus-within:ring-2 focus-within:ring-primary transition-colors">
-            <input
-              id="time-hour"
-              type="number"
-              min={0}
-              max={23}
-              value={String(hours).padStart(2, "0")}
-              onChange={handleHourChange}
-              className="w-8 text-center bg-transparent outline-none"
-            />
-            <span className="font-medium">:</span>
-            <input
-              id="time-minute"
-              type="number"
-              min={0}
-              max={59}
-              value={String(minutes).padStart(2, "0")}
-              onChange={handleMinuteChange}
-              className="w-8 text-center bg-transparent outline-none"
-            />
-          </div>
-        </div>
-      </CardContent>
-      <CardFooter className="flex flex-wrap gap-2 border-t rounded-b-none group-data-[size=sm]/card:py-2">
-        {[
-          { label: t("today"), value: 0 },
-          { label: t("tomorrow"), value: 1 },
-          { label: t("in3Days"), value: 3 },
-          { label: t("in1Week"), value: 7 },
-          { label: t("in2Weeks"), value: 14 },
-        ].map((preset) => (
-          <Button
-            key={preset.value}
-            type="button"
-            variant="outline"
-            size="sm"
-            className={cn(
-              "flex-1 transition-colors",
-              diffDays === preset.value
-                ? "bg-primary-light text-primary border-primary hover:bg-primary-light hover:text-blue-600"
-                : "",
-            )}
-            onClick={() => onPresetClick(preset.value)}
-          >
-            {preset.label}
-          </Button>
-        ))}
-      </CardFooter>
-      <Button
-        type="button"
-        variant="default"
-        className="mb-2 mx-2 py-5 bg-primary text-white"
-        onClick={onConfirm}
+  const modalContent = (
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-primary-text/20 backdrop-blur-xs transition-opacity duration-300">
+      {/* Click outside backdrop */}
+      <div
+        className="absolute inset-0 cursor-default"
+        onClick={onClose}
+        aria-hidden="true"
+      />
+
+      <Card
+        className="relative mx-auto w-85 max-w-[calc(100vw-32px)] shadow-2xl z-10 p-4 border border-border bg-surface rounded-2xl animate-subtle-pop"
+        size="sm"
       >
-        {t("confirm")}
-      </Button>
-    </Card>
+        <CardContent className="p-0">
+          <Calendar
+            mode="single"
+            weekStartsOn={1}
+            selected={selectedDate}
+            captionLayout="dropdown"
+            startMonth={new Date(2010, 0)}
+            endMonth={new Date(2040, 11)}
+            onSelect={handleDateSelect}
+            month={displayMonth}
+            onMonthChange={onMonthChange}
+            fixedWeeks={false}
+            locale={locale}
+            className="p-0 w-full"
+            classNames={{
+              month: "flex w-full flex-col gap-2",
+              week: "flex w-full justify-between",
+              day_button:
+                "data-[selected-single=true]:bg-primary data-[selected-single=true]:text-white h-9 w-9 rounded-lg font-medium transition-all hover:bg-surface-secondary",
+              day: "h-9 w-9 flex items-center justify-center p-0",
+              today: "font-bold text-primary",
+            }}
+          />
+          <div className="flex items-center justify-between gap-2 mt-4 pt-3 border-t border-border">
+            <label
+              htmlFor="time-hour"
+              className="text-xs font-semibold uppercase text-secondary-text tracking-wider"
+            >
+              {t("time")}
+            </label>
+            <div className="flex items-center gap-1 border border-border rounded-lg px-2.5 py-1 bg-surface-secondary/50 focus-within:ring-2 focus-within:ring-primary/20 transition-colors">
+              <input
+                id="time-hour"
+                type="number"
+                min={0}
+                max={23}
+                value={String(hours).padStart(2, "0")}
+                onChange={handleHourChange}
+                className="w-7 text-center bg-transparent outline-none font-semibold text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
+              <span className="font-bold text-sm text-secondary-text">:</span>
+              <input
+                id="time-minute"
+                type="number"
+                min={0}
+                max={59}
+                value={String(minutes).padStart(2, "0")}
+                onChange={handleMinuteChange}
+                className="w-7 text-center bg-transparent outline-none font-semibold text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
+            </div>
+          </div>
+        </CardContent>
+        <CardFooter className="flex flex-wrap gap-1.5 border-t border-border p-2 rounded-md">
+          {[
+            { label: t("today"), value: 0 },
+            { label: t("tomorrow"), value: 1 },
+            { label: t("in3Days"), value: 3 },
+            { label: t("in1Week"), value: 7 },
+            { label: t("in2Weeks"), value: 14 },
+          ].map((preset) => (
+            <Button
+              key={preset.value}
+              type="button"
+              variant="outline"
+              size="sm"
+              className={cn(
+                "text-xs px-2.5 py-1.5 h-auto rounded-lg font-medium transition-all flex-1 min-w-17.5",
+                diffDays === preset.value
+                  ? "bg-primary-light text-primary border-primary hover:bg-primary-light hover:text-primary-hover"
+                  : "border-border hover:bg-surface-secondary",
+              )}
+              onClick={() => onPresetClick(preset.value)}
+            >
+              {preset.label}
+            </Button>
+          ))}
+          <Button
+            type="button"
+            variant="default"
+            className="my-2 w-full py-2.5 bg-primary hover:bg-primary-hover text-white font-semibold rounded-xl transition-all shadow-md active:scale-[0.98]"
+            onClick={onConfirm}
+          >
+            {t("confirm")}
+          </Button>
+        </CardFooter>
+      </Card>
+    </div>
   );
+
+  return createPortal(modalContent, document.body);
 }

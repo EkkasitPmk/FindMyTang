@@ -221,27 +221,16 @@ export default function TransactionMoreDetails({
                   <span className="text-sm font-medium">{displayDate}</span>
                 </Button>
                 {isCalendarOpen && (
-                  <>
-                    <Button
-                      variant="unstyled"
-                      type="button"
-                      aria-label="Close calendar"
-                      className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm transition-opacity border-none outline-none"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setIsCalendarOpen(false);
-                      }}
-                    />
-                    <ChooseADate
-                      selectedDate={tempDate}
-                      onSelectDate={setTempDate}
-                      displayMonth={displayMonth}
-                      onMonthChange={setDisplayMonth}
-                      onConfirm={onConfirmDate}
-                      onPresetClick={onPresetClick}
-                      locale={calendarLocale}
-                    />
-                  </>
+                  <ChooseADate
+                    selectedDate={tempDate}
+                    onSelectDate={setTempDate}
+                    displayMonth={displayMonth}
+                    onMonthChange={setDisplayMonth}
+                    onConfirm={onConfirmDate}
+                    onClose={() => setIsCalendarOpen(false)}
+                    onPresetClick={onPresetClick}
+                    locale={calendarLocale}
+                  />
                 )}
               </div>
             )}

@@ -117,6 +117,8 @@ export const MonthlyTrendsChart = ({
                 dataKey="income"
                 fill="var(--color-income)"
                 radius={[4, 4, 0, 0]}
+                animationDuration={400}
+                animationEasing="ease-out"
               />
             )}
             {activeTypes.expense && (
@@ -124,6 +126,8 @@ export const MonthlyTrendsChart = ({
                 dataKey="expense"
                 fill="var(--color-expense)"
                 radius={[4, 4, 0, 0]}
+                animationDuration={400}
+                animationEasing="ease-out"
               />
             )}
             {activeTypes.transfer && (
@@ -131,6 +135,8 @@ export const MonthlyTrendsChart = ({
                 dataKey="transfer"
                 fill="var(--color-transfer)"
                 radius={[4, 4, 0, 0]}
+                animationDuration={400}
+                animationEasing="ease-out"
               />
             )}
             {activeTypes.adjust && (
@@ -138,6 +144,8 @@ export const MonthlyTrendsChart = ({
                 dataKey="adjust"
                 fill="var(--color-adjust)"
                 radius={[4, 4, 0, 0]}
+                animationDuration={400}
+                animationEasing="ease-out"
               />
             )}
           </BarChart>

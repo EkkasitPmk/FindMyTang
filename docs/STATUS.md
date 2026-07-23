@@ -96,6 +96,18 @@
   - ย้ายและเปลี่ยนจากคอมโพเนนต์เดิม `SegmentedControl` ไปใช้ `Animate Tabs` (`Tabs`, `TabsList`, `TabsTrigger`) แบบ Smooth Motion ในทุกหน้าจอเรียบร้อยแล้ว
   - ลบไฟล์ `SegmentedControl.tsx` เดิมที่ไม่ถูกใช้งานแล้วออกจากระบบสำเร็จ 100%
 
+- **Transaction Date Modal React Portal & Month/Year Dropdown Restoration**:
+  - Refactor คอมโพเนนต์ [ChooseADate.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/transactions/components/ChooseADate.tsx) ให้ใช้ `createPortal(modalContent, document.body)` ร่วมกับ `useMounted()` เพื่อส่งองค์ประกอบ Modal ขึ้นไปเรนเดอร์ในระดับ Root Document (`document.body`)
+  - คืนค่าและปรับปรุงระบบ Dropdown สำหรับเลือก **เดือน และ ปี** (`captionLayout="dropdown"`) พร้อมตั้งค่า `startMonth` และ `endMonth` ครอบคลุมตั้งแต่งปี 2010 ถึง 2040
+  - ปรับแต่งสไตล์ [calendar.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/ui/calendar.tsx) ให้ปุ่ม Dropdown เดือนและปีมีกรอบมน สวยงาม ชัดเจน และไม่บดบังปุ่มลูกศร Navigation เลื่อนเดือน
+  - เพิ่ม Backdrop Overlay ครอบเต็มจอภาพ (`fixed inset-0 z-100 bg-primary-text/20 backdrop-blur-xs`) พร้อมระบบกดพื้นที่ว่างภายนอกเพื่อปิด Modal
+  - ซ่อนลูกศร Spinner Native Browser ในช่องกรอกเวลา (`[appearance:textfield]` และ `&::-webkit-inner-spin-button`) ช่วยให้ตัวเลขอ่านง่ายและจัดกึ่งกลางสวยงาม
+
+- **Analytics Chart Animation & Unblocked Interactions Optimization**:
+  - ปรับแต่งระยะเวลา Animation ของ Recharts กราฟวงกลม (`PieChart`) ใน [CategoryBreakdownChart.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/analytics/components/CategoryBreakdownChart.tsx) และกราฟแท่ง (`BarChart`) ใน [MonthlyTrendsChart.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/analytics/components/MonthlyTrendsChart.tsx) ให้รวดเร็ว นุ่มนวล เคลื่อนไหวสวยงาม (`animationDuration={400}`, `animationEasing="ease-out"`)
+  - จัด Z-Index Layer ของปุ่มกดและแท็บควบคุม (`PeriodSelector` และ `TabsList`) ด้วย `relative z-10` ใน [CategoryBreakdownContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/analytics/containers/CategoryBreakdownContainer.tsx) เพื่อป้องกันไม่ให้ SVG Overlay บล็อกการโต้ตอบ
+  - ส่งผลให้ผู้ใช้สามารถกดปุ่ม แท็บ หรือเปลี่ยนเดือนในหน้า Analytics ได้ทันทีขณะที่กราฟกำลังเล่น Animation อยู่
+
 - **Analytics Page Scroll Refactoring**:
   - แก้ไขโครงสร้าง Layout การเลื่อน (Scroll) ของหน้าแดชบอร์ดวิเคราะห์ข้อมูล ([AnalyticsContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/analytics/containers/AnalyticsContainer.tsx))
   - กำหนดให้แถบ Tab Bar หลักด้านบนสุด (`[รายงาน]`, `[แนวโน้ม]`, `[สินทรัพย์]`) ล็อกตรึงอยู่กับที่ด้านบนสุดของหน้าเสมอ ไม่เลื่อนหายไปเมื่อผู้ใช้เลื่อนดูข้อมูล

@@ -92,7 +92,7 @@ export const CategoryBreakdownContainer = () => {
             setType(val as "EXPENSE" | "INCOME" | "TRANSFER" | "ADJUSTMENT")
           }
         >
-          <div className="m-0 px-4">
+          <div className="m-0 px-4 relative z-10">
             <TabsList className="w-full">
               <TabsTrigger value="EXPENSE">{t("expense")}</TabsTrigger>
               <TabsTrigger value="INCOME">{t("income")}</TabsTrigger>
@@ -126,7 +126,7 @@ export const CategoryBreakdownContainer = () => {
 
   return (
     <div className="flex-1 min-h-0 overflow-y-auto hide-scrollbar space-y-3">
-      <div className="px-4">
+      <div className="px-4 relative z-10">
         <PeriodSelector
           mode="month"
           month={month}
