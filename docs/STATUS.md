@@ -90,8 +90,32 @@
   - กำหนดคลาสสี `text-primary` และ `text-secondary-text` ให้กับตัว `<Icon />` และ `<MoreHorizontal />` โดยตรงใน [MobileBottomNav.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/nav/components/MobileBottomNav.tsx) พร้อมใส่ `transition-colors duration-150`
   - ปรับใช้ `strokeWidth={2}` คงที่เพื่อป้องกันไม่ให้ React Re-render และอัปเดต Attribute ของ SVG Element บน DOM กลางคันขณะเปลี่ยนหน้า ช่วยให้การสลับสี Text และ Icon active เป็นไปอย่างพร้อมเพรียงและนุ่มนวล
 
----
+- **Animate UI Tabs Migration & DESIGN.md Styling Alignment**:
+  - ติดตั้งแพ็กเกจคอมโพเนนต์ `@animate-ui/components-animate-tabs` และจัดโครงสร้างไฟล์ใน [src/shared/components/animate-ui/](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui)
+  - ปรับแต่งการแสดงผลและระบบสีของ `TabsList` และ `TabsTrigger` ให้สอดคล้องกับมาตรฐาน [DESIGN.md](file:///Users/torikiton/Desktop/PocketNote/docs/DESIGN.md) (ใช้ `bg-surface-secondary`, `bg-surface`, `text-primary-text`, `text-secondary-text`, `border-border` พร้อมรองรับทั้ง Light และ Dark Mode)
+  - ย้ายและเปลี่ยนจากคอมโพเนนต์เดิม `SegmentedControl` ไปใช้ `Animate Tabs` (`Tabs`, `TabsList`, `TabsTrigger`) แบบ Smooth Motion ในทุกหน้าจอเรียบร้อยแล้ว
+  - ลบไฟล์ `SegmentedControl.tsx` เดิมที่ไม่ถูกใช้งานแล้วออกจากระบบสำเร็จ 100%
 
+- **Analytics Page Scroll Refactoring**:
+  - แก้ไขโครงสร้าง Layout การเลื่อน (Scroll) ของหน้าแดชบอร์ดวิเคราะห์ข้อมูล ([AnalyticsContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/analytics/containers/AnalyticsContainer.tsx))
+  - กำหนดให้แถบ Tab Bar หลักด้านบนสุด (`[รายงาน]`, `[แนวโน้ม]`, `[สินทรัพย์]`) ล็อกตรึงอยู่กับที่ด้านบนสุดของหน้าเสมอ ไม่เลื่อนหายไปเมื่อผู้ใช้เลื่อนดูข้อมูล
+  - กำหนดให้เนื้อหาทั้งหมดภายในแต่ละ Tab ([CategoryBreakdownContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/analytics/containers/CategoryBreakdownContainer.tsx), [MonthlyTrendsContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/analytics/containers/MonthlyTrendsContainer.tsx), [AssetDistributionContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/analytics/containers/AssetDistributionContainer.tsx)) สามารถเลื่อน Scroll ไปพร้อมกันได้อย่างเป็นธรรมชาติแบบผืนเดียวกันในแต่ละ Tab
+
+- **Transaction Form Tab Switch Validation Bug Fix**:
+  - แก้ไขปัญหาหน้าจอบันทึกรายการธุรกรรม (Transaction Form) แสดงข้อความแจ้งเตือนผิดพลาด `"Amount must be greater than 0"` ทันทีเมื่อผู้ใช้กดสลับ Tab (ประเภทธุรกรรม)
+  - **สาเหตุที่แท้จริง (Root Cause)**: ปุ่ม `<TabsTrigger>` ของคอมโพเนนต์ Animate Tabs ไม่ได้ระบุ Attribute `type="button"` เมื่ออยู่ภายใต้ฟอร์ม `<form>` เบราว์เซอร์จึงปฏิบัติตามมาตรฐาน HTML โดยถือว่าปุ่มนั้นเป็น `type="submit"` ซึ่งส่งผลให้ทุกครั้งที่ผู้ใช้กดสลับ Tab ระบบจะทำการ Submit Form และรัน Zod Validation ทันที เป็นเหตุให้แสดงข้อผิดพลาด `"Amount must be greater than 0"`
+  - **การแก้ไข**: เพิ่ม `type="button"` ให้กับ [TabsTrigger Primitive](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/primitives/animate/tabs.tsx#L176) และ [TabsTrigger Component Wrapper](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/components/animate/tabs.tsx#L52) เพื่อป้องกันการกดสลับ Tab ไม่ให้เกิดการ Trigger Form Submit โดยไม่ตั้งใจ
+  - คงระบบ Validation สมบูรณ์แบบไว้สำหรับการพิมพ์จำนวนเงิน และการกดบันทึกรายการ (Submit) ตามปกติ
+
+- **Analytics & Journal Layout Lockdown & Content-Only Scroll Architecture**:
+  - แก้ไขปัญหาหน้าจอ Analytics (`/analytics`) และ Journal (`/journal`) ซึ่งเดิมตัว Layout นอกสุด (`<main>`) มี class `overflow-y-auto` ทำให้เมื่อทำการสโครล ทั้งส่วนหัวเลือก Tab (`TabsList`) และส่วนตัวกรองสโครลตามไปด้วยหลุดจากหน้าจอ
+  - **การปรับปรุง**:
+    1. ปรับปรุง [MainLayoutContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/main-layout/containers/MainLayoutContainer.tsx) โดยกำหนดให้ `<main>` ในหน้า `/journal` และ `/analytics` มีคุณสมบัติ `overflow-hidden h-full` เพื่อปิดการสโครลระดับ Layout ใหญ่ ไม่ให้ส่วนหัวและแถบ Tab สโครลตาม
+    2. ใน [JournalContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/journal/containers/JournalContainer.tsx) และ [AnalyticsContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/analytics/containers/AnalyticsContainer.tsx) ล็อคส่วนหัว `TabsList` และส่วนกรอง/ค้นหาด้วย `shrink-0 z-10 bg-background` และเปิดให้สโครลเฉพาะส่วนรายการข้อมูล (`flex-1 min-h-0 overflow-y-auto` / `GroupedVirtuoso`) เท่านั้น
+    3. ปรับแต่ง [tabs.tsx (Primitive)](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/primitives/animate/tabs.tsx) ใช้ `Math.max(pane.scrollHeight, ...)` เพื่อแก้ปัญหา ResizeObserver Deadlock กรณีข้อมูลโหลดทีหลัง และรองรับ `isHFull` ให้สโครลได้ 100% สมบูรณ์ทั้งหน้า Analytics และ Journal
+    4. ปรับแต่งขนาดระยะเผื่อด้านล่างเป็น `pb-10 sm:pb-2` ให้สอดคล้องพอดีกับความสูงของแถบ Mobile Bottom Navigation (64px) ร่วมกับ `py-3` ของ Layout หลัก ทำให้เมื่อสโครลลงมาล่างสุด รายการสุดท้ายจะแสดงผลชิดขอบพอดียอดเยี่ยม โดยไม่เหลือพื้นที่ว่างเปล่าส่วนเกิน (Empty Space) ด้านล่างอีกต่อไป
+
+---
 
 ### 2. สิ่งที่จะต้องทำเป็นลำดับถัดไป (Next Actions)
 
