@@ -17,7 +17,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarTrigger,
-  useSidebar,
 } from "@/shared/components/animate-ui/components/radix/sidebar";
 import { cn } from "@/shared/lib/utils/core.util";
 
@@ -45,32 +44,21 @@ export default function DesktopSidebar({
   onNavigate,
 }: Readonly<DesktopSidebarProps>) {
   const { t } = useTranslation();
-  const { state } = useSidebar();
-  const isCollapsed = state === "collapsed";
 
   return (
     <Sidebar
       collapsible="icon"
       className="border-r border-border bg-surface shadow-xs"
     >
-      <SidebarHeader
-        className={cn(
-          "border-b border-border/50 transition-all duration-200",
-          isCollapsed
-            ? "p-2 flex items-center justify-center"
-            : "p-4 flex flex-row items-center justify-between",
-        )}
-      >
-        {!isCollapsed && (
-          <div className="flex items-center gap-3 overflow-hidden">
-            <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center shadow-xs shrink-0">
-              <Wallet className="w-4.5 h-4.5 text-white" strokeWidth={2} />
-            </div>
-            <span className="text-base font-bold tracking-tight text-primary-text truncate">
-              PocketNote
-            </span>
+      <SidebarHeader className="border-b border-border/50 p-3 flex flex-row items-center justify-between group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-2 transition-all duration-300">
+        <div className="flex items-center gap-2.5 overflow-hidden transition-all duration-300 group-data-[collapsible=icon]:w-0 group-data-[collapsible=icon]:opacity-0 group-data-[collapsible=icon]:hidden">
+          <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center shadow-xs shrink-0">
+            <Wallet className="w-4.5 h-4.5 text-white" strokeWidth={2} />
           </div>
-        )}
+          <span className="text-base font-bold tracking-tight text-primary-text truncate">
+            PocketNote
+          </span>
+        </div>
         <SidebarTrigger className="size-8 text-secondary-text hover:text-primary-text hover:bg-surface-secondary cursor-pointer shrink-0" />
       </SidebarHeader>
 
@@ -102,10 +90,7 @@ export default function DesktopSidebar({
                       <Link
                         href={item.href}
                         onClick={(e) => onNavigate?.(e, item.href)}
-                        className={cn(
-                          "flex items-center gap-3 w-full",
-                          isCollapsed && "justify-center gap-0",
-                        )}
+                        className="flex items-center gap-3 w-full group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0"
                       >
                         <Icon
                           className={cn(
@@ -116,9 +101,9 @@ export default function DesktopSidebar({
                           )}
                           strokeWidth={isActive ? 2.2 : 1.75}
                         />
-                        {!isCollapsed && (
-                          <span className="truncate">{displayLabel}</span>
-                        )}
+                        <span className="truncate group-data-[collapsible=icon]:hidden">
+                          {displayLabel}
+                        </span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -129,44 +114,20 @@ export default function DesktopSidebar({
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-3 gap-3 border-t border-border/50">
-        {!isCollapsed ? (
-          <>
-            <SyncStatusButton
-              isGuest={isGuest}
-              isSyncing={isSyncing}
-              syncStatus={syncStatus}
-              onSyncClick={onSyncClick}
-            />
-            <ThemeSwitcher />
-            <NavUserProfile
-              user={user}
-              isLoading={isLoading}
-              onLogout={onLogout}
-              className="pt-2 border-t-0"
-            />
-          </>
-        ) : (
-          <div className="flex flex-col items-center gap-3 py-1">
-            <div className="space-y-1">
-              <SyncStatusButton
-                isGuest={isGuest}
-                isSyncing={isSyncing}
-                syncStatus={syncStatus}
-                onSyncClick={onSyncClick}
-                isCollapsed={true}
-              />
-              <ThemeSwitcher isCollapsed={true} />
-            </div>
-            <NavUserProfile
-              user={user}
-              isLoading={isLoading}
-              onLogout={onLogout}
-              isCollapsed={true}
-              className="pt-0 border-t-0"
-            />
-          </div>
-        )}
+      <SidebarFooter className="p-3 gap-3 border-t border-border/50 group-data-[collapsible=icon]:p-2 group-data-[collapsible=icon]:gap-2">
+        <SyncStatusButton
+          isGuest={isGuest}
+          isSyncing={isSyncing}
+          syncStatus={syncStatus}
+          onSyncClick={onSyncClick}
+        />
+        <ThemeSwitcher />
+        <NavUserProfile
+          user={user}
+          isLoading={isLoading}
+          onLogout={onLogout}
+          className="pt-2 border-t-0"
+        />
       </SidebarFooter>
     </Sidebar>
   );

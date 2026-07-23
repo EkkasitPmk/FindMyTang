@@ -65,7 +65,18 @@
 
 ### 1. สิ่งที่พัฒนาเสร็จสิ้นแล้ว (Completed)
 
+- **Sidebar Collapse Animation Refactoring**:
+  - ปรับปรุงอนิเมชันการย่อ-ขยาย (Expand/Collapse) ของ Desktop Sidebar ให้มีความนุ่มนวล (Smooth Transition) แบบ 100% ตามมาตรฐาน [test.md](file:///Users/torikiton/Desktop/PocketNote/test.md)
+  - เปลี่ยนจากการใช้ JavaScript Unmount Elements (`{!isCollapsed && ...}`) ไปใช้ Tailwind CSS `group-data-[collapsible=icon]` ร่วมกับ CSS Transitions
+  - อัปเดตคอมโพเนนต์ [DesktopSidebar.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/nav/components/DesktopSidebar.tsx), [NavUserProfile.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/nav/components/NavUserProfile.tsx), [SyncStatusButton.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/SyncStatusButton.tsx), และ [ThemeSwitcher.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/ThemeSwitcher.tsx) ให้รองรับอนิเมชัน CSS โดยไม่มีอาการกระตุก
+
+- **ThemeSwitcher UI & Animation Upgrade**:
+  - ยกระดับดีไซน์ [ThemeSwitcher.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/ThemeSwitcher.tsx) เป็นระบบ **Animated Segmented Control** ด้วย `motion/react`
+  - เพิ่ม **Sliding Spring Pill Background** ไหลสไลด์ระหว่างแท็บ (Light / System / Dark) อย่างนุ่มนวล
+  - ปรับปรุงอนิเมชันการย่อ-ขยายร่วมกับ Sidebar ให้ไหลลื่นแบบ **Continuous 300ms Transition** โดยไม่ใช้ `display: none` (`hidden`) สแน็ปสลับองค์ประกอบ แต่ใช้การหดความกว้าง (width/max-width) และความโปร่งแสง (opacity) อย่างนุ่มนวลไปพร้อมกับ Sidebar
+
 ---
+
 
 ### 2. สิ่งที่จะต้องทำเป็นลำดับถัดไป (Next Actions)
 

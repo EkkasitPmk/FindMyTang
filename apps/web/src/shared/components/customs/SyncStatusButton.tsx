@@ -1,13 +1,13 @@
 import { Cloud, CloudOff, RefreshCw, CheckCircle2 } from "lucide-react";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { Button } from "@/shared/components/customs/Button";
+import { cn } from "@/shared/lib/utils/core.util";
 
 interface SyncStatusButtonProps {
   isGuest: boolean;
   isSyncing: boolean;
   syncStatus: "synced" | "syncing" | "offline";
   onSyncClick?: () => void;
-  isCollapsed?: boolean;
 }
 
 export default function SyncStatusButton({
@@ -15,7 +15,6 @@ export default function SyncStatusButton({
   isSyncing,
   syncStatus,
   onSyncClick,
-  isCollapsed = false,
 }: Readonly<SyncStatusButtonProps>) {
   const { t } = useTranslation();
 
@@ -38,37 +37,24 @@ export default function SyncStatusButton({
     if (syncStatus === "synced") return t("upToDate");
   };
 
-  if (isCollapsed) {
-    return (
-      <Button
-        variant="unstyled"
-        onClick={onSyncClick}
-        title={isGuest ? t("localStorageLabel") : t("cloudSync")}
-        className="flex items-center justify-center mx-auto p-2 rounded-lg shrink-0 cursor-pointer hover:bg-surface-secondary/80 transition-all text-sm group"
-        aria-label="Sync status"
-      >
-        <div className="flex items-center justify-center w-6 h-6 rounded bg-surface border border-border/50 shadow-2xs">
-          {getIcon()}
-        </div>
-      </Button>
-    );
-  }
-
   return (
     <Button
       variant="unstyled"
       onClick={onSyncClick}
-      className="flex items-center justify-center gap-2 p-2 rounded-lg shrink-0 cursor-pointer hover:bg-surface-secondary/80 transition-all text-sm group"
+      title={isGuest ? t("localStorageLabel") : t("cloudSync")}
+      className={cn(
+        "flex items-center justify-center group-data-[collapsible=icon]:justify-center gap-2 p-2 rounded-lg shrink-0 cursor-pointer hover:bg-surface-secondary/80 transition-all text-sm group w-full",
+      )}
       aria-label="Sync status"
     >
-      <div className="flex items-center justify-center w-6 h-6 rounded bg-surface">
+      <div className="flex items-center justify-center w-6 h-6 rounded bg-surface border border-border/50 shadow-2xs shrink-0">
         {getIcon()}
       </div>
-      <div className="flex flex-col">
-        <span className="text-xs font-medium text-primary-text leading-tight">
+      <div className="flex flex-col text-left group-data-[collapsible=icon]:hidden overflow-hidden">
+        <span className="text-xs font-medium text-primary-text leading-tight truncate">
           {isGuest ? t("localStorageLabel") : t("cloudSync")}
         </span>
-        <span className="text-[10px] text-secondary-text leading-tight">
+        <span className="text-[10px] text-secondary-text leading-tight truncate">
           {getStatusText()}
         </span>
       </div>
