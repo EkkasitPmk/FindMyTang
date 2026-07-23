@@ -70,10 +70,25 @@
   - เปลี่ยนจากการใช้ JavaScript Unmount Elements (`{!isCollapsed && ...}`) ไปใช้ Tailwind CSS `group-data-[collapsible=icon]` ร่วมกับ CSS Transitions
   - อัปเดตคอมโพเนนต์ [DesktopSidebar.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/nav/components/DesktopSidebar.tsx), [NavUserProfile.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/nav/components/NavUserProfile.tsx), [SyncStatusButton.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/SyncStatusButton.tsx), และ [ThemeSwitcher.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/ThemeSwitcher.tsx) ให้รองรับอนิเมชัน CSS โดยไม่มีอาการกระตุก
 
-- **ThemeSwitcher UI & Animation Upgrade**:
-  - ยกระดับดีไซน์ [ThemeSwitcher.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/ThemeSwitcher.tsx) เป็นระบบ **Animated Segmented Control** ด้วย `motion/react`
-  - เพิ่ม **Sliding Spring Pill Background** ไหลสไลด์ระหว่างแท็บ (Light / System / Dark) อย่างนุ่มนวล
-  - ปรับปรุงอนิเมชันการย่อ-ขยายร่วมกับ Sidebar ให้ไหลลื่นแบบ **Continuous 300ms Transition** โดยไม่ใช้ `display: none` (`hidden`) สแน็ปสลับองค์ประกอบ แต่ใช้การหดความกว้าง (width/max-width) และความโปร่งแสง (opacity) อย่างนุ่มนวลไปพร้อมกับ Sidebar
+- **ThemeSwitcher Smooth Sidebar Collapse/Expand Animation**:
+  - แก้ไขปัญหา ThemeSwitcher สลับ View ด้วย `display: hidden` / `block` แบบทันทีทันใดที่ขาด Animation
+  - เปลี่ยนจากการใช้ `display: hidden/block` มาใช้ Tailwind CSS Transition ร่วมกับ `opacity`, `scale` และ `max-width` (`opacity-0 scale-90` -> `opacity-100 scale-100`)
+  - รองรับการ Animate Cross-fade / Morph ระหว่าง 3-Pill Expanded Buttons และ 1-Icon Collapsed Dropdown อย่างนุ่มนวล ซิงค์ตรงกับจังหวะการย่อ-ขยาย 300ms ของ Sidebar
+
+- **Mobile Sidebar Open/Close Animation & Architecture Refactoring**:
+  - ย้าย Logic การทำงานทั้งหมดของ Mobile Sidebar (State `drawerRendered`, `drawerVisible`, `useEffect` ควบคุม Transition 300ms, `body overflow`, และ Keyboard Escape Listener) ออกจาก [MobileDrawer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/nav/components/MobileDrawer.tsx) ไปไว้ที่ Logic Container [NavContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/nav/containers/NavContainer.tsx) 100% ตามสถาปัตยกรรม `FRONTEND_IMPLEMENTATION.md`
+  - ปรับปรุง [MobileDrawer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/nav/components/MobileDrawer.tsx) ให้กลายเป็น Pure Presentation Component ที่รับเฉพาะ Props (`isMounted`, `isVisible`, handlers) และรับหน้าที่แสดงผล UI และ Tailwind CSS Animation (Slide in/out และ Backdrop Fade in/out) อย่างเดียวเท่านั้น
+
+- **MobileDrawer Performance & Instant Open/Close Optimization**:
+  - แก้ไขปัญหาความหน่วง ชะงัก (Lag/Delay) ตอนกดเปิด-ปิด MobileDrawer บนมือถือ
+  - ยกเลิกการใช้ Multi-state (`rAF`, `drawerRendered`, `drawerVisible`, `setTimeout 300ms`) ที่ทำให้เกิด Double Render Delay ปรับใช้ single state `mobileMenuOpen` ควบคู่กับ CSS Transition
+  - ถอด `backdrop-blur-xs` ออก เปลี่ยนเป็น `bg-primary-text/30` เพื่อลดภาระการประมวลผล GPU บนเบราว์เซอร์มือถือ
+  - เพิ่ม Hardware Acceleration (`transform-gpu`, `will-change-transform`) และปรับเป็น 200ms `ease-out` เพื่อการตอบสนองสไลด์เปิด-ปิดที่รวดเร็วและลื่นไหลระดับ 60fps/120fps
+
+- **Mobile Bottom Nav Active Color Sync Fix**:
+  - แก้ไขปัญหา active สีใน Mobile Bottom Nav สลับเปลี่ยนช้า (สี Text เปลี่ยนก่อน แล้วสี Icon เปลี่ยนตามมา)
+  - กำหนดคลาสสี `text-primary` และ `text-secondary-text` ให้กับตัว `<Icon />` และ `<MoreHorizontal />` โดยตรงใน [MobileBottomNav.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/nav/components/MobileBottomNav.tsx) พร้อมใส่ `transition-colors duration-150`
+  - ปรับใช้ `strokeWidth={2}` คงที่เพื่อป้องกันไม่ให้ React Re-render และอัปเดต Attribute ของ SVG Element บน DOM กลางคันขณะเปลี่ยนหน้า ช่วยให้การสลับสี Text และ Icon active เป็นไปอย่างพร้อมเพรียงและนุ่มนวล
 
 ---
 
