@@ -35,13 +35,19 @@ export const useTransactionFormSync = ({
       activeCategoryId !== watchCategoryId &&
       isCategoryType
     ) {
-      setValue("categoryId", activeCategoryId, { shouldValidate: true });
+      setValue("categoryId", activeCategoryId, {
+        shouldValidate: false,
+        shouldTouch: false,
+      });
     }
   }, [activeCategoryId, watchCategoryId, setValue, transactionType]);
 
   useEffect(() => {
     if (activeAssetId && activeAssetId !== watchAssetId) {
-      setValue("assetId", activeAssetId, { shouldValidate: true });
+      setValue("assetId", activeAssetId, {
+        shouldValidate: false,
+        shouldTouch: false,
+      });
     }
   }, [activeAssetId, watchAssetId, setValue]);
 
@@ -51,7 +57,10 @@ export const useTransactionFormSync = ({
       activeAssetToId !== watchToAssetId &&
       transactionType === "TRANSFER"
     ) {
-      setValue("toAssetId", activeAssetToId, { shouldValidate: true });
+      setValue("toAssetId", activeAssetToId, {
+        shouldValidate: false,
+        shouldTouch: false,
+      });
     }
   }, [activeAssetToId, watchToAssetId, setValue, transactionType]);
 };
