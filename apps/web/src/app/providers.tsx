@@ -47,7 +47,7 @@ export default function Providers({ children }: Readonly<ProvidersProps>) {
           onSignUp={lockLogic.onSignUp}
         />
       )}
-      <ReactQueryDevtools buttonPosition="bottom-right" />
+      <ReactQueryDevtools buttonPosition="bottom-left" />
     </QueryClientProvider>
   );
 }
