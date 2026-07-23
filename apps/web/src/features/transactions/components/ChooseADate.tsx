@@ -75,7 +75,7 @@ export default function ChooseADate({
       />
 
       <Card
-        className="relative mx-auto w-85 max-w-[calc(100vw-32px)] shadow-2xl z-10 p-4 border border-border bg-surface rounded-2xl animate-subtle-pop"
+        className="relative mx-auto w-85 max-w-[calc(100vw-32px)] gap-2 shadow-2xl z-10 p-4 border border-border bg-surface rounded-2xl animate-subtle-pop data-[size=sm]:has-data-[slot=card-footer]:pb-4"
         size="sm"
       >
         <CardContent className="p-0">
@@ -155,15 +155,15 @@ export default function ChooseADate({
               {preset.label}
             </Button>
           ))}
-          <Button
-            type="button"
-            variant="default"
-            className="my-2 w-full py-2.5 bg-primary hover:bg-primary-hover text-white font-semibold rounded-xl transition-all shadow-md active:scale-[0.98]"
-            onClick={onConfirm}
-          >
-            {t("confirm")}
-          </Button>
         </CardFooter>
+        <Button
+          type="button"
+          variant="default"
+          className="w-full py-2.5 bg-primary hover:bg-primary-hover text-white font-semibold rounded-xl transition-all shadow-md active:scale-[0.98]"
+          onClick={onConfirm}
+        >
+          {t("confirm")}
+        </Button>
       </Card>
     </div>
   );
