@@ -70,7 +70,7 @@ export default function AssetForm({
           <Button
             variant="unstyled"
             type="button"
-            onClick={onClose}
+            onClick={() => onClose?.()}
             className="w-full border border-border rounded-lg py-2.5 text-sm font-medium hover:bg-surface-secondary transition-colors cursor-pointer text-secondary-text bg-surface shadow-sm"
           >
             {t("cancel")}

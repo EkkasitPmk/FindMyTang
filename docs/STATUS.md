@@ -130,6 +130,13 @@
   - ปรับปรุง [collapsible.tsx (Primitive)](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/primitives/radix/collapsible.tsx) โดยระบุ `key="collapsible-content"` บนตัวลูกชั้นแรกของ `<AnimatePresence>` เพื่อให้ Framer Motion สลับสถานะและรัน `exit` animation ตอนปิดกางได้อย่างถูกต้อง
   - ปรับปรุงคอมโพเนนต์ [TransactionItem.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/TransactionItem.tsx) ถอดคลาส CSS `data-[state=closed]:grid-rows-[0fr]` ที่เข้ามาขัดขวาง Framer Motion ออก เพื่อเปิดให้จังหวะการหุบปิด (Exit collapse animation) ทำงานได้อย่างนุ่มนวลสมบูรณ์ทั้งเปิดและปิด
 
+- **Asset Edit Modal Cancel Event Leakage Bug Fix**:
+  - แก้ไขปัญหาชื่อ Asset แสดงผลเป็น `[object Object]` บน `TopAppBarMobile` เมื่อผู้ใช้กดปุ่ม Cancel บน Modal แก้ไข Asset
+  - **สาเหตุที่แท้จริง (Root Cause)**: ปุ่ม Cancel ใน [AssetForm.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/assets/components/AssetForm.tsx) ถูกผูก `onClick={onClose}` ไว้โดยตรง ส่งผลให้ React ส่ง `MouseEvent` (SyntheticBaseEvent) เข้าไปเป็น argument ตัวแรกของ `onClose` และผ่านไปถึง `handleEditClose(newName)` ใน [AssetDetailContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/assets/containers/AssetDetailContainer.tsx) เนื่องจาก JavaScript ประเมินว่า Event Object เป็นค่า truthy ทำให้เงื่อนไข `if (newName && id)` ทำงาน และสั่ง `params.set("name", newName)` ซึ่งแปลง Event Object เป็น string จนกลายเป็น `"[object Object]"` บน URL
+  - **การแก้ไข**:
+    1. ปรับปรุง [AssetDetailContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/assets/containers/AssetDetailContainer.tsx) โดยเพิ่ม Type Check `if (typeof newName === "string" && id)` เพื่อป้องกันไม่ให้ Object ชนิดอื่นถูกส่งไปตั้งค่าใน URL Query Parameter
+    2. ปรับปรุง [AssetForm.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/assets/components/AssetForm.tsx) ให้ปุ่ม Cancel เรียก `onClick={() => onClose?.()}` เพื่อป้องกันไม่ให้ส่ง MouseEvent Object ออกไปยัง callback
+
 ---
 
 ### 2. สิ่งที่จะต้องทำเป็นลำดับถัดไป (Next Actions)
