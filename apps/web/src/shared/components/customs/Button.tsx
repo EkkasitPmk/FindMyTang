@@ -48,7 +48,8 @@ export interface ButtonProps
   extends
     React.ButtonHTMLAttributes<HTMLButtonElement>,
     Omit<VariantProps<typeof buttonVariants>, "variant"> {
-  variant: VariantProps<typeof buttonVariants>["variant"] | "unstyled";
+  variant?:
+    NonNullable<VariantProps<typeof buttonVariants>["variant"]> | "unstyled";
   isLoading?: boolean;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;

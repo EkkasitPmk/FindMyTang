@@ -1,6 +1,12 @@
 "use client";
 import { useState } from "react";
-import { SegmentedControl } from "@/shared/components/customs/SegmentedControl";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContents,
+  TabsContent,
+} from "@/shared/components/animate-ui/components/animate/tabs";
 import { CategoryBreakdownContainer } from "./CategoryBreakdownContainer";
 import { MonthlyTrendsContainer } from "./MonthlyTrendsContainer";
 import { AssetDistributionContainer } from "./AssetDistributionContainer";
@@ -34,34 +40,42 @@ export default function AnalyticsContainer() {
   ];
 
   return (
-    <div className="flex flex-col h-[calc(100vh-80px)] bg-background space-y-3">
-      <div className="px-4">
-        <SegmentedControl
-          options={tabs.map((t) => ({
-            value: t.value,
-            label: (
-              <div className="flex items-center justify-center gap-1.5">
+    <div className="flex flex-col h-[calc(100vh-80px)] bg-background">
+      <Tabs
+        value={activeTab}
+        onValueChange={(val) =>
+          setActiveTab(val as "category" | "trends" | "assets")
+        }
+        className="flex-1 flex flex-col min-h-0 gap-1"
+      >
+        <div className="px-4 shrink-0 pt-1 pb-1 bg-background z-10">
+          <TabsList className="w-full">
+            {tabs.map((t) => (
+              <TabsTrigger key={t.value} value={t.value} className="gap-1.5">
                 {t.icon}
                 <span>{t.label}</span>
-              </div>
-            ),
-          }))}
-          value={activeTab}
-          onChange={(val) =>
-            setActiveTab(val as "category" | "trends" | "assets")
-          }
-        />
-      </div>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
 
-      <div className="flex-1 overflow-y-auto hide-scrollbar">
-        {activeTab === "category" && <CategoryBreakdownContainer />}
-        {activeTab === "trends" && <MonthlyTrendsContainer />}
-        {activeTab === "assets" && (
-          <AssetDistributionContainer
-            onAddAsset={() => setIsCreateAssetOpen(true)}
-          />
-        )}
-      </div>
+        <TabsContents className="h-full flex-1 min-h-0">
+          <TabsContent
+            value="category"
+            className="h-full flex flex-col min-h-0"
+          >
+            <CategoryBreakdownContainer />
+          </TabsContent>
+          <TabsContent value="trends" className="h-full flex flex-col min-h-0">
+            <MonthlyTrendsContainer />
+          </TabsContent>
+          <TabsContent value="assets" className="h-full flex flex-col min-h-0">
+            <AssetDistributionContainer
+              onAddAsset={() => setIsCreateAssetOpen(true)}
+            />
+          </TabsContent>
+        </TabsContents>
+      </Tabs>
 
       {isCreateAssetOpen && (
         <CreateAssetsContainer onClose={() => setIsCreateAssetOpen(false)} />

@@ -24,12 +24,17 @@ import {
   useTransactionFormSync,
   useTransactionInitialization,
 } from "../hooks/transaction-form.hook";
-
 import ConfirmModal from "@/shared/components/customs/ConfirmModal";
 import { useConfirmModal } from "@/shared/lib/hooks/useConfirmModal.hook";
 import LoadingModal from "@/shared/components/customs/LoadingModal";
 import { useModalState } from "@/shared/lib/hooks/useModalState.hook";
-import { SegmentedControl } from "@/shared/components/customs/SegmentedControl";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContents,
+  TabsContent,
+} from "@/shared/components/animate-ui/components/animate/tabs";
 import { CurrencyInput } from "@/shared/components/customs/CurrencyInput";
 import { useCurrencyInput } from "../hooks/useCurrencyInput.hook";
 import {
@@ -155,7 +160,8 @@ export default function TransactionsContainer() {
     control,
     reset,
     register,
-    formState: { errors },
+    clearErrors,
+    formState: { errors, isSubmitted, touchedFields },
   } = useForm<CreateTransactionFormValues>({
     resolver: zodResolver(createTransactionSchema),
     defaultValues,
@@ -377,6 +383,7 @@ export default function TransactionsContainer() {
     setAmountDigits(digits);
     setValue("amount", convertDigitsToAmount(digits), {
       shouldValidate: true,
+      shouldTouch: true,
     });
   };
 
@@ -420,7 +427,7 @@ export default function TransactionsContainer() {
     <form
       onSubmit={handleSubmit(onSubmit)}
       onReset={handleResetForm}
-      className={cn(isMoreDetailsOpen && "pb-28")}
+      className={cn(isMoreDetailsOpen && "pb-32")}
     >
       <header
         className={cn(
@@ -459,88 +466,110 @@ export default function TransactionsContainer() {
         )}
       </header>
 
-      <div className="space-y-4 px-4">
+      <div className="px-4">
         {isTxLoading ? (
           <Skeleton className="w-full h-10 rounded-lg" />
         ) : (
-          <SegmentedControl
+          <Tabs
             value={transactionType}
-            onChange={(val) => setTransactionType(val as TransactionType)}
-            options={transactionTypeOptions}
-          />
+            onValueChange={(val) => {
+              setTransactionType(val as TransactionType);
+              clearErrors();
+            }}
+            className="gap-2"
+          >
+            <TabsList className="w-full">
+              {transactionTypeOptions.map((option) => (
+                <TabsTrigger key={option.value} value={option.value}>
+                  {option.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+
+            <TabsContents>
+              {transactionTypeOptions.map((option) => (
+                <TabsContent
+                  key={option.value}
+                  value={option.value}
+                  className="space-y-4"
+                >
+                  <section className="flex flex-col items-center gap-1 relative min-h-10 justify-center">
+                    {isTxLoading ? (
+                      <Skeleton className="w-60 h-10 rounded-lg" />
+                    ) : (
+                      <>
+                        <CurrencyInput
+                          id="balance"
+                          ref={amountInputRef}
+                          value={displayAmount}
+                          onChange={handleCurrencyInput}
+                        />
+                        <input
+                          type="hidden"
+                          name="amount"
+                          value={numericAmount}
+                        />
+                        {(isSubmitted || Boolean(touchedFields.amount)) &&
+                          errors.amount && (
+                            <p className="text-expense text-xs">
+                              {errors.amount.message}
+                            </p>
+                          )}
+                      </>
+                    )}
+                  </section>
+
+                  {showCategoryList && (
+                    <TransactionCategoryList
+                      categories={filteredCategories}
+                      activeCategoryId={watchCategoryId || null}
+                      onSelectCategory={(id) => setValue("categoryId", id)}
+                      onEditClick={handleEditCategoryClick}
+                      isLoadingCategoryList={isLoadingCategoryList}
+                    />
+                  )}
+
+                  <TransactionAssetList
+                    assets={safeAssets}
+                    activeAssetId={watchAssetId || null}
+                    onSelectAsset={(id) => setValue("assetId", id)}
+                    activeAssetToId={watchToAssetId || null}
+                    onSelectAssetTo={(id) => setValue("toAssetId", id)}
+                    transactionType={transactionType}
+                    isLoadingAssetList={isLoadingAssetList}
+                  />
+
+                  <TransactionMoreDetails
+                    isMoreDetailsOpen={isMoreDetailsOpen}
+                    setIsMoreDetailsOpen={setIsMoreDetailsOpen}
+                    displayDate={displayDate}
+                    tempDate={tempDate}
+                    setTempDate={setTempDate}
+                    displayMonth={displayMonth}
+                    setDisplayMonth={setDisplayMonth}
+                    onPresetClick={handlePresetClick}
+                    onConfirmDate={handleConfirmDate}
+                    isCalendarOpen={isCalendarOpen}
+                    setIsCalendarOpen={setIsCalendarOpen}
+                    isPhotoMenuOpen={isPhotoMenuOpen}
+                    setIsPhotoMenuOpen={setIsPhotoMenuOpen}
+                    file={file}
+                    attachmentUrl={attachmentUrl}
+                    onRemoveFile={handleRemoveFile}
+                    onTakeAPhoto={handleTakeAPhoto}
+                    onSelectAPhoto={handleSelectAPhoto}
+                    fileInputRef={fileInputRef}
+                    cameraInputRef={cameraInputRef}
+                    handleFileChange={handleFileChange}
+                    register={register}
+                    isLoadingTx={isTxLoading}
+                    calendarLocale={calendarLocale}
+                  />
+                </TabsContent>
+              ))}
+            </TabsContents>
+          </Tabs>
         )}
-
-        <section className="flex flex-col items-center gap-1 relative min-h-10 justify-center">
-          {isTxLoading ? (
-            <Skeleton className="w-60 h-10 rounded-lg" />
-          ) : (
-            <>
-              <CurrencyInput
-                id="balance"
-                ref={amountInputRef}
-                value={displayAmount}
-                onChange={handleCurrencyInput}
-              />
-              <input type="hidden" name="amount" value={numericAmount} />
-              {errors.amount && (
-                <p className="text-expense text-xs">{errors.amount.message}</p>
-              )}
-            </>
-          )}
-        </section>
-
-        {showCategoryList && (
-          <TransactionCategoryList
-            categories={filteredCategories}
-            activeCategoryId={watchCategoryId || null}
-            onSelectCategory={(id) =>
-              setValue("categoryId", id, { shouldValidate: true })
-            }
-            onEditClick={handleEditCategoryClick}
-            isLoadingCategoryList={isLoadingCategoryList}
-          />
-        )}
-
-        <TransactionAssetList
-          assets={safeAssets}
-          activeAssetId={watchAssetId || null}
-          onSelectAsset={(id) =>
-            setValue("assetId", id, { shouldValidate: true })
-          }
-          activeAssetToId={watchToAssetId || null}
-          onSelectAssetTo={(id) =>
-            setValue("toAssetId", id, { shouldValidate: true })
-          }
-          transactionType={transactionType}
-          isLoadingAssetList={isLoadingAssetList}
-        />
-
-        <TransactionMoreDetails
-          isMoreDetailsOpen={isMoreDetailsOpen}
-          setIsMoreDetailsOpen={setIsMoreDetailsOpen}
-          displayDate={displayDate}
-          tempDate={tempDate}
-          setTempDate={setTempDate}
-          displayMonth={displayMonth}
-          setDisplayMonth={setDisplayMonth}
-          onPresetClick={handlePresetClick}
-          onConfirmDate={handleConfirmDate}
-          isCalendarOpen={isCalendarOpen}
-          setIsCalendarOpen={setIsCalendarOpen}
-          isPhotoMenuOpen={isPhotoMenuOpen}
-          setIsPhotoMenuOpen={setIsPhotoMenuOpen}
-          file={file}
-          attachmentUrl={attachmentUrl}
-          onRemoveFile={handleRemoveFile}
-          onTakeAPhoto={handleTakeAPhoto}
-          onSelectAPhoto={handleSelectAPhoto}
-          fileInputRef={fileInputRef}
-          cameraInputRef={cameraInputRef}
-          handleFileChange={handleFileChange}
-          register={register}
-          isLoadingTx={isTxLoading}
-          calendarLocale={calendarLocale}
-        />
 
         <section className="fixed bottom-16 left-0 right-0 mx-4 pb-4 bg-background pt-2">
           <Button

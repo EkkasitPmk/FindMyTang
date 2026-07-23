@@ -5,6 +5,7 @@ import SyncStatusButton from "@/shared/components/customs/SyncStatusButton";
 import NavUserProfile from "./NavUserProfile";
 import { UserProfile } from "@/shared/lib/types/user.type";
 import { Button } from "@/shared/components/customs/Button";
+import { cn } from "@/shared/lib/utils/core.util";
 
 interface MobileDrawerProps {
   isOpen: boolean;
@@ -33,10 +34,13 @@ export default function MobileDrawer({
   onSyncClick,
   onNavigate,
 }: Readonly<MobileDrawerProps>) {
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 md:hidden">
+    <div
+      className={cn(
+        "fixed inset-0 z-50 md:hidden overflow-hidden transition-all duration-200",
+        isOpen ? "pointer-events-auto" : "pointer-events-none delay-200",
+      )}
+    >
       {/* Backdrop */}
       <Button
         variant="unstyled"
@@ -44,11 +48,19 @@ export default function MobileDrawer({
         aria-hidden="true"
         tabIndex={-1}
         onClick={onClose}
-        className="fixed inset-0 bg-primary-text/25 backdrop-blur-xs w-full h-full border-none p-0 outline-none"
+        className={cn(
+          "fixed inset-0 bg-primary-text/30 w-full h-full border-none p-0 outline-none transition-opacity duration-200 ease-out",
+          isOpen ? "opacity-100" : "opacity-0",
+        )}
       />
 
       {/* Drawer */}
-      <div className="fixed top-0 bottom-0 left-0 z-50 w-64 max-w-[80vw] bg-surface border-r border-border p-4 flex flex-col justify-between animate-in slide-in-from-left duration-200">
+      <div
+        className={cn(
+          "fixed top-0 bottom-0 left-0 z-50 w-64 max-w-[80vw] bg-surface border-r border-border p-4 flex flex-col justify-between transition-transform duration-200 ease-out shadow-xl transform-gpu will-change-transform",
+          isOpen ? "translate-x-0" : "-translate-x-full",
+        )}
+      >
         <div className="space-y-6">
           {/* Header */}
           <div className="flex items-center justify-between">
@@ -63,7 +75,7 @@ export default function MobileDrawer({
             <Button
               variant="unstyled"
               onClick={onClose}
-              className="p-1.5 rounded-md hover:bg-surface-secondary text-secondary-text"
+              className="p-1.5 rounded-md hover:bg-surface-secondary text-secondary-text transition-colors"
             >
               <X className="w-5 h-5" strokeWidth={1.5} />
             </Button>

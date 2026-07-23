@@ -215,7 +215,8 @@ export class AuthService {
     transactions: SyncGuestDto["transactions"],
     assetMap: Map<string, string>,
     categoryMap: Map<string, string>,
-  ) {
+  ): Promise<number> {
+    let syncedCount = 0;
     for (const txData of transactions) {
       const assetId = assetMap.get(txData.localAssetId);
       if (!assetId) continue;
@@ -251,13 +252,20 @@ export class AuthService {
           deletedAt: txData.deletedAt ? new Date(txData.deletedAt) : null,
         },
       });
+      syncedCount++;
     }
+    return syncedCount;
   }
 
   async syncGuest(
     userId: string,
     syncDto: SyncGuestDto,
-  ): Promise<{ success: boolean }> {
+  ): Promise<{
+    success: boolean;
+    syncedAssetsCount: number;
+    syncedCategoriesCount: number;
+    syncedTransactionsCount: number;
+  }> {
     const { assets, categories, transactions } = syncDto;
 
     return await this.prisma.$transaction(async (tx) => {
@@ -268,7 +276,7 @@ export class AuthService {
       const assetMap = await this._syncAssets(tx, userId, assets);
 
       // 3. Sync Transactions
-      await this._syncTransactions(
+      const syncedTransactionsCount = await this._syncTransactions(
         tx,
         userId,
         transactions,
@@ -285,7 +293,12 @@ export class AuthService {
         },
       });
 
-      return { success: true };
+      return {
+        success: true,
+        syncedAssetsCount: assetMap.size,
+        syncedCategoriesCount: categoryMap.size,
+        syncedTransactionsCount,
+      };
     });
   }
 
@@ -348,5 +361,23 @@ export class AuthService {
   logout(): Promise<void> {
     // ponytail: stateless session invalidation is handled by client clearing cookies.
     return Promise.resolve();
+  }
+
+  async syncUser(
+    userId: string,
+  ): Promise<{ success: boolean; lastSyncedAt: Date; lastSyncStatus: string }> {
+    const lastSyncedAt = new Date();
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        lastSyncedAt,
+        lastSyncStatus: "SUCCESS",
+      },
+    });
+    return {
+      success: true,
+      lastSyncedAt,
+      lastSyncStatus: "SUCCESS",
+    };
   }
 }

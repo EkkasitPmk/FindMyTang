@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { AssetType } from "@/shared/lib/types/asset.type";
 import { CategoryType } from "@/shared/lib/types/category.type";
@@ -10,6 +10,7 @@ import { db } from "@/shared/lib/storages/dexie.storage";
 import { toast } from "react-toastify";
 
 export const useSyncGuestMutation = () => {
+  const queryClient = useQueryClient();
   const clearGuestData = useGuestStore((state) => state.clearGuestData);
 
   return useMutation<
@@ -62,8 +63,20 @@ export const useSyncGuestMutation = () => {
     },
     onSuccess: (data) => {
       if (data.success) {
-        toast.success("ข้อมูล Guest ถูกซิงค์เรียบร้อยแล้ว");
+        const assetsCount = data.syncedAssetsCount ?? 0;
+        const categoriesCount = data.syncedCategoriesCount ?? 0;
+        const txCount = data.syncedTransactionsCount ?? 0;
+
+        if (assetsCount === 0 && categoriesCount === 0 && txCount === 0) {
+          toast.info("การซิงค์เสร็จสิ้น (ไม่มีข้อมูล Guest ใหม่ที่ต้องซิงค์)");
+        } else {
+          toast.success(
+            `ซิงค์ข้อมูล Guest สำเร็จ: สินทรัพย์ ${assetsCount} รายการ, หมวดหมู่ ${categoriesCount} รายการ, ธุรกรรม ${txCount} รายการ`,
+          );
+        }
+
         void clearGuestData(); // ล้างข้อมูล local หลังจากซิงค์สำเร็จ
+        void queryClient.invalidateQueries(); // invalidate แคลชเพื่อให้ดึงข้อมูลใหม่มาแสดงทันที
       }
     },
     onError: (error: AxiosError<{ message: string | string[] }>) => {

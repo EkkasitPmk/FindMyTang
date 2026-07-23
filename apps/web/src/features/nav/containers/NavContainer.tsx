@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { toast } from "react-toastify";
 import { LogOut } from "lucide-react";
-import { useLogoutMutation } from "../hooks/auth.hook";
+import { useLogoutMutation, useSyncUserMutation } from "../hooks/auth.hook";
 import { useGuestStore } from "@/shared/lib/storages/guest.storage";
 import DesktopSidebar from "../components/DesktopSidebar";
 import MobileDrawer from "../components/MobileDrawer";
@@ -16,9 +16,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { useMeQuery } from "@/shared/lib/hooks/useMeQuery.hook";
 import { useModalState } from "@/shared/lib/hooks/useModalState.hook";
+import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 
 export default function NavContainer() {
   const pathname = usePathname();
+  const isClientMounted = useMounted();
 
   const { data: user, isLoading } = useMeQuery();
   const queryClient = useQueryClient();
@@ -26,6 +28,28 @@ export default function NavContainer() {
   const openLockModal = useFeatureLockModal((state) => state.openModal);
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileMenuOpen]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && mobileMenuOpen) {
+        setMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [mobileMenuOpen]);
+
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncStatus, setSyncStatus] = useState<
     "synced" | "syncing" | "offline"
@@ -51,6 +75,8 @@ export default function NavContainer() {
       },
     });
 
+  const syncUserMutation = useSyncUserMutation();
+
   const handleSyncClick = () => {
     if (isGuest) {
       openLockModal(t("cloudSyncBackup"));
@@ -65,18 +91,30 @@ export default function NavContainer() {
       message: t("syncing"),
     });
 
-    void queryClient
-      .refetchQueries()
-      .then(() => {
-        setIsSyncing(false);
-        setSyncStatus("synced");
-        setModalState({
-          isOpen: true,
-          status: "success",
-          message: t("allDataSynced"),
-        });
-      })
-      .catch(() => {
+    syncUserMutation.mutate(undefined, {
+      onSuccess: () => {
+        void queryClient
+          .refetchQueries()
+          .then(() => {
+            setIsSyncing(false);
+            setSyncStatus("synced");
+            setModalState({
+              isOpen: true,
+              status: "success",
+              message: t("allDataSynced"),
+            });
+          })
+          .catch(() => {
+            setIsSyncing(false);
+            setSyncStatus("offline");
+            setModalState({
+              isOpen: true,
+              status: "error",
+              message: t("cloudSyncFailed"),
+            });
+          });
+      },
+      onError: () => {
         setIsSyncing(false);
         setSyncStatus("offline");
         setModalState({
@@ -84,7 +122,8 @@ export default function NavContainer() {
           status: "error",
           message: t("cloudSyncFailed"),
         });
-      });
+      },
+    });
   };
 
   const handleNavigate = (
@@ -172,7 +211,7 @@ export default function NavContainer() {
 
       {/* Mobile Drawer Navigation overlay */}
       <MobileDrawer
-        isOpen={mobileMenuOpen}
+        isOpen={isClientMounted && mobileMenuOpen}
         onClose={() => setMobileMenuOpen(false)}
         pathname={pathname}
         user={user}
@@ -193,7 +232,7 @@ export default function NavContainer() {
         <MobileBottomNav
           pathname={pathname}
           mobileMenuOpen={mobileMenuOpen}
-          onMenuOpen={() => setMobileMenuOpen(true)}
+          onMenuOpen={() => setMobileMenuOpen((prev) => !prev)}
         />
       )}
 

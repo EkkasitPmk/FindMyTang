@@ -117,39 +117,40 @@
   --semantic-highlight: #EA580C;
   --semantic-highlight-light: #FFEDD5;
 
-  --background: #FAFAFA;
-  --foreground: #111827;
-  --card: #FFFFFF;
-  --card-foreground: #111827;
-  --popover: #FFFFFF;
-  --popover-foreground: #111827;
-  --primary: #2563EB;
+  /* Standard Shadcn / App Tokens mapped to Semantic Design Tokens */
+  --background: var(--semantic-background);
+  --foreground: var(--semantic-primary-text);
+  --card: var(--semantic-surface);
+  --card-foreground: var(--semantic-primary-text);
+  --popover: var(--semantic-surface);
+  --popover-foreground: var(--semantic-primary-text);
+  --primary: var(--semantic-primary);
   --primary-foreground: #FFFFFF;
-  --secondary: #F5F5F5;
-  --secondary-foreground: #111827;
-  --muted: #F5F5F5;
-  --muted-foreground: #6B7280;
-  --accent: #F5F5F5;
-  --accent-foreground: #111827;
-  --destructive: #DC2626;
+  --secondary: var(--semantic-surface-secondary);
+  --secondary-foreground: var(--semantic-primary-text);
+  --muted: var(--semantic-surface-secondary);
+  --muted-foreground: var(--semantic-secondary-text);
+  --accent: var(--semantic-surface-secondary);
+  --accent-foreground: var(--semantic-primary-text);
+  --destructive: var(--semantic-expense);
   --destructive-foreground: #FAFAFA;
-  --border: #E5E7EB;
-  --input: #E5E7EB;
-  --ring: #2563EB;
-  --chart-1: #16A34A;
-  --chart-2: #DC2626;
-  --chart-3: #7C3AED;
-  --chart-4: #F59E0B;
-  --chart-5: #0EA5E9;
+  --border: var(--semantic-border);
+  --input: var(--semantic-border);
+  --ring: var(--semantic-primary);
+  --chart-1: var(--semantic-income);
+  --chart-2: var(--semantic-expense);
+  --chart-3: var(--semantic-transfer);
+  --chart-4: var(--semantic-investment);
+  --chart-5: var(--semantic-info);
   --radius: 0.625rem;
-  --sidebar: #FAFAFA;
-  --sidebar-foreground: #111827;
-  --sidebar-primary: #2563EB;
+  --sidebar: var(--semantic-surface);
+  --sidebar-foreground: var(--semantic-primary-text);
+  --sidebar-primary: var(--semantic-primary);
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #F5F5F5;
-  --sidebar-accent-foreground: #111827;
-  --sidebar-border: #E5E7EB;
-  --sidebar-ring: #2563EB;
+  --sidebar-accent: var(--semantic-surface-secondary);
+  --sidebar-accent-foreground: var(--semantic-primary-text);
+  --sidebar-border: var(--semantic-border);
+  --sidebar-ring: var(--semantic-primary);
 }
 
 .dark {
@@ -197,38 +198,39 @@
   --semantic-highlight-light: #7C2D12;
   /* Tailwind orange-900 */
 
-  --background: #111827;
-  --foreground: #FAFAFA;
-  --card: #1F2937;
-  --card-foreground: #FAFAFA;
-  --popover: #1F2937;
-  --popover-foreground: #FAFAFA;
-  --primary: #3B82F6;
+  /* Standard Shadcn / App Tokens mapped to Semantic Design Tokens */
+  --background: var(--semantic-background);
+  --foreground: var(--semantic-primary-text);
+  --card: var(--semantic-surface);
+  --card-foreground: var(--semantic-primary-text);
+  --popover: var(--semantic-surface);
+  --popover-foreground: var(--semantic-primary-text);
+  --primary: var(--semantic-primary);
   --primary-foreground: #FFFFFF;
-  --secondary: #374151;
-  --secondary-foreground: #FAFAFA;
-  --muted: #374151;
-  --muted-foreground: #9CA3AF;
-  --accent: #374151;
-  --accent-foreground: #FAFAFA;
-  --destructive: #EF4444;
+  --secondary: var(--semantic-surface-secondary);
+  --secondary-foreground: var(--semantic-primary-text);
+  --muted: var(--semantic-surface-secondary);
+  --muted-foreground: var(--semantic-secondary-text);
+  --accent: var(--semantic-surface-secondary);
+  --accent-foreground: var(--semantic-primary-text);
+  --destructive: var(--semantic-expense);
   --destructive-foreground: #FAFAFA;
-  --border: #374151;
-  --input: #374151;
-  --ring: #3B82F6;
-  --chart-1: #22C55E;
-  --chart-2: #EF4444;
-  --chart-3: #8B5CF6;
-  --chart-4: #F59E0B;
-  --chart-5: #0EA5E9;
-  --sidebar: #111827;
-  --sidebar-foreground: #FAFAFA;
-  --sidebar-primary: #3B82F6;
+  --border: var(--semantic-border);
+  --input: var(--semantic-border);
+  --ring: var(--semantic-primary);
+  --chart-1: var(--semantic-income);
+  --chart-2: var(--semantic-expense);
+  --chart-3: var(--semantic-transfer);
+  --chart-4: var(--semantic-investment);
+  --chart-5: var(--semantic-info);
+  --sidebar: var(--semantic-surface);
+  --sidebar-foreground: var(--semantic-primary-text);
+  --sidebar-primary: var(--semantic-primary);
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #374151;
-  --sidebar-accent-foreground: #FAFAFA;
-  --sidebar-border: #374151;
-  --sidebar-ring: #3B82F6;
+  --sidebar-accent: var(--semantic-surface-secondary);
+  --sidebar-accent-foreground: var(--semantic-primary-text);
+  --sidebar-border: var(--semantic-border);
+  --sidebar-ring: var(--semantic-primary);
 }
 
 @layer base {

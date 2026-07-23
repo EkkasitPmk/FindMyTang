@@ -6,7 +6,13 @@ import { TransactionSummary } from "@/shared/components/customs/TransactionSumma
 import { CategoryBreakdownChart } from "../components/CategoryBreakdownChart";
 import { CategoryList } from "../components/CategoryList";
 import { Skeleton } from "@/shared/components/ui/skeleton";
-import { SegmentedControl } from "@/shared/components/customs/SegmentedControl";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContents,
+  TabsContent,
+} from "@/shared/components/animate-ui/components/animate/tabs";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 export const CategoryBreakdownContainer = () => {
@@ -58,7 +64,7 @@ export const CategoryBreakdownContainer = () => {
           <div className="space-y-1 px-4">
             <Skeleton className="h-4 w-30 rounded-xl" />
             <Skeleton className="h-15 w-full rounded-xl" />
-            <Skeleton className="h-15 w-full หrounded-xl" />
+            <Skeleton className="h-15 w-full rounded-xl" />
             <Skeleton className="h-15 w-full rounded-xl" />
           </div>
         </div>
@@ -80,36 +86,47 @@ export const CategoryBreakdownContainer = () => {
           />
         </div>
 
-        <div className="m-0 px-4">
-          <SegmentedControl
-            options={[
-              { value: "EXPENSE", label: t("expense") },
-              { value: "INCOME", label: t("income") },
-              { value: "TRANSFER", label: t("transfer") },
-              { value: "ADJUSTMENT", label: t("adjustment") },
-            ]}
-            value={type}
-            onChange={(val) =>
-              setType(val as "EXPENSE" | "INCOME" | "TRANSFER" | "ADJUSTMENT")
-            }
-          />
-        </div>
+        <Tabs
+          value={type}
+          onValueChange={(val) =>
+            setType(val as "EXPENSE" | "INCOME" | "TRANSFER" | "ADJUSTMENT")
+          }
+        >
+          <div className="m-0 px-4 relative z-10">
+            <TabsList className="w-full">
+              <TabsTrigger value="EXPENSE">{t("expense")}</TabsTrigger>
+              <TabsTrigger value="INCOME">{t("income")}</TabsTrigger>
+              <TabsTrigger value="TRANSFER">{t("transfer")}</TabsTrigger>
+              <TabsTrigger value="ADJUSTMENT">{t("adjustment")}</TabsTrigger>
+            </TabsList>
+          </div>
 
-        <div className="m-0">
-          <CategoryBreakdownChart
-            data={data.breakdown}
-            totalAmount={totalAmount}
-          />
-        </div>
+          <TabsContents className="mt-3">
+            {(["EXPENSE", "INCOME", "TRANSFER", "ADJUSTMENT"] as const).map(
+              (tVal) => (
+                <TabsContent key={tVal} value={tVal} className="space-y-3">
+                  <CategoryBreakdownChart
+                    data={data.breakdown}
+                    totalAmount={totalAmount}
+                  />
 
-        <CategoryList data={data.breakdown} month={month} year={year} />
+                  <CategoryList
+                    data={data.breakdown}
+                    month={month}
+                    year={year}
+                  />
+                </TabsContent>
+              ),
+            )}
+          </TabsContents>
+        </Tabs>
       </>
     );
   };
 
   return (
-    <div className="flex flex-col h-full space-y-3">
-      <div className="px-4">
+    <div className="flex-1 min-h-0 overflow-y-auto hide-scrollbar space-y-3">
+      <div className="px-4 relative z-10">
         <PeriodSelector
           mode="month"
           month={month}

@@ -36,7 +36,7 @@ export default function MobileBottomNav({
               variant="unstyled"
               key={item.href}
               onClick={onMenuOpen}
-              className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-md text-[10px] font-semibold transition-all cursor-pointer outline-none ${
+              className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-md text-[10px] font-semibold transition-colors duration-150 cursor-pointer outline-none ${
                 isMoreActive
                   ? "text-primary"
                   : "text-secondary-text hover:text-primary-text"
@@ -44,8 +44,10 @@ export default function MobileBottomNav({
             >
               <div className="h-6 flex items-center justify-center">
                 <MoreHorizontal
-                  className="w-5 h-5"
-                  strokeWidth={isMoreActive ? 2 : 1.5}
+                  className={`w-5 h-5 transition-colors duration-150 ${
+                    isMoreActive ? "text-primary" : "text-secondary-text"
+                  }`}
+                  strokeWidth={2}
                 />
               </div>
               {t("navMore")}
@@ -67,7 +69,7 @@ export default function MobileBottomNav({
                 lastClickTimeRef.current = now;
               }
             }}
-            className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-md text-[10px] font-semibold transition-all ${
+            className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-md text-[10px] font-semibold transition-colors duration-150 ${
               isActive
                 ? "text-primary"
                 : "text-secondary-text hover:text-primary-text"
@@ -75,8 +77,10 @@ export default function MobileBottomNav({
           >
             <div className="h-6 flex items-center justify-center">
               <Icon
-                className={item.href === "/transaction" ? "w-6 h-6" : "w-5 h-5"}
-                strokeWidth={isActive ? 2 : 1.5}
+                className={`transition-colors duration-150 ${
+                  item.href === "/transaction" ? "w-6 h-6" : "w-5 h-5"
+                } ${isActive ? "text-primary" : "text-secondary-text"}`}
+                strokeWidth={2}
               />
             </div>
             {displayLabel}

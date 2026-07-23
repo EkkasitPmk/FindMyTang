@@ -10,6 +10,11 @@ import {
   getAmountDisplayConfig,
   getDisplayTitle,
 } from "@/shared/lib/helpers/transaction-item.helper";
+import {
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
+} from "../animate-ui/primitives/radix/collapsible";
 
 export interface TransactionItemProps {
   transaction: TransactionResponse;
@@ -62,51 +67,51 @@ export function TransactionItem({
   }
 
   return (
-    <>
-      <Button
-        variant="unstyled"
-        type="button"
-        onClick={() =>
-          setExpandedTransactionId(
-            expandedTransactionId === transaction.id ? null : transaction.id,
-          )
-        }
-        className={cn(
-          "w-full text-left flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-surface-secondary focus:outline-none focus:bg-surface-secondary transition-colors",
-        )}
-      >
-        <TransactionIcon transaction={transaction} />
-        <div className="grid grid-cols-2 w-full">
-          <div className="flex items-center gap-3">
-            <div className="flex flex-col leading-5 text-left overflow-hidden mr-2">
-              <span className="text-base capitalize truncate">
-                {displayTitle}
+    <Collapsible
+      open={isExpanded}
+      onOpenChange={(open) => {
+        setExpandedTransactionId(open ? transaction.id : null);
+      }}
+      className="group/collapsible"
+    >
+      <CollapsibleTrigger asChild>
+        <Button
+          variant="unstyled"
+          type="button"
+          className={cn(
+            "w-full text-left flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-surface-secondary focus:outline-none focus:bg-surface-secondary transition-colors",
+          )}
+        >
+          <TransactionIcon transaction={transaction} />
+          <div className="grid grid-cols-2 w-full">
+            <div className="flex items-center gap-3">
+              <div className="flex flex-col leading-5 text-left overflow-hidden mr-2">
+                <span className="text-base capitalize truncate">
+                  {displayTitle}
+                </span>
+                <span className="text-xs text-secondary-text truncate flex items-center gap-1">
+                  {transaction.note && (
+                    <span className="truncate">{transaction.note}</span>
+                  )}
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center justify-end gap-1">
+              <span className={`text-base font-medium ${amountColorClass}`}>
+                {amountPrefix}฿
+                {Math.abs(transaction.amount).toLocaleString(locale, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </span>
-              <span className="text-xs text-secondary-text truncate flex items-center gap-1">
-                {transaction.note && (
-                  <span className="truncate">{transaction.note}</span>
-                )}
-              </span>
+              <ChevronDown
+                size={18}
+                className="text-disabled-text transition-transform duration-300 group-data-[state=open]/collapsible:-rotate-180"
+              />
             </div>
           </div>
-          <div className="flex items-center justify-end gap-1">
-            <span className={`text-base font-medium ${amountColorClass}`}>
-              {amountPrefix}฿
-              {Math.abs(transaction.amount).toLocaleString(locale, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-            </span>
-            <ChevronDown
-              size={18}
-              className={cn(
-                "text-disabled-text transition-transform",
-                isExpanded && "-rotate-x-180",
-              )}
-            />
-          </div>
-        </div>
-      </Button>
+        </Button>
+      </CollapsibleTrigger>
 
       <div
         className={cn(
@@ -116,14 +121,7 @@ export function TransactionItem({
       />
 
       {/* Expandable Detail */}
-      <div
-        className={cn(
-          "grid transition-all duration-300 ease-in-out",
-          isExpanded
-            ? "grid-rows-[1fr] opacity-100"
-            : "grid-rows-[0fr] opacity-0",
-        )}
-      >
+      <CollapsibleContent transition={{ duration: 0.25, ease: "easeInOut" }}>
         <div className="overflow-hidden">
           <TransactionItemDetails
             transaction={transaction}
@@ -137,7 +135,7 @@ export function TransactionItem({
             currentAssetId={currentAssetId}
           />
         </div>
-      </div>
-    </>
+      </CollapsibleContent>
+    </Collapsible>
   );
 }

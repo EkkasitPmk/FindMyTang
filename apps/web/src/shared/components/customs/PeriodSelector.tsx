@@ -26,7 +26,7 @@ export const PeriodSelector = ({
   const date = new Date(year, month - 1);
 
   return (
-    <div className="flex items-center justify-between px-4 py-2 bg-surface rounded-xl shadow-sm border">
+    <div className="flex items-center justify-between px-4 py-1 bg-surface rounded-xl shadow-sm border">
       <Button
         variant="ghost"
         size="icon"

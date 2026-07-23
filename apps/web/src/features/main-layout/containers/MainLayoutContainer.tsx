@@ -19,6 +19,7 @@ import { useAssetUIStore } from "@/features/assets/hooks/assets.hook";
 import { Button } from "@/shared/components/customs/Button";
 import { Input } from "@/shared/components/customs/Input";
 import { useAssets } from "@/shared/lib/hooks/useAssets.hook";
+import { SidebarProvider } from "@/shared/components/animate-ui/components/radix/sidebar";
 
 export default function MainLayoutContainer({
   children,
@@ -170,6 +171,7 @@ export default function MainLayoutContainer({
   };
 
   let mainContentClassName = "px-0 py-3";
+  let mainOverflowClassName = "overflow-y-auto max-h-screen";
   if (isMainTab) {
     if (
       pathname === "/transaction" ||
@@ -177,6 +179,7 @@ export default function MainLayoutContainer({
       pathname === "/analytics"
     ) {
       mainContentClassName = cn("py-3");
+      mainOverflowClassName = "overflow-hidden h-full";
     } else {
       mainContentClassName = cn("pt-15");
     }
@@ -185,79 +188,82 @@ export default function MainLayoutContainer({
   }
 
   return (
-    <div className="text-primary-text flex flex-col font-sans relative overflow-x-hidden flex-1">
-      {/* Subtle brand color glow - very light opacity, surgical accent */}
-      <div className="absolute top-0 right-0 w-[40vw] h-[40vw] rounded-full bg-primary-light/20 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[40vw] h-[40vw] rounded-full bg-accent-light/10 blur-[120px] pointer-events-none" />
+    <SidebarProvider defaultOpen={true}>
+      <div className="text-primary-text flex flex-col font-sans relative flex-1 min-w-0">
+        {/* Subtle brand color glow - very light opacity, surgical accent */}
+        <div className="absolute top-0 right-0 w-[40vw] h-[40vw] rounded-full bg-primary-light/20 blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-[40vw] h-[40vw] rounded-full bg-accent-light/10 blur-[120px] pointer-events-none" />
 
-      {/* Main Shell Container */}
-      <div className="flex flex-1 relative z-10">
-        {/* Navigation components (Sidebar, Drawer, Bottom Nav, Modals) */}
-        <NavContainer />
+        {/* Main Shell Container */}
+        <div className="flex flex-1 relative z-10 min-w-0">
+          {/* Navigation components (Sidebar, Drawer, Bottom Nav, Modals) */}
+          <NavContainer />
 
-        {/* Right Content Area */}
-        <div className="flex-1 flex flex-col min-w-0">
-          {isMainTab &&
-            pathname !== "/transaction" &&
-            pathname !== "/journal" &&
-            pathname !== "/analytics" && <ShowProfileContainer />}
+          {/* Right Content Area */}
+          <div className="flex-1 flex flex-col min-w-0">
+            {isMainTab &&
+              pathname !== "/transaction" &&
+              pathname !== "/journal" &&
+              pathname !== "/analytics" && <ShowProfileContainer />}
 
-          {shouldShowTopAppBar && !isSearchMode && (
-            <div className="fixed w-full top-0 z-40 bg-background/80 backdrop-blur-md">
-              <TopAppBarMobile
-                title={mobileTitle}
-                showBackButton={pathname !== "/settings"}
-                onBack={() => {
-                  if (pathname === "/assets" && assetName) {
+            {shouldShowTopAppBar && !isSearchMode && (
+              <div className="fixed w-full top-0 z-40 bg-background/80 backdrop-blur-md">
+                <TopAppBarMobile
+                  title={mobileTitle}
+                  showBackButton={pathname !== "/settings"}
+                  onBack={() => {
+                    if (pathname === "/assets" && assetName) {
+                      setSearchMode(false);
+                      setSearchKeyword("");
+                    }
+                    router.back();
+                  }}
+                  rightAction={renderRightAction()}
+                />
+              </div>
+            )}
+
+            {shouldShowTopAppBar && isSearchMode && (
+              <div className="sticky top-0 flex items-center px-4 pb-2 pt-2 z-40 bg-background/90 backdrop-blur-sm border-b border-border/50 h-14">
+                <Input
+                  autoFocus
+                  placeholder={t("searchByNoteOrCategory")}
+                  value={searchKeyword}
+                  onChange={(e) => setSearchKeyword(e.target.value)}
+                  className="h-8 text-sm flex-1 bg-surface"
+                />
+                <Button
+                  variant="unstyled"
+                  onClick={() => {
                     setSearchMode(false);
                     setSearchKeyword("");
-                  }
-                  router.back();
-                }}
-                rightAction={renderRightAction()}
-              />
-            </div>
-          )}
-
-          {shouldShowTopAppBar && isSearchMode && (
-            <div className="sticky top-0 flex items-center px-4 pb-2 pt-2 z-40 bg-background/90 backdrop-blur-sm border-b border-border/50 h-14">
-              <Input
-                autoFocus
-                placeholder={t("searchByNoteOrCategory")}
-                value={searchKeyword}
-                onChange={(e) => setSearchKeyword(e.target.value)}
-                className="h-8 text-sm flex-1 bg-surface"
-              />
-              <Button
-                variant="unstyled"
-                onClick={() => {
-                  setSearchMode(false);
-                  setSearchKeyword("");
-                }}
-                className="ml-2 text-secondary-text cursor-pointer p-1 shrink-0"
-              >
-                <X size={20} />
-              </Button>
-            </div>
-          )}
-
-          {/* Child Content */}
-          <main
-            className={cn(
-              "flex-1 overflow-y-auto max-h-screen w-full mx-auto",
-              mainContentClassName,
+                  }}
+                  className="ml-2 text-secondary-text cursor-pointer p-1 shrink-0"
+                >
+                  <X size={20} />
+                </Button>
+              </div>
             )}
-          >
-            {children}
 
-            {isCreateAssetModalOpen && (
-              <CreateAssetsContainer
-                onClose={() => setIsCreateAssetModalOpen(false)}
-              />
-            )}
-          </main>
+            {/* Child Content */}
+            <main
+              className={cn(
+                "flex-1 w-full mx-auto",
+                mainOverflowClassName,
+                mainContentClassName,
+              )}
+            >
+              {children}
+
+              {isCreateAssetModalOpen && (
+                <CreateAssetsContainer
+                  onClose={() => setIsCreateAssetModalOpen(false)}
+                />
+              )}
+            </main>
+          </div>
         </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 }

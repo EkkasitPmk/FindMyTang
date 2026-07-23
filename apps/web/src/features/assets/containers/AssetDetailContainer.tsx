@@ -177,7 +177,7 @@ export default function AssetDetailContainer() {
     (newName?: string) => {
       setIsEditModalOpen(false);
       // ponytail: sync URL ?name= param หลัง edit เพื่อ TopAppBar แสดงชื่อใหม่ทันที
-      if (newName && id) {
+      if (typeof newName === "string" && id) {
         const params = new URLSearchParams(searchParams.toString());
         params.set("name", newName);
         router.replace(`/assets?${params.toString()}`);
