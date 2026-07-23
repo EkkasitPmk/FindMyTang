@@ -9,6 +9,74 @@ import {
 } from "@/shared/lib/types/transaction.type";
 import { ApiErrorResponse } from "@/shared/lib/types/api.type";
 import { TranslationKey } from "@/shared/lib/configs/translations.config";
+import { ModalState } from "@/shared/lib/hooks/useModalState.hook";
+
+const TRANSACTION_TYPE_LABEL_KEYS: Record<string, string> = {
+  expense: "expense",
+  income: "income",
+  transfer: "transfer",
+  adjustment: "adjustment",
+};
+
+export function getTypeLabel(
+  type: string,
+  t: (key: TranslationKey) => string,
+): string {
+  const lower = type.toLowerCase();
+  const key = TRANSACTION_TYPE_LABEL_KEYS[lower];
+  return key ? t(key as TranslationKey) : lower;
+}
+
+export function parseErrorMessage(
+  err: AxiosError<ApiErrorResponse>,
+  fallback: string,
+): string {
+  const msg = err.response?.data?.message;
+  if (Array.isArray(msg)) {
+    return msg[0];
+  }
+  return msg || fallback;
+}
+
+export function checkIsLoading(
+  mounted: boolean,
+  isPending: boolean,
+  isFetching: boolean,
+): boolean {
+  return !mounted || isPending || isFetching;
+}
+
+export function checkIsTxLoading(
+  mounted: boolean,
+  editId: string | null,
+  isPending: boolean,
+  isFetching: boolean,
+): boolean {
+  return Boolean(editId) && (!mounted || isPending || isFetching);
+}
+
+export function checkIsSubmitting(
+  createPending: boolean,
+  updatePending: boolean,
+  deletePending: boolean,
+): boolean {
+  return createPending || updatePending || deletePending;
+}
+
+export function isCategoryType(type: TransactionType): boolean {
+  return type === "EXPENSE" || type === "INCOME";
+}
+
+export function getLoadingModalProps(
+  modalState: ModalState,
+  isSubmitting: boolean,
+) {
+  return {
+    isOpen: modalState.isOpen || isSubmitting,
+    status: modalState.isOpen ? modalState.status : "loading",
+    message: modalState.isOpen ? modalState.message : undefined,
+  };
+}
 
 interface SubmitTransactionParams {
   transactionType: TransactionType;

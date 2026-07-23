@@ -4,7 +4,7 @@ import { ArrowDown, Calendar as CalendarLucide, Camera, X } from "lucide-react";
 import { UseFormRegister } from "react-hook-form";
 import { CreateTransactionFormValues } from "../schemas/transaction.form.schema";
 import ChooseADate from "./ChooseADate";
-import { useImagePreview } from "@/shared/lib/hooks/useImagePreview.hook";
+import { useImagePreview } from "../hooks/useImagePreview.hook";
 import { Button } from "@/shared/components/customs/Button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";

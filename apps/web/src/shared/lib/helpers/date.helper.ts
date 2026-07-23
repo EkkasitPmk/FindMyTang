@@ -98,3 +98,12 @@ export function formatDisplayDate(
 
   return displayStr;
 }
+
+export function updatePresetDate(daysToAdd: number, baseDate?: Date): Date {
+  const newDate = new Date();
+  newDate.setDate(newDate.getDate() + daysToAdd);
+  if (baseDate) {
+    newDate.setHours(baseDate.getHours(), baseDate.getMinutes(), 0, 0);
+  }
+  return newDate;
+}

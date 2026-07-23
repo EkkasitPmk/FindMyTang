@@ -7,11 +7,11 @@ import ConfirmModal from "@/shared/components/customs/ConfirmModal";
 import LoadingModal from "@/shared/components/customs/LoadingModal";
 import ImagePreviewModal from "@/shared/components/customs/ImagePreviewModal";
 import { useConfirmModal } from "@/shared/lib/hooks/useConfirmModal.hook";
+import { useModalState } from "@/shared/lib/hooks/useModalState.hook";
 import {
   useDeleteTransactionMutation,
   useUpdateTransactionMutation,
 } from "@/features/transactions/hooks/transaction.hook";
-import { toast } from "react-toastify";
 import { RotateCcw, Trash } from "lucide-react";
 import {
   TransactionResponse,
@@ -19,6 +19,8 @@ import {
 } from "@/shared/lib/types/transaction.type";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { cn } from "@/shared/lib/utils/core.util";
+import { AxiosError } from "axios";
+import { ApiErrorResponse } from "@/shared/lib/types/api.type";
 
 interface TransactionListContainerProps {
   groupedTransactions: GroupedTransaction[];
@@ -52,6 +54,7 @@ export function TransactionListContainer({
     string | null
   >(null);
   const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
+  const { modalState, setModalState, resetModalState } = useModalState();
 
   // Restore logic
   const [isRestoreModalOpen, setIsRestoreModalOpen] = useState(false);
@@ -60,7 +63,23 @@ export function TransactionListContainer({
 
   const restoreTransaction = useUpdateTransactionMutation({
     onSuccess: () => {
-      toast.success(t("transactionRestoredSuccess"));
+      setModalState({
+        isOpen: true,
+        status: "success",
+        message:
+          t("transactionRestoredSuccess") ||
+          "Transaction restored successfully",
+      });
+    },
+    onError: (err: AxiosError<ApiErrorResponse>) => {
+      const msg = err.response?.data?.message;
+      setModalState({
+        isOpen: true,
+        status: "error",
+        message: Array.isArray(msg)
+          ? msg[0]
+          : msg || "Failed to restore transaction",
+      });
     },
   });
 
@@ -78,7 +97,21 @@ export function TransactionListContainer({
 
   const deleteTransaction = useDeleteTransactionMutation({
     onSuccess: () => {
-      toast.success(t("transactionDeletedSuccess"));
+      setModalState({
+        isOpen: true,
+        status: "success",
+        message: t("transactionDeletedSuccess"),
+      });
+    },
+    onError: (err: AxiosError<ApiErrorResponse>) => {
+      const msg = err.response?.data?.message;
+      setModalState({
+        isOpen: true,
+        status: "error",
+        message: Array.isArray(msg)
+          ? msg[0]
+          : msg || "Failed to delete transaction",
+      });
     },
   });
 
@@ -243,7 +276,14 @@ export function TransactionListContainer({
       />
 
       <LoadingModal
-        isOpen={restoreTransaction.isPending || deleteTransaction.isPending}
+        isOpen={
+          modalState.isOpen ||
+          restoreTransaction.isPending ||
+          deleteTransaction.isPending
+        }
+        status={modalState.isOpen ? modalState.status : "loading"}
+        message={modalState.isOpen ? modalState.message : undefined}
+        onClose={resetModalState}
       />
 
       <ImagePreviewModal

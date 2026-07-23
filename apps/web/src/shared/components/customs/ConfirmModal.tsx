@@ -1,6 +1,7 @@
 import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import { LucideIcon, Check } from "lucide-react";
 import { createPortal } from "react-dom";
+import { Button } from "@/shared/components/customs/Button";
 
 interface ConfirmModalProps {
   isOpen: boolean;
@@ -162,14 +163,16 @@ export default function ConfirmModal({
 
           {/* Action buttons */}
           <div className="flex gap-3 w-full mt-2">
-            <button
+            <Button
+              variant="unstyled"
               type="button"
               onClick={onClose}
               className="flex-1 py-2.5 px-4 rounded-md border border-border hover:bg-surface-secondary text-secondary-text text-xs font-semibold transition-colors cursor-pointer"
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="unstyled"
               type="button"
               onClick={() => onConfirm(isHardDelete)}
               disabled={Boolean(isConfirmDisabled)}
@@ -180,7 +183,7 @@ export default function ConfirmModal({
               }`}
             >
               {confirmLabel}
-            </button>
+            </Button>
           </div>
         </div>
       </div>

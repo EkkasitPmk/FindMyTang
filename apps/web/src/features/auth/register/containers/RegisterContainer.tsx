@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
 import { useRegisterMutation } from "../hooks/register.hook";
 import {
   registerSchema,
@@ -13,13 +12,16 @@ import RegisterForm from "../components/RegisterForm";
 import { handleFormError } from "@/shared/lib/helpers/form.helper";
 import LoadingModal from "@/shared/components/customs/LoadingModal";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { useModalState } from "@/shared/lib/hooks/useModalState.hook";
 
 export default function RegisterContainer() {
-  const { t } = useTranslation();
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const { modalState, setModalState, resetModalState } = useModalState();
+
+  const { t } = useTranslation();
 
   const {
     register,
@@ -39,10 +41,12 @@ export default function RegisterContainer() {
 
   const { mutate: registerUser, isPending } = useRegisterMutation({
     onSuccess: () => {
-      setIsRedirecting(true);
-      toast.success(t("registerSuccess"));
-      // Redirect to login page on success
-      router.push("/login");
+      setModalState({
+        isOpen: true,
+        status: "success",
+        message: t("registerSuccess"),
+        shouldRedirect: true,
+      });
     },
     onError: (error) => {
       handleFormError(error, setError, t("registerFailed"), {
@@ -55,6 +59,15 @@ export default function RegisterContainer() {
       });
     },
   });
+
+  const handleModalClose = () => {
+    const shouldRedirect = modalState.shouldRedirect;
+    resetModalState();
+    if (shouldRedirect) {
+      setIsRedirecting(true);
+      router.push("/login");
+    }
+  };
 
   const onSubmit = (values: RegisterFormValues) => {
     registerUser({
@@ -81,8 +94,10 @@ export default function RegisterContainer() {
         }
       />
       <LoadingModal
-        isOpen={isPending || isRedirecting}
-        message={t("registering")}
+        isOpen={modalState.isOpen || isPending || isRedirecting}
+        status={modalState.isOpen ? modalState.status : "loading"}
+        message={modalState.isOpen ? modalState.message : t("registering")}
+        onClose={handleModalClose}
       />
     </>
   );

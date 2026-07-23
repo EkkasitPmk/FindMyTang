@@ -1,5 +1,5 @@
-"use client";
 import * as React from "react";
+import { VariantProps } from "class-variance-authority";
 import {
   DayPicker,
   getDefaultClassNames,
@@ -7,7 +7,7 @@ import {
   type Locale,
 } from "react-day-picker";
 import { cn } from "@/shared/lib/utils/core.util";
-import { Button, buttonVariants } from "@/shared/components/ui/button";
+import { Button, buttonVariants } from "@/shared/components/customs/Button";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -25,7 +25,7 @@ function Calendar({
   components,
   ...props
 }: React.ComponentProps<typeof DayPicker> & {
-  buttonVariant?: React.ComponentProps<typeof Button>["variant"];
+  buttonVariant?: VariantProps<typeof buttonVariants>["variant"];
 }) {
   const defaultClassNames = getDefaultClassNames();
 

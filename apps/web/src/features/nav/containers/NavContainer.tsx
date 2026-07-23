@@ -15,27 +15,41 @@ import { useFeatureLockModal } from "@/shared/lib/hooks/useFeatureLockModal.hook
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { useMeQuery } from "@/shared/lib/hooks/useMeQuery.hook";
+import { useModalState } from "@/shared/lib/hooks/useModalState.hook";
 
 export default function NavContainer() {
   const pathname = usePathname();
+
+  const { data: user, isLoading } = useMeQuery();
+  const queryClient = useQueryClient();
+  const { isGuest, setGuestMode, clearGuestData } = useGuestStore();
+  const openLockModal = useFeatureLockModal((state) => state.openModal);
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<
+    "synced" | "syncing" | "offline"
+  >("synced");
   const [isLoggingOutLocal, setIsLoggingOutLocal] = useState(false);
+  const { modalState, setModalState, resetModalState } = useModalState();
+
+  const { t } = useTranslation();
+
   const {
     isOpen: logoutConfirmOpen,
     open: openLogoutConfirm,
     close: closeLogoutConfirm,
   } = useConfirmModal();
-  const isGuest = useGuestStore((state) => state.isGuest);
-  const setGuestMode = useGuestStore((state) => state.setGuestMode);
-  const clearGuestData = useGuestStore((state) => state.clearGuestData);
-  const openLockModal = useFeatureLockModal((state) => state.openModal);
-  const queryClient = useQueryClient();
-  const { t } = useTranslation();
 
-  const [isSyncing, setIsSyncing] = useState(false);
-  const [syncStatus, setSyncStatus] = useState<
-    "synced" | "syncing" | "offline"
-  >("offline");
+  const { mutateAsync: logoutUserAsync, isPending: isLogoutPending } =
+    useLogoutMutation({
+      onSuccess: () => {
+        window.location.href = "/home";
+      },
+      onError: () => {
+        setIsLoggingOutLocal(false);
+      },
+    });
 
   const handleSyncClick = () => {
     if (isGuest) {
@@ -45,18 +59,31 @@ export default function NavContainer() {
 
     setIsSyncing(true);
     setSyncStatus("syncing");
+    setModalState({
+      isOpen: true,
+      status: "loading",
+      message: t("syncing"),
+    });
 
     void queryClient
       .refetchQueries()
       .then(() => {
         setIsSyncing(false);
         setSyncStatus("synced");
-        toast.success(t("allDataSynced"));
+        setModalState({
+          isOpen: true,
+          status: "success",
+          message: t("allDataSynced"),
+        });
       })
       .catch(() => {
         setIsSyncing(false);
         setSyncStatus("offline");
-        toast.error(t("cloudSyncFailed"));
+        setModalState({
+          isOpen: true,
+          status: "error",
+          message: t("cloudSyncFailed"),
+        });
       });
   };
 
@@ -69,20 +96,6 @@ export default function NavContainer() {
       openLockModal(t("accountSettingsBackup"));
     }
   };
-
-  const { data: user, isLoading } = useMeQuery();
-
-  const { mutateAsync: logoutUserAsync, isPending: isLogoutPending } =
-    useLogoutMutation({
-      onSuccess: () => {
-        toast.success(t("logoutSuccessOffline"));
-        window.location.href = "/home";
-      },
-      onError: () => {
-        toast.error(t("logoutFailed"));
-        setIsLoggingOutLocal(false);
-      },
-    });
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -132,6 +145,15 @@ export default function NavContainer() {
   };
 
   const isLoggingOut = isLogoutPending || isLoggingOutLocal;
+
+  let loadingModalMessage: string | undefined;
+  if (modalState.isOpen) {
+    loadingModalMessage = modalState.message;
+  } else if (isGuest) {
+    loadingModalMessage = t("clearingSession");
+  } else {
+    loadingModalMessage = t("signingOut");
+  }
 
   return (
     <>
@@ -185,10 +207,12 @@ export default function NavContainer() {
         des={isGuest ? t("clearSessionDesc") : t("signOutConfirmDesc")}
       />
 
-      {/* Loading Modal for Logout */}
+      {/* Loading Modal for Logout & Manual Sync */}
       <LoadingModal
-        isOpen={isLoggingOut}
-        message={isGuest ? t("clearingSession") : t("signingOut")}
+        isOpen={modalState.isOpen || isLoggingOut}
+        status={modalState.isOpen ? modalState.status : "loading"}
+        message={loadingModalMessage}
+        onClose={resetModalState}
       />
     </>
   );

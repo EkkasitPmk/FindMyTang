@@ -146,10 +146,11 @@ export function TransactionItemDetails({
       {cachedAttachmentUrl && (
         <div className="mt-2 flex items-center justify-between">
           <p className="text-secondary-text capitalize">{t("attachment")}:</p>
-          <button
+          <Button
+            variant="unstyled"
             type="button"
             className={cn(
-              "relative h-16 w-16 overflow-hidden rounded-md border border-border focus:outline-none focus:ring-2 focus:ring-primary",
+              "relative h-16 w-16 overflow-hidden rounded-md border border-border focus:outline-none focus:ring-2 focus:ring-primary p-0",
               onAttachmentClick &&
                 "cursor-pointer hover:opacity-80 transition-opacity",
             )}
@@ -170,7 +171,7 @@ export function TransactionItemDetails({
                 cachedAttachmentUrl.startsWith("data:")
               }
             />
-          </button>
+          </Button>
         </div>
       )}
 

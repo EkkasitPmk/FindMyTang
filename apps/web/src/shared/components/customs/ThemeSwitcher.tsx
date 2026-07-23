@@ -2,6 +2,7 @@ import { useTheme } from "next-themes";
 import { Sun, Moon, Monitor } from "lucide-react";
 import { cn } from "@/shared/lib/utils/core.util";
 import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
+import { Button } from "@/shared/components/customs/Button";
 
 export default function ThemeSwitcher() {
   const mounted = useMounted();
@@ -24,7 +25,8 @@ export default function ThemeSwitcher() {
       {options.map(({ value, icon: Icon, label }) => {
         const isActive = theme === value;
         return (
-          <button
+          <Button
+            variant="unstyled"
             key={value}
             onClick={() => setTheme(value)}
             className={cn(
@@ -37,7 +39,7 @@ export default function ThemeSwitcher() {
             aria-label={`Switch to ${label} theme`}
           >
             <Icon size={16} strokeWidth={isActive ? 2.5 : 2} />
-          </button>
+          </Button>
         );
       })}
     </div>

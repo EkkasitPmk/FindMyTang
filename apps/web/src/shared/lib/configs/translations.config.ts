@@ -69,6 +69,7 @@ export const translations = {
     save: "บันทึก",
     saving: "กำลังบันทึก...",
     updating: "กำลังอัปเดต...",
+    deletingAccount: "กำลังลบบัญชี...",
 
     // Additional settings / account layout
     done: "เสร็จสิ้น",
@@ -412,6 +413,7 @@ export const translations = {
     save: "Save",
     saving: "Saving...",
     updating: "Updating...",
+    deletingAccount: "Deleting account...",
 
     // Additional settings / account layout
     done: "Done",

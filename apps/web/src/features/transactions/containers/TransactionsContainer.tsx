@@ -28,16 +28,20 @@ import {
 import ConfirmModal from "@/shared/components/customs/ConfirmModal";
 import { useConfirmModal } from "@/shared/lib/hooks/useConfirmModal.hook";
 import LoadingModal from "@/shared/components/customs/LoadingModal";
+import { useModalState } from "@/shared/lib/hooks/useModalState.hook";
 import { SegmentedControl } from "@/shared/components/customs/SegmentedControl";
 import { CurrencyInput } from "@/shared/components/customs/CurrencyInput";
-import { useCurrencyInput } from "@/shared/lib/hooks/useCurrencyInput.hook";
+import { useCurrencyInput } from "../hooks/useCurrencyInput.hook";
 import {
   getFormattedAmount,
   parseAmountDigits,
   convertDigitsToAmount,
   convertAmountToDigits,
 } from "@/shared/lib/utils/currency.util";
-import { formatDisplayDate } from "@/shared/lib/helpers/date.helper";
+import {
+  formatDisplayDate,
+  updatePresetDate,
+} from "@/shared/lib/helpers/date.helper";
 import { th, enUS } from "date-fns/locale";
 import {
   submitTransaction,
@@ -45,15 +49,24 @@ import {
   createDefaultFormValues,
   getActiveItemId,
   getTransactionTypeOptions,
+  getTypeLabel,
+  parseErrorMessage,
+  checkIsLoading,
+  checkIsTxLoading,
+  checkIsSubmitting,
+  isCategoryType,
+  getLoadingModalProps,
 } from "../helpers/transaction.helper";
 import { cn } from "@/shared/lib/utils/core.util";
 import { Button } from "@/shared/components/customs/Button";
 import { TransactionType } from "@/shared/lib/types/transaction.type";
 import { Category } from "@/shared/lib/types/category.type";
 import { Skeleton } from "@/shared/components/ui/skeleton";
-import imageCompression from "browser-image-compression";
+import { compressImageFile } from "../utils/image.util";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { useAssets } from "@/shared/lib/hooks/useAssets.hook";
+import { AxiosError } from "axios";
+import { ApiErrorResponse } from "@/shared/lib/types/api.type";
 
 export default function TransactionsContainer() {
   const router = useRouter();
@@ -69,7 +82,15 @@ export default function TransactionsContainer() {
     isPending: isTxPending,
     isFetching: isTxFetching,
   } = useTransactionQuery(editId || undefined);
-  const isLoadingTx = isTxPending || isTxFetching;
+
+  const mounted = useMounted();
+  const isTxLoading = checkIsTxLoading(
+    mounted,
+    editId,
+    isTxPending,
+    isTxFetching,
+  );
+
   const defaultType = useMemo(
     () => resolveDefaultTransactionType(existingTx, typeParam),
     [existingTx, typeParam],
@@ -85,6 +106,7 @@ export default function TransactionsContainer() {
   const [removedAttachment, setRemovedAttachment] = useState(false);
   const [isMoreDetailsOpen, setIsMoreDetailsOpen] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const { modalState, setModalState, resetModalState } = useModalState();
 
   const {
     isOpen: isDeleteModalOpen,
@@ -104,8 +126,6 @@ export default function TransactionsContainer() {
   const [displayMonth, setDisplayMonth] = useState<Date | undefined>(
     currentMonth,
   );
-
-  const mounted = useMounted();
 
   useTransactionInitialization({
     existingTx,
@@ -156,48 +176,90 @@ export default function TransactionsContainer() {
   );
 
   const handleSuccess = useCallback(
-    (message: string) => {
-      toast.success(message);
+    (message: string, shouldRedirect: boolean = false) => {
+      setModalState({
+        isOpen: true,
+        status: "success",
+        message,
+        shouldRedirect,
+      });
       reset(defaultValues);
       setAmountDigits("");
       setFile(null);
     },
-    [reset, defaultValues],
+    [reset, defaultValues, setModalState],
   );
 
   const createTransaction = useCreateTransactionMutation({
-    onSuccess: (data, variables) => {
-      let typeStr = variables.type.toLowerCase();
-      if (typeStr === "expense") typeStr = t("expense");
-      else if (typeStr === "income") typeStr = t("income");
-      else if (typeStr === "transfer") typeStr = t("transfer");
-      else if (typeStr === "adjustment") typeStr = t("adjustment");
-
+    onSuccess: (_, variables) => {
+      const typeStr = getTypeLabel(variables.type, t);
       handleSuccess(t("transactionSavedSuccess").replace("{type}", typeStr));
     },
+    onError: (err: AxiosError<ApiErrorResponse>) => {
+      setModalState({
+        isOpen: true,
+        status: "error",
+        message: parseErrorMessage(err, "Failed to save transaction"),
+      });
+    },
   });
+
   const updateTransaction = useUpdateTransactionMutation({
     onSuccess: () => {
-      toast.success(t("transactionUpdatedSuccess"));
-      if (editId) {
-        router.back();
-      } else {
-        reset(defaultValues);
-        setAmountDigits("");
-        setFile(null);
-      }
+      handleSuccess(t("transactionUpdatedSuccess"), !!editId);
+    },
+    onError: (err: AxiosError<ApiErrorResponse>) => {
+      setModalState({
+        isOpen: true,
+        status: "error",
+        message: parseErrorMessage(err, "Failed to update transaction"),
+      });
     },
   });
 
   const deleteTransaction = useDeleteTransactionMutation({
     onSuccess: () => {
-      toast.success(t("transactionDeletedSuccess"));
-      router.back();
+      setModalState({
+        isOpen: true,
+        status: "success",
+        message: t("transactionDeletedSuccess"),
+        shouldRedirect: true,
+      });
+    },
+    onError: (err: AxiosError<ApiErrorResponse>) => {
+      setModalState({
+        isOpen: true,
+        status: "error",
+        message: parseErrorMessage(err, "Failed to delete transaction"),
+      });
     },
   });
 
-  const [tempDate, setTempDate] = useState<Date | undefined>(date);
+  const isSubmitting = checkIsSubmitting(
+    createTransaction.isPending,
+    updateTransaction.isPending,
+    deleteTransaction.isPending,
+  );
 
+  const handleModalClose = () => {
+    const shouldRedirect = modalState.shouldRedirect;
+    resetModalState();
+    if (shouldRedirect) {
+      router.back();
+    }
+  };
+
+  const handleConfirmDelete = () => {
+    if (editId) {
+      deleteTransaction.mutate({
+        id: editId,
+        isHardDelete: Boolean(isHardDelete),
+      });
+      closeDeleteModal();
+    }
+  };
+
+  const [tempDate, setTempDate] = useState<Date | undefined>(date);
   const [prevDate, setPrevDate] = useState<Date>(date);
 
   if (date !== prevDate) {
@@ -216,11 +278,7 @@ export default function TransactionsContainer() {
   };
 
   const handlePresetClick = (daysToAdd: number) => {
-    const newDate = new Date();
-    newDate.setDate(newDate.getDate() + daysToAdd);
-    if (tempDate) {
-      newDate.setHours(tempDate.getHours(), tempDate.getMinutes(), 0, 0);
-    }
+    const newDate = updatePresetDate(daysToAdd, tempDate);
     setTempDate(newDate);
     setDisplayMonth(newDate);
   };
@@ -232,26 +290,10 @@ export default function TransactionsContainer() {
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const originalFile = e.target.files[0];
-      try {
-        const options = {
-          maxSizeMB: 0.5,
-          maxWidthOrHeight: 1280,
-          useWebWorker: true,
-          initialQuality: 0.8,
-        };
-        const compressedFile = await imageCompression(originalFile, options);
-        // imageCompression returns a File or Blob, ensure it's set as File
-        const newFile = new File([compressedFile], originalFile.name, {
-          type: compressedFile.type || originalFile.type,
-          lastModified: Date.now(),
-        });
-        setFile(newFile);
-      } catch (error) {
-        console.error("Error compressing image:", error);
-        setFile(originalFile); // Fallback to original if compression fails
-      }
+    const originalFile = e.target.files?.[0];
+    if (originalFile) {
+      const newFile = await compressImageFile(originalFile);
+      setFile(newFile);
     }
   };
 
@@ -279,8 +321,11 @@ export default function TransactionsContainer() {
     isPending: isCategoryPending,
     isFetching: isCategoryFetching,
   } = useCategories();
-  const isLoadingCategoryList =
-    !mounted || isCategoryPending || isCategoryFetching;
+  const isLoadingCategoryList = checkIsLoading(
+    mounted,
+    isCategoryPending,
+    isCategoryFetching,
+  );
   const filteredCategories = useMemo(
     () =>
       categories?.filter(
@@ -294,7 +339,11 @@ export default function TransactionsContainer() {
     isPending: isAssetPending,
     isFetching: isAssetFetching,
   } = useAssets();
-  const isLoadingAssetList = !mounted || isAssetPending || isAssetFetching;
+  const isLoadingAssetList = checkIsLoading(
+    mounted,
+    isAssetPending,
+    isAssetFetching,
+  );
   const safeAssets = useMemo(() => assets ?? [], [assets]);
 
   const activeCategoryId = getActiveItemId(watchCategoryId, filteredCategories);
@@ -326,7 +375,9 @@ export default function TransactionsContainer() {
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const digits = parseAmountDigits(e.target.value);
     setAmountDigits(digits);
-    setValue("amount", convertDigitsToAmount(digits), { shouldValidate: true });
+    setValue("amount", convertDigitsToAmount(digits), {
+      shouldValidate: true,
+    });
   };
 
   const { displayAmount, numericAmount } = getFormattedAmount(amountDigits);
@@ -360,20 +411,10 @@ export default function TransactionsContainer() {
     [editId, existingTx?.type, t],
   );
 
-  let transactionTypeStr = "";
-  switch (transactionType) {
-    case "EXPENSE":
-      transactionTypeStr = t("expense");
-      break;
-    case "INCOME":
-      transactionTypeStr = t("income");
-      break;
-    case "TRANSFER":
-      transactionTypeStr = t("transfer");
-      break;
-    default:
-      transactionTypeStr = t("adjustment");
-  }
+  const transactionTypeStr = getTypeLabel(transactionType, t);
+  const showCategoryList = isCategoryType(transactionType);
+  const loadingModalProps = getLoadingModalProps(modalState, isSubmitting);
+  const attachmentUrl = removedAttachment ? null : existingTx?.attachmentUrl;
 
   return (
     <form
@@ -419,7 +460,7 @@ export default function TransactionsContainer() {
       </header>
 
       <div className="space-y-4 px-4">
-        {editId && (!mounted || isLoadingTx) ? (
+        {isTxLoading ? (
           <Skeleton className="w-full h-10 rounded-lg" />
         ) : (
           <SegmentedControl
@@ -430,7 +471,7 @@ export default function TransactionsContainer() {
         )}
 
         <section className="flex flex-col items-center gap-1 relative min-h-10 justify-center">
-          {editId && (!mounted || isLoadingTx) ? (
+          {isTxLoading ? (
             <Skeleton className="w-60 h-10 rounded-lg" />
           ) : (
             <>
@@ -448,7 +489,7 @@ export default function TransactionsContainer() {
           )}
         </section>
 
-        {(transactionType === "EXPENSE" || transactionType === "INCOME") && (
+        {showCategoryList && (
           <TransactionCategoryList
             categories={filteredCategories}
             activeCategoryId={watchCategoryId || null}
@@ -489,7 +530,7 @@ export default function TransactionsContainer() {
           isPhotoMenuOpen={isPhotoMenuOpen}
           setIsPhotoMenuOpen={setIsPhotoMenuOpen}
           file={file}
-          attachmentUrl={removedAttachment ? null : existingTx?.attachmentUrl}
+          attachmentUrl={attachmentUrl}
           onRemoveFile={handleRemoveFile}
           onTakeAPhoto={handleTakeAPhoto}
           onSelectAPhoto={handleSelectAPhoto}
@@ -497,7 +538,7 @@ export default function TransactionsContainer() {
           cameraInputRef={cameraInputRef}
           handleFileChange={handleFileChange}
           register={register}
-          isLoadingTx={!!(editId && (!mounted || isLoadingTx))}
+          isLoadingTx={isTxLoading}
           calendarLocale={calendarLocale}
         />
 
@@ -505,11 +546,7 @@ export default function TransactionsContainer() {
           <Button
             variant="unstyled"
             type="submit"
-            disabled={
-              createTransaction.isPending ||
-              updateTransaction.isPending ||
-              deleteTransaction.isPending
-            }
+            disabled={isSubmitting}
             className="flex items-center justify-center gap-2 bg-primary w-full text-white py-3 rounded-xl text-base font-bold capitalize disabled:opacity-50"
           >
             {t("saveTransactionStr").replace("{type}", transactionTypeStr)}
@@ -521,15 +558,7 @@ export default function TransactionsContainer() {
       <ConfirmModal
         isOpen={isDeleteModalOpen}
         onClose={closeDeleteModal}
-        onConfirm={() => {
-          if (editId) {
-            deleteTransaction.mutate({
-              id: editId,
-              isHardDelete: Boolean(isHardDelete),
-            });
-            closeDeleteModal();
-          }
-        }}
+        onConfirm={handleConfirmDelete}
         icon={Trash}
         title={t("deleteTransaction")}
         des={t("deleteTransactionDesc")}
@@ -543,11 +572,10 @@ export default function TransactionsContainer() {
       />
 
       <LoadingModal
-        isOpen={
-          createTransaction.isPending ||
-          updateTransaction.isPending ||
-          deleteTransaction.isPending
-        }
+        isOpen={loadingModalProps.isOpen}
+        status={loadingModalProps.status}
+        message={loadingModalProps.message}
+        onClose={handleModalClose}
       />
     </form>
   );
