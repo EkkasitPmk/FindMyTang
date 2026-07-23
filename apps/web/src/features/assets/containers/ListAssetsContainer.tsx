@@ -90,7 +90,7 @@ export default function ListAssetsContainer({
                 </div>
                 <div className="flex items-center gap-1">
                   <span className="font-semibold text-base text-primary-text">
-                    ฿{" "}
+                    ฿
                     {asset.balance.toLocaleString(locale, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
