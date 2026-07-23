@@ -123,7 +123,7 @@ export const MonthlyTrendsContainer = () => {
   };
 
   return (
-    <div className="flex flex-col h-full animate-in fade-in duration-300">
+    <div className="flex-1 min-h-0 overflow-y-auto hide-scrollbar animate-in fade-in duration-300 space-y-3">
       <div className="px-4">
         <PeriodSelector
           mode="year"
