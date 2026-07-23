@@ -20,7 +20,7 @@ export default function MobileBottomNav({
   const lastClickTimeRef = useRef<number>(0);
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-surface/90 backdrop-blur-md border-t border-border grid grid-cols-5 items-center py-2 px-4 shadow-sm">
+    <nav className="fixed bottom-0 left-0 right-0 z-80 md:hidden bg-surface/90 backdrop-blur-md border-t border-border grid grid-cols-5 items-center py-2 px-4 shadow-sm">
       {navItems.map((item) => {
         const Icon = item.icon;
         const isActive = pathname.startsWith(item.href);

@@ -427,7 +427,7 @@ export default function TransactionsContainer() {
     <form
       onSubmit={handleSubmit(onSubmit)}
       onReset={handleResetForm}
-      className={cn(isMoreDetailsOpen && "pb-28")}
+      className={cn(isMoreDetailsOpen && "pb-32")}
     >
       <header
         className={cn(
@@ -466,7 +466,7 @@ export default function TransactionsContainer() {
         )}
       </header>
 
-      <div className="space-y-4 px-4 pb-24">
+      <div className="px-4">
         {isTxLoading ? (
           <Skeleton className="w-full h-10 rounded-lg" />
         ) : (
@@ -476,7 +476,7 @@ export default function TransactionsContainer() {
               setTransactionType(val as TransactionType);
               clearErrors();
             }}
-            className="space-y-4"
+            className="gap-2"
           >
             <TabsList className="w-full">
               {transactionTypeOptions.map((option) => (
