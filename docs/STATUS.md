@@ -113,7 +113,10 @@
     1. ปรับปรุง [MainLayoutContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/main-layout/containers/MainLayoutContainer.tsx) โดยกำหนดให้ `<main>` ในหน้า `/journal` และ `/analytics` มีคุณสมบัติ `overflow-hidden h-full` เพื่อปิดการสโครลระดับ Layout ใหญ่ ไม่ให้ส่วนหัวและแถบ Tab สโครลตาม
     2. ใน [JournalContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/journal/containers/JournalContainer.tsx) และ [AnalyticsContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/analytics/containers/AnalyticsContainer.tsx) ล็อคส่วนหัว `TabsList` และส่วนกรอง/ค้นหาด้วย `shrink-0 z-10 bg-background` และเปิดให้สโครลเฉพาะส่วนรายการข้อมูล (`flex-1 min-h-0 overflow-y-auto` / `GroupedVirtuoso`) เท่านั้น
     3. ปรับแต่ง [tabs.tsx (Primitive)](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/primitives/animate/tabs.tsx) ใช้ `Math.max(pane.scrollHeight, ...)` เพื่อแก้ปัญหา ResizeObserver Deadlock กรณีข้อมูลโหลดทีหลัง และรองรับ `isHFull` ให้สโครลได้ 100% สมบูรณ์ทั้งหน้า Analytics และ Journal
-    4. ปรับแต่งขนาดระยะเผื่อด้านล่างเป็น `pb-10 sm:pb-2` ให้สอดคล้องพอดีกับความสูงของแถบ Mobile Bottom Navigation (64px) ร่วมกับ `py-3` ของ Layout หลัก ทำให้เมื่อสโครลลงมาล่างสุด รายการสุดท้ายจะแสดงผลชิดขอบพอดียอดเยี่ยม โดยไม่เหลือพื้นที่ว่างเปล่าส่วนเกิน (Empty Space) ด้านล่างอีกต่อไป
+- **Transaction Item Radix Collapsible Refactoring & Exit Animation Fix**:
+  - ติดตั้งแพ็กเกจคอมโพเนนต์ `@animate-ui/primitives-radix-collapsible` และจัดเก็บไฟล์ไว้ที่ [collapsible.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/primitives/radix/collapsible.tsx) พร้อม re-export ผ่าน [shared/components/ui/collapsible.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/ui/collapsible.tsx)
+  - ปรับปรุง [collapsible.tsx (Primitive)](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/primitives/radix/collapsible.tsx) โดยระบุ `key="collapsible-content"` บนตัวลูกชั้นแรกของ `<AnimatePresence>` เพื่อให้ Framer Motion สลับสถานะและรัน `exit` animation ตอนปิดกางได้อย่างถูกต้อง
+  - ปรับปรุงคอมโพเนนต์ [TransactionItem.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/TransactionItem.tsx) ถอดคลาส CSS `data-[state=closed]:grid-rows-[0fr]` ที่เข้ามาขัดขวาง Framer Motion ออก เพื่อเปิดให้จังหวะการหุบปิด (Exit collapse animation) ทำงานได้อย่างนุ่มนวลสมบูรณ์ทั้งเปิดและปิด
 
 ---
 
@@ -123,3 +126,4 @@
 
 - **[ ] ระบบความปลอดภัยและการจัดการสิทธิ์ขั้นสูง:** ตรวจสอบความปลอดภัย API, JWT, Middleware
 - **[ ] การปรับปรุงประสิทธิภาพระบบ:** การแบ่งหน้าข้อมูล (Pagination), ทำ Caching กรณีข้อมูลธุรกรรมปริมาณมาก
+
