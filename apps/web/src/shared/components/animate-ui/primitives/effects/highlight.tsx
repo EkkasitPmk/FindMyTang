@@ -391,7 +391,7 @@ function getNonOverridingDataAttributes(
   );
 }
 
-type ExtendedChildProps = React.ComponentProps<"div"> & {
+type ExtendedChildProps = React.HTMLAttributes<HTMLElement> & {
   id?: string;
   ref?: React.Ref<HTMLElement>;
   "data-active"?: string;
@@ -526,26 +526,30 @@ function HighlightItem<T extends React.ElementType>({
     "data-highlight": true,
   };
 
-  let commonHandlers: Record<
-    string,
-    (e: React.MouseEvent<HTMLDivElement>) => void
-  > = {};
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let commonHandlers: Record<string, (e: React.MouseEvent<any>) => void> = {};
   if (hover) {
     commonHandlers = {
-      onMouseEnter: (e: React.MouseEvent<HTMLDivElement>) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      onMouseEnter: (e: React.MouseEvent<any>) => {
         setActiveValue(childValue);
-        element.props.onMouseEnter?.(e);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (element.props as any).onMouseEnter?.(e);
       },
-      onMouseLeave: (e: React.MouseEvent<HTMLDivElement>) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      onMouseLeave: (e: React.MouseEvent<any>) => {
         setActiveValue(null);
-        element.props.onMouseLeave?.(e);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (element.props as any).onMouseLeave?.(e);
       },
     };
   } else if (click) {
     commonHandlers = {
-      onClick: (e: React.MouseEvent<HTMLDivElement>) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      onClick: (e: React.MouseEvent<any>) => {
         setActiveValue(childValue);
-        element.props.onClick?.(e);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (element.props as any).onClick?.(e);
       },
     };
   }
@@ -566,7 +570,7 @@ function HighlightItem<T extends React.ElementType>({
           ...props,
         },
         <>
-          <AnimatePresence initial={false} mode="wait">
+          <AnimatePresence initial={false}>
             {isActive && !isDisabled && (
               <motion.div
                 layoutId={`transition-background-${contextId}`}
@@ -628,7 +632,7 @@ function HighlightItem<T extends React.ElementType>({
       {...commonHandlers}
     >
       {mode === "children" && (
-        <AnimatePresence initial={false} mode="wait">
+        <AnimatePresence initial={false}>
           {isActive && !isDisabled && (
             <motion.div
               layoutId={`transition-background-${contextId}`}

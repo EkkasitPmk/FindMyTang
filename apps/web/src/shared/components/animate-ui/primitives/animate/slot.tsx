@@ -5,7 +5,8 @@ import { cn } from "@/shared/lib/utils/core.util";
 type AnyProps = Record<string, unknown>;
 
 type DOMMotionProps<T extends HTMLElement = HTMLElement> = Omit<
-  HTMLMotionProps<"div">,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  HTMLMotionProps<any>,
   "ref"
 > & { ref?: React.Ref<T> };
 
