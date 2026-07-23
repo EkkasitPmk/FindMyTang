@@ -100,7 +100,9 @@ describe("AssetService", () => {
         },
       ] as any;
 
-      mockAssetRepository.findAllActiveByUserId.mockResolvedValue(expectedAssets);
+      mockAssetRepository.findAllActiveByUserId.mockResolvedValue(
+        expectedAssets,
+      );
 
       const result = await service.findAllActive("user-123");
 
@@ -123,12 +125,16 @@ describe("AssetService", () => {
         },
       ] as any;
 
-      mockAssetRepository.findAllIncludingDeletedByUserId.mockResolvedValue(expectedAssets);
+      mockAssetRepository.findAllIncludingDeletedByUserId.mockResolvedValue(
+        expectedAssets,
+      );
 
       const result = await service.findAllIncludingDeleted("user-123");
 
       expect(result).toEqual(expectedAssets);
-      expect(repository.findAllIncludingDeletedByUserId).toHaveBeenCalledWith("user-123");
+      expect(repository.findAllIncludingDeletedByUserId).toHaveBeenCalledWith(
+        "user-123",
+      );
     });
   });
 

@@ -73,6 +73,15 @@ export class AuthController {
     return { user };
   }
 
+  @Post("sync")
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
+  async syncUser(
+    @CurrentUser() user: User,
+  ): Promise<{ success: boolean; lastSyncedAt: Date; lastSyncStatus: string }> {
+    return await this.authService.syncUser(user.id);
+  }
+
   @Post("sync-guest")
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
