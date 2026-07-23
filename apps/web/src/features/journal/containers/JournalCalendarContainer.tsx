@@ -162,7 +162,7 @@ export default function JournalCalendarContainer() {
 
       <div
         ref={transactionListRef}
-        className="flex-1 overflow-y-auto relative min-h-0 pb-10 sm:pb-0"
+        className="flex-1 overflow-y-auto relative min-h-0 pb-4"
       >
         {/* Section 3: Monthly Summary */}
         <div className="mb-1 shrink-0">

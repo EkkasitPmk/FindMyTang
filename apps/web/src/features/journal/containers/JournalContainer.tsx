@@ -114,11 +114,11 @@ export default function JournalContainer() {
   }, [transactionsData, searchKeyword, locale]);
 
   return (
-    <div className="flex flex-col h-full bg-background space-y-2">
+    <div className="flex flex-col h-[calc(100vh-80px)] bg-background space-y-2">
       <Tabs
         value={viewMode}
         onValueChange={(val) => setViewMode(val as ViewMode)}
-        className="flex-1 flex flex-col min-h-0 space-y-2"
+        className="flex-1 flex flex-col min-h-0 gap-1"
       >
         {/* 1. ใส่ Timeline สลับ Calendar */}
         <div className="px-4 shrink-0 pt-1 pb-1 bg-background z-10">
@@ -289,7 +289,7 @@ export default function JournalContainer() {
                 </section>
 
                 {/* 4. แสดง transaction เรียงลงมาแบบปกติ และมี Lazy Load ด้วย Intersection Observer */}
-                <div className="flex-1 min-h-0 pb-10 sm:pb-0">
+                <div className="flex-1 min-h-0">
                   <TransactionListContainer
                     groupedTransactions={groupedTransactions}
                     isLoadingTransactions={isLoadingTransactions}
@@ -304,7 +304,7 @@ export default function JournalContainer() {
                 </div>
               </div>
             </TabsContent>
-            <TabsContent value="calendar" className="h-full">
+            <TabsContent value="calendar" className="h-full flex flex-col">
               <JournalCalendarContainer />
             </TabsContent>
           </TabsContents>
