@@ -15,3 +15,16 @@ export const logoutApi = async (): Promise<NavLogoutResponse> => {
   const response = await http.post<NavLogoutResponse>("/auth/logout");
   return navLogoutResponseSchema.parse(response.data);
 };
+
+export const syncUserApi = async (): Promise<{
+  success: boolean;
+  lastSyncedAt: string;
+  lastSyncStatus: string;
+}> => {
+  const response = await http.post<{
+    success: boolean;
+    lastSyncedAt: string;
+    lastSyncStatus: string;
+  }>("/auth/sync");
+  return response.data;
+};

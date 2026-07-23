@@ -1,9 +1,25 @@
+import Link from "next/link";
 import { Wallet } from "lucide-react";
-import NavLinks from "./NavLinks";
 import ThemeSwitcher from "@/shared/components/customs/ThemeSwitcher";
 import SyncStatusButton from "@/shared/components/customs/SyncStatusButton";
 import NavUserProfile from "./NavUserProfile";
 import { UserProfile } from "@/shared/lib/types/user.type";
+import { navItems } from "../configs/navigation.config";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarTrigger,
+  useSidebar,
+} from "@/shared/components/animate-ui/components/radix/sidebar";
+import { cn } from "@/shared/lib/utils/core.util";
 
 interface DesktopSidebarProps {
   pathname: string;
@@ -28,47 +44,130 @@ export default function DesktopSidebar({
   onSyncClick,
   onNavigate,
 }: Readonly<DesktopSidebarProps>) {
+  const { t } = useTranslation();
+  const { state } = useSidebar();
+  const isCollapsed = state === "collapsed";
+
   return (
-    <aside className="hidden md:flex flex-col w-64 border-r border-border bg-surface sticky top-0 h-screen p-6 justify-between shrink-0">
-      <div className="space-y-8">
-        {/* Brand Title */}
-        <div className="flex items-center gap-3 px-2">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shadow-sm">
-            <Wallet className="w-4 h-4 text-white" strokeWidth={1.5} />
+    <Sidebar
+      collapsible="icon"
+      className="border-r border-border bg-surface shadow-xs"
+    >
+      <SidebarHeader
+        className={cn(
+          "border-b border-border/50 transition-all duration-200",
+          isCollapsed
+            ? "p-2 flex items-center justify-center"
+            : "p-4 flex flex-row items-center justify-between",
+        )}
+      >
+        {!isCollapsed && (
+          <div className="flex items-center gap-3 overflow-hidden">
+            <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center shadow-xs shrink-0">
+              <Wallet className="w-4.5 h-4.5 text-white" strokeWidth={2} />
+            </div>
+            <span className="text-base font-bold tracking-tight text-primary-text truncate">
+              PocketNote
+            </span>
           </div>
-          <span className="text-lg font-bold tracking-tight text-primary-text">
-            PocketNote
-          </span>
-        </div>
+        )}
+        <SidebarTrigger className="size-8 text-secondary-text hover:text-primary-text hover:bg-surface-secondary cursor-pointer shrink-0" />
+      </SidebarHeader>
 
-        {/* Navigation links */}
-        <NavLinks
-          pathname={pathname}
-          itemClassName="py-3"
-          onLinkClick={onNavigate}
-        />
-      </div>
+      <SidebarContent className="px-2 py-4 group-data-[collapsible=icon]:px-0">
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {navItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = pathname.startsWith(item.href);
+                const displayLabel = item.translationKey
+                  ? t(item.translationKey)
+                  : item.label;
 
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-col gap-2">
-          <SyncStatusButton
-            isGuest={isGuest}
-            isSyncing={isSyncing}
-            syncStatus={syncStatus}
-            onSyncClick={onSyncClick}
-          />
-          <div className="px-4">
+                return (
+                  <SidebarMenuItem key={item.href}>
+                    <SidebarMenuButton
+                      isActive={isActive}
+                      tooltip={displayLabel}
+                      size="lg"
+                      asChild
+                      className={cn(
+                        "rounded-xl transition-all duration-200 cursor-pointer font-medium text-sm",
+                        isActive
+                          ? "bg-primary-light text-primary font-semibold border border-primary-light/80 shadow-xs"
+                          : "text-secondary-text hover:text-primary-text",
+                      )}
+                    >
+                      <Link
+                        href={item.href}
+                        onClick={(e) => onNavigate?.(e, item.href)}
+                        className={cn(
+                          "flex items-center gap-3 w-full",
+                          isCollapsed && "justify-center gap-0",
+                        )}
+                      >
+                        <Icon
+                          className={cn(
+                            "size-5 shrink-0 transition-transform",
+                            isActive
+                              ? "text-primary scale-105"
+                              : "text-secondary-text",
+                          )}
+                          strokeWidth={isActive ? 2.2 : 1.75}
+                        />
+                        {!isCollapsed && (
+                          <span className="truncate">{displayLabel}</span>
+                        )}
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+
+      <SidebarFooter className="p-3 gap-3 border-t border-border/50">
+        {!isCollapsed ? (
+          <>
+            <SyncStatusButton
+              isGuest={isGuest}
+              isSyncing={isSyncing}
+              syncStatus={syncStatus}
+              onSyncClick={onSyncClick}
+            />
             <ThemeSwitcher />
+            <NavUserProfile
+              user={user}
+              isLoading={isLoading}
+              onLogout={onLogout}
+              className="pt-2 border-t-0"
+            />
+          </>
+        ) : (
+          <div className="flex flex-col items-center gap-3 py-1">
+            <div className="space-y-1">
+              <SyncStatusButton
+                isGuest={isGuest}
+                isSyncing={isSyncing}
+                syncStatus={syncStatus}
+                onSyncClick={onSyncClick}
+                isCollapsed={true}
+              />
+              <ThemeSwitcher isCollapsed={true} />
+            </div>
+            <NavUserProfile
+              user={user}
+              isLoading={isLoading}
+              onLogout={onLogout}
+              isCollapsed={true}
+              className="pt-0 border-t-0"
+            />
           </div>
-        </div>
-        {/* User profile & Action */}
-        <NavUserProfile
-          user={user}
-          isLoading={isLoading}
-          onLogout={onLogout}
-          className="pt-4 border-t border-border"
-        />
-      </div>
-    </aside>
+        )}
+      </SidebarFooter>
+    </Sidebar>
   );
 }

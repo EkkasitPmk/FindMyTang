@@ -135,6 +135,7 @@ export default function ChooseADate({
       </CardFooter>
       <Button
         type="button"
+        variant="default"
         className="mb-2 mx-2 py-5 bg-primary text-white"
         onClick={onConfirm}
       >

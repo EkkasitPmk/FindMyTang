@@ -11,6 +11,7 @@ interface NavUserProfileProps {
   isLoading: boolean;
   onLogout: () => void;
   onActionClick?: () => void;
+  isCollapsed?: boolean;
   className?: string;
 }
 
@@ -19,9 +20,43 @@ export default function NavUserProfile({
   isLoading,
   onLogout,
   onActionClick,
+  isCollapsed = false,
   className,
 }: Readonly<NavUserProfileProps>) {
   const { t } = useTranslation();
+
+  if (isCollapsed) {
+    return (
+      <div className={cn("flex flex-col items-center gap-2", className)}>
+        <div className="w-8 h-8 rounded-full bg-surface-secondary border border-border flex items-center justify-center overflow-hidden shrink-0">
+          <Avatar url={user?.avatarUrl} size={32} iconSize={16} />
+        </div>
+        {!isLoading &&
+          (user ? (
+            <Button
+              variant="unstyled"
+              onClick={() => {
+                onLogout();
+                onActionClick?.();
+              }}
+              title={t("signOut")}
+              className="p-1.5 rounded-lg text-secondary-text hover:text-expense hover:bg-expense-light/50 transition-all duration-200 border border-transparent cursor-pointer"
+            >
+              <LogOut className="w-4 h-4 text-expense" strokeWidth={1.5} />
+            </Button>
+          ) : (
+            <Link
+              href="/login"
+              onClick={onActionClick}
+              title={t("connectBtn")}
+              className="p-1.5 rounded-lg text-secondary-text hover:text-primary hover:bg-primary-light/50 transition-all duration-200 border border-transparent cursor-pointer"
+            >
+              <LogIn className="w-4 h-4 text-primary" strokeWidth={1.5} />
+            </Link>
+          ))}
+      </div>
+    );
+  }
 
   const userProfileContent = (() => {
     if (isLoading) {

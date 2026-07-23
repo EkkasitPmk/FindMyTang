@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { toast } from "react-toastify";
 import { LogOut } from "lucide-react";
-import { useLogoutMutation } from "../hooks/auth.hook";
+import { useLogoutMutation, useSyncUserMutation } from "../hooks/auth.hook";
 import { useGuestStore } from "@/shared/lib/storages/guest.storage";
 import DesktopSidebar from "../components/DesktopSidebar";
 import MobileDrawer from "../components/MobileDrawer";
@@ -51,6 +51,8 @@ export default function NavContainer() {
       },
     });
 
+  const syncUserMutation = useSyncUserMutation();
+
   const handleSyncClick = () => {
     if (isGuest) {
       openLockModal(t("cloudSyncBackup"));
@@ -65,18 +67,30 @@ export default function NavContainer() {
       message: t("syncing"),
     });
 
-    void queryClient
-      .refetchQueries()
-      .then(() => {
-        setIsSyncing(false);
-        setSyncStatus("synced");
-        setModalState({
-          isOpen: true,
-          status: "success",
-          message: t("allDataSynced"),
-        });
-      })
-      .catch(() => {
+    syncUserMutation.mutate(undefined, {
+      onSuccess: () => {
+        void queryClient
+          .refetchQueries()
+          .then(() => {
+            setIsSyncing(false);
+            setSyncStatus("synced");
+            setModalState({
+              isOpen: true,
+              status: "success",
+              message: t("allDataSynced"),
+            });
+          })
+          .catch(() => {
+            setIsSyncing(false);
+            setSyncStatus("offline");
+            setModalState({
+              isOpen: true,
+              status: "error",
+              message: t("cloudSyncFailed"),
+            });
+          });
+      },
+      onError: () => {
         setIsSyncing(false);
         setSyncStatus("offline");
         setModalState({
@@ -84,7 +98,8 @@ export default function NavContainer() {
           status: "error",
           message: t("cloudSyncFailed"),
         });
-      });
+      },
+    });
   };
 
   const handleNavigate = (

@@ -11,7 +11,7 @@
 - **Frontend**: ตั้งค่า Next.js, Tailwind CSS, shadcn/ui, Zustand, และ TanStack Query รวมถึงโครงสร้างการแสดงผล Layout & Navigation (Responsive)
 - **Backend**: ตั้งค่า NestJS, PostgreSQL & Prisma, โครงสร้าง Module พื้นฐาน และระบบล็อกอิน/สมัครสมาชิก (Auth Module)
 
-### Sprint 1: ระบบสินทรัพย์ หมวดหมู่ และรายการพื้นฐาน (Transaction & Asset Core) - 🔄 กำลังดำเนินการ (ปรับปรุงตาม DB Schema ใหม่)
+### Sprint 1: ระบบสินทรัพย์ หมวดหมู่ และรายการพื้นฐาน (Transaction & Asset Core) - ✅ สำเร็จ 100%
 
 - **ฟีเจอร์หลัก**:
   - ระบบจัดการสินทรัพย์ (Asset CRUD & UI) - ไม่เก็บไอคอนใน DB ใช้ไอคอนตามประเภท
@@ -20,7 +20,7 @@
   - การแสดงผลประวัติรายการธุรกรรมพื้นฐาน (Transaction Timeline)
 - **เป้าหมาย**: ผู้ใช้งานสามารถจัดการบัญชีสินทรัพย์ จัดการหมวดหมู่ และบันทึกรายการรายรับ-รายจ่ายพื้นฐานรายวันได้จริง
 
-### Sprint 2: ระบบประวัติ ธุรกรรมขั้นสูง และการตั้งค่า (Journal, Advanced Transactions & Profile Settings) - 🔄 กำลังดำเนินการ
+### Sprint 2: ระบบประวัติ ธุรกรรมขั้นสูง และการตั้งค่า (Journal, Advanced Transactions & Profile Settings) - ✅ สำเร็จ 100%
 
 - **ฟีเจอร์หลัก**:
   - ระบบโอนเงินข้ามบัญชี (Transfer Transaction)
@@ -30,7 +30,7 @@
   - หน้าจอประวัติธุรกรรมแบบสมบูรณ์ (Journal Timeline & Calendar View)
 - **เป้าหมาย**: ระบบจดบันทึกมีความยืดหยุ่น เชื่อมต่อการซิงค์ข้อมูล Guest สมบูรณ์ และตั้งค่าโปรไฟล์ส่วนตัวได้
 
-### Sprint 3: หน้าจอแดชบอร์ดหลัก (Home Dashboard) - ⏳ รอดำเนินการ
+### Sprint 3: หน้าจอแดชบอร์ดหลัก (Home Dashboard) - ✅ สำเร็จ 100%
 
 - **ฟีเจอร์หลัก**:
   - คำนวณยอดเงินสินทรัพย์รวม (Total Assets Calculation)
@@ -64,13 +64,6 @@
 ## 🛠️ สถานะปัจจุบัน (Current Status)
 
 ### 1. สิ่งที่พัฒนาเสร็จสิ้นแล้ว (Completed)
-
-- **Sprint 0 (Foundation):** โครงสร้างระบบพื้นฐานทั้ง Frontend (Next.js, Tailwind, Zustand, TanStack Query) และ Backend (NestJS, PostgreSQL, Prisma, Auth Module) เสร็จสมบูรณ์
-- **Sprint 1 (Backend Core):** อัปเดต DB Schema และ API ของ NestJS สำหรับจัดการ Asset, Category, และ Transaction เสร็จสมบูรณ์
-- **Sprint 2 (Guest Mode & Sync):** พัฒนาระบบ Guest Mode แบบ Offline ฝั่ง Frontend ครอบคลุมระบบทั้งหมด และพัฒนากลไก Sync นำข้อมูล Local โยนขึ้น Cloud สมบูรณ์ (อ้างอิงจาก PR #12)
-- **Sprint 2 (Advanced Transactions):** พัฒนาระบบโอนเงินข้ามบัญชี (Transfer) และระบบปรับปรุงยอดบัญชี (Balance Adjustment) สมบูรณ์พร้อมเชื่อมต่อหน้าบ้านและหลังบ้าน
-- **Sprint 2 (Profile Settings):** พัฒนาระบบลบบัญชีผู้ใช้ (Delete Account) แบบ Hard Delete, ระบบการเปลี่ยนรหัสผ่าน (Change Password) และหน้า UI การจัดการบัญชีอย่างสมบูรณ์
-- **Sprint 3 (Dashboard):** พัฒนาหน้า Dashboard เสร็จสมบูรณ์ (คำนวณ Net Worth, Net Flow รายเดือน, รายการบัญชี และ 5 ธุรกรรมล่าสุด)
 
 ---
 

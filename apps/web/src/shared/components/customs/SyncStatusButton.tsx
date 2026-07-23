@@ -7,6 +7,7 @@ interface SyncStatusButtonProps {
   isSyncing: boolean;
   syncStatus: "synced" | "syncing" | "offline";
   onSyncClick?: () => void;
+  isCollapsed?: boolean;
 }
 
 export default function SyncStatusButton({
@@ -14,6 +15,7 @@ export default function SyncStatusButton({
   isSyncing,
   syncStatus,
   onSyncClick,
+  isCollapsed = false,
 }: Readonly<SyncStatusButtonProps>) {
   const { t } = useTranslation();
 
@@ -35,6 +37,22 @@ export default function SyncStatusButton({
     if (isSyncing) return t("syncing");
     if (syncStatus === "synced") return t("upToDate");
   };
+
+  if (isCollapsed) {
+    return (
+      <Button
+        variant="unstyled"
+        onClick={onSyncClick}
+        title={isGuest ? t("localStorageLabel") : t("cloudSync")}
+        className="flex items-center justify-center mx-auto p-2 rounded-lg shrink-0 cursor-pointer hover:bg-surface-secondary/80 transition-all text-sm group"
+        aria-label="Sync status"
+      >
+        <div className="flex items-center justify-center w-6 h-6 rounded bg-surface border border-border/50 shadow-2xs">
+          {getIcon()}
+        </div>
+      </Button>
+    );
+  }
 
   return (
     <Button
