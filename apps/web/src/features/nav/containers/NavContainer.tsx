@@ -16,9 +16,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { useMeQuery } from "@/shared/lib/hooks/useMeQuery.hook";
 import { useModalState } from "@/shared/lib/hooks/useModalState.hook";
+import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 
 export default function NavContainer() {
   const pathname = usePathname();
+  const isClientMounted = useMounted();
 
   const { data: user, isLoading } = useMeQuery();
   const queryClient = useQueryClient();
@@ -26,6 +28,28 @@ export default function NavContainer() {
   const openLockModal = useFeatureLockModal((state) => state.openModal);
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileMenuOpen]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && mobileMenuOpen) {
+        setMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [mobileMenuOpen]);
+
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncStatus, setSyncStatus] = useState<
     "synced" | "syncing" | "offline"
@@ -187,7 +211,7 @@ export default function NavContainer() {
 
       {/* Mobile Drawer Navigation overlay */}
       <MobileDrawer
-        isOpen={mobileMenuOpen}
+        isOpen={isClientMounted && mobileMenuOpen}
         onClose={() => setMobileMenuOpen(false)}
         pathname={pathname}
         user={user}
@@ -208,7 +232,7 @@ export default function NavContainer() {
         <MobileBottomNav
           pathname={pathname}
           mobileMenuOpen={mobileMenuOpen}
-          onMenuOpen={() => setMobileMenuOpen(true)}
+          onMenuOpen={() => setMobileMenuOpen((prev) => !prev)}
         />
       )}
 

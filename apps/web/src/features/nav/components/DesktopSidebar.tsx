@@ -62,7 +62,7 @@ export default function DesktopSidebar({
         <SidebarTrigger className="size-8 text-secondary-text hover:text-primary-text hover:bg-surface-secondary cursor-pointer shrink-0" />
       </SidebarHeader>
 
-      <SidebarContent className="px-2 py-4 group-data-[collapsible=icon]:px-0">
+      <SidebarContent className="px-2 py-4 group-data-[collapsible=icon]:px-0 flex items-center justify-between">
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -112,16 +112,19 @@ export default function DesktopSidebar({
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        <div className="space-y-2">
+          <SyncStatusButton
+            isGuest={isGuest}
+            isSyncing={isSyncing}
+            syncStatus={syncStatus}
+            onSyncClick={onSyncClick}
+          />
+          <ThemeSwitcher />
+        </div>
       </SidebarContent>
 
       <SidebarFooter className="p-3 gap-3 border-t border-border/50 group-data-[collapsible=icon]:p-2 group-data-[collapsible=icon]:gap-2">
-        <SyncStatusButton
-          isGuest={isGuest}
-          isSyncing={isSyncing}
-          syncStatus={syncStatus}
-          onSyncClick={onSyncClick}
-        />
-        <ThemeSwitcher />
         <NavUserProfile
           user={user}
           isLoading={isLoading}
