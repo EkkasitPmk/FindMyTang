@@ -49,7 +49,7 @@ function TabsTrigger({ className, ...props }: TabsTriggerProps) {
       <TabsTriggerPrimitive
         type="button"
         className={cn(
-          "data-[state=active]:text-primary-text data-[state=active]:font-semibold focus-visible:border-primary focus-visible:ring-primary/50 text-secondary-text hover:text-primary-text inline-flex h-full flex-1 items-center justify-center gap-1.5 rounded-lg w-full px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-colors duration-200 ease-in-out focus-visible:ring-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
+          "data-[state=active]:text-primary-text data-[state=active]:font-semibold focus-visible:border-primary focus-visible:ring-primary/50 text-secondary-text hover:text-primary-text inline-flex h-full flex-1 items-center justify-center gap-1.5 rounded-lg w-full px-3 py-2 text-xs font-medium whitespace-nowrap transition-colors duration-200 ease-in-out focus-visible:ring-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
           className,
         )}
         {...props}
