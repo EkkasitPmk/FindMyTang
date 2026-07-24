@@ -1,25 +1,32 @@
-import { Card, CardContent, CardFooter } from "@/shared/components/ui/card";
 import { Calendar } from "@/shared/components/ui/calendar";
 import { Button } from "@/shared/components/customs/Button";
 import { getDiffDays } from "@/shared/lib/helpers/date.helper";
 import { cn } from "@/shared/lib/utils/core.util";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
-import { createPortal } from "react-dom";
+import { Clock, Calendar as CalendarIcon } from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/shared/components/animate-ui/components/radix/sheet";
 import type { Locale } from "react-day-picker";
 
 interface ChooseADateProps {
+  isOpen: boolean;
   selectedDate: Date | undefined;
   onSelectDate: (date: Date | undefined) => void;
   displayMonth: Date | undefined;
   onMonthChange: (month: Date) => void;
   onConfirm: () => void;
-  onClose?: () => void;
+  onClose: () => void;
   onPresetClick: (daysToAdd: number) => void;
   locale?: Locale;
 }
 
 export default function ChooseADate({
+  isOpen,
   selectedDate,
   onSelectDate,
   displayMonth,
@@ -65,20 +72,25 @@ export default function ChooseADate({
     }
   };
 
-  const modalContent = (
-    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-primary-text/20 backdrop-blur-xs transition-opacity duration-300">
-      {/* Click outside backdrop */}
-      <div
-        className="absolute inset-0 cursor-default"
-        onClick={onClose}
-        aria-hidden="true"
-      />
-
-      <Card
-        className="relative mx-auto w-85 max-w-[calc(100vw-32px)] gap-2 shadow-2xl z-10 p-4 border border-border bg-surface rounded-2xl animate-subtle-pop data-[size=sm]:has-data-[slot=card-footer]:pb-4"
-        size="sm"
+  return (
+    <Sheet
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+    >
+      <SheetContent
+        side="bottom"
+        className="h-auto max-h-[90vh] rounded-t-2xl sm:max-w-lg sm:mx-auto border-border bg-surface p-4 sm:p-6 shadow-2xl overflow-y-auto custom-scrollbar flex flex-col gap-2"
       >
-        <CardContent className="p-0">
+        <SheetHeader className="text-left pb-1 px-0">
+          <SheetTitle className="text-lg font-bold text-foreground flex items-center gap-2">
+            <CalendarIcon size={20} className="text-primary" />
+            {t("date")}
+          </SheetTitle>
+        </SheetHeader>
+
+        <div className="flex flex-col items-center gap-4 w-full">
           <Calendar
             mode="single"
             weekStartsOn={1}
@@ -91,9 +103,10 @@ export default function ChooseADate({
             onMonthChange={onMonthChange}
             fixedWeeks={false}
             locale={locale}
-            className="p-0 w-full"
+            className="p-0 w-full max-w-sm rounded-md"
             classNames={{
-              month: "flex w-full flex-col gap-2",
+              month: "flex w-full flex-col gap-6 px-2 py-4",
+              nav: "absolute top-4 px-4 flex w-full items-center justify-between",
               week: "flex w-full justify-between",
               day_button:
                 "data-[selected-single=true]:bg-primary data-[selected-single=true]:text-white h-9 w-9 rounded-lg font-medium transition-all hover:bg-surface-secondary",
@@ -101,13 +114,12 @@ export default function ChooseADate({
               today: "font-bold text-primary",
             }}
           />
-          <div className="flex items-center justify-between gap-2 mt-4 pt-3 border-t border-border">
-            <label
-              htmlFor="time-hour"
-              className="text-xs font-semibold uppercase text-secondary-text tracking-wider"
-            >
-              {t("time")}
-            </label>
+
+          <div className="flex items-center justify-between gap-2 w-full pt-3 border-t border-border">
+            <div className="flex items-center gap-1.5 text-xs font-semibold uppercase text-secondary-text tracking-wider">
+              <Clock size={16} className="text-secondary-text" />
+              <span>{t("time")}</span>
+            </div>
             <div className="flex items-center gap-1 border border-border rounded-lg px-2.5 py-1 bg-surface-secondary/50 focus-within:ring-2 focus-within:ring-primary/20 transition-colors">
               <input
                 id="time-hour"
@@ -130,43 +142,43 @@ export default function ChooseADate({
               />
             </div>
           </div>
-        </CardContent>
-        <CardFooter className="flex flex-wrap gap-1.5 border-t border-border p-2 rounded-md">
-          {[
-            { label: t("today"), value: 0 },
-            { label: t("tomorrow"), value: 1 },
-            { label: t("in3Days"), value: 3 },
-            { label: t("in1Week"), value: 7 },
-            { label: t("in2Weeks"), value: 14 },
-          ].map((preset) => (
-            <Button
-              key={preset.value}
-              type="button"
-              variant="outline"
-              size="sm"
-              className={cn(
-                "text-xs px-2.5 py-1.5 h-auto rounded-lg font-medium transition-all flex-1 min-w-17.5",
-                diffDays === preset.value
-                  ? "bg-primary-light text-primary border-primary hover:bg-primary-light hover:text-primary-hover"
-                  : "border-border hover:bg-surface-secondary",
-              )}
-              onClick={() => onPresetClick(preset.value)}
-            >
-              {preset.label}
-            </Button>
-          ))}
-        </CardFooter>
-        <Button
-          type="button"
-          variant="default"
-          className="w-full py-2.5 bg-primary hover:bg-primary-hover text-white font-semibold rounded-xl transition-all shadow-md active:scale-[0.98]"
-          onClick={onConfirm}
-        >
-          {t("confirm")}
-        </Button>
-      </Card>
-    </div>
-  );
 
-  return createPortal(modalContent, document.body);
+          <div className="flex flex-wrap gap-1.5 w-full border-t border-border pt-3">
+            {[
+              { label: t("today"), value: 0 },
+              { label: t("tomorrow"), value: 1 },
+              { label: t("in3Days"), value: 3 },
+              { label: t("in1Week"), value: 7 },
+              { label: t("in2Weeks"), value: 14 },
+            ].map((preset) => (
+              <Button
+                key={preset.value}
+                type="button"
+                variant="outline"
+                size="sm"
+                className={cn(
+                  "text-xs py-2.5 h-auto rounded-lg font-medium transition-all flex-1 min-w-17.5",
+                  diffDays === preset.value
+                    ? "bg-primary-light border-primary hover:bg-primary-light hover:text-primary-hover"
+                    : "border-border hover:bg-surface-secondary",
+                )}
+                onClick={() => onPresetClick(preset.value)}
+              >
+                {preset.label}
+              </Button>
+            ))}
+          </div>
+
+          <Button
+            type="button"
+            variant="default"
+            className="w-full py-5 bg-primary hover:bg-primary-hover text-white font-semibold rounded-lg transition-all shadow-md active:scale-[0.98] mt-1"
+            onClick={onConfirm}
+          >
+            {t("confirm")}
+          </Button>
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
 }

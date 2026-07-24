@@ -150,6 +150,12 @@
   - รองรับการแสดงผลที่เหมาะสมกับ Web Mobile โดยแสดงเป็น Bottom Sheet สไลด์ขึ้นมาจากด้านล่าง พร้อมจัดการ Scrollbar, Virtual Keyboard Offset, Dynamic Height และ Touch Ergonomics ทำให้ฟอร์มกรอกข้อมูลทั้งหมดในแอปเป็นมาตรฐานเดียวกัน 100%
   - คงการทำงานระบบ **Auto Focus แบบ Synchronous บน Radix Sheet** ([primitives/radix/sheet.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/primitives/radix/sheet.tsx)) เพื่อให้เบราว์เซอร์บนมือถือ (iOS Safari / Android Chrome) แสดงเคอร์เซอร์ (Cursor) และเรียกแป้นพิมพ์เสมือน (Virtual Soft Keyboard) ขึ้นมาให้ผู้ใช้งานกรอกข้อมูลได้ทันทีโดยไม่ถูกระบบปฏิบัติการสั่งบล็อก Security Policy ของระบบโฟกัสแบบ Async (setTimeout)
 
+- **Transaction Date Picker Radix Sheet & Single-Instance Architecture Refactoring**:
+  - ปรับเปลี่ยนคอมโพเนนต์เลือกวัน/เวลาในธุรกรรม ([ChooseADate.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/transactions/components/ChooseADate.tsx)) จาก custom pop-up modal ตรงกลางหน้าจอ มาใช้งาน `@/shared/components/animate-ui/components/radix/sheet` (`Sheet`) แบบ Bottom Sheet สไลด์ลื่นไหลจากด้านล่าง
+  - ย้ายการเรนเดอร์คอมโพเนนต์ `<ChooseADate>` ออกมาจากลูป `.map()` ของแท็บทั้ง 4 ประเภท (`TabsContent`) ใน [TransactionMoreDetails.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/transactions/components/TransactionMoreDetails.tsx) ขึ้นไปไว้ที่ระดับบนสุดของ [TransactionsContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/transactions/containers/TransactionsContainer.tsx) ร่วมกับ `ConfirmModal` และ `LoadingModal`
+  - แก้ไขสาเหตุที่แท้จริง (Root Cause) ของปัญหาการเกิด `sheet-overlay` และ `sheet-content` ซ้อนกัน 4 ชั้นได้อย่างเบ็ดเสร็จ 100% ทำให้เหลือตัว Sheet ใน DOM เพียง 1 ตัวถ้วน เรนเดอร์ลื่นไหลและประหยัดหน่วยความจำ
+  - ปรับปรุงคอมโพเนนต์ส่วนกลาง [sheet.tsx (Component)](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/components/radix/sheet.tsx) และ [sheet.tsx (Primitive)](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/primitives/radix/sheet.tsx) โดยใช้ `opacity` transition ร่วมกับ `bg-black/40 backdrop-blur-xs` เพื่อให้ Overlay ฉากหลังสอดคล้อง นุ่มนวล และสวยงามเหมือนกันทุก Sheet ทั้งแอป 100%
+
 ---
 
 ### 2. สิ่งที่จะต้องทำเป็นลำดับถัดไป (Next Actions)

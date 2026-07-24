@@ -3,23 +3,15 @@ import { cn } from "@/shared/lib/utils/core.util";
 import { ArrowDown, Calendar as CalendarLucide, Camera, X } from "lucide-react";
 import { UseFormRegister } from "react-hook-form";
 import { CreateTransactionFormValues } from "../schemas/transaction.form.schema";
-import ChooseADate from "./ChooseADate";
 import { useImagePreview } from "../hooks/useImagePreview.hook";
 import { Button } from "@/shared/components/customs/Button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
-import type { Locale } from "react-day-picker";
 
 interface TransactionMoreDetailsProps {
   isMoreDetailsOpen: boolean;
   setIsMoreDetailsOpen: (open: boolean) => void;
   displayDate: string;
-  tempDate: Date | undefined;
-  setTempDate: (date: Date | undefined) => void;
-  displayMonth: Date | undefined;
-  setDisplayMonth: (date: Date) => void;
-  onPresetClick: (daysToAdd: number) => void;
-  onConfirmDate: () => void;
   isCalendarOpen: boolean;
   setIsCalendarOpen: (open: boolean) => void;
   isPhotoMenuOpen: boolean;
@@ -34,19 +26,12 @@ interface TransactionMoreDetailsProps {
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   register: UseFormRegister<CreateTransactionFormValues>;
   isLoadingTx?: boolean;
-  calendarLocale?: Locale;
 }
 
 export default function TransactionMoreDetails({
   isMoreDetailsOpen,
   setIsMoreDetailsOpen,
   displayDate,
-  tempDate,
-  setTempDate,
-  displayMonth,
-  setDisplayMonth,
-  onPresetClick,
-  onConfirmDate,
   isCalendarOpen,
   setIsCalendarOpen,
   isPhotoMenuOpen,
@@ -61,7 +46,6 @@ export default function TransactionMoreDetails({
   handleFileChange,
   register,
   isLoadingTx,
-  calendarLocale,
 }: Readonly<TransactionMoreDetailsProps>) {
   const { t } = useTranslation();
   const filePreview = useImagePreview(file);
@@ -220,18 +204,6 @@ export default function TransactionMoreDetails({
                   </span>
                   <span className="text-sm font-medium">{displayDate}</span>
                 </Button>
-                {isCalendarOpen && (
-                  <ChooseADate
-                    selectedDate={tempDate}
-                    onSelectDate={setTempDate}
-                    displayMonth={displayMonth}
-                    onMonthChange={setDisplayMonth}
-                    onConfirm={onConfirmDate}
-                    onClose={() => setIsCalendarOpen(false)}
-                    onPresetClick={onPresetClick}
-                    locale={calendarLocale}
-                  />
-                )}
               </div>
             )}
 

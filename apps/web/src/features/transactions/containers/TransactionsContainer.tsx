@@ -20,6 +20,7 @@ import { toast } from "react-toastify";
 import TransactionCategoryList from "../components/TransactionCategoryList";
 import TransactionAssetList from "../components/TransactionAssetList";
 import TransactionMoreDetails from "../components/TransactionMoreDetails";
+import ChooseADate from "../components/ChooseADate";
 import {
   useTransactionFormSync,
   useTransactionInitialization,
@@ -543,12 +544,6 @@ export default function TransactionsContainer() {
                     isMoreDetailsOpen={isMoreDetailsOpen}
                     setIsMoreDetailsOpen={setIsMoreDetailsOpen}
                     displayDate={displayDate}
-                    tempDate={tempDate}
-                    setTempDate={setTempDate}
-                    displayMonth={displayMonth}
-                    setDisplayMonth={setDisplayMonth}
-                    onPresetClick={handlePresetClick}
-                    onConfirmDate={handleConfirmDate}
                     isCalendarOpen={isCalendarOpen}
                     setIsCalendarOpen={setIsCalendarOpen}
                     isPhotoMenuOpen={isPhotoMenuOpen}
@@ -563,7 +558,6 @@ export default function TransactionsContainer() {
                     handleFileChange={handleFileChange}
                     register={register}
                     isLoadingTx={isTxLoading}
-                    calendarLocale={calendarLocale}
                   />
                 </TabsContent>
               ))}
@@ -583,6 +577,18 @@ export default function TransactionsContainer() {
           </Button>
         </section>
       </div>
+
+      <ChooseADate
+        isOpen={isCalendarOpen}
+        selectedDate={tempDate}
+        onSelectDate={setTempDate}
+        displayMonth={displayMonth}
+        onMonthChange={setDisplayMonth}
+        onConfirm={handleConfirmDate}
+        onClose={() => setIsCalendarOpen(false)}
+        onPresetClick={handlePresetClick}
+        locale={calendarLocale}
+      />
 
       <ConfirmModal
         isOpen={isDeleteModalOpen}
