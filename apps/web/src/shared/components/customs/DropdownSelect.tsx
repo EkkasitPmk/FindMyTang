@@ -1,97 +1,143 @@
+import { ChevronDown } from "lucide-react";
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { cn } from "@/shared/lib/utils/core.util";
-import { forwardRef } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/shared/components/animate-ui/components/radix/dropdown-menu";
 
 interface DropdownSelectProps {
   options: string[];
   selected: string;
   onSelect: (option: string) => void;
   isOpen: boolean;
-  onToggle: () => void;
+  onToggle: (open?: boolean) => void;
   className?: string;
   themeColor?: string | null;
+  ref?: React.Ref<HTMLDivElement>;
 }
 
-export const DropdownSelect = forwardRef<HTMLDivElement, DropdownSelectProps>(
-  (
-    { options, selected, onSelect, isOpen, onToggle, className, themeColor },
-    ref,
-  ) => {
-    const customStyle = themeColor
-      ? ({ "--dropdown-theme": themeColor } as React.CSSProperties)
-      : undefined;
+export function DropdownSelect({
+  options,
+  selected,
+  onSelect,
+  isOpen,
+  onToggle,
+  className,
+  themeColor,
+  ref,
+}: Readonly<DropdownSelectProps>) {
+  const effectiveThemeColor =
+    themeColor &&
+    themeColor.toLowerCase() !== "#ffffff" &&
+    themeColor.toLowerCase() !== "#fafafa" &&
+    themeColor.toLowerCase() !== "#f5f5f5"
+      ? themeColor
+      : null;
 
-    return (
-      <div
-        ref={ref}
-        className={cn("flex flex-col w-34 text-sm relative", className)}
-        style={customStyle}
-      >
-        <Button
-          variant="unstyled"
-          type="button"
-          onClick={onToggle}
-          className="w-full text-left p-2 border-b text-primary-text border-border hover:bg-surface-secondary focus:outline-none"
-        >
-          <span>{selected}</span>
-          <svg
-            className={`w-5 h-5 inline float-right transition-transform duration-200 text-secondary-text ${isOpen ? "rotate-0" : "-rotate-90"}`}
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 26 26"
-            stroke="currentColor"
+  const getTriggerStyle = () => {
+    if (isOpen && effectiveThemeColor) {
+      return {
+        backgroundColor: `${effectiveThemeColor}1A`,
+        color: effectiveThemeColor,
+        borderColor: `${effectiveThemeColor}40`,
+      };
+    }
+    return undefined;
+  };
+
+  const getSelectedItemStyle = () => {
+    if (effectiveThemeColor) {
+      return {
+        backgroundColor: `${effectiveThemeColor}20`,
+        color: effectiveThemeColor,
+      };
+    }
+    return undefined;
+  };
+
+  const getItemClassName = (isSelected: boolean) => {
+    if (!isSelected) {
+      return "text-primary-text";
+    }
+    if (effectiveThemeColor) {
+      return "font-semibold relative z-10";
+    }
+    return "text-primary bg-primary-light/80 font-semibold relative z-10";
+  };
+
+  return (
+    <div
+      ref={ref}
+      className={cn("relative flex flex-col w-34 text-sm", className)}
+    >
+      <DropdownMenu open={isOpen} onOpenChange={(open) => onToggle(open)}>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="unstyled"
+            tapScale={1}
+            hoverScale={1}
+            type="button"
+            style={getTriggerStyle()}
+            className={cn(
+              "flex items-center justify-between gap-2 px-3 py-2 rounded-md text-sm font-semibold tracking-wide border transition-all duration-200 cursor-pointer outline-none w-full shadow-2xs select-none",
+              isOpen
+                ? !effectiveThemeColor &&
+                    "text-primary bg-primary-light/70 border-primary/30 ring-2 ring-primary/15"
+                : "text-primary-text bg-surface-secondary/40 border-border/70 hover:bg-surface-secondary hover:border-border hover:shadow-xs",
+            )}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19 9l-7 7-7-7"
+            <span className="truncate">{selected}</span>
+            <ChevronDown
+              size={16}
+              style={
+                isOpen && effectiveThemeColor
+                  ? { color: effectiveThemeColor }
+                  : undefined
+              }
+              className={cn(
+                "shrink-0 transition-transform duration-200 text-secondary-text",
+                isOpen && "-rotate-180",
+                isOpen && !effectiveThemeColor && "text-primary",
+              )}
             />
-          </svg>
-        </Button>
+          </Button>
+        </DropdownMenuTrigger>
 
-        {isOpen && (
-          <ul className="absolute top-full w-full bg-surface border border-border rounded py-1 z-20">
+        <DropdownMenuContent
+          align="start"
+          sideOffset={6}
+          transition={{ duration: 0.12, ease: "easeOut" }}
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.96 }}
+          className="w-(--radix-dropdown-menu-trigger-width) max-h-64 overflow-y-auto p-1.5 rounded-xl shadow-lg border border-border bg-surface text-primary-text z-50"
+        >
+          <DropdownMenuGroup>
             {options.map((option) => {
               const isSelected = option === selected;
-              let bgClass = "";
-
-              if (isSelected) {
-                bgClass = themeColor
-                  ? "bg-[var(--dropdown-theme)]"
-                  : "bg-primary";
-              } else {
-                bgClass = themeColor
-                  ? "hover:bg-[var(--dropdown-theme)] focus:bg-[var(--dropdown-theme)]"
-                  : "hover:bg-primary focus:bg-primary";
-              }
-
               return (
-                <li key={option}>
-                  <Button
-                    variant="unstyled"
-                    type="button"
-                    className={cn(
-                      "w-full text-left p-2 cursor-pointer focus:outline-none transition-colors",
-                      isSelected
-                        ? "text-white font-medium"
-                        : "text-primary-text hover:text-white focus:text-white",
-                      bgClass,
-                    )}
-                    onClick={() => {
-                      onSelect(option);
-                    }}
-                  >
-                    {option}
-                  </Button>
-                </li>
+                <DropdownMenuItem
+                  key={option}
+                  onSelect={() => onSelect(option)}
+                  style={isSelected ? getSelectedItemStyle() : undefined}
+                  className={cn(
+                    "w-full justify-between px-2.5 py-1.5 text-sm cursor-pointer rounded-lg my-0.5 transition-colors",
+                    getItemClassName(isSelected),
+                  )}
+                >
+                  <span className="truncate">{option}</span>
+                </DropdownMenuItem>
               );
             })}
-          </ul>
-        )}
-      </div>
-    );
-  },
-);
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
+}
 
-DropdownSelect.displayName = "DropdownSelect";
+export default DropdownSelect;
