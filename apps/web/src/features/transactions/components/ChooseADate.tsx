@@ -90,7 +90,7 @@ export default function ChooseADate({
           </SheetTitle>
         </SheetHeader>
 
-        <div className="flex flex-col items-center gap-4 w-full">
+        <div className="flex flex-col overflow-y-auto items-center gap-4 w-full">
           <Calendar
             mode="single"
             weekStartsOn={1}
@@ -105,13 +105,15 @@ export default function ChooseADate({
             locale={locale}
             className="p-0 w-full max-w-sm rounded-md"
             classNames={{
-              month: "flex w-full flex-col gap-6 px-2 py-4",
+              month: "flex w-full flex-col gap-4 px-2 py-4",
               nav: "absolute top-4 px-4 flex w-full items-center justify-between",
               week: "flex w-full justify-between",
               day_button:
                 "data-[selected-single=true]:bg-primary data-[selected-single=true]:text-white h-9 w-9 rounded-lg font-medium transition-all hover:bg-surface-secondary",
               day: "h-9 w-9 flex items-center justify-center p-0",
               today: "font-bold text-primary",
+              dropdown_root:
+                "relative flex items-center justify-center rounded-lg border border-border/70 bg-surface-secondary/50 px-2.5 py-2 hover:bg-surface-secondary transition-colors cursor-pointer",
             }}
           />
 
@@ -168,16 +170,15 @@ export default function ChooseADate({
               </Button>
             ))}
           </div>
-
-          <Button
-            type="button"
-            variant="default"
-            className="w-full py-5 bg-primary hover:bg-primary-hover text-white font-semibold rounded-lg transition-all shadow-md active:scale-[0.98] mt-1"
-            onClick={onConfirm}
-          >
-            {t("confirm")}
-          </Button>
         </div>
+        <Button
+          type="button"
+          variant="default"
+          className="w-full py-5 bg-primary hover:bg-primary-hover text-white font-semibold rounded-lg transition-all shadow-md active:scale-[0.98] mt-1"
+          onClick={onConfirm}
+        >
+          {t("confirm")}
+        </Button>
       </SheetContent>
     </Sheet>
   );

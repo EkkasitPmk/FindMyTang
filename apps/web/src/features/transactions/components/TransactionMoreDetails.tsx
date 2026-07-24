@@ -72,7 +72,7 @@ export default function TransactionMoreDetails({
               e.stopPropagation();
               onRemoveFile();
             }}
-            className="absolute top-2 right-2 p-1.5 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors"
+            className="absolute top-2 right-2 p-1.5 bg-expense/50 border border-expense text-white rounded-full hover:bg-black/70 transition-colors"
           >
             <X size={16} className="text-white" />
           </Button>
@@ -102,7 +102,7 @@ export default function TransactionMoreDetails({
               e.stopPropagation();
               onRemoveFile();
             }}
-            className="absolute top-2 right-2 p-1.5 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors"
+            className="absolute top-2 right-2 p-1.5 bg-expense/50 border border-expense text-white rounded-full hover:bg-black/70 transition-colors"
           >
             <X size={16} className="text-white" />
           </Button>
@@ -118,7 +118,7 @@ export default function TransactionMoreDetails({
               variant="unstyled"
               type="button"
               onClick={() => setIsPhotoMenuOpen(!isPhotoMenuOpen)}
-              className="absolute top-1 right-2"
+              className="absolute top-2 right-2"
             >
               <X className="text-destructive" />
             </Button>
@@ -196,6 +196,8 @@ export default function TransactionMoreDetails({
                 <Button
                   variant="unstyled"
                   type="button"
+                  tapScale={1}
+                  hoverScale={1}
                   onClick={() => setIsCalendarOpen(!isCalendarOpen)}
                   className="flex flex-col flex-1 text-left"
                 >

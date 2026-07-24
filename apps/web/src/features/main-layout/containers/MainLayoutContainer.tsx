@@ -226,7 +226,11 @@ export default function MainLayoutContainer({
       mainContentClassName = cn("pt-15");
     }
   } else if (shouldShowTopAppBar) {
-    mainContentClassName = cn("pt-12");
+    if (pathname === "/assets" && isSearchMode) {
+      mainContentClassName = cn("");
+    } else {
+      mainContentClassName = cn("pt-12");
+    }
   }
 
   return (
