@@ -91,6 +91,7 @@ export const CategoryBreakdownContainer = () => {
           onValueChange={(val) =>
             setType(val as "EXPENSE" | "INCOME" | "TRANSFER")
           }
+          className="gap-1"
         >
           <div className="m-0 px-4 relative z-10">
             <TabsList className="w-full">
@@ -102,7 +103,7 @@ export const CategoryBreakdownContainer = () => {
 
           <TabsContents className="mt-3">
             {(["EXPENSE", "INCOME", "TRANSFER"] as const).map((tVal) => (
-              <TabsContent key={tVal} value={tVal} className="space-y-3">
+              <TabsContent key={tVal} value={tVal} className="space-y-2">
                 <CategoryBreakdownChart
                   data={data.breakdown}
                   totalAmount={totalAmount}

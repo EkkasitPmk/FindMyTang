@@ -41,7 +41,7 @@ export const AssetTypeList = ({
             <CollapsibleTrigger asChild>
               <Button
                 variant="unstyled"
-                className="w-full flex items-center justify-between p-4 transition-colors hover:bg-surface-secondary cursor-pointer"
+                className="w-full flex items-center justify-between px-4 py-3 transition-colors hover:bg-surface-secondary cursor-pointer"
               >
                 <div className="flex items-center gap-3">
                   <AssetIconWrapper color={`var(--chart-${(index % 5) + 1})`}>
