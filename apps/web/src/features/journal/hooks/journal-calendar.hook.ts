@@ -38,14 +38,14 @@ export function useJournalCalendar(
     setIsYearOpen(false);
   }, []);
 
-  const handleMonthToggle = useCallback(() => {
-    setIsMonthOpen((prev) => !prev);
-    setIsYearOpen(false);
+  const handleMonthToggle = useCallback((open?: boolean) => {
+    setIsMonthOpen((prev) => (typeof open === "boolean" ? open : !prev));
+    if (open !== false) setIsYearOpen(false);
   }, []);
 
-  const handleYearToggle = useCallback(() => {
-    setIsYearOpen((prev) => !prev);
-    setIsMonthOpen(false);
+  const handleYearToggle = useCallback((open?: boolean) => {
+    setIsYearOpen((prev) => (typeof open === "boolean" ? open : !prev));
+    if (open !== false) setIsMonthOpen(false);
   }, []);
 
   const handleGoToToday = useCallback(() => {

@@ -65,6 +65,12 @@
 
 ### 1. สิ่งที่พัฒนาเสร็จสิ้นแล้ว (Completed)
 
+- **Month & Year Selector Animate UI Radix Dropdown Menu Migration**:
+  - ติดตั้งและย้ายมาใช้แพ็กเกจคอมโพเนนต์ `@animate-ui/components-radix-dropdown-menu` ([components/radix/dropdown-menu.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/components/radix/dropdown-menu.tsx))
+  - ลบคอมโพเนนต์ดรอปดาวน์เดิมที่ซ้ำซ้อนออก และอัปเดตจุดเรียกใช้งานทั้งหมด ([MonthYearNavigator.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/journal/components/MonthYearNavigator.tsx) และ [ThemeSwitcher.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/ThemeSwitcher.tsx)) ให้ชี้ไปยังคอมโพเนนต์ Radix Dropdown Menu ตัวใหม่ของ `animate-ui`
+  - อัปเดต [journal-calendar.hook.ts](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/journal/hooks/journal-calendar.hook.ts) ให้ฟังก์ชัน `handleMonthToggle` และ `handleYearToggle` รองรับพารามิเตอร์ `open?: boolean` เพื่อทำงานร่วมกับ Radix UI & Motion transition entry animations ได้อย่างราบรื่นและเสถียร 100%
+
+
 - **Sidebar Collapse Animation Refactoring**:
   - ปรับปรุงอนิเมชันการย่อ-ขยาย (Expand/Collapse) ของ Desktop Sidebar ให้มีความนุ่มนวล (Smooth Transition) แบบ 100% ตามมาตรฐาน [test.md](file:///Users/torikiton/Desktop/PocketNote/test.md)
   - เปลี่ยนจากการใช้ JavaScript Unmount Elements (`{!isCollapsed && ...}`) ไปใช้ Tailwind CSS `group-data-[collapsible=icon]` ร่วมกับ CSS Transitions

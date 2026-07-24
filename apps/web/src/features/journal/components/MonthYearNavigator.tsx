@@ -1,21 +1,28 @@
 import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { cn } from "@/shared/lib/utils/core.util";
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/shared/components/animate-ui/components/radix/dropdown-menu";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 interface MonthYearNavigatorProps {
   isMonthOpen: boolean;
   isYearOpen: boolean;
-  monthRef: React.RefObject<HTMLDivElement | null>;
-  yearRef: React.RefObject<HTMLDivElement | null>;
+  monthRef?: React.RefObject<HTMLDivElement | null>;
+  yearRef?: React.RefObject<HTMLDivElement | null>;
   monthLabel: string;
   yearLabel: string;
   selectedMonthIndex: number;
   selectedYear: number;
   months: readonly string[];
   years: number[];
-  onMonthToggle: () => void;
-  onYearToggle: () => void;
+  onMonthToggle: (open?: boolean) => void;
+  onYearToggle: (open?: boolean) => void;
   onMonthSelect: (index: number) => void;
   onYearSelect: (year: number) => void;
   onPrevMonth: () => void;
@@ -49,89 +56,107 @@ export default function MonthYearNavigator({
       {/* Month & Year Selector */}
       <div className="flex items-center gap-1">
         {/* Month Dropdown */}
-        <div className="relative" ref={monthRef}>
-          <Button
-            variant="unstyled"
-            onClick={onMonthToggle}
-            className={cn(
-              "flex items-center gap-1 px-2 py-1.5 rounded-lg text-base font-semibold tracking-wide transition-colors cursor-pointer",
-              isMonthOpen
-                ? "text-primary bg-primary-light"
-                : "text-primary-text hover:bg-surface-secondary",
-            )}
-          >
-            {monthLabel}
-            <ChevronDown
-              size={16}
-              className={cn(
-                "transition-transform",
-                isMonthOpen && "-rotate-180",
-              )}
-            />
-          </Button>
-
-          {isMonthOpen && (
-            <div className="absolute left-0 top-full mt-1.5 w-44 bg-surface rounded-xl py-1.5 shadow-lg border border-border z-50 animate-subtle-pop">
-              {months.map((month, index) => (
-                <Button
-                  key={month}
-                  variant="unstyled"
-                  onClick={() => onMonthSelect(index)}
+        <div ref={monthRef}>
+          <DropdownMenu open={isMonthOpen} onOpenChange={onMonthToggle}>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="unstyled"
+                className={cn(
+                  "flex items-center gap-1 px-2 py-1.5 rounded-lg text-base font-semibold tracking-wide transition-colors cursor-pointer outline-none",
+                  isMonthOpen
+                    ? "text-primary bg-primary-light"
+                    : "text-primary-text hover:bg-surface-secondary",
+                )}
+              >
+                {monthLabel}
+                <ChevronDown
+                  size={16}
                   className={cn(
-                    "w-full text-left px-4 py-2 text-sm transition-colors cursor-pointer",
-                    index === selectedMonthIndex
-                      ? "text-primary font-semibold bg-primary-light"
-                      : "text-primary-text hover:bg-surface-secondary",
+                    "transition-transform duration-200",
+                    isMonthOpen && "-rotate-180",
                   )}
-                >
-                  {month}
-                </Button>
-              ))}
-            </div>
-          )}
+                />
+              </Button>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent
+              align="start"
+              sideOffset={6}
+              className="w-44 max-h-64 overflow-y-auto p-1 rounded-xl shadow-lg border border-border bg-surface z-50"
+            >
+              <DropdownMenuGroup>
+                {months.map((month, index) => {
+                  const isSelected = index === selectedMonthIndex;
+                  return (
+                    <DropdownMenuItem
+                      key={month}
+                      onSelect={() => onMonthSelect(index)}
+                      className={cn(
+                        "w-full justify-between px-2.5 py-1.5 text-sm cursor-pointer rounded-lg my-0.5",
+                        isSelected
+                          ? "text-primary font-semibold bg-primary-light/60"
+                          : "text-primary-text",
+                      )}
+                    >
+                      {month}
+                    </DropdownMenuItem>
+                  );
+                })}
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {/* Year Dropdown */}
-        <div className="relative" ref={yearRef}>
-          <Button
-            variant="unstyled"
-            onClick={onYearToggle}
-            className={cn(
-              "flex items-center gap-1 px-2 py-1.5 rounded-lg text-base font-semibold tracking-wide transition-colors cursor-pointer",
-              isYearOpen
-                ? "text-primary bg-primary-light"
-                : "text-primary-text hover:bg-surface-secondary",
-            )}
-          >
-            {yearLabel}
-            <ChevronDown
-              size={14}
-              className={cn(
-                "transition-transform",
-                isYearOpen && "-rotate-180",
-              )}
-            />
-          </Button>
-
-          {isYearOpen && (
-            <div className="absolute left-0 top-full mt-1.5 w-28 bg-surface rounded-xl py-1.5 shadow-lg border border-border z-50 animate-subtle-pop">
-              {years.map((year) => (
-                <Button
-                  key={year}
-                  variant="unstyled"
-                  onClick={() => onYearSelect(year)}
+        <div ref={yearRef}>
+          <DropdownMenu open={isYearOpen} onOpenChange={onYearToggle}>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="unstyled"
+                className={cn(
+                  "flex items-center gap-1 px-2 py-1.5 rounded-lg text-base font-semibold tracking-wide transition-colors cursor-pointer outline-none",
+                  isYearOpen
+                    ? "text-primary bg-primary-light"
+                    : "text-primary-text hover:bg-surface-secondary",
+                )}
+              >
+                {yearLabel}
+                <ChevronDown
+                  size={14}
                   className={cn(
-                    "w-full text-left px-4 py-2 text-sm transition-colors cursor-pointer",
-                    year === selectedYear
-                      ? "text-primary font-semibold bg-primary-light"
-                      : "text-primary-text hover:bg-surface-secondary",
+                    "transition-transform duration-200",
+                    isYearOpen && "-rotate-180",
                   )}
-                >
-                  {year}
-                </Button>
-              ))}
-            </div>
-          )}
+                />
+              </Button>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent
+              align="start"
+              sideOffset={6}
+              className="w-28 max-h-64 overflow-y-auto p-1 rounded-xl shadow-lg border border-border bg-surface z-50"
+            >
+              <DropdownMenuGroup>
+                {years.map((year) => {
+                  const isSelected = year === selectedYear;
+                  return (
+                    <DropdownMenuItem
+                      key={year}
+                      onSelect={() => onYearSelect(year)}
+                      className={cn(
+                        "w-full justify-between px-2.5 py-1.5 text-sm cursor-pointer rounded-lg my-0.5",
+                        isSelected
+                          ? "text-primary font-semibold bg-primary-light/60"
+                          : "text-primary-text",
+                      )}
+                    >
+                      {year}
+                    </DropdownMenuItem>
+                  );
+                })}
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
