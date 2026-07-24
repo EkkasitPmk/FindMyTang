@@ -65,6 +65,35 @@
 
 ### 1. สิ่งที่พัฒนาเสร็จสิ้นแล้ว (Completed)
 
+- **AssetDetail TopAppBar Mobile Dropdown Animate-UI Migration & Touch Fix**:
+  - ปรับปรุงเมนูดรอปดาวน์ของรายละเอียดสินทรัพย์ (`AssetsMenu`) บน `TopAppBarMobile` ให้ย้ายมาใช้งาน Radix Dropdown Menu จาก `animate-ui` (`@/shared/components/animate-ui/components/radix/dropdown-menu`)
+  - รองรับ Submenu ของ Filter และ Sort (ย่อยตาม Date และ Money) พร้อมอนิเมชันเปิด-ปิดที่นุ่มนวลและเป็นธรรมชาติจาก `animate-ui`
+  - แก้ไขปัญหาบน Mobile ที่กดเลือก Filter/Sort แล้วเมนูปิด/หลุดออกก่อนเลือกตัวเลือก สาเหตุเกิดจาก Hook `useClickOutside` ของเดิมที่ผูกกับ Trigger Ref เมื่อกด Submenu Content (ซึ่ง Radix UI Render ใน Portal ภายนอก Trigger Container) ทำให้ถูกตรวจจับว่าเป็นการกดนอกพื้นที่ จึงได้ลบ `useClickOutside` ซ้ำซ้อนออกเพื่อให้ Radix UI จัดการ Portal Touch Events ได้อย่างสมบูรณ์
+  - เพิ่มสไตล์ `font-medium` ให้กับตัวเลือกที่ถูกเช็กเลือก (`checked`) ในคอมโพเนนต์ [dropdown-menu.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/components/radix/dropdown-menu.tsx) (`DropdownMenuCheckboxItem`)
+  - แก้ไขปัญหา Hover Highlight ใน Submenu ไม่แสดงผล โดยเพิ่ม `<DropdownMenuHighlightPrimitive>` ครอบใน `DropdownMenuSubContent` พร้อมกำหนด `data-[highlighted]:bg-surface-secondary/80` ให้กับไอเทมดรอปดาวน์ทั้งหมด
+  - อัปเดตไฟล์ [AssetsMenu.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/assets/components/AssetsMenu.tsx), [AssetsMenuContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/assets/containers/AssetsMenuContainer.tsx) และ [AssetDetailContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/assets/containers/AssetDetailContainer.tsx) ผ่านการตรวจสอบ TypeScript (`tsc --noEmit`) 100%
+
+- **Journal Timeline Animate UI Dropdown Menu Migration**:
+  - ย้าย Dropdown เมนูเรียงลำดับรายการ (Sort Menu) ของ Journal Timeline ใน [JournalContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/journal/containers/JournalContainer.tsx) จากเมนูดั้งเดิม ไปใช้ `animate-ui` Radix Dropdown Menu (`DropdownMenu`, `DropdownMenuTrigger`, `DropdownMenuContent`, `DropdownMenuSub`, `DropdownMenuSubTrigger`, `DropdownMenuSubContent`, `DropdownMenuCheckboxItem`)
+  - รองรับ Submenu สำหรับการจัดเรียงแยกตาม วันที่ (Date) และ จำนวนเงิน (Money/Amount) พร้อม Motion transition, micro-interactions และ accessibility ครบถ้วนตามมาตรฐาน UI
+  - ลบ state และ custom helper ที่ซ้ำซ้อน (`openSortSubMenu`, `sortMenuRef`, `useClickOutside`, `MenuItem`, `MenuCheckboxItem`) ออก เพื่อความสะอาด ละเอียดยิบ และผ่านการตรวจสอบ TypeScript Check 100%
+
+- **DropdownSelect Modern Pill Card Redesign**:
+  - ปรับปรุงดีไซน์ปุ่ม Trigger ของ [DropdownSelect.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/DropdownSelect.tsx) ใหม่ในสไตล์ **Modern Pill Card** ตัวปุ่มขอบโค้งมน (`rounded-xl`), มีเส้นขอบเนียนบาง (`border border-border/70`), Shadow เบาๆ (`shadow-2xs`), พร้อมไมโครอนิเมชันตอนกดและวางเมาส์ (`tapScale={0.98}`, `hoverScale={1.01}`)
+  - เพิ่มเอฟเฟกต์ Subtle Ring Glow (`ring-2 ring-primary/15` / `ring-current/15`) และปรับสีตามสีธีมสินทรัพย์เมื่อเปิดดรอปดาวน์ (`isOpen`) ให้ดูสวยงาม สะอาดตา พรีเมียม และมีมิติตามมาตรฐานสถาปัตยกรรม UI ล่าสุด
+
+- **DropdownMenu Instant Rapid Click Transition Optimization**:
+  - ปรับแต่งการเปิด-ปิดเมนูดรอปดาวน์ใน [DropdownSelect.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/DropdownSelect.tsx) และ [MonthYearNavigator.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/journal/components/MonthYearNavigator.tsx) เป็น `transition={{ duration: 0.12, ease: "easeOut" }}` ถอด Spring Physics แรงต้านออก เพื่อรองรับการกดรัวๆ เปิด-ปิด ได้ทันทีแบบ Instant ตอบสนองทันใจโดยไม่มีอาการหน่วง ชะงัก หรือ Lag ของคิว Animation
+
+- **DropdownSelect & Animate-UI HighlightItem Style Preservation Fix**:
+  - แก้ไข Root Cause ใน [highlight.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/primitives/effects/highlight.tsx) ที่เดิมมีการใช้ `React.cloneElement` เขียนทับ `style` ด้วย `{ position: "relative", zIndex: 1 }` ทำให้ `style` และ `backgroundColor` ที่ส่งเข้ามาใน `DropdownMenuItem` ถูกลบทิ้ง
+  - ปรับปรุง [highlight.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/primitives/effects/highlight.tsx) ให้รักษา `element.props.style` (`{ position: "relative", zIndex: 1, ...element.props.style }`)
+  - ส่งผลให้สีพื้นหลังและสีตัวอักษรของ Selected Item ใน [DropdownSelect.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/DropdownSelect.tsx) แสดงผลสีพื้นหลังได้อย่างถูกต้อง 100% ทั้งสี `bg-primary-light` ของ Default Theme และ Custom `themeColor` ของสินทรัพย์
+
+- **DropdownSelect Journal Calendar UI Alignment & Code Refactoring**:
+  - ปรับปรุงโครงสร้างคอมโพเนนต์ [DropdownSelect.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/DropdownSelect.tsx) เป็นรูปแบบ `export default function DropdownSelect(...)` ตามมาตรฐานของโปรเจกต์
+  - ให้ดีไซน์และพฤติกรรมเหมือนกับ [MonthYearNavigator.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/journal/components/MonthYearNavigator.tsx) ในหน้า Journal Calendar 100% พร้อมรองรับ `effectiveThemeColor` ของสินทรัพย์ได้อย่างกลมกลืน และผ่าน TypeScript Check 100%
+
 - **Month & Year Selector Animate UI Radix Dropdown Menu Migration**:
   - ติดตั้งและย้ายมาใช้แพ็กเกจคอมโพเนนต์ `@animate-ui/components-radix-dropdown-menu` ([components/radix/dropdown-menu.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/components/radix/dropdown-menu.tsx))
   - ลบคอมโพเนนต์ดรอปดาวน์เดิมที่ซ้ำซ้อนออก และอัปเดตจุดเรียกใช้งานทั้งหมด ([MonthYearNavigator.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/journal/components/MonthYearNavigator.tsx) และ [ThemeSwitcher.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/ThemeSwitcher.tsx)) ให้ชี้ไปยังคอมโพเนนต์ Radix Dropdown Menu ตัวใหม่ของ `animate-ui`
@@ -167,6 +196,20 @@
   - ปรับแต่ง variants และขนาดให้สอดคล้องตาม [DESIGN.md](file:///Users/torikiton/Desktop/PocketNote/docs/DESIGN.md) (`primary`, `surface`, `income`, `expense`, `investment`, `secondary`, `outline`, `ghost`, `link`, `unstyled`)
   - อัปเดตเส้นทาง Import ในแอปพลิเคชันทั้งหมด 45 ไฟล์ตรงไปที่ `@/shared/components/animate-ui/components/buttons/button`
   - ลบไฟล์เก่า `customs/Button.tsx` และ `ui/button.tsx` ออกจากระบบโดยเด็ดขาด 100% พร้อมทดสอบ TypeScript Type Check และ Unit Tests ผ่านทั้งหมดเรียบร้อยแล้ว
+
+- **ManageAsset Collapsible Integration**:
+  - เปลี่ยนการแสดงผลส่วนขยาย (Expanded Actions Panel) ของรายการสินทรัพย์ใน [ManageAssetItem.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/assets/components/ManageAssetItem.tsx) ให้ใช้งานคอมโพเนนต์ `Collapsible`, `CollapsibleTrigger`, และ `CollapsibleContent` จาก `@/shared/components/animate-ui/primitives/radix/collapsible`
+  - รองรับอนิเมชันเปิด-ปิดสไลด์อย่างราบรื่นร่วมกับ `AnimatePresence` และ `motion`
+  - รองรับการสลับระหว่างโหมดแก้ไขรายการ (Select/Drag & Drop Mode) กับโหมดขยายปกติ (Collapsible Mode) โดยไม่เกิดการชนกันของ Event Handlers
+
+- **MainLayoutContainer Asset Search Mode Top Padding Fix**:
+  - ปิด `pt-12` บน [MainLayoutContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/main-layout/containers/MainLayoutContainer.tsx) เมื่อผู้ใช้อยู่ในหน้าสินทรัพย์ (`/assets`) และอยู่ในโหมดค้นหา (`isSearchMode`) เพื่อให้ layout ไม่เกิดช่องว่างส่วนเกินใต้ Sticky Search Header
+
+- **AssetDetail Animate UI Dropdown Menu Migration**:
+  - ปรับเปลี่ยนดรอปดาวน์เมนูในหน้าจอรายละเอียดสินทรัพย์ ([AssetDetail.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/assets/components/AssetDetail.tsx)) ได้แก่ ดรอปดาวน์เลือกมุมมอง (View Option), เลือกเดือน (Month), เลือกปี (Year) รวมถึงเมนูตัวเลือกเพิ่มธุรกรรม (Add Transaction Menu) ให้มาใช้งาน `DropdownMenu` จาก `@/shared/components/animate-ui/components/radix/dropdown-menu`
+  - ปรับปรุงคอมโพเนนต์ส่วนกลาง [DropdownSelect.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/DropdownSelect.tsx) จาก custom absolute positioning list มาใช้ Radix UI `DropdownMenu` ร่วมกับ Spring animation ของ `animate-ui` สวยงาม ราบรื่น และมี accessibility สมบูรณ์ 100%
+  - เพิ่มสถานะสี **Active / Selected State** (`bg-primary-light/60 text-primary font-semibold` สำหรับโหมดปกติ หรือใช้สีสินทรัพย์ `themeColor` ร่วมกับ `text-white`) พร้อมแสดงไอคอนสัญลักษณ์ติ๊กถูก (`Check` Icon) ด้านขวามือของตัวเลือกที่ถูกเปิดใช้งานเพื่อความชัดเจนทาง visual และตรงตาม [DESIGN.md](file:///Users/torikiton/Desktop/PocketNote/docs/DESIGN.md)
+  - Refactor โค้ดใน [DropdownSelect.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/DropdownSelect.tsx) โดยสกัด (extract) nested ternary operations ออกมาเป็น helper functions (`getTriggerStyle` และ `getItemClassName`) เพื่อให้อ่านง่าย สะอาดขึ้น และลดความซับซ้อนตามมาตรฐานโค้ดที่ดี
 
 ---
 
