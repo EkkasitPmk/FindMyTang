@@ -15,13 +15,13 @@ export default function JournalCalendarGrid({
 }: Readonly<JournalCalendarGridProps>) {
   const { t, locale } = useTranslation();
   const weekdayLabels = [
-    t("sun"),
     t("mon"),
     t("tue"),
     t("wed"),
     t("thu"),
     t("fri"),
     t("sat"),
+    t("sun"),
   ];
 
   return (
