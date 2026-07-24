@@ -1,6 +1,6 @@
 import { Cloud, CloudOff, RefreshCw, CheckCircle2 } from "lucide-react";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { cn } from "@/shared/lib/utils/core.util";
 
 interface SyncStatusButtonProps {

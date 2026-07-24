@@ -20,9 +20,9 @@ export const CategoryBreakdownContainer = () => {
   const currentDate = new Date();
   const [month, setMonth] = useState(currentDate.getMonth() + 1);
   const [year, setYear] = useState(currentDate.getFullYear());
-  const [type, setType] = useState<
-    "EXPENSE" | "INCOME" | "TRANSFER" | "ADJUSTMENT"
-  >("EXPENSE");
+  const [type, setType] = useState<"EXPENSE" | "INCOME" | "TRANSFER">(
+    "EXPENSE",
+  );
 
   const { data, isLoading } = useCategoryBreakdown(month, year, type);
 
@@ -48,8 +48,8 @@ export const CategoryBreakdownContainer = () => {
   if (data) {
     if (type === "EXPENSE") totalAmount = data.summary.expense || 0;
     else if (type === "INCOME") totalAmount = data.summary.income || 0;
-    else if (type === "TRANSFER") totalAmount = data.summary.transfer || 0;
-    else totalAmount = data.summary.adjust || 0;
+    else
+      totalAmount = (data.summary.transfer || 0) + (data.summary.adjust || 0);
   }
 
   const renderContent = () => {
@@ -89,35 +89,34 @@ export const CategoryBreakdownContainer = () => {
         <Tabs
           value={type}
           onValueChange={(val) =>
-            setType(val as "EXPENSE" | "INCOME" | "TRANSFER" | "ADJUSTMENT")
+            setType(val as "EXPENSE" | "INCOME" | "TRANSFER")
           }
+          className="gap-1"
         >
           <div className="m-0 px-4 relative z-10">
             <TabsList className="w-full">
               <TabsTrigger value="EXPENSE">{t("expense")}</TabsTrigger>
               <TabsTrigger value="INCOME">{t("income")}</TabsTrigger>
               <TabsTrigger value="TRANSFER">{t("transfer")}</TabsTrigger>
-              <TabsTrigger value="ADJUSTMENT">{t("adjustment")}</TabsTrigger>
             </TabsList>
           </div>
 
           <TabsContents className="mt-3">
-            {(["EXPENSE", "INCOME", "TRANSFER", "ADJUSTMENT"] as const).map(
-              (tVal) => (
-                <TabsContent key={tVal} value={tVal} className="space-y-3">
-                  <CategoryBreakdownChart
-                    data={data.breakdown}
-                    totalAmount={totalAmount}
-                  />
+            {(["EXPENSE", "INCOME", "TRANSFER"] as const).map((tVal) => (
+              <TabsContent key={tVal} value={tVal} className="space-y-2">
+                <CategoryBreakdownChart
+                  data={data.breakdown}
+                  totalAmount={totalAmount}
+                />
 
-                  <CategoryList
-                    data={data.breakdown}
-                    month={month}
-                    year={year}
-                  />
-                </TabsContent>
-              ),
-            )}
+                <CategoryList
+                  data={data.breakdown}
+                  month={month}
+                  year={year}
+                  type={tVal}
+                />
+              </TabsContent>
+            ))}
           </TabsContents>
         </Tabs>
       </>

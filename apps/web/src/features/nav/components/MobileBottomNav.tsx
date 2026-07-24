@@ -3,7 +3,7 @@ import { useRef } from "react";
 import { navItems } from "../configs/navigation.config";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { MoreHorizontal } from "lucide-react";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 
 interface MobileBottomNavProps {
   pathname: string;

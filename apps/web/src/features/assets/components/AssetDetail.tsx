@@ -2,7 +2,7 @@ import { ChevronRight, Pencil } from "lucide-react";
 import { Asset } from "@/shared/lib/types/asset.type";
 import { GroupedTransaction } from "@/shared/lib/types/transaction.type";
 import { cn } from "@/shared/lib/utils/core.util";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { DropdownSelect } from "@/shared/components/customs/DropdownSelect";
 import { Dispatch, SetStateAction, RefObject } from "react";
 import { TransactionListContainer } from "@/features/transactions/containers/TransactionListContainer";
@@ -221,7 +221,7 @@ export default function AssetDetail({
 
       <section className="flex-1 relative flex flex-col min-h-0 m-0">
         {isSearchMode && (
-          <div className="flex items-end justify-end shrink-0">
+          <div className="flex items-end justify-end shrink-0 px-4 py-1">
             <DropdownSelect
               ref={yearRef}
               options={years.map(translateDropdownItem)}

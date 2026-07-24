@@ -1,15 +1,15 @@
 import { useTheme } from "next-themes";
-import { Sun, Moon, Monitor, Check } from "lucide-react";
+import { Sun, Moon, Monitor } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/shared/lib/utils/core.util";
 import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/shared/components/animate-ui/components/animate/dropdown-menu";
+} from "@/shared/components/animate-ui/components/radix/dropdown-menu";
 
 export default function ThemeSwitcher() {
   const mounted = useMounted();
@@ -150,22 +150,6 @@ export default function ThemeSwitcher() {
                     />
                     <span>{label}</span>
                   </div>
-                  {isActive && (
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 500,
-                        damping: 30,
-                      }}
-                    >
-                      <Check
-                        size={14}
-                        className="text-primary shrink-0 stroke-[2.5]"
-                      />
-                    </motion.div>
-                  )}
                 </DropdownMenuItem>
               );
             })}

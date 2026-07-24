@@ -11,12 +11,15 @@ import { Category } from "@/shared/lib/types/category.type";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { cn } from "@/shared/lib/utils/core.util";
 import { TransactionIcon } from "@/shared/components/customs/TransactionIcon";
-import { TransactionResponse } from "@/shared/lib/types/transaction.type";
+import {
+  TransactionResponse,
+  TransactionType,
+} from "@/shared/lib/types/transaction.type";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import AssetsMenuContainer from "@/features/assets/containers/AssetsMenuContainer";
 import CreateAssetsContainer from "@/features/assets/containers/CreateAssetsContainer";
 import { useAssetUIStore } from "@/features/assets/hooks/assets.hook";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { Input } from "@/shared/components/customs/Input";
 import { useAssets } from "@/shared/lib/hooks/useAssets.hook";
 import { SidebarProvider } from "@/shared/components/animate-ui/components/radix/sidebar";
@@ -65,9 +68,47 @@ export default function MainLayoutContainer({
   );
   const categoryId = categoryIdMatch ? categoryIdMatch[1] : null;
   const { data: categories } = useCategories();
-  const currentCategory = categories?.find(
-    (c: Category) => c.id === categoryId,
-  );
+
+  const getSyntheticCategory = (
+    id: string | null,
+  ): {
+    id: string;
+    name: string;
+    color: string;
+    icon?: string;
+    type?: TransactionType;
+  } | null => {
+    if (!id) return null;
+    if (id === "uncategorized_transfer") {
+      return {
+        id: "uncategorized_transfer",
+        name: t("transfer"),
+        color: "#3B82F6",
+        type: "TRANSFER",
+      };
+    }
+    if (id === "uncategorized_adjustment") {
+      return {
+        id: "uncategorized_adjustment",
+        name: t("adjustment"),
+        color: "#6B7280",
+        type: "ADJUSTMENT",
+      };
+    }
+    if (id === "uncategorized") {
+      return {
+        id: "uncategorized",
+        name: "Uncategorized",
+        color: "#9CA3AF",
+        type: "EXPENSE",
+      };
+    }
+    return null;
+  };
+
+  const currentCategory =
+    categories?.find((c: Category) => c.id === categoryId) ||
+    getSyntheticCategory(categoryId);
 
   const getMobileTitle = (path: string): React.ReactNode => {
     if (path === "/categories") return t("manageCategories");
@@ -83,7 +124,8 @@ export default function MainLayoutContainer({
               <TransactionIcon
                 transaction={
                   {
-                    type: "EXPENSE",
+                    type:
+                      (currentCategory.type as TransactionType) || "EXPENSE",
                     category: {
                       id: currentCategory.id,
                       name: currentCategory.name,
@@ -184,7 +226,11 @@ export default function MainLayoutContainer({
       mainContentClassName = cn("pt-15");
     }
   } else if (shouldShowTopAppBar) {
-    mainContentClassName = cn("pt-12");
+    if (pathname === "/assets" && isSearchMode) {
+      mainContentClassName = cn("");
+    } else {
+      mainContentClassName = cn("pt-12");
+    }
   }
 
   return (

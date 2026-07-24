@@ -20,6 +20,7 @@ import { toast } from "react-toastify";
 import TransactionCategoryList from "../components/TransactionCategoryList";
 import TransactionAssetList from "../components/TransactionAssetList";
 import TransactionMoreDetails from "../components/TransactionMoreDetails";
+import ChooseADate from "../components/ChooseADate";
 import {
   useTransactionFormSync,
   useTransactionInitialization,
@@ -63,7 +64,7 @@ import {
   getLoadingModalProps,
 } from "../helpers/transaction.helper";
 import { cn } from "@/shared/lib/utils/core.util";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { TransactionType } from "@/shared/lib/types/transaction.type";
 import { Category } from "@/shared/lib/types/category.type";
 import { Skeleton } from "@/shared/components/ui/skeleton";
@@ -543,12 +544,6 @@ export default function TransactionsContainer() {
                     isMoreDetailsOpen={isMoreDetailsOpen}
                     setIsMoreDetailsOpen={setIsMoreDetailsOpen}
                     displayDate={displayDate}
-                    tempDate={tempDate}
-                    setTempDate={setTempDate}
-                    displayMonth={displayMonth}
-                    setDisplayMonth={setDisplayMonth}
-                    onPresetClick={handlePresetClick}
-                    onConfirmDate={handleConfirmDate}
                     isCalendarOpen={isCalendarOpen}
                     setIsCalendarOpen={setIsCalendarOpen}
                     isPhotoMenuOpen={isPhotoMenuOpen}
@@ -563,7 +558,6 @@ export default function TransactionsContainer() {
                     handleFileChange={handleFileChange}
                     register={register}
                     isLoadingTx={isTxLoading}
-                    calendarLocale={calendarLocale}
                   />
                 </TabsContent>
               ))}
@@ -583,6 +577,18 @@ export default function TransactionsContainer() {
           </Button>
         </section>
       </div>
+
+      <ChooseADate
+        isOpen={isCalendarOpen}
+        selectedDate={tempDate}
+        onSelectDate={setTempDate}
+        displayMonth={displayMonth}
+        onMonthChange={setDisplayMonth}
+        onConfirm={handleConfirmDate}
+        onClose={() => setIsCalendarOpen(false)}
+        onPresetClick={handlePresetClick}
+        locale={calendarLocale}
+      />
 
       <ConfirmModal
         isOpen={isDeleteModalOpen}

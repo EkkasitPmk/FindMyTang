@@ -1,7 +1,7 @@
 import { ChevronDown } from "lucide-react";
 import { TransactionResponse } from "@/shared/lib/types/transaction.type";
 import { cn } from "@/shared/lib/utils/core.util";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { TransactionItemDetails } from "./TransactionItemDetails";
 import { TransactionIcon } from "./TransactionIcon";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
@@ -78,6 +78,8 @@ export function TransactionItem({
         <Button
           variant="unstyled"
           type="button"
+          hoverScale={1}
+          tapScale={1}
           className={cn(
             "w-full text-left flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-surface-secondary focus:outline-none focus:bg-surface-secondary transition-colors",
           )}

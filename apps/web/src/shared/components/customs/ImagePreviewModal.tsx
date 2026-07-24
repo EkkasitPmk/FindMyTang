@@ -1,5 +1,7 @@
+import { createPortal } from "react-dom";
+import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import { X } from "lucide-react";
-import { Button } from "./Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import Image from "next/image";
 
 export interface ImagePreviewModalProps {
@@ -13,9 +15,11 @@ export default function ImagePreviewModal({
   onClose,
   imageUrl,
 }: Readonly<ImagePreviewModalProps>) {
-  if (!isOpen || !imageUrl) return null;
+  const mounted = useMounted();
 
-  return (
+  if (!isOpen || !imageUrl || !mounted) return null;
+
+  const modalContent = (
     <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-primary-text/60 backdrop-blur-sm transition-opacity duration-300">
       <div
         className="absolute inset-0 cursor-pointer"
@@ -43,4 +47,6 @@ export default function ImagePreviewModal({
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }

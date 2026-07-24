@@ -24,7 +24,7 @@ import LoadingModal from "@/shared/components/customs/LoadingModal";
 import { useConfirmModal } from "@/shared/lib/hooks/useConfirmModal.hook";
 import { useModalState } from "@/shared/lib/hooks/useModalState.hook";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { handleFormError } from "@/shared/lib/helpers/form.helper";
 import { useQueryClient } from "@tanstack/react-query";
 import { useGuestStore } from "@/shared/lib/storages/guest.storage";

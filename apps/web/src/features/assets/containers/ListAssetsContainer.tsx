@@ -6,7 +6,7 @@ import { getAssetIcon } from "@/shared/components/customs/AssetIcon";
 import { EmptyAssetList } from "../../../shared/components/customs/EmptyAssetList";
 import { useThisMonthSummary } from "@/features/home/hooks/summary.hook";
 import { AssetIconWrapper } from "@/shared/components/customs/AssetIconWrapper";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import { usePathname } from "next/navigation";

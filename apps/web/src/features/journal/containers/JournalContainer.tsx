@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo } from "react";
 import { TransactionListContainer } from "@/features/transactions/containers/TransactionListContainer";
 import {
   Tabs,
@@ -9,14 +9,20 @@ import {
   TabsContent,
 } from "@/shared/components/animate-ui/components/animate/tabs";
 import { Input } from "@/shared/components/customs/Input";
-import { Search, X, ArrowUpDown, ChevronRight } from "lucide-react";
+import { Search, X, ArrowUpDown } from "lucide-react";
 import { cn } from "@/shared/lib/utils/core.util";
-import MenuItem from "@/shared/components/customs/MenuItem";
-import MenuCheckboxItem from "@/shared/components/customs/MenuCheckboxItem";
-import { useClickOutside } from "@/shared/lib/hooks/useClickOutside.hook";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+  DropdownMenuCheckboxItem,
+} from "@/shared/components/animate-ui/components/radix/dropdown-menu";
 import { useInfiniteTransactionsQuery } from "@/features/transactions/hooks/transaction.hook";
 import { TransactionResponse } from "@/shared/lib/types/transaction.type";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import JournalCalendarContainer from "./JournalCalendarContainer";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { TranslationKey } from "@/shared/lib/configs/translations.config";
@@ -37,19 +43,6 @@ export default function JournalContainer() {
     "DATE_NEWEST" | "DATE_OLDEST" | "AMOUNT_HIGHEST" | "AMOUNT_LOWEST"
   >("DATE_NEWEST");
   const [isSortOpen, setIsSortOpen] = useState(false);
-  const [openSortSubMenu, setOpenSortSubMenu] = useState<
-    "DATE" | "MONEY" | null
-  >(null);
-
-  const sortMenuRef = useRef<HTMLDivElement>(null);
-  useClickOutside(
-    sortMenuRef,
-    () => {
-      setIsSortOpen(false);
-      setOpenSortSubMenu(null);
-    },
-    isSortOpen,
-  );
 
   const queryType =
     selectedType === "all" ? undefined : selectedType.toUpperCase();
@@ -180,111 +173,84 @@ export default function JournalContainer() {
                       ))}
                     </div>
 
-                    <div className="relative flex-none" ref={sortMenuRef}>
-                      <Button
-                        variant="unstyled"
-                        onClick={() => {
-                          setIsSortOpen(!isSortOpen);
-                          if (!isSortOpen) setOpenSortSubMenu(null);
-                        }}
-                        className="p-1.5 bg-surface border border-border rounded-md text-secondary-text hover:bg-surface-secondary"
-                      >
-                        <ArrowUpDown size={18} />
-                      </Button>
+                    <DropdownMenu
+                      open={isSortOpen}
+                      onOpenChange={setIsSortOpen}
+                    >
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="unstyled"
+                          hoverScale={1}
+                          tapScale={1}
+                          type="button"
+                          className="p-1.5 bg-surface border border-border rounded-md text-secondary-text hover:bg-surface-secondary cursor-pointer outline-none"
+                        >
+                          <ArrowUpDown size={18} />
+                        </Button>
+                      </DropdownMenuTrigger>
 
-                      {isSortOpen && (
-                        <div className="absolute right-0 top-full mt-1 flex flex-col items-start w-44 bg-surface rounded-md py-1 shadow-md z-50 border border-border">
-                          <MenuItem
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setOpenSortSubMenu((prev) =>
-                                prev === "DATE" ? null : "DATE",
-                              );
-                            }}
-                            className="relative flex items-center justify-between w-full"
-                          >
-                            <div className="flex flex-col text-left">
-                              <span className="text-sm">{t("date")}</span>
-                            </div>
-                            <ChevronRight
-                              size={16}
-                              className={cn(
-                                "transition-transform",
-                                isSortOpen && openSortSubMenu === "DATE"
-                                  ? "rotate-90"
-                                  : "",
-                              )}
-                            />
-                            {openSortSubMenu === "DATE" && (
-                              <div className="absolute top-full right-0 w-full bg-surface flex flex-col py-1 shadow-md rounded-md z-50 border border-border">
-                                <MenuCheckboxItem
-                                  label={t("newestFirst")}
-                                  labelSize="sm"
-                                  isSelected={sortType === "DATE_NEWEST"}
-                                  onClick={() => {
-                                    setSortType("DATE_NEWEST");
-                                    setIsSortOpen(false);
-                                  }}
-                                />
-                                <MenuCheckboxItem
-                                  label={t("oldestFirst")}
-                                  labelSize="sm"
-                                  isSelected={sortType === "DATE_OLDEST"}
-                                  onClick={() => {
-                                    setSortType("DATE_OLDEST");
-                                    setIsSortOpen(false);
-                                  }}
-                                />
-                              </div>
-                            )}
-                          </MenuItem>
-                          <MenuItem
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setOpenSortSubMenu((prev) =>
-                                prev === "MONEY" ? null : "MONEY",
-                              );
-                            }}
-                            className="relative flex items-center justify-between w-full"
-                          >
-                            <div className="flex flex-col text-left">
-                              <span className="text-sm">{t("amountStr")}</span>
-                            </div>
-                            <ChevronRight
-                              size={16}
-                              className={cn(
-                                "transition-transform",
-                                isSortOpen && openSortSubMenu === "MONEY"
-                                  ? "rotate-90"
-                                  : "",
-                              )}
-                            />
-                            {openSortSubMenu === "MONEY" && (
-                              <div className="absolute top-full right-0 w-full bg-surface flex flex-col py-1 shadow-md rounded-md z-50 border border-border">
-                                <MenuCheckboxItem
-                                  label={t("highestAmount")}
-                                  labelSize="sm"
-                                  isSelected={sortType === "AMOUNT_HIGHEST"}
-                                  onClick={() => {
-                                    setSortType("AMOUNT_HIGHEST");
-                                    setIsSortOpen(false);
-                                  }}
-                                />
-                                <MenuCheckboxItem
-                                  label={t("lowestAmount")}
-                                  labelSize="sm"
-                                  isSelected={sortType === "AMOUNT_LOWEST"}
-                                  onClick={() => {
-                                    setSortType("AMOUNT_LOWEST");
-                                    setIsSortOpen(false);
-                                  }}
-                                />
-                              </div>
-                            )}
-                          </MenuItem>
-                        </div>
-                      )}
-                    </div>
+                      <DropdownMenuContent
+                        align="end"
+                        sideOffset={4}
+                        className="w-44 p-1 rounded-xl shadow-lg border border-border bg-surface text-primary-text z-50"
+                      >
+                        <DropdownMenuSub>
+                          <DropdownMenuSubTrigger className="cursor-pointer text-sm py-2">
+                            <span>{t("date")}</span>
+                          </DropdownMenuSubTrigger>
+                          <DropdownMenuSubContent className="w-40 p-1 rounded-xl shadow-lg border border-border bg-surface text-primary-text">
+                            <DropdownMenuCheckboxItem
+                              checked={sortType === "DATE_NEWEST"}
+                              onSelect={() => {
+                                setSortType("DATE_NEWEST");
+                                setIsSortOpen(false);
+                              }}
+                              className="cursor-pointer text-sm"
+                            >
+                              {t("newestFirst")}
+                            </DropdownMenuCheckboxItem>
+                            <DropdownMenuCheckboxItem
+                              checked={sortType === "DATE_OLDEST"}
+                              onSelect={() => {
+                                setSortType("DATE_OLDEST");
+                                setIsSortOpen(false);
+                              }}
+                              className="cursor-pointer text-sm"
+                            >
+                              {t("oldestFirst")}
+                            </DropdownMenuCheckboxItem>
+                          </DropdownMenuSubContent>
+                        </DropdownMenuSub>
+
+                        <DropdownMenuSub>
+                          <DropdownMenuSubTrigger className="cursor-pointer text-sm py-2">
+                            <span>{t("amountStr")}</span>
+                          </DropdownMenuSubTrigger>
+                          <DropdownMenuSubContent className="w-40 p-1 rounded-xl shadow-lg border border-border bg-surface text-primary-text">
+                            <DropdownMenuCheckboxItem
+                              checked={sortType === "AMOUNT_HIGHEST"}
+                              onSelect={() => {
+                                setSortType("AMOUNT_HIGHEST");
+                                setIsSortOpen(false);
+                              }}
+                              className="cursor-pointer text-sm"
+                            >
+                              {t("highestAmount")}
+                            </DropdownMenuCheckboxItem>
+                            <DropdownMenuCheckboxItem
+                              checked={sortType === "AMOUNT_LOWEST"}
+                              onSelect={() => {
+                                setSortType("AMOUNT_LOWEST");
+                                setIsSortOpen(false);
+                              }}
+                              className="cursor-pointer text-sm"
+                            >
+                              {t("lowestAmount")}
+                            </DropdownMenuCheckboxItem>
+                          </DropdownMenuSubContent>
+                        </DropdownMenuSub>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </section>
 

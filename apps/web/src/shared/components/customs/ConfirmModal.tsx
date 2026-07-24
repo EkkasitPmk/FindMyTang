@@ -1,7 +1,7 @@
 import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import { LucideIcon, Check } from "lucide-react";
 import { createPortal } from "react-dom";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 
 interface ConfirmModalProps {
   isOpen: boolean;

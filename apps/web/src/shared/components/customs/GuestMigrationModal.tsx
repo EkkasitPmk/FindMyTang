@@ -1,5 +1,5 @@
 import { CloudUpload, Trash2 } from "lucide-react";
-import { Button } from "./Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 
 interface GuestMigrationModalProps {
   isOpen: boolean;

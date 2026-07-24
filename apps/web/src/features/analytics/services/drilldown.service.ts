@@ -1,5 +1,5 @@
 import { useGuestStore } from "@/shared/lib/storages/guest.storage";
-import { db } from "@/shared/lib/storages/dexie.storage";
+import { db, LocalCategory } from "@/shared/lib/storages/dexie.storage";
 import http from "@/shared/lib/api/http";
 import {
   DrilldownResponse,
@@ -22,7 +22,60 @@ export const getDrilldownApi = async (
     const endOfPrevMonth = new Date(prevYear, prevMonth, 0);
     const endOfPrevMonthStr = `${prevYear}-${String(prevMonth).padStart(2, "0")}-${String(endOfPrevMonth.getDate()).padStart(2, "0")}T23:59:59`;
 
-    const category = await db.categories.get(categoryId);
+    let category:
+      | LocalCategory
+      | {
+          id: string;
+          name: string;
+          color: string;
+          icon: string | null;
+          type: string;
+        }
+      | undefined;
+    if (categoryId === "uncategorized_adjustment") {
+      category = {
+        id: "uncategorized_adjustment",
+        name: "Adjustment",
+        color: "#6B7280",
+        icon: null,
+        type: "ADJUSTMENT" as const,
+      };
+    } else if (categoryId === "uncategorized_transfer") {
+      category = {
+        id: "uncategorized_transfer",
+        name: "Transfer",
+        color: "#3B82F6",
+        icon: null,
+        type: "TRANSFER" as const,
+      };
+    } else if (categoryId === "uncategorized") {
+      category = {
+        id: "uncategorized",
+        name: "Uncategorized",
+        color: "#9CA3AF",
+        icon: null,
+        type: "EXPENSE" as const,
+      };
+    } else {
+      category = await db.categories.get(categoryId);
+    }
+
+    const matchesCategory = (t: {
+      categoryId?: string | null;
+      type?: string;
+    }) => {
+      if (categoryId === "uncategorized_adjustment") {
+        return !t.categoryId && t.type === "ADJUSTMENT";
+      }
+      if (categoryId === "uncategorized_transfer") {
+        return !t.categoryId && t.type === "TRANSFER";
+      }
+      if (categoryId === "uncategorized") {
+        return !t.categoryId;
+      }
+      return t.categoryId === categoryId;
+    };
+
     const allCurrentMonthTxs = await db.transactions
       .filter(
         (t) =>
@@ -38,16 +91,14 @@ export const getDrilldownApi = async (
           !t.deletedAt &&
           t.date >= startOfPrevMonth &&
           t.date <= endOfPrevMonthStr &&
-          t.categoryId === categoryId,
+          matchesCategory(t),
       )
       .toArray();
 
     const assets = await db.assets.toArray();
     const assetMap = new Map(assets.map((a) => [a.id, a]));
 
-    const currentTxs = allCurrentMonthTxs.filter(
-      (t) => t.categoryId === categoryId,
-    );
+    const currentTxs = allCurrentMonthTxs.filter(matchesCategory);
 
     let currentTotal = 0;
     currentTxs.forEach((t) => (currentTotal += t.amount));
@@ -82,7 +133,7 @@ export const getDrilldownApi = async (
     return drilldownResponseSchema.parse({
       category: {
         id: category?.id || categoryId,
-        name: category?.name || "Unknown",
+        name: category?.name || "Uncategorized",
         color: category?.color || null,
         icon: category?.icon || null,
       },

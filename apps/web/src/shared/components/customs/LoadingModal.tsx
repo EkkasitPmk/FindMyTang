@@ -81,7 +81,10 @@ export default function LoadingModal({
         )}
       >
         {renderIcon()}
-        <p className="mt-3 text-sm font-medium text-secondary-text dark:text-zinc-200">
+        <p
+          className="mt-3 text-sm font-semibold text-secondary-text dark:text-secondary-text"
+          style={{ color: "var(--semantic-secondary-text)" }}
+        >
           {message}
         </p>
       </div>

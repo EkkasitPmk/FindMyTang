@@ -32,7 +32,7 @@ import {
 } from "../helpers/category.helper";
 import { handleFormError } from "@/shared/lib/helpers/form.helper";
 import { AxiosError } from "axios";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 
 export default function CategoryContainer() {
   const { t } = useTranslation();
@@ -296,7 +296,7 @@ export default function CategoryContainer() {
     localCategories.filter((category) => category.type === activeTab) || [];
 
   return (
-    <div className="space-y-2 px-4">
+    <div className="space-y-2 px-4 py-2">
       <div className="mb-2">
         <h2 className="text-xl font-bold">{t("categoryManagement")}</h2>
         <p className="text-sm">{t("categoryManagementDesc")}</p>

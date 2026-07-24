@@ -4,7 +4,7 @@ import Avatar from "@/shared/components/customs/Avatar";
 import { UserProfile } from "@/shared/lib/types/user.type";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { cn } from "@/shared/lib/utils/core.util";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 
 interface NavUserProfileProps {
   user?: UserProfile | null;
