@@ -15,13 +15,16 @@ import { cn } from "@/shared/lib/utils/core.util";
 
 type TooltipProviderProps = TooltipProviderPrimitiveProps;
 
-function TooltipProvider({ openDelay = 0, ...props }: TooltipProviderProps) {
+function TooltipProvider({
+  openDelay = 0,
+  ...props
+}: Readonly<TooltipProviderProps>) {
   return <TooltipProviderPrimitive openDelay={openDelay} {...props} />;
 }
 
 type TooltipProps = TooltipPrimitiveProps;
 
-function Tooltip({ sideOffset = 10, ...props }: TooltipProps) {
+function Tooltip({ sideOffset = 10, ...props }: Readonly<TooltipProps>) {
   return <TooltipPrimitive sideOffset={sideOffset} {...props} />;
 }
 
