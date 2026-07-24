@@ -3,6 +3,11 @@ import { Asset } from "@/shared/lib/types/asset.type";
 import { getAssetIcon } from "@/shared/components/customs/AssetIcon";
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { cn } from "@/shared/lib/utils/core.util";
+import {
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
+} from "@/shared/components/animate-ui/primitives/radix/collapsible";
 import { getManageAssetItemClasses } from "../helpers/asset.helper";
 import ManageAssetActions from "./ManageAssetActions";
 import ManageAssetDragHandle from "./ManageAssetDragHandle";
@@ -126,17 +131,37 @@ export default function ManageAssetItem({
         <ChevronDown
           size={16}
           className={cn(
-            "text-disabled-text transition-transform",
-            isExpanded && "-rotate-x-180",
+            "text-disabled-text transition-transform duration-300",
+            "group-data-[state=open]/collapsible:-rotate-180",
           )}
         />
       )}
     </div>
   );
 
+  const headerButton = (
+    <Button
+      variant="unstyled"
+      type="button"
+      tapScale={1}
+      hoverScale={1}
+      onClick={isEditingList ? onToggleSelect : undefined}
+      className={headerClasses}
+    >
+      <div className="flex items-center gap-3">
+        {selectionIndicator}
+        {assetIconView}
+        {assetDetailsView}
+      </div>
+      {assetRightControls}
+    </Button>
+  );
+
   return (
-    <div
-      className={containerClasses}
+    <Collapsible
+      open={!isEditingList && isExpanded}
+      onOpenChange={isEditingList ? undefined : () => onToggle()}
+      className={cn(containerClasses, "group/collapsible")}
       style={containerStyle}
       draggable={draggable}
       onDragStart={(e) => index !== undefined && onDragStart?.(e, index)}
@@ -144,28 +169,14 @@ export default function ManageAssetItem({
       onDragEnd={onDragEnd}
       data-index={index}
     >
-      <Button
-        variant="unstyled"
-        type="button"
-        onClick={isEditingList ? onToggleSelect : onToggle}
-        className={headerClasses}
-      >
-        <div className="flex items-center gap-3">
-          {selectionIndicator}
-          {assetIconView}
-          {assetDetailsView}
-        </div>
-        {assetRightControls}
-      </Button>
+      {isEditingList ? (
+        headerButton
+      ) : (
+        <CollapsibleTrigger asChild>{headerButton}</CollapsibleTrigger>
+      )}
 
-      {/* Expanded actions panel */}
-      {isExpanded && !isEditingList && (
-        <div
-          className={cn(
-            "flex items-center gap-2 px-3 py-2 border-t border-border",
-            "animate-subtle-pop",
-          )}
-        >
+      <CollapsibleContent>
+        <div className="flex items-center gap-2 px-3 py-2 border-t border-border">
           <ManageAssetActions
             isDeleted={isDeleted}
             isArchived={isArchived}
@@ -176,7 +187,7 @@ export default function ManageAssetItem({
             onDelete={onDelete}
           />
         </div>
-      )}
-    </div>
+      </CollapsibleContent>
+    </Collapsible>
   );
 }

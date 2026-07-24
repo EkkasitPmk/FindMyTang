@@ -6,7 +6,6 @@ import {
   useUpdateAssetMutation,
   useAssetUIStore,
 } from "../hooks/assets.hook";
-import { useClickOutside } from "@/shared/lib/hooks/useClickOutside.hook";
 import { useConfirmModal } from "@/shared/lib/hooks/useConfirmModal.hook";
 import AssetsMenu from "../components/AssetsMenu";
 import LoadingModal from "@/shared/components/customs/LoadingModal";
@@ -180,17 +179,6 @@ export default function AssetsMenuContainer() {
         return t("newestFirst");
     }
   })();
-
-  useClickOutside(
-    menuRef,
-    () => {
-      setIsOpen(false);
-      setIsFilterOpen(false);
-      setIsSortOpen(false);
-      setOpenSortSubMenu(null);
-    },
-    isOpen,
-  );
 
   return (
     <>

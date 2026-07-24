@@ -221,7 +221,7 @@ export default function AssetDetail({
 
       <section className="flex-1 relative flex flex-col min-h-0 m-0">
         {isSearchMode && (
-          <div className="flex items-end justify-end shrink-0">
+          <div className="flex items-end justify-end shrink-0 px-4 py-1">
             <DropdownSelect
               ref={yearRef}
               options={years.map(translateDropdownItem)}

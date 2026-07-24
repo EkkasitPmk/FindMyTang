@@ -11,7 +11,6 @@ import {
 } from "../../transactions/hooks/transaction.hook";
 import { groupTransactionsByDate } from "../helpers/asset-transactions.helper";
 import { MONTHS } from "@/shared/lib/configs/date.config";
-import { useClickOutside } from "@/shared/lib/hooks/useClickOutside.hook";
 import EditAssetsContainer from "./EditAssetsContainer";
 import AssetDetail from "../components/AssetDetail";
 import ManageAssetsContainer from "./ManageAssetsContainer";
@@ -42,11 +41,6 @@ export default function AssetDetailContainer() {
   const [viewOption, setViewOption] = useState("recentTransactions");
   const [isViewOptionOpen, setIsViewOptionOpen] = useState(false);
   const viewOptionRef = useRef<HTMLDivElement>(null);
-  useClickOutside(
-    viewOptionRef,
-    () => setIsViewOptionOpen(false),
-    isViewOptionOpen,
-  );
 
   const asset = assets?.find((a: Asset) => a.id === id) || assets?.[0];
 
@@ -62,11 +56,9 @@ export default function AssetDetailContainer() {
 
   const [isMonthOpen, setIsMonthOpen] = useState(false);
   const monthRef = useRef<HTMLDivElement>(null);
-  useClickOutside(monthRef, () => setIsMonthOpen(false), isMonthOpen);
 
   const [isYearOpen, setIsYearOpen] = useState(false);
   const yearRef = useRef<HTMLDivElement>(null);
-  useClickOutside(yearRef, () => setIsYearOpen(false), isYearOpen);
 
   const [selectedMonth, setSelectedMonth] = useState("Select");
   const [selectedYear, setSelectedYear] = useState("Select");
