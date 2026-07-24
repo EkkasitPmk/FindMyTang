@@ -61,6 +61,8 @@ export default function MonthYearNavigator({
             <DropdownMenuTrigger asChild>
               <Button
                 variant="unstyled"
+                hoverScale={1}
+                tapScale={1}
                 className={cn(
                   "flex items-center gap-1 px-2 py-1.5 rounded-lg text-base font-semibold tracking-wide transition-colors cursor-pointer outline-none",
                   isMonthOpen
@@ -82,7 +84,11 @@ export default function MonthYearNavigator({
             <DropdownMenuContent
               align="start"
               sideOffset={6}
-              className="w-44 max-h-64 overflow-y-auto p-1 rounded-xl shadow-lg border border-border bg-surface z-50"
+              transition={{ duration: 0.12, ease: "easeOut" }}
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              className="max-h-64 overflow-y-auto p-1 rounded-xl shadow-lg border border-border bg-surface z-50"
             >
               <DropdownMenuGroup>
                 {months.map((month, index) => {
@@ -113,6 +119,8 @@ export default function MonthYearNavigator({
             <DropdownMenuTrigger asChild>
               <Button
                 variant="unstyled"
+                hoverScale={1}
+                tapScale={1}
                 className={cn(
                   "flex items-center gap-1 px-2 py-1.5 rounded-lg text-base font-semibold tracking-wide transition-colors cursor-pointer outline-none",
                   isYearOpen
@@ -134,7 +142,11 @@ export default function MonthYearNavigator({
             <DropdownMenuContent
               align="start"
               sideOffset={6}
-              className="w-28 max-h-64 overflow-y-auto p-1 rounded-xl shadow-lg border border-border bg-surface z-50"
+              transition={{ duration: 0.12, ease: "easeOut" }}
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              className="min-w-22 max-h-64 overflow-y-auto p-1 rounded-xl shadow-lg border border-border bg-surface z-50"
             >
               <DropdownMenuGroup>
                 {years.map((year) => {

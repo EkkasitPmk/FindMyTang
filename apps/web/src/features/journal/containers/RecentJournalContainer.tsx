@@ -55,6 +55,7 @@ export default function RecentJournalContainer() {
         className={cn(
           "flex items-center justify-between mb-2",
           groupedTransactions.length > 0 && "px-4",
+          isLoading && "px-4",
         )}
       >
         <span className="text-lg font-medium">{t("recentJournal")}</span>
