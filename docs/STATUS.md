@@ -137,6 +137,14 @@
     1. ปรับปรุง [AssetDetailContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/assets/containers/AssetDetailContainer.tsx) โดยเพิ่ม Type Check `if (typeof newName === "string" && id)` เพื่อป้องกันไม่ให้ Object ชนิดอื่นถูกส่งไปตั้งค่าใน URL Query Parameter
     2. ปรับปรุง [AssetForm.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/assets/components/AssetForm.tsx) ให้ปุ่ม Cancel เรียก `onClick={() => onClose?.()}` เพื่อป้องกันไม่ให้ส่ง MouseEvent Object ออกไปยัง callback
 
+- **Analytics Transfer/Adjustment Drilldown Synthetic Category TopAppBarMobile Loading Fix**:
+  - แก้ไขปัญหา TopAppBarMobile หมุนค้างแสดงผล Skeleton ไม่ยอมหายและไม่แสดงชื่อข้อมูล เมื่อกดคลิกรายการในหน้า Analytics (`/analytics`) -> แถบรายงาน (`Report`) -> แถบโอนเงิน (`Transfer`) เพื่อไปยังหน้า Drilldown (`/analytics/category/[id]`)
+  - **สาเหตุที่แท้จริง (Root Cause)**: รายการธุรกรรมในแถบโอนเงิน (`TRANSFER`) และการปรับปรุงยอด (`ADJUSTMENT`) จะใช้ Synthetic Category ID พิเศษ (`uncategorized_transfer`, `uncategorized_adjustment`, `uncategorized`) ซึ่งถูกสร้างขึ้นเฉพาะในระบบ Analytics เท่านั้น แต่ไม่ได้อยู่ในตารางหมวดหมู่จริง (`categories` จาก hook `useCategories()`) เมื่อผู้ใช้นิเกตไปยังหน้า Drilldown (`/analytics/category/uncategorized_transfer`) คอมโพเนนต์ [MainLayoutContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/main-layout/containers/MainLayoutContainer.tsx) ค้นหาหมวดหมู่นี้ไม่พบ (`currentCategory` มีค่าเป็น `undefined`) จึงทำให้ฟังก์ชัน `getMobileTitle()` คืนค่าเป็น `<Skeleton />` ค้างตลอดเวลา
+  - **การแก้ไข**:
+    1. เพิ่มฟังก์ชัน helper `getSyntheticCategory` ใน [MainLayoutContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/main-layout/containers/MainLayoutContainer.tsx) เพื่อแมปข้อมูล Synthetic Category (`uncategorized_transfer`, `uncategorized_adjustment`, `uncategorized`) กลับเป็นชื่อหมวดหมู่ที่แปลตามภาษา (เช่น "โอนเงิน", "ปรับปรุง") พร้อมสีและประเภทธุรกรรม
+    2. ปรับปรุงคอมโพเนนต์ [TransactionIcon.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/TransactionIcon.tsx) ให้ตรวจสอบ `transaction.category?.icon` ก่อน และหากไม่มีไอคอนประจำหมวดหมู่ ให้เลือกแสดงไอคอนประเภทธุรกรรม (`ArrowRightLeft` สำหรับ TRANSFER และ `SlidersHorizontal` สำหรับ ADJUSTMENT) ได้อย่างถูกต้อง
+    3. ปรับปรุงคอมโพเนนต์ [CategoryList.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/analytics/components/CategoryList.tsx) และ [CategoryBreakdownContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/analytics/containers/CategoryBreakdownContainer.tsx) โดยเลิกฮาร์ดโค้ด `type: "EXPENSE"` และส่งประเภทแถบข้อมูล (`type`) พร้อมคำนวณ `itemType` ตาม `categoryId` เพื่อให้ไอคอนรายการโอนเงิน (`TRANSFER`) และปรับปรุงยอด (`ADJUSTMENT`) แสดงไอคอนสัญลักษณ์ที่ถูกต้องแทนการตกเป็นไอคอนเครื่องหมายคำถาม (`?`)
+
 ---
 
 ### 2. สิ่งที่จะต้องทำเป็นลำดับถัดไป (Next Actions)
@@ -145,4 +153,18 @@
 
 - **[ ] ระบบความปลอดภัยและการจัดการสิทธิ์ขั้นสูง:** ตรวจสอบความปลอดภัย API, JWT, Middleware
 - **[ ] การปรับปรุงประสิทธิภาพระบบ:** การแบ่งหน้าข้อมูล (Pagination), ทำ Caching กรณีข้อมูลธุรกรรมปริมาณมาก
+
+---
+
+### 3. 💡 ฟีเจอร์เพิ่มเติมที่วางแผนไว้ในอนาคต (Future Feature Backlog)
+
+ฟีเจอร์เพิ่มเติมที่สรุปจากความต้องการของผู้ใช้ เพื่อเตรียมออกแบบและพัฒนาใน Sprint ถัด ๆ ไป:
+
+1. **[ ] การคำนวณรายจ่ายเฉลี่ย/วัน (Daily Average Expenses):** คำนวณและแสดงผลค่าเฉลี่ยการใช้จ่ายรายวันประจำเดือน เพื่อช่วยให้ผู้ใช้ประเมินพฤติกรรมการใช้จ่ายได้ชัดเจนยิ่งขึ้น (พิจารณาแสดงบน Home Dashboard หรือ Analytics)
+2. **[ ] ระบบวางแผนงบประมาณรายหมวดหมู่ (Category Budget Planning):** สามารถกำหนดเพดานงบประมาณรายจ่ายล่วงหน้าในแต่ละหมวดหมู่ประจำเดือน พร้อมระบบแจ้งเตือนเมื่อใช้จ่ายใกล้เต็มงบ
+3. **[ ] ระบบผู้ช่วยอัจฉริยะด้วยข้อความและเสียง (AI Smart Assistant / Voice & Text Action):** พิมพ์หรือพูดคำสั่งเสียงภาษาธรรมชาติเพื่อให้ผู้ช่วย AI ดำเนินการเพิ่ม, แก้ไข, หรือลบรายการธุรกรรม, หมวดหมู่, และสินทรัพย์โดยอัตโนมัติ
+4. **[ ] ระบบจัดการหนี้สินและเป้าหมายเงินออม (Debts & Savings Goals):** ติดตั้งโมดูลติดตามภาระหนี้สิน (Debts/Liabilities) และระบบตั้งเป้าหมายการออมเงิน (Savings Goals) พร้อม Progress Tracking
+5. **[ ] ระบบคำนวณยอดเงินพร้อมใช้ (Spendable / Available Balance):** คำนวณยอดเงินคงเหลือที่สามารถนำไปใช้จ่ายได้จริง (สุทธิจากเงินออม เงินลงทุน หรือเงินสำรอง) แยกต่างหากจากยอดสินทรัพย์รวม (Total Assets)
+6. **[ ] ระบบวิเคราะห์ภาษีและการลดหย่อน (Tax Calculation & Deduction Tracker):** ระบบรวบรวมรายได้สะสม สรุปหมวดหมู่ค่าใช้จ่าย/สิทธิลดหย่อน และคำนวณภาษีเงินได้บุคคลธรรมดาประเมินปลายปี
+7. **[ ] ระบบจัดสรรรายได้อัตโนมัติ (Income Allocation / Rule-based Splitting):** ตั้งค่ากฎการแบ่งเก็บแบ่งจ่ายอัตโนมัติเมื่อมีรายรับเข้ามา (เช่น 50% ค่าใช้จ่าย, 30% เงินออม, 20% ลงทุน)
 
