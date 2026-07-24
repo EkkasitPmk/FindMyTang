@@ -663,7 +663,7 @@ function HighlightItem<T extends React.ElementType>({
       )}
 
       {React.cloneElement(element, {
-        style: { position: "relative", zIndex: 1 },
+        style: { position: "relative", zIndex: 1, ...element.props.style },
         className: element.props.className,
         ...getNonOverridingDataAttributes(element, {
           ...dataAttributes,
