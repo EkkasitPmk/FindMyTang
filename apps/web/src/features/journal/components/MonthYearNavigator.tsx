@@ -1,6 +1,6 @@
 import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { cn } from "@/shared/lib/utils/core.util";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 interface MonthYearNavigatorProps {
@@ -65,7 +65,7 @@ export default function MonthYearNavigator({
               size={16}
               className={cn(
                 "transition-transform",
-                isMonthOpen && "rotate-x-180",
+                isMonthOpen && "-rotate-180",
               )}
             />
           </Button>
@@ -108,7 +108,7 @@ export default function MonthYearNavigator({
               size={14}
               className={cn(
                 "transition-transform",
-                isYearOpen && "rotate-x-180",
+                isYearOpen && "-rotate-180",
               )}
             />
           </Button>

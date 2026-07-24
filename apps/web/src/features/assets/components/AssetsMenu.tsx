@@ -11,7 +11,7 @@ import ConfirmModal from "@/shared/components/customs/ConfirmModal";
 import MenuItem from "@/shared/components/customs/MenuItem";
 import MenuCheckboxItem from "@/shared/components/customs/MenuCheckboxItem";
 import { RefObject } from "react";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 interface AssetsMenuProps {

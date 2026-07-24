@@ -1,7 +1,7 @@
 import { ChevronDown, Circle, CheckCircle2 } from "lucide-react";
 import { Asset } from "@/shared/lib/types/asset.type";
 import { getAssetIcon } from "@/shared/components/customs/AssetIcon";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { cn } from "@/shared/lib/utils/core.util";
 import { getManageAssetItemClasses } from "../helpers/asset.helper";
 import ManageAssetActions from "./ManageAssetActions";

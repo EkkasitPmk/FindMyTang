@@ -1,7 +1,7 @@
 import { createPortal } from "react-dom";
 import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import { X } from "lucide-react";
-import { Button } from "./Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import Image from "next/image";
 
 export interface ImagePreviewModalProps {

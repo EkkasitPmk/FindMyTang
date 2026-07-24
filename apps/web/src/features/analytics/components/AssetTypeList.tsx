@@ -6,7 +6,7 @@ import { AssetType } from "@/shared/lib/types/asset.type";
 import { AssetIconWrapper } from "@/shared/components/customs/AssetIconWrapper";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { TranslationKey } from "@/shared/lib/configs/translations.config";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import {
   Collapsible,
   CollapsibleTrigger,

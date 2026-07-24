@@ -3,7 +3,7 @@ import { cn } from "@/shared/lib/utils/core.util";
 import Avatar from "@/shared/components/customs/Avatar";
 import { AVATARS } from "../configs/account.config";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 
 interface AvatarSectionProps {
   user:

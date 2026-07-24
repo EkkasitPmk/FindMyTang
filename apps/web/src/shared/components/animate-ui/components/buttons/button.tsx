@@ -1,7 +1,10 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { Slot } from "radix-ui";
 import { Loader2 } from "lucide-react";
+import {
+  Button as ButtonPrimitive,
+  type ButtonProps as ButtonPrimitiveProps,
+} from "@/shared/components/animate-ui/primitives/buttons/button";
 import { cn } from "@/shared/lib/utils/core.util";
 
 const buttonVariants = cva(
@@ -24,6 +27,7 @@ const buttonVariants = cva(
         investment:
           "bg-investment text-white hover:bg-investment/90 focus-visible:ring-investment/50",
         link: "text-primary underline-offset-4 hover:underline p-0 h-auto font-normal",
+        unstyled: "",
       },
       size: {
         default: "h-8 gap-1.5 px-3 text-sm rounded-lg",
@@ -45,15 +49,12 @@ const buttonVariants = cva(
 );
 
 export interface ButtonProps
-  extends
-    React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends Omit<ButtonPrimitiveProps, "variant">,
     Omit<VariantProps<typeof buttonVariants>, "variant"> {
-  variant?:
-    NonNullable<VariantProps<typeof buttonVariants>["variant"]> | "unstyled";
+  variant?: NonNullable<VariantProps<typeof buttonVariants>["variant"]>;
   isLoading?: boolean;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
-  asChild?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -67,18 +68,22 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       rightIcon,
       children,
       disabled,
+      hoverScale,
+      tapScale,
       asChild = false,
       ...props
     },
     ref,
   ) => {
     if (variant === "unstyled") {
-      const Comp = asChild ? Slot.Root : "button";
       return (
-        <Comp
-          className={className}
+        <ButtonPrimitive
           ref={ref}
+          className={className}
           disabled={isLoading || disabled}
+          hoverScale={hoverScale}
+          tapScale={tapScale}
+          asChild={asChild}
           {...props}
         >
           {isLoading && (
@@ -91,30 +96,32 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           {!isLoading && rightIcon && (
             <span className="ml-2 inline-block">{rightIcon}</span>
           )}
-        </Comp>
+        </ButtonPrimitive>
       );
     }
 
-    const Comp = asChild ? Slot.Root : "button";
-
     return (
-      <Comp
+      <ButtonPrimitive
+        ref={ref}
         data-slot="button"
         data-variant={variant}
         data-size={size}
         className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
         disabled={isLoading || disabled}
+        hoverScale={hoverScale}
+        tapScale={tapScale}
+        asChild={asChild}
         {...props}
       >
         {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         {!isLoading && leftIcon && <span className="mr-2">{leftIcon}</span>}
         {children}
         {!isLoading && rightIcon && <span className="ml-2">{rightIcon}</span>}
-      </Comp>
+      </ButtonPrimitive>
     );
   },
 );
+
 Button.displayName = "Button";
 
 export { Button, buttonVariants };

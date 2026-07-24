@@ -1,5 +1,5 @@
 import { Lock, X } from "lucide-react";
-import { Button } from "./Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { cn } from "@/shared/lib/utils/core.util";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 

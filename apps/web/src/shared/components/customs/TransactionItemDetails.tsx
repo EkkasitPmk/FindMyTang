@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { TransactionResponse } from "@/shared/lib/types/transaction.type";
 import { cn } from "@/shared/lib/utils/core.util";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { RotateCcw, Trash } from "lucide-react";
 import { useCachedImageUrl } from "@/shared/lib/hooks/useCachedImageUrl.hook";
 import { getTimeDisplay } from "@/shared/lib/helpers/transaction-item.helper";

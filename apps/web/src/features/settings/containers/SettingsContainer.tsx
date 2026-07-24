@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { useIsGuest } from "@/shared/lib/storages/guest.storage";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 
 interface SettingsContainerProps {
   onClose?: () => void;

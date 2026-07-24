@@ -16,7 +16,7 @@ import MenuCheckboxItem from "@/shared/components/customs/MenuCheckboxItem";
 import { useClickOutside } from "@/shared/lib/hooks/useClickOutside.hook";
 import { useInfiniteTransactionsQuery } from "@/features/transactions/hooks/transaction.hook";
 import { TransactionResponse } from "@/shared/lib/types/transaction.type";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import JournalCalendarContainer from "./JournalCalendarContainer";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { TranslationKey } from "@/shared/lib/configs/translations.config";

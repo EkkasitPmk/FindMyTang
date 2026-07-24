@@ -1,5 +1,5 @@
 import { Edit2, Archive, RefreshCw, Trash2, ArrowUpCircle } from "lucide-react";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 interface ManageAssetActionsProps {

@@ -19,7 +19,7 @@ import { Skeleton } from "@/shared/components/ui/skeleton";
 import AssetsMenuContainer from "@/features/assets/containers/AssetsMenuContainer";
 import CreateAssetsContainer from "@/features/assets/containers/CreateAssetsContainer";
 import { useAssetUIStore } from "@/features/assets/hooks/assets.hook";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { Input } from "@/shared/components/customs/Input";
 import { useAssets } from "@/shared/lib/hooks/useAssets.hook";
 import { SidebarProvider } from "@/shared/components/animate-ui/components/radix/sidebar";

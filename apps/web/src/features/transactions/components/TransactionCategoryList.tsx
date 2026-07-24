@@ -2,7 +2,7 @@ import { cn } from "@/shared/lib/utils/core.util";
 import { Plus } from "lucide-react";
 import { getCategoryIcon } from "@/shared/lib/configs/category-icons.config";
 import { Category } from "@/shared/lib/types/category.type";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 

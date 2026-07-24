@@ -64,7 +64,7 @@ import {
   getLoadingModalProps,
 } from "../helpers/transaction.helper";
 import { cn } from "@/shared/lib/utils/core.util";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { TransactionType } from "@/shared/lib/types/transaction.type";
 import { Category } from "@/shared/lib/types/category.type";
 import { Skeleton } from "@/shared/components/ui/skeleton";

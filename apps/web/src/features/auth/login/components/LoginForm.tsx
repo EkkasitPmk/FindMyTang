@@ -7,7 +7,7 @@ import {
 } from "react-hook-form";
 import { LoginFormValues } from "../schemas/login.form.schema";
 import { Input } from "@/shared/components/customs/Input";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { TranslationKey } from "@/shared/lib/configs/translations.config";
 

@@ -32,7 +32,7 @@ import {
 } from "../helpers/category.helper";
 import { handleFormError } from "@/shared/lib/helpers/form.helper";
 import { AxiosError } from "axios";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 
 export default function CategoryContainer() {
   const { t } = useTranslation();

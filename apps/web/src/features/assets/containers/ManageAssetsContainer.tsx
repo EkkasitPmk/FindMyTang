@@ -22,7 +22,7 @@ import ManageAssetItem from "../components/ManageAssetItem";
 import EditAssetsContainer from "./EditAssetsContainer";
 import { RotateCcw, Trash2, Archive } from "lucide-react";
 import { Skeleton } from "@/shared/components/ui/skeleton";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { reorderList } from "../helpers/asset.helper";
 import { cn } from "@/shared/lib/utils/core.util";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";

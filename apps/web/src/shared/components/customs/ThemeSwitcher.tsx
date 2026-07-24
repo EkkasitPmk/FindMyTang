@@ -3,7 +3,7 @@ import { Sun, Moon, Monitor, Check } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/shared/lib/utils/core.util";
 import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import {
   DropdownMenu,
   DropdownMenuContent,

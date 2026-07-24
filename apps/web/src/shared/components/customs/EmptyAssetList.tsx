@@ -1,5 +1,5 @@
 import { Landmark, Link2 } from "lucide-react";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 interface EmptyAssetListProps {

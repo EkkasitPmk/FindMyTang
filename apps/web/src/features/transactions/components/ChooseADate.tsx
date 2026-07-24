@@ -1,5 +1,5 @@
 import { Calendar } from "@/shared/components/ui/calendar";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { getDiffDays } from "@/shared/lib/helpers/date.helper";
 import { cn } from "@/shared/lib/utils/core.util";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";

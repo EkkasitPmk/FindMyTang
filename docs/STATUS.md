@@ -156,6 +156,12 @@
   - แก้ไขสาเหตุที่แท้จริง (Root Cause) ของปัญหาการเกิด `sheet-overlay` และ `sheet-content` ซ้อนกัน 4 ชั้นได้อย่างเบ็ดเสร็จ 100% ทำให้เหลือตัว Sheet ใน DOM เพียง 1 ตัวถ้วน เรนเดอร์ลื่นไหลและประหยัดหน่วยความจำ
   - ปรับปรุงคอมโพเนนต์ส่วนกลาง [sheet.tsx (Component)](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/components/radix/sheet.tsx) และ [sheet.tsx (Primitive)](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/primitives/radix/sheet.tsx) โดยใช้ `opacity` transition ร่วมกับ `bg-black/40 backdrop-blur-xs` เพื่อให้ Overlay ฉากหลังสอดคล้อง นุ่มนวล และสวยงามเหมือนกันทุก Sheet ทั้งแอป 100%
 
+- **Animate UI Motion Button Integration & Clean Removal of Legacy Button**:
+  - ติดตั้งและปรับใช้ `@animate-ui/components-buttons-button` ([primitives/buttons/button.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/primitives/buttons/button.tsx) และ [components/buttons/button.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/components/buttons/button.tsx)) เพื่อให้ปุ่มทุกตัวในแอปพลิเคชันมี Micro-interaction (Hover/Active Scale motion) ที่เรียบหรูและตอบสนองได้นุ่มนวล
+  - ปรับแต่ง variants และขนาดให้สอดคล้องตาม [DESIGN.md](file:///Users/torikiton/Desktop/PocketNote/docs/DESIGN.md) (`primary`, `surface`, `income`, `expense`, `investment`, `secondary`, `outline`, `ghost`, `link`, `unstyled`)
+  - อัปเดตเส้นทาง Import ในแอปพลิเคชันทั้งหมด 45 ไฟล์ตรงไปที่ `@/shared/components/animate-ui/components/buttons/button`
+  - ลบไฟล์เก่า `customs/Button.tsx` และ `ui/button.tsx` ออกจากระบบโดยเด็ดขาด 100% พร้อมทดสอบ TypeScript Type Check และ Unit Tests ผ่านทั้งหมดเรียบร้อยแล้ว
+
 ---
 
 ### 2. สิ่งที่จะต้องทำเป็นลำดับถัดไป (Next Actions)

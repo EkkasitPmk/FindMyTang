@@ -1,4 +1,4 @@
-import { Button } from "./Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { cn } from "@/shared/lib/utils/core.util";
 import { forwardRef } from "react";
 

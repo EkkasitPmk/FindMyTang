@@ -2,7 +2,7 @@ import { ChevronRight, Pencil } from "lucide-react";
 import { Asset } from "@/shared/lib/types/asset.type";
 import { GroupedTransaction } from "@/shared/lib/types/transaction.type";
 import { cn } from "@/shared/lib/utils/core.util";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { DropdownSelect } from "@/shared/components/customs/DropdownSelect";
 import { Dispatch, SetStateAction, RefObject } from "react";
 import { TransactionListContainer } from "@/features/transactions/containers/TransactionListContainer";

@@ -14,7 +14,7 @@ import {
 } from "@/shared/lib/configs/category-icons.config";
 import { cn } from "@/shared/lib/utils/core.util";
 import { Input } from "@/shared/components/customs/Input";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import {
   Sheet,

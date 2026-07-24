@@ -1,7 +1,7 @@
 import { cn } from "@/shared/lib/utils/core.util";
 import { formatCompactAmount } from "../helpers/calendar.helper";
 import type { CalendarDay } from "../helpers/calendar.helper";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 interface JournalCalendarGridProps {

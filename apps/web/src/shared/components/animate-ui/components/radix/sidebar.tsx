@@ -4,7 +4,7 @@ import { cva, VariantProps } from "class-variance-authority";
 import { PanelLeftIcon } from "lucide-react";
 import { type Transition } from "motion/react";
 import { useIsMobile } from "@/shared/lib/hooks/use-mobile";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { Input } from "@/shared/components/customs/Input";
 import { Separator } from "@/shared/components/ui/separator";
 import { Skeleton } from "@/shared/components/ui/skeleton";

@@ -1,6 +1,6 @@
 import { cn } from "@/shared/lib/utils/core.util";
 import { ChevronLeft } from "lucide-react";
-import { Button } from "@/shared/components/customs/Button";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 
 interface TopAppBarMobileProps {
   title: React.ReactNode;
