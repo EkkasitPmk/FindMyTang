@@ -41,13 +41,25 @@ export const getCategoryBreakdownApi = async (
       if (t.type === "TRANSFER") transfer += t.amount;
       if (t.type === "ADJUSTMENT") adjust += t.amount;
 
-      if (t.type === type && t.categoryId) {
+      const isMatch =
+        t.type === type ||
+        (type === "TRANSFER" &&
+          (t.type === "TRANSFER" || t.type === "ADJUSTMENT"));
+
+      if (isMatch) {
         totalTypeAmount += t.amount;
-        const existing = categoryTotals.get(t.categoryId) || {
+        let catId = t.categoryId;
+        if (!catId) {
+          if (t.type === "ADJUSTMENT") catId = "uncategorized_adjustment";
+          else if (t.type === "TRANSFER") catId = "uncategorized_transfer";
+          else catId = "uncategorized";
+        }
+
+        const existing = categoryTotals.get(catId) || {
           total: 0,
           count: 0,
         };
-        categoryTotals.set(t.categoryId, {
+        categoryTotals.set(catId, {
           total: existing.total + t.amount,
           count: existing.count + 1,
         });
@@ -57,11 +69,28 @@ export const getCategoryBreakdownApi = async (
     const breakdown = Array.from(categoryTotals.entries())
       .map(([categoryId, data]) => {
         const cat = categoryMap.get(categoryId);
+        let name = cat?.name;
+        let color = cat?.color || null;
+        const icon = cat?.icon || null;
+
+        if (!name) {
+          if (categoryId === "uncategorized_adjustment") {
+            name = "Adjustment";
+            color = "#6B7280";
+          } else if (categoryId === "uncategorized_transfer") {
+            name = "Transfer";
+            color = "#3B82F6";
+          } else {
+            name = "Uncategorized";
+            color = "#9CA3AF";
+          }
+        }
+
         return {
           categoryId,
-          categoryName: cat?.name || "Unknown",
-          categoryColor: cat?.color || null,
-          categoryIcon: cat?.icon || null,
+          categoryName: name,
+          categoryColor: color,
+          categoryIcon: icon,
           totalAmount: data.total,
           percentage:
             totalTypeAmount > 0 ? (data.total / totalTypeAmount) * 100 : 0,

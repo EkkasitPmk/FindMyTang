@@ -3,16 +3,25 @@ import { formatCurrency } from "@/shared/lib/utils/currency.util";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { TransactionIcon } from "@/shared/components/customs/TransactionIcon";
-import { TransactionResponse } from "@/shared/lib/types/transaction.type";
+import {
+  TransactionResponse,
+  TransactionType,
+} from "@/shared/lib/types/transaction.type";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 interface CategoryListProps {
   data: CategoryBreakdownItem[];
   month: number;
   year: number;
+  type?: "EXPENSE" | "INCOME" | "TRANSFER" | "ADJUSTMENT";
 }
 
-export const CategoryList = ({ data, month, year }: CategoryListProps) => {
+export const CategoryList = ({
+  data,
+  month,
+  year,
+  type = "EXPENSE",
+}: CategoryListProps) => {
   const { t } = useTranslation();
 
   if (data.length === 0) return null;
@@ -22,6 +31,11 @@ export const CategoryList = ({ data, month, year }: CategoryListProps) => {
       <p className="text-primary-text text-base">{t("categoryList")}</p>
       {data.map((item, index) => {
         const color = item.categoryColor || `var(--chart-${(index % 5) + 1})`;
+
+        let itemType: TransactionType = type;
+        if (item.categoryId === "uncategorized_transfer") itemType = "TRANSFER";
+        else if (item.categoryId === "uncategorized_adjustment")
+          itemType = "ADJUSTMENT";
 
         return (
           <Link
@@ -33,7 +47,7 @@ export const CategoryList = ({ data, month, year }: CategoryListProps) => {
               <TransactionIcon
                 transaction={
                   {
-                    type: "EXPENSE",
+                    type: itemType,
                     category: {
                       id: item.categoryId,
                       name: item.categoryName,

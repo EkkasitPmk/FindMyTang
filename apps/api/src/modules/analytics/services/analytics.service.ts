@@ -33,21 +33,42 @@ export class AnalyticsService {
     >();
 
     for (const t of transactions) {
-      if (!t.categoryId || !t.category) continue;
       const amount = Number(t.amount);
       total += amount;
 
-      if (!categoryMap.has(t.categoryId)) {
-        categoryMap.set(t.categoryId, {
-          categoryId: t.category.id,
-          categoryName: t.category.name,
-          categoryColor: t.category.color,
-          categoryIcon: t.category.icon,
+      let catId = t.categoryId;
+      let catName = t.category?.name;
+      let catColor = t.category?.color || null;
+      const catIcon = t.category?.icon || null;
+
+      // ponytail: group transactions without category under specialized uncategorized keys for ADJUSTMENT and TRANSFER
+      if (!catId) {
+        if (t.type === "ADJUSTMENT") {
+          catId = "uncategorized_adjustment";
+          catName = "Adjustment";
+          catColor = "#6B7280";
+        } else if (t.type === "TRANSFER") {
+          catId = "uncategorized_transfer";
+          catName = "Transfer";
+          catColor = "#3B82F6";
+        } else {
+          catId = "uncategorized";
+          catName = "Uncategorized";
+          catColor = "#9CA3AF";
+        }
+      }
+
+      if (!categoryMap.has(catId)) {
+        categoryMap.set(catId, {
+          categoryId: catId,
+          categoryName: catName!,
+          categoryColor: catColor,
+          categoryIcon: catIcon,
           totalAmount: 0,
           transactionCount: 0,
         });
       }
-      const cat = categoryMap.get(t.categoryId)!;
+      const cat = categoryMap.get(catId)!;
       cat.totalAmount += amount;
       cat.transactionCount += 1;
     }
