@@ -65,6 +65,62 @@
 
 ### 1. สิ่งที่พัฒนาเสร็จสิ้นแล้ว (Completed)
 
+- **Analytics & Summary Modules Swagger Documentation & ApiProperty Completion (Backend API)**:
+  - เพิ่มและปรับปรุง `@ApiProperty` และ Swagger Decorators ในระบบ Analytics และ Summary Module ฝั่ง Backend (`apps/api`) อย่างสมบูรณ์ครบถ้วน 100%:
+    - **Summary Module**:
+      - **`SummaryResponseDto` (ใหม่)**: สร้าง DTO สำหรับผลลัพธ์รายวันและรายเดือน (`income`, `expense`, `net`, `totalNetWorth`) ตกแต่งด้วย `@ApiProperty` ครบถ้วน
+      - **`SummaryController`**: เพิ่ม `@ApiTags("Summary")`, `@ApiBearerAuth()`, `@ApiOperation()`, และ `@ApiResponse()` สำหรับ `GET /summary/today` และ `GET /summary/monthly`
+    - **Analytics Module**:
+      - **Query DTOs (ใหม่)**: สร้าง `CategoryBreakdownQueryDto`, `MonthlyTrendsQueryDto`, และ `CategoryTransactionsQueryDto` ระบุตัวเลือก `month`, `year`, และ `type` พร้อมคำอธิบายบน Swagger UI
+      - **Response DTOs (ใหม่)**: สร้าง `CategoryBreakdownResponseDto`, `MonthlyTrendsResponseDto`, `AssetDistributionResponseDto`, และ `CategoryTransactionsResponseDto` พร้อม Sub-DTOs ที่เกี่ยวข้อง ตกแต่งด้วย `@ApiProperty` ละเอียดทุกฟิลด์
+      - **`AnalyticsController`**: เพิ่ม `@ApiTags("Analytics")`, `@ApiBearerAuth()`, `@ApiOperation()`, `@ApiQuery()`, `@ApiParam()`, และ `@ApiResponse()` ครอบคลุมทั้ง 4 endpoints (`GET /analytics/categories`, `GET /analytics/trends`, `GET /analytics/assets`, `GET /analytics/categories/:id/transactions`)
+  - ผ่านการทดสอบ NestJS Build (`npm run build`) และ Jest Unit Tests (`npm test`) 100% ไร้ข้อผิดพลาด
+
+- **Auth Module Swagger Documentation & ApiProperty Completion (Backend API)**:
+  - เพิ่มและปรับปรุง `@ApiProperty` และ Swagger Decorators ในระบบ Auth Module ฝั่ง Backend (`apps/api`) อย่างสมบูรณ์ครบถ้วน 100%:
+    - **`LoginDto`**: ใส่ข้อมูล `description`, `example`, `required`, `minLength: 8`, `format: "password"` สำหรับ `email` และ `password`
+    - **`RegisterDto`**: ใส่ข้อมูล `description`, `example`, `required`, `minLength: 8`, `format: "password"` สำหรับ `email`, `password`, `confirmPassword`, และ `displayName`
+    - **`SyncGuestDto` (รวม `SyncAssetItemDto`, `SyncCategoryItemDto`, `SyncTransactionItemDto`)**: ใส่ข้อมูล `@ApiProperty` ละเอียดสำหรับทุกฟิลด์การซิงค์ข้อมูล offline guest
+    - **`auth-response.dto.ts` (ใหม่)**: สร้าง `AuthUserObjectDto`, `RegisterResponseDto`, `AuthUserResponseDto`, `SyncUserResponseDto`, `MeResponseDto`, `AuthMessageResponseDto`, และ `AuthActionResponseDto` พร้อมตกแต่งด้วย `@ApiProperty` สำหรับ Response Schema ทุก Endpoint
+    - **`AuthController`**: เพิ่ม `@ApiTags("Auth")`, `@ApiBearerAuth()`, `@ApiOperation()`, `@ApiBody()`, และ `@ApiResponse()` ครอบคลุมทั้ง 7 endpoints (`POST /auth/register`, `POST /auth/login`, `POST /auth/sync`, `POST /auth/sync-guest`, `POST /auth/refresh`, `GET /auth/me`, `POST /auth/logout`)
+  - ผ่านการทดสอบ NestJS Build (`npm run build`) และ Jest Unit Tests (`npm test`) 100% ไร้ข้อผิดพลาด
+
+- **Transaction Module Swagger Documentation & ApiProperty Completion (Backend API)**:
+  - เพิ่มและปรับปรุง `@ApiProperty` และ Swagger Decorators ในระบบ Transaction Module ฝั่ง Backend (`apps/api`) อย่างสมบูรณ์ครบถ้วน 100%:
+    - **`TransactionQueryDto`**: เพิ่ม `@ApiProperty` ครบ 10 ฟิลด์สำหรับ Query Parameters (`page`, `limit`, `type`, `assetId`, `categoryId`, `searchKeyword`, `from`, `to`, `isDeleted`, `sortType`)
+    - **`CreateTransactionDto`, `CreateExpenseDto`, `CreateIncomeDto`, `CreateTransferDto`, `CreateAdjustmentDto`**: ใส่ข้อมูล `description`, `example`, `required`, `maxLength`, `enum` (`INCOME`, `EXPENSE`, `TRANSFER`, `ADJUSTMENT`), และ `type` ครบถ้วน
+    - **`UpdateTransactionDto`**: ใส่ข้อมูล `@ApiProperty` ละเอียดสำหรับทุกฟิลด์การอัปเดต (`type`, `amount`, `date`, `categoryId`, `assetId`, `toAssetId`, `note`, `attachmentUrl`, `deletedAt`)
+    - **`transaction-response.dto.ts` (ใหม่)**: สร้าง `TransactionResponseDto`, `TransactionAssetRelationDto`, `TransactionCategoryRelationDto`, `TransactionPaginationMetaDto`, และ `PaginatedTransactionResponseDto` พร้อมตกแต่งด้วย `@ApiProperty` สำหรับ Response Schema ทุก Endpoint
+    - **`TransactionController`**: เพิ่ม `@ApiTags("Transaction")`, `@ApiBearerAuth()`, `@ApiOperation()`, `@ApiConsumes("multipart/form-data", "application/json")`, `@ApiQuery()`, `@ApiParam()`, `@ApiBody()`, และ `@ApiResponse()` ครอบคลุมทั้ง 7 endpoints (`GET available-dates`, `GET years`, `GET :id`, `POST /`, `GET /`, `PATCH :id`, `DELETE :id`)
+  - ผ่านการทดสอบ NestJS Build (`npm run build`) และ Jest Unit Tests (`npm test`) 100% ไร้ข้อผิดพลาด
+
+- **Category Module Swagger Documentation & ApiProperty Completion (Backend API)**:
+  - เพิ่มและปรับปรุง `@ApiProperty` และ Swagger Decorators ในระบบ Category Module ฝั่ง Backend (`apps/api`) อย่างสมบูรณ์ครบถ้วน 100%:
+    - **`CreateCategoryDto`**: ใส่ข้อมูล `description`, `example`, `required`, `maxLength`, `enum` (`INCOME` / `EXPENSE`), และ `type` สำหรับ `name`, `type`, `color`, `icon`, และ `displayOrder`
+    - **`UpdateCategoryDto`**: ใส่ข้อมูล `@ApiProperty` ละเอียดสำหรับทุกฟิลด์การอัปเดต (`name`, `icon`, `color`, `type`)
+    - **`ReorderCategoriesDto` (ใหม่)**: สร้าง DTO สำหรับรับ `ids: string[]` พร้อมระบุ `@ApiProperty` สำหรับ endpoint `PATCH /categories/reorder`
+    - **`CategoryResponseDto` (ใหม่)**: สร้าง `CategoryResponseDto` และ `CategoryActionResponseDto` ตกแต่งด้วย `@ApiProperty` ครบถ้วน สำหรับ Response Schema ของทุก Endpoint
+    - **`CategoryController`**: เพิ่ม `@ApiTags("Category")`, `@ApiBearerAuth()`, `@ApiOperation()`, `@ApiQuery()`, `@ApiParam()`, `@ApiBody()`, และ `@ApiResponse()` ครอบคลุมทั้ง 6 endpoints (`POST`, `GET`, `PATCH reorder`, `PATCH :id/restore`, `PATCH :id`, `DELETE :id`)
+  - ผ่านการทดสอบ NestJS Build (`npm run build`) 100% ไร้ข้อผิดพลาด
+
+- **Asset Module Swagger Documentation & ApiProperty Completion (Backend API)**:
+  - เพิ่มและปรับปรุง `@ApiProperty` และ Swagger Decorators ในระบบ Asset Module ฝั่ง Backend (`apps/api`) อย่างสมบูรณ์ครบถ้วน 100%:
+    - **`CreateAssetDto`**: ใส่ข้อมูล `description`, `example`, `required`, `maxLength`, `enum`, `default`, และ `type` สำหรับ `name`, `type`, `balance`, และ `color`
+    - **`UpdateAssetDto`**: ใส่ข้อมูล `description`, `example`, `required: false`, และ `type: Boolean` สำหรับ `isArchived`
+    - **`BulkAssetIdsDto` (ใหม่)**: สร้าง DTO รองรับการส่ง `ids: string[]` พร้อมระบุ `@ApiProperty` สำหรับ `reorder`, `bulk-delete`, `bulk-archive`, และ `bulk-restore`
+    - **`AssetResponseDto` (ใหม่)**: สร้าง `AssetResponseDto` และ `AssetActionResponseDto` ตกแต่งด้วย `@ApiProperty` ครบถ้วน เพื่อให้ Swagger UI แสดง Response Schema สำหรับทุก Endpoint
+    - **`AssetController`**: เพิ่ม `@ApiTags("Asset")`, `@ApiBearerAuth()`, `@ApiOperation()`, `@ApiQuery()`, `@ApiParam()`, `@ApiBody()`, และ `@ApiResponse()` ครอบคลุมทั้ง 9 endpoints (`POST`, `GET`, `PATCH :id`, `PATCH :id/restore`, `DELETE :id`, `PATCH reorder`, `POST bulk-delete`, `POST bulk-archive`, `POST bulk-restore`)
+  - ผ่านการทดสอบ NestJS Build (`npm run build`) 100% ไร้ข้อผิดพลาด
+
+- **User Module Swagger Documentation & ApiProperty Completion (Backend API)**:
+  - เพิ่มและปรับปรุง `@ApiProperty` และ Decorator ของ Swagger ในระบบ User Module ฝั่ง Backend (`apps/api`) อย่างสมบูรณ์ครบถ้วน 100%:
+    - **`UpdateProfileDto`**: ใส่ข้อมูล `description`, `example`, `required`, `maxLength`, และ `enum` สำหรับ `displayName`, `avatarUrl`, และ `language`
+    - **`ChangePasswordDto`**: ใส่ข้อมูล `description`, `example`, `minLength`, `format: "password"`, และ `required` สำหรับ `currentPassword`, `newPassword`, และ `confirmNewPassword`
+    - **`UserResponseDto` (ใหม่)**: สร้าง `UserProfileResponseDto` และ `UserActionResponseDto` พร้อมตกแต่งด้วย `@ApiProperty` ครบถ้วน เพื่อให้ Swagger แสดง Response Schema สำหรับ `PATCH /users/profile`, `POST /users/change-password`, และ `DELETE /users`
+    - **`UserController`**: เพิ่ม `@ApiTags("User")`, `@ApiBearerAuth()`, `@ApiOperation()`, `@ApiBody()`, และ `@ApiResponse()` ครอบคลุม HTTP Status Codes (200, 400, 401)
+    - **`main.ts`**: เพิ่ม `.addBearerAuth()` ให้กับ DocumentBuilder Swagger เพื่อให้สามารถทดสอบ API ด้วย Bearer Token บน Swagger UI หน้าเว็บได้ทันที
+  - ผ่านการทดสอบ NestJS Build (`npm run build`) 100% ไร้ข้อผิดพลาด
+
 - **Transaction Hard-Deleted Category Fallback Icon (ไอคอนทดแทนสำหรับรายการที่หมวดหมู่ถูกลบถาวร)**:
   - ปรับปรุง [TransactionIcon.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/TransactionIcon.tsx) ให้แสดงไอคอนสื่อความหมายมาตรฐาน (`CircleQuestionMark` ในกล่อง `bg-surface-secondary text-secondary-text`) เมื่อรายการธุรกรรมไม่มีหมวดหมู่ หรือหมวดหมู่อ้างอิงถูกลบถาวร (Hard Delete) ไปแล้ว
   - ป้องกันปัญหาการไม่แสดงไอคอนเลย (กล่องว่างเปล่า) เมื่อ `transaction.category` เป็น `null` หรือ `undefined`

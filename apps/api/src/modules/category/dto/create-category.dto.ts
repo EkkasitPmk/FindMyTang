@@ -11,46 +11,52 @@ import { CategoryType } from "@prisma/client";
 
 export class CreateCategoryDto {
   @ApiProperty({
-    description: "Name of the category",
-    example: "Food",
+    description: "Name of the category (maximum 100 characters)",
+    example: "Food & Dining",
     maxLength: 100,
+    required: true,
+    type: String,
   })
   @IsString()
   @IsNotEmpty({ message: "Category name is required" })
   @MaxLength(100, { message: "Category name must not exceed 100 characters" })
-  name: string;
+  name!: string;
 
   @ApiProperty({
-    description: "Type of the category",
+    description: "Type of the category (INCOME or EXPENSE)",
     enum: CategoryType,
     example: CategoryType.EXPENSE,
+    required: true,
   })
   @IsEnum(CategoryType, { message: "Invalid category type" })
   @IsNotEmpty({ message: "Category type is required" })
-  type: CategoryType;
+  type!: CategoryType;
 
   @ApiProperty({
-    description: "Color associated with the category",
+    description: "Hex color code associated with the category",
     example: "#FF5733",
     required: false,
+    type: String,
   })
   @IsString()
   @IsOptional()
   color?: string;
 
   @ApiProperty({
-    description: "Icon associated with the category",
-    example: "food-icon",
+    description: "Icon name/identifier associated with the category",
+    example: "utensils",
     required: false,
+    type: String,
   })
   @IsString()
   @IsOptional()
   icon?: string;
 
   @ApiProperty({
-    description: "Display order of the category",
+    description: "Display sort order of the category",
     example: 1,
     required: false,
+    type: Number,
   })
   @IsInt()
   @IsOptional()

@@ -11,10 +11,25 @@ import {
 } from "@nestjs/common";
 import * as express from "express";
 import { ConfigService } from "@nestjs/config";
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiBody,
+} from "@nestjs/swagger";
 import { AuthService } from "../services/auth.service";
 import { RegisterDto } from "../dto/register.dto";
 import { LoginDto } from "../dto/login.dto";
 import { SyncGuestDto } from "../dto/sync-guest.dto";
+import {
+  RegisterResponseDto,
+  AuthUserResponseDto,
+  SyncUserResponseDto,
+  MeResponseDto,
+  AuthMessageResponseDto,
+  AuthActionResponseDto,
+} from "../dto/auth-response.dto";
 import { JwtAuthGuard } from "../guards/jwt-auth.guard";
 import { JwtRefreshGuard } from "../guards/jwt-refresh.guard";
 import { CurrentUser } from "../decorators/current-user.decorator";
@@ -23,6 +38,7 @@ import type { User } from "@prisma/client";
 
 type CookieSameSite = "lax" | "strict" | "none";
 
+@ApiTags("Auth")
 @Controller("auth")
 export class AuthController {
   constructor(
@@ -32,7 +48,24 @@ export class AuthController {
 
   @Post("register")
   @Throttle({ default: { limit: 10, ttl: 60000 } })
-  async register(@Body() registerDto: RegisterDto) {
+  @ApiOperation({
+    summary: "Register a new user account",
+    description:
+      "Registers a new account with email, password, and display name.",
+  })
+  @ApiBody({ type: RegisterDto })
+  @ApiResponse({
+    status: 201,
+    description: "User registered successfully.",
+    type: RegisterResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: "Bad request (email already exists or validation error).",
+  })
+  async register(
+    @Body() registerDto: RegisterDto,
+  ): Promise<RegisterResponseDto> {
     const user = await this.authService.register(registerDto);
     return {
       id: user.id,
@@ -44,10 +77,25 @@ export class AuthController {
 
   @Post("login")
   @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @ApiOperation({
+    summary: "Login to user account",
+    description:
+      "Authenticates user credentials and sets access_token and refresh_token in HTTP-only cookies.",
+  })
+  @ApiBody({ type: LoginDto })
+  @ApiResponse({
+    status: 200,
+    description: "User authenticated successfully.",
+    type: AuthUserResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: "Invalid email or password.",
+  })
   async login(
     @Body() loginDto: LoginDto,
     @Response({ passthrough: true }) res: express.Response,
-  ) {
+  ): Promise<AuthUserResponseDto> {
     const { accessToken, refreshToken, user } =
       await this.authService.login(loginDto);
 
@@ -62,7 +110,7 @@ export class AuthController {
       secure,
       sameSite,
       domain,
-      maxAge: 15 * 60 * 1000, // 15 minutes to match access token expiration
+      maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
     res.cookie("refresh_token", refreshToken, {
@@ -70,7 +118,7 @@ export class AuthController {
       secure,
       sameSite,
       domain,
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days to match refresh token expiration
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
     return { user };
@@ -79,29 +127,73 @@ export class AuthController {
   @Post("sync")
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
-  async syncUser(
-    @CurrentUser() user: User,
-  ): Promise<{ success: boolean; lastSyncedAt: Date; lastSyncStatus: string }> {
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: "Trigger user data sync",
+    description:
+      "Triggers a cloud synchronization operation for the authenticated user.",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Sync executed successfully.",
+    type: SyncUserResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: "Unauthorized access.",
+  })
+  async syncUser(@CurrentUser() user: User): Promise<SyncUserResponseDto> {
     return await this.authService.syncUser(user.id);
   }
 
   @Post("sync-guest")
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: "Synchronize offline guest data",
+    description:
+      "Merges offline guest assets, categories, and transactions into the authenticated user account.",
+  })
+  @ApiBody({ type: SyncGuestDto })
+  @ApiResponse({
+    status: 200,
+    description: "Guest data synchronized successfully.",
+    type: AuthActionResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: "Unauthorized access.",
+  })
   async syncGuest(
     @CurrentUser() user: User,
     @Body() syncDto: SyncGuestDto,
-  ): Promise<{ success: boolean }> {
+  ): Promise<AuthActionResponseDto> {
     return this.authService.syncGuest(user.id, syncDto);
   }
 
   @Post("refresh")
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtRefreshGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: "Refresh access token",
+    description:
+      "Uses the valid refresh_token cookie to issue new access_token and refresh_token cookies.",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Token refreshed successfully.",
+    type: AuthUserResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: "Invalid or expired refresh token.",
+  })
   async refresh(
     @Req() req: express.Request,
     @Response({ passthrough: true }) res: express.Response,
-  ) {
+  ): Promise<AuthUserResponseDto> {
     const userPayload = req.user as {
       user: User;
       refreshToken: string;
@@ -125,7 +217,7 @@ export class AuthController {
       secure,
       sameSite,
       domain,
-      maxAge: 15 * 60 * 1000, // 15 minutes to match access token expiration
+      maxAge: 15 * 60 * 1000,
     });
 
     res.cookie("refresh_token", newRefreshToken, {
@@ -133,7 +225,7 @@ export class AuthController {
       secure,
       sameSite,
       domain,
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days to match refresh token expiration
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     return { user };
@@ -141,7 +233,22 @@ export class AuthController {
 
   @Get("me")
   @UseGuards(JwtAuthGuard)
-  getMe(@CurrentUser() user: User) {
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: "Get current authenticated user profile",
+    description:
+      "Retrieves current logged-in user profile, language preferences, and sync status.",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "User profile retrieved successfully.",
+    type: MeResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: "Unauthorized access.",
+  })
+  getMe(@CurrentUser() user: User): MeResponseDto {
     return {
       id: user.id,
       email: user.email,
@@ -155,10 +262,19 @@ export class AuthController {
 
   @Post("logout")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "Logout user",
+    description: "Clears access_token and refresh_token HTTP-only cookies.",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "User logged out successfully.",
+    type: AuthMessageResponseDto,
+  })
   async logout(
     @Req() req: express.Request,
     @Response({ passthrough: true }) res: express.Response,
-  ) {
+  ): Promise<AuthMessageResponseDto> {
     await this.authService.logout();
 
     const domain =
