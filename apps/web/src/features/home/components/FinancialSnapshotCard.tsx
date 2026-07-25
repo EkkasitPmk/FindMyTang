@@ -90,7 +90,7 @@ export default function FinancialSnapshotCard({
             ฿ 0.00
           </span>
         </div>
-        <div className="flex items-center gap-2 pt-1 border-t border-border/50 text-xs text-secondary-text">
+        <div className="flex items-center gap-2 pt-2 border-t border-border/50 text-xs text-secondary-text">
           <span className="text-primary font-medium">
             {t("startRecordingTransactions")}
           </span>

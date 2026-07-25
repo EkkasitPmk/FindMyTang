@@ -81,7 +81,8 @@ export function TransactionItem({
           hoverScale={1}
           tapScale={1}
           className={cn(
-            "w-full text-left flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-surface-secondary focus:outline-none focus:bg-surface-secondary transition-colors",
+            "w-full text-left flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-surface-secondary focus:outline-none transition-colors",
+            isExpanded && "focus:bg-surface-secondary",
           )}
         >
           <TransactionIcon transaction={transaction} />

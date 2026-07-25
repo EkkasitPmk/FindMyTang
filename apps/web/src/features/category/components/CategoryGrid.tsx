@@ -83,7 +83,7 @@ export default function CategoryGrid({
       )}
 
       {categories.length === 0 && isDeletedTab && (
-        <div className="col-span-3 py-12 flex flex-col items-center justify-center text-secondary-text text-xs">
+        <div className="col-span-3 flex flex-col items-center justify-center h-[50vh] text-secondary-text text-xs">
           <p>{t("noCategoriesFound")}</p>
         </div>
       )}

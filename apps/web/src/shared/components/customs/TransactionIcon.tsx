@@ -52,11 +52,14 @@ export function TransactionIcon({
     return (
       <span
         className="rounded-lg p-2 relative inline-flex items-center justify-center overflow-hidden shrink-0"
-        style={{ color: transaction.category.color }}
+        style={{ color: transaction.category.color || "var(--primary-text)" }}
       >
         <span
           className="absolute inset-0 opacity-[0.15]"
-          style={{ backgroundColor: transaction.category.color }}
+          style={{
+            backgroundColor:
+              transaction.category.color || "var(--primary-text)",
+          }}
         />
         <span className="relative flex items-center justify-center">
           {React.createElement(icon, { size: 18 })}
@@ -65,5 +68,10 @@ export function TransactionIcon({
     );
   }
 
-  return null;
+  const icon = getCategoryIcon();
+  return (
+    <span className="bg-surface-secondary rounded-lg p-2 text-secondary-text inline-flex items-center justify-center shrink-0">
+      {React.createElement(icon, { size: 18 })}
+    </span>
+  );
 }
