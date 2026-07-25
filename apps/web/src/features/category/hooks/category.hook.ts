@@ -4,6 +4,7 @@ import {
   createCategoryApi,
   deleteCategory,
   reorderCategoriesApi,
+  restoreCategoryApi,
   updateCategory,
 } from "../services/category.service";
 import {
@@ -11,7 +12,6 @@ import {
   CreateCategoryRequest,
 } from "@/shared/lib/types/category.type";
 import { AxiosError } from "axios";
-
 import { ApiErrorResponse } from "@/shared/lib/types/api.type";
 
 export const useCreateCategoryMutation = (options?: {
@@ -54,14 +54,39 @@ export const useUpdateCategoryMutation = (options?: {
   });
 };
 
-export const useDeleteCategoryMutation = (options?: {
+export const useRestoreCategoryMutation = (options?: {
   onSuccess?: (data: Category) => void;
   onError?: (error: AxiosError<ApiErrorResponse>) => void;
 }) => {
   const queryClient = useQueryClient();
 
   return useMutation<Category, AxiosError<ApiErrorResponse>, string>({
-    mutationFn: (id) => deleteCategory(id),
+    mutationFn: (id) => restoreCategoryApi(id),
+    ...options,
+    onSuccess: (data) => {
+      void queryClient.invalidateQueries({ queryKey: ["categories"] });
+      options?.onSuccess?.(data);
+    },
+  });
+};
+
+export const useDeleteCategoryMutation = (options?: {
+  onSuccess?: (data: Category) => void;
+  onError?: (error: AxiosError<ApiErrorResponse>) => void;
+}) => {
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    Category,
+    AxiosError<ApiErrorResponse>,
+    { id: string; isHardDelete?: boolean } | string
+  >({
+    mutationFn: (param) => {
+      if (typeof param === "string") {
+        return deleteCategory(param, false);
+      }
+      return deleteCategory(param.id, param.isHardDelete);
+    },
     ...options,
     onSuccess: (data) => {
       void queryClient.invalidateQueries({ queryKey: ["categories"] });
