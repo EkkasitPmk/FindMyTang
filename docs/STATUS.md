@@ -65,6 +65,26 @@
 
 ### 1. สิ่งที่พัฒนาเสร็จสิ้นแล้ว (Completed)
 
+- **FinancialSnapshot & ListAssets Strict Architecture Alignment**:
+  - ปรับโครงสร้าง [FinancialSnapshotCard.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/home/components/FinancialSnapshotCard.tsx) และ [FinancialSnapshotContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/home/containers/FinancialSnapshotContainer.tsx) ให้สอดคล้องเป๊ะตามมาตรฐานใน [FRONTEND_IMPLEMENTATION.md](file:///Users/torikiton/Desktop/PocketNote/docs/FRONTEND_IMPLEMENTATION.md) 100%:
+    1. **Pure UI Component (Dumb Component)**: `FinancialSnapshotCard` รับผิดชอบเฉพาะการแสดงผล UI ไม่มี internal state/effect ซับซ้อน พร้อมใช้ `export default` และ typing `Readonly<FinancialSnapshotCardProps>` ตามรูปแบบหลักของโปรเจกต์
+    2. **Reused UI Component**: เปลี่ยนจากการใช้แท็ก HTML `<button>` แบบดั้งเดิม มาเรียกใช้คอมโพเนนต์ `<Button variant="unstyled">` จาก `@/shared/components/animate-ui/components/buttons/button` ตามลำดับความสำคัญของ UI Component ในโปรเจกต์
+    3. **Pixel-Perfect Skeleton Loading**: ปรับแต่งโครงสร้าง Skeleton ใน `FinancialSnapshotCard` ให้ตรงกับเลย์เอาต์ UI ตอนโหลดข้อมูลเสร็จสมบูรณ์แบบ 1-to-1 (รวม Header, Balance Amount, Cash Flow Grid และ Monthly Net Change Footer Pill)
+    4. **Render Helper Patterns**: ใช้ฟังก์ชัน helper การเรนเดอร์ย่อยภายในตัวคอมโพเนนต์ (`renderNetWorthAmount`, `renderCashFlowCard`, `renderNetChangeBadge`) เพื่อให้สอดคล้องกับแพทเทิร์นการเขียนใน [TransactionAssetList.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/transactions/components/TransactionAssetList.tsx) ช่วยลด Cognitive Complexity เหลือเพียง ~2
+    5. **Container State & Pure Props**: `FinancialSnapshotContainer` รับหน้าที่ดึงข้อมูลจาก Hooks (`useAssets`, `useThisMonthSummary`) และจัดการ local state (`isPrivate` พร้อม lazy initializer) และส่ง Props ไปยัง Component
+  - เพิ่ม **Privacy Mode** (ซ่อน/แสดงยอดเงิน) และ **Cash Flow Split Grid** (แสดง Income 🟢 / Expense 🔴 ประจำเดือน)
+  - **ลบส่วนแสดงผล Income/Expense ที่ซ้ำซ้อน** ออกจาก [ListAssetsContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/assets/containers/ListAssetsContainer.tsx)
+  - ผ่านการทดสอบ Typecheck (`npx tsc --noEmit`) และ Linter 100% ไร้ข้อผิดพลาด
+
+- **Auth Me Query Optimization (`useMeQuery`)**:
+  - กำหนดค่ามาตรฐาน `staleTime: 1000 * 60 * 5` (5 นาที) และ `refetchOnWindowFocus: false` ใน [useMeQuery.hook.ts](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/lib/hooks/useMeQuery.hook.ts#L12)
+  - ช่วยลดการยิง API `/auth/me` ซ้ำซ้อนโดยไม่จำเป็นเมื่อผู้ใช้สลับแท็บเบราว์เซอร์ ประหยัด Bandwidth และเพิ่มประสิทธิภาพในการทำงานของหน้าบ้าน 100% ผ่านการทดสอบ TypeScript Check ปราศจากข้อผิดพลาด
+
+- **Virtualization Lazy Load Trigger Indicator (Journal Timeline & Transaction Lists)**:
+  - เชื่อมต่อ `isFetchingNextPage` จาก `TransactionListContainer` เข้ากับ `TransactionList` และสร้างคอมโพเนนต์แยกไฟล์เฉพาะ [TransactionVirtuosoFooter.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/TransactionVirtuosoFooter.tsx) ในโฟลเดอร์ `shared/components/customs/` ให้สอดคล้องเป๊ะตามโครงสร้างของ `TransactionVirtuosoGroup` และ `TransactionVirtuosoItem` ตามหลักการสถาปัตยกรรมใน [FRONTEND_IMPLEMENTATION.md](file:///Users/torikiton/Desktop/PocketNote/docs/FRONTEND_IMPLEMENTATION.md)
+  - ส่งผลให้ในโหมด Virtualization (เช่น หน้า Journal Timeline) ขณะที่ผู้ใช้งานเลื่อนสกรอลล์ลงไปด้านล่างอย่างรวดเร็ว ระบบจะแสดงผล Trigger for Lazy load (`<TransactionListSkeleton />`) ที่ท้ายรายการอย่างถูกต้อง 100% ควบคู่ไปกับ Virtualization
+  - ผ่านการทดสอบ Typecheck (`npx tsc --noEmit`) 100% ไร้ข้อผิดพลาด
+
 - **ListAssetsContainer & RecentJournalContainer Animate-UI Hover & Active Animations**:
   - เพิ่มอนิเมชัน hover scale (`hoverScale={1.01}`) และ tap active scale (`tapScale={0.98}`) สไตล์ `animate-ui` ให้กับรายการสินทรัพย์ (Asset items) และลิงก์หัวข้อ "สินทรัพย์" ใน [ListAssetsContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/assets/containers/ListAssetsContainer.tsx)
   - เพิ่มอนิเมชัน hover scale (`1.05`) และ tap active scale (`0.95`) สไตล์ `animate-ui` ให้กับปุ่ม "ดูทั้งหมด" (seeAll) ใน [RecentJournalContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/journal/containers/RecentJournalContainer.tsx) โดยใช้ `motion.div` เพื่อคงดีไซน์ เลย์เอาต์ และ Styling เดิมไว้ 100%

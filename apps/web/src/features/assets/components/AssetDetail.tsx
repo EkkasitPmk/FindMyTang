@@ -95,7 +95,7 @@ export default function AssetDetail({
 
   if (isLoading) {
     return (
-      <div className="flex flex-col h-[calc(100vh-124px)] space-y-4">
+      <div className="flex flex-col h-[calc(100vh-118px)] space-y-4">
         <section className="relative flex flex-col items-center justify-center mt-6">
           <Skeleton className="h-9 w-30 rounded-full mb-2" />
           <Skeleton className="h-10 w-48" />
@@ -122,7 +122,7 @@ export default function AssetDetail({
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-124px)] space-y-4">
+    <div className="flex flex-col h-[calc(100vh-118px)] space-y-4">
       {!isSearchMode && (
         <section className="relative flex flex-col items-center justify-center mt-6">
           <div
@@ -176,7 +176,7 @@ export default function AssetDetail({
 
           {groupedTransactions?.length > 0 && (
             <>
-              <span className="text-secondary-text text-sm">{t("period")}</span>
+              <p className="text-secondary-text text-sm mt-2">{t("period")}</p>
 
               <div className="flex items-center justify-between gap-4">
                 <DropdownSelect

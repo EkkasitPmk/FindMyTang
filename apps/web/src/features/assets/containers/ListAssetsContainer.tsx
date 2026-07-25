@@ -5,7 +5,6 @@ import { motion } from "motion/react";
 import { useAssets } from "@/shared/lib/hooks/useAssets.hook";
 import { getAssetIcon } from "@/shared/components/customs/AssetIcon";
 import { EmptyAssetList } from "../../../shared/components/customs/EmptyAssetList";
-import { useThisMonthSummary } from "@/features/home/hooks/summary.hook";
 import { AssetIconWrapper } from "@/shared/components/customs/AssetIconWrapper";
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
@@ -31,10 +30,8 @@ export default function ListAssetsContainer({
   const mounted = useMounted();
 
   const { data: assets, isPending: isAssetsPending } = useAssets();
-  const { data: summary, isPending: isSummaryPending } = useThisMonthSummary();
 
   const isLoading = !mounted || isAssetsPending;
-  const isSummaryLoading = !mounted || isSummaryPending;
 
   const renderAssetsList = () => {
     if (isLoading) {
@@ -145,37 +142,6 @@ export default function ListAssetsContainer({
           </div>
 
           {renderAssetsList()}
-
-          <div className="flex gap-4">
-            <div className="flex flex-col grow w-full px-4 py-3 rounded-md bg-surface border border-border/30">
-              <span className="text-sm font-medium">{t("income")}</span>
-              {isSummaryLoading ? (
-                <Skeleton className="h-6 w-24" />
-              ) : (
-                <span className="text-base font-bold">
-                  ฿{" "}
-                  {summary?.income?.toLocaleString(locale, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  }) ?? "0.00"}
-                </span>
-              )}
-            </div>
-            <div className="flex flex-col grow w-full px-4 py-3 rounded-md bg-surface border border-border/30">
-              <span className="text-sm font-medium">{t("expense")}</span>
-              {isSummaryLoading ? (
-                <Skeleton className="h-6 w-24" />
-              ) : (
-                <span className="text-base font-bold">
-                  ฿{" "}
-                  {summary?.expense?.toLocaleString(locale, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  }) ?? "0.00"}
-                </span>
-              )}
-            </div>
-          </div>
         </section>
       )}
     </>

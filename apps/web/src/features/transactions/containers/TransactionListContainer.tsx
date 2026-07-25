@@ -180,6 +180,7 @@ export function TransactionListContainer({
         <TransactionList
           groupedTransactions={groupedTransactions}
           isLoadingTransactions={isLoadingTransactions}
+          isFetchingNextPage={isFetchingNextPage}
           onTransactionItemClick={handleTransactionItemClick}
           onRestoreClick={handleRestoreClick}
           onDeleteClick={handleDeleteClick}

@@ -7,6 +7,7 @@ import { TransactionItem } from "./TransactionItem";
 import { TransactionGroupHeader } from "./TransactionGroupHeader";
 import { renderGroupContent } from "./TransactionVirtuosoGroup";
 import { renderItemContent } from "./TransactionVirtuosoItem";
+import { TransactionVirtuosoFooter } from "./TransactionVirtuosoFooter";
 import { cn } from "@/shared/lib/utils/core.util";
 import TransactionListSkeleton from "../skeletons/TransactionListSkeleton";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
@@ -18,6 +19,7 @@ const SKELETON_GROUPS = Array.from({ length: 3 }, (_, i) => i);
 export interface TransactionListProps {
   groupedTransactions: GroupedTransaction[];
   isLoadingTransactions: boolean;
+  isFetchingNextPage?: boolean;
   assetId?: string;
   onTransactionItemClick: (transaction: TransactionResponse) => void;
   onRestoreClick?: (transaction: TransactionResponse) => void;
@@ -44,11 +46,13 @@ export interface VirtuosoContext {
   onRestoreClick?: (transaction: TransactionResponse) => void;
   onDeleteClick?: (transaction: TransactionResponse) => void;
   onAttachmentClick?: (url: string) => void;
+  isFetchingNextPage?: boolean;
 }
 
 export function TransactionList({
   groupedTransactions,
   isLoadingTransactions,
+  isFetchingNextPage = false,
   assetId,
   onTransactionItemClick,
   onRestoreClick,
@@ -77,6 +81,7 @@ export function TransactionList({
     onRestoreClick,
     onDeleteClick,
     onAttachmentClick,
+    isFetchingNextPage,
   };
 
   if (isSearchMode && !searchKeyword) {
@@ -136,6 +141,9 @@ export function TransactionList({
           context={virtuosoContext}
           groupContent={renderGroupContent}
           itemContent={renderItemContent}
+          components={{
+            Footer: TransactionVirtuosoFooter,
+          }}
         />
       </section>
     );
