@@ -5,7 +5,6 @@ import {
   BadRequestException,
   OnModuleInit,
 } from "@nestjs/common";
-import * as crypto from "node:crypto";
 import "multer";
 import { TransactionRepository } from "../repositories/transaction.repository";
 import { AssetRepository } from "../../asset/repositories/asset.repository";
@@ -14,8 +13,8 @@ import { PrismaService } from "../../../prisma/prisma.service";
 import { CreateTransactionDto } from "../dto/create-transaction.dto";
 import { UpdateTransactionDto } from "../dto/update-transaction.dto";
 import { Transaction, TransactionType, Prisma } from "@prisma/client";
-import { createClient } from "@supabase/supabase-js";
 import { TransactionQueryDto } from "../dto/transaction-query.dto";
+import { StorageService } from "../../../common/storage/storage.service";
 
 @Injectable()
 export class TransactionService implements OnModuleInit {
@@ -24,14 +23,8 @@ export class TransactionService implements OnModuleInit {
     private readonly assetRepository: AssetRepository,
     private readonly categoryRepository: CategoryRepository,
     private readonly prisma: PrismaService,
+    private readonly storageService: StorageService,
   ) {}
-
-  private readonly supabase = createClient(
-    process.env.SUPABASE_URL || "",
-    process.env.SUPABASE_SERVICE_ROLE_KEY ||
-      process.env.SUPABASE_ANON_KEY ||
-      "",
-  );
 
   onModuleInit() {
     // ponytail: using native setInterval instead of @nestjs/schedule to avoid unnecessary dependency.
@@ -58,7 +51,7 @@ export class TransactionService implements OnModuleInit {
 
               for (const tx of expiredTransactions) {
                 if (tx.attachmentUrl) {
-                  await this.removeAttachmentFromSupabase(tx.attachmentUrl);
+                  await this.storageService.removeFile(tx.attachmentUrl);
                 }
               }
 
@@ -106,7 +99,7 @@ export class TransactionService implements OnModuleInit {
                 assetTransactions
                   .map((transaction) => transaction.attachmentUrl)
                   .filter((url): url is string => Boolean(url))
-                  .map((url) => this.removeAttachmentFromSupabase(url)),
+                  .map((url) => this.storageService.removeFile(url)),
               );
               await this.prisma.transaction.deleteMany({
                 where: { toAssetId: { in: assetIds } },
@@ -122,73 +115,6 @@ export class TransactionService implements OnModuleInit {
       },
       60 * 60 * 1000,
     ); // Check every hour
-  }
-
-  async uploadFile(file: Express.Multer.File): Promise<string | null> {
-    if (!file) return null;
-    try {
-      const bucketName = process.env.SUPABASE_BUCKET || "attachments";
-      const fileExtension = file.originalname.split(".").pop();
-      const secureRandom = crypto.randomBytes(4).toString("hex");
-      const fileName = `${Date.now()}-${secureRandom}.${fileExtension}`;
-      const { data, error } = await this.supabase.storage
-        .from(bucketName)
-        .upload(fileName, file.buffer, {
-          contentType: file.mimetype,
-          upsert: false,
-        });
-
-      if (error) {
-        console.error("Supabase upload error:", error);
-        return null;
-      }
-      return data.path; // ponytail: store path instead of public URL for private buckets
-    } catch (e) {
-      console.error("Upload exception:", e);
-      return null;
-    }
-  }
-
-  private async getAttachmentUrl(
-    pathOrUrl: string | null,
-    bucketName: string,
-  ): Promise<string | null> {
-    if (!pathOrUrl) return null;
-    // If it's already a full URL (legacy), try to extract path or just return it
-    let path = pathOrUrl;
-    if (pathOrUrl.startsWith("http")) {
-      const parts = pathOrUrl.split(`/${bucketName}/`);
-      if (parts.length > 1) {
-        path = parts[1];
-      } else {
-        return pathOrUrl; // Cannot extract, return as is
-      }
-    }
-
-    const { data } = await this.supabase.storage
-      .from(bucketName)
-      .createSignedUrl(path, 3600); // 1 hour expiration
-
-    return data?.signedUrl || null;
-  }
-
-  private async removeAttachmentFromSupabase(
-    attachmentUrl: string,
-  ): Promise<void> {
-    const bucketName = process.env.SUPABASE_BUCKET || "attachments";
-    let path = attachmentUrl;
-    if (path.startsWith("http")) {
-      const parts = path.split(`/${bucketName}/`);
-      if (parts.length > 1) {
-        path = parts[1];
-      }
-    }
-    const { error } = await this.supabase.storage
-      .from(bucketName)
-      .remove([path]);
-    if (error) {
-      console.error("Failed to delete attachment from Supabase:", error);
-    }
   }
 
   private async handleTransfer(
@@ -347,7 +273,7 @@ export class TransactionService implements OnModuleInit {
 
     let attachmentUrl = dto.attachmentUrl;
     if (file) {
-      const uploadedUrl = await this.uploadFile(file);
+      const uploadedUrl = await this.storageService.uploadFile(file);
       if (uploadedUrl) {
         attachmentUrl = uploadedUrl;
       }
@@ -365,10 +291,8 @@ export class TransactionService implements OnModuleInit {
     });
 
     if (resultTransaction.attachmentUrl) {
-      const bucketName = process.env.SUPABASE_BUCKET || "attachments";
-      resultTransaction.attachmentUrl = await this.getAttachmentUrl(
+      resultTransaction.attachmentUrl = await this.storageService.getSignedUrl(
         resultTransaction.attachmentUrl,
-        bucketName,
       );
     }
     return resultTransaction;
@@ -382,14 +306,12 @@ export class TransactionService implements OnModuleInit {
       userId,
       query,
     );
-    const bucketName = process.env.SUPABASE_BUCKET || "attachments";
 
     // Map paths to signed URLs
     for (const item of result.items) {
       if (item.attachmentUrl) {
-        item.attachmentUrl = await this.getAttachmentUrl(
+        item.attachmentUrl = await this.storageService.getSignedUrl(
           item.attachmentUrl,
-          bucketName,
         );
       }
     }
@@ -412,7 +334,7 @@ export class TransactionService implements OnModuleInit {
       tx.attachmentUrl &&
       (dto.attachmentUrl === null || dto.attachmentUrl === "")
     ) {
-      await this.removeAttachmentFromSupabase(tx.attachmentUrl);
+      await this.storageService.removeFile(tx.attachmentUrl);
     }
 
     let newAttachmentUrl =
@@ -421,12 +343,12 @@ export class TransactionService implements OnModuleInit {
         : dto.attachmentUrl || tx.attachmentUrl;
 
     if (file) {
-      const uploadedUrl = await this.uploadFile(file);
+      const uploadedUrl = await this.storageService.uploadFile(file);
       if (uploadedUrl) {
         newAttachmentUrl = uploadedUrl;
         // Optionally delete the old file if we just uploaded a new one and didn't already delete it
         if (tx.attachmentUrl && tx.attachmentUrl !== newAttachmentUrl) {
-          await this.removeAttachmentFromSupabase(tx.attachmentUrl);
+          await this.storageService.removeFile(tx.attachmentUrl);
         }
       }
     }
@@ -483,10 +405,8 @@ export class TransactionService implements OnModuleInit {
     });
 
     if (updatedTx.attachmentUrl) {
-      const bucketName = process.env.SUPABASE_BUCKET || "attachments";
-      updatedTx.attachmentUrl = await this.getAttachmentUrl(
+      updatedTx.attachmentUrl = await this.storageService.getSignedUrl(
         updatedTx.attachmentUrl,
-        bucketName,
       );
     }
     return updatedTx;
@@ -504,7 +424,7 @@ export class TransactionService implements OnModuleInit {
 
     // ponytail: if hard deleting, clean up the storage file too so we don't leak space
     if (isHardDelete && tx.attachmentUrl) {
-      await this.removeAttachmentFromSupabase(tx.attachmentUrl);
+      await this.storageService.removeFile(tx.attachmentUrl);
     }
 
     return this.prisma.$transaction(async (prismaTx) => {
@@ -552,10 +472,8 @@ export class TransactionService implements OnModuleInit {
     if (!transaction) throw new NotFoundException("Transaction not found");
 
     if (transaction.attachmentUrl) {
-      const bucketName = process.env.SUPABASE_BUCKET || "attachments";
-      transaction.attachmentUrl = await this.getAttachmentUrl(
+      transaction.attachmentUrl = await this.storageService.getSignedUrl(
         transaction.attachmentUrl,
-        bucketName,
       );
     }
 

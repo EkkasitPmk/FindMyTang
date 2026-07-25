@@ -1,5 +1,4 @@
 import { Prisma } from "@prisma/client";
-import { createClient } from "@supabase/supabase-js";
 import {
   BadRequestException,
   ConflictException,
@@ -17,6 +16,7 @@ import * as crypto from "node:crypto";
 import { DEFAULT_CATEGORIES } from "../../../common/constants/default-categories";
 import { PrismaService } from "../../../prisma/prisma.service";
 import { SyncGuestDto } from "../dto/sync-guest.dto";
+import { StorageService } from "../../../common/storage/storage.service";
 
 @Injectable()
 export class AuthService {
@@ -25,50 +25,8 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private readonly prisma: PrismaService,
+    private readonly storageService: StorageService,
   ) {}
-
-  private readonly supabase = createClient(
-    process.env.SUPABASE_URL || "",
-    process.env.SUPABASE_SERVICE_ROLE_KEY ||
-      process.env.SUPABASE_ANON_KEY ||
-      "",
-  );
-
-  private async uploadBase64File(base64Data: string): Promise<string | null> {
-    try {
-      const match = base64Data.match(/^data:([A-Za-z-+/]+);base64,(.+)$/);
-      if (match?.length !== 3) {
-        return null;
-      }
-
-      const mimeType = match[1];
-      const base64String = match[2];
-      const buffer = Buffer.from(base64String, "base64");
-
-      let extension = mimeType.split("/")[1] || "bin";
-      if (extension === "jpeg") extension = "jpg";
-
-      const bucketName = process.env.SUPABASE_BUCKET || "attachments";
-      const secureRandom = crypto.randomBytes(4).toString("hex");
-      const fileName = `${Date.now()}-${secureRandom}.${extension}`;
-
-      const { data, error } = await this.supabase.storage
-        .from(bucketName)
-        .upload(fileName, buffer, {
-          contentType: mimeType,
-          upsert: false,
-        });
-
-      if (error) {
-        console.error("Supabase base64 upload error:", error);
-        return null;
-      }
-      return data.path;
-    } catch (e) {
-      console.error("Upload base64 exception:", e);
-      return null;
-    }
-  }
 
   async login(loginDto: LoginDto) {
     const { email, password } = loginDto;
@@ -230,7 +188,8 @@ export class AuthService {
 
       let finalAttachmentUrl = txData.attachmentUrl;
       if (finalAttachmentUrl?.startsWith("data:")) {
-        const uploadedPath = await this.uploadBase64File(finalAttachmentUrl);
+        const uploadedPath =
+          await this.storageService.uploadBase64(finalAttachmentUrl);
         if (uploadedPath) {
           finalAttachmentUrl = uploadedPath;
         } else {

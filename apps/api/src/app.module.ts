@@ -12,6 +12,7 @@ import { SummaryModule } from "./modules/summary/summary.module";
 import { AnalyticsModule } from "./modules/analytics/analytics.module";
 import jwtConfig from "./common/config/jwt.config";
 import cookieConfig from "./common/config/cookie.config";
+import { StorageModule } from "./common/storage/storage.module";
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import cookieConfig from "./common/config/cookie.config";
       load: [jwtConfig, cookieConfig],
     }),
     PrismaModule,
+    StorageModule,
     UserModule,
     AssetModule,
     CategoryModule,

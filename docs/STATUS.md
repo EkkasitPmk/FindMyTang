@@ -213,6 +213,13 @@
 - **Deployment Readiness & Preparation Documentation**:
   - จัดทำเอกสารฉบับใหม่ [DEPLOYMENT_PREPARATION.md](file:///Users/torikiton/Desktop/PocketNote/docs/DEPLOYMENT_PREPARATION.md) รวบรวมสรุปความพร้อมของระบบ (~80%-85%), รายการตรวจสอบการทดสอบ Build, การจัดเตรียม Cloud Database (PostgreSQL), การเลือก App Hosting (Frontend Vercel / Backend Render), การตั้งค่า Environment Variables (`.env.production`) และประเมินหัวข้อสำหรับการนำมาประชุมตัดสินใจร่วมกันก่อน Launch ขึ้นเซิร์ฟเวอร์จริง
 
+- **Supabase Centralized Storage Service & Security Refactoring**:
+  - **สร้าง Centralized Storage Module & Service**: สร้าง [storage.module.ts](file:///Users/torikiton/Desktop/PocketNote/apps/api/src/common/storage/storage.module.ts) และ [storage.service.ts](file:///Users/torikiton/Desktop/PocketNote/apps/api/src/common/storage/storage.service.ts) ไว้ที่ฝั่ง Backend สื่อสารผ่าน NestJS `ConfigService` เพื่อเป็นศูนย์กลางเดี่ยวในการสร้าง Supabase Client (Singleton) สำหรับจัดการ Storage
+  - **ขจัด Code Duplication**: ลบการประกาศ `createClient(...)` ซ้ำซ้อน 3 จุด และลบ Helper Method ที่สร้างกระจัดกระจายใน [AssetService](file:///Users/torikiton/Desktop/PocketNote/apps/api/src/modules/asset/services/asset.service.ts), [AuthService](file:///Users/torikiton/Desktop/PocketNote/apps/api/src/modules/auth/services/auth.service.ts), และ [TransactionService](file:///Users/torikiton/Desktop/PocketNote/apps/api/src/modules/transaction/services/transaction.service.ts) โดยเปลี่ยนมา Inject `StorageService` แทน
+  - **ลบ Unused Config & Keys**: ลบ `SUPABASE_ANON_KEY` ที่ไม่ได้ใช้งานในฝั่ง Backend ออกจากไฟล์ `.env` เพื่อป้องกันความสับสน
+  - **Frontend Wildcard Domain Pattern**: ปรับปรุง [next.config.ts](file:///Users/torikiton/Desktop/PocketNote/apps/web/next.config.ts) ฝั่งหน้าบ้าน จากเดิมที่ระบุ Hostname เจาะจงเฉพาะโครงการ ให้รองรับ Wildcard Pattern `*.supabase.co` เพื่อความยืดหยุ่นและการเปลี่ยนผ่าน Environment
+  - **Verification**: ทดสอบผ่าน TypeScript Compilation และการ Build ผ่าน 100% ทั้งฝั่ง `apps/api` และ `apps/web`
+
 ---
 
 ### 2. สิ่งที่จะต้องทำเป็นลำดับถัดไป (Next Actions)
