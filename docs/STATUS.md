@@ -65,6 +65,15 @@
 
 ### 1. สิ่งที่พัฒนาเสร็จสิ้นแล้ว (Completed)
 
+- **Deleted Categories Management & Hard Delete Flow (DELETED Tab & Hard Delete Confirmation)**:
+  - เพิ่มแท็บ **"หมวดหมู่ที่ถูกลบ" (`DELETED`)** ไว้ทางขวาของแท็บ `INCOME` ในหน้า Manage Categories (`/categories`)
+  - แสดงผลรายการหมวดหมู่ที่ถูก Soft Delete (`deletedAt != null`) ในรูปแบบ Grid พร้อมแสดง Badge บอกประเภท (`รายรับ` / `รายจ่าย`)
+  - เพิ่มฟังก์ชัน **"กู้คืนหมวดหมู่" (Restore Category)** ให้สามารถกู้คืนหมวดหมู่ที่ถูก Soft Delete กลับมาใช้งานหลักในแท็บ `EXPENSE` หรือ `INCOME` ได้
+  - ปรับแต่งแท็บ **"ถังขยะ" (`DELETED`)**: ปิดการคลิกเปิด Sheet ที่การ์ดหมวดหมู่ที่ถูกลบ (คลิกปกติไม่แสดง Sheet) โดยผู้ใช้สามารถกดเข้าโหมดแก้ไข (Edit) เพื่อดำเนินการ **"กู้คืน"** หรือ **"ลบถาวร"** บนการ์ดได้สะดวก
+  - เพิ่มตัวเลือก Checkbox **"ลบถาวร (Hard delete)"** ใน `ConfirmModal` สำหรับการลบหมวดหมู่ในแท็บปกติ (รายรับ/รายจ่าย) และหากอยู่ในแท็บหมวดหมู่ที่ถูกลบ ระบบจะไม่ถาม Checkbox ซ้ำ แต่ให้ยืนยันการลบออกจากฐานข้อมูลถาวรได้ทันที
+  - ปรับปรุง Backend API (`CategoryRepository`, `CategoryService`, `CategoryController`) และ Guest Storage (Dexie) ให้รองรับการ Hard Delete อย่างปลอดภัย โดยการเคลียร์ `categoryId` ในรายการธุรกรรมที่อ้างอิงเป็น `null` ก่อนลบจริง เพื่อรักษาประวัติธุรกรรมไว้
+  - ผ่านการทดสอบ Typecheck, NestJS Build และ Vitest 100% ไร้ข้อผิดพลาด
+
 - **Manage Assets & Categories Selection Circle, Grid Item & Animate-UI Animated Tabs Integration**:
   - ปรับปรุงโครงสร้าง Tabs ของหน้า **Manage Categories** ([CategoryContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/category/containers/CategoryContainer.tsx)) ให้ใช้งาน `Tabs`, `TabsList`, `TabsTrigger`, `TabsContents`, และ `TabsContent` จาก `animate-ui` (`@/shared/components/animate-ui/components/animate/tabs`) แบบสมบูรณ์ 100%
   - เพิ่มอนิเมชัน **Horizontal Sliding Content Motion Transition** สไลด์เปลี่ยนหน้าเนื้อหาการ์ดหมวดหมู่รายรับ/รายจ่ายเมื่อคลิกสลับแท็บ ร่วมกับ Sliding Highlight Indicator ในปุ่มแท็บ
