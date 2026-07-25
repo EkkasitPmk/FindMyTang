@@ -8,6 +8,8 @@ import {
   ForbiddenException,
 } from "@nestjs/common";
 
+import { CACHE_MANAGER } from "@nestjs/cache-manager";
+
 describe("CategoryService", () => {
   let service: CategoryService;
   let repository: CategoryRepository;
@@ -20,6 +22,12 @@ describe("CategoryService", () => {
     delete: jest.fn(),
   };
 
+  const mockCacheManager = {
+    get: jest.fn(),
+    set: jest.fn(),
+    del: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -27,6 +35,10 @@ describe("CategoryService", () => {
         {
           provide: CategoryRepository,
           useValue: mockCategoryRepository,
+        },
+        {
+          provide: CACHE_MANAGER,
+          useValue: mockCacheManager,
         },
       ],
     }).compile();
