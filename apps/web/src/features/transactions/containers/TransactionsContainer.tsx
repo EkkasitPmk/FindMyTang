@@ -336,9 +336,11 @@ export default function TransactionsContainer() {
   const filteredCategories = useMemo(
     () =>
       categories?.filter(
-        (c: Category) => c.type === (transactionType as string),
+        (c: Category) =>
+          c.type === (transactionType as string) &&
+          (!c.deletedAt || c.id === watchCategoryId),
       ) || [],
-    [categories, transactionType],
+    [categories, transactionType, watchCategoryId],
   );
 
   const {
