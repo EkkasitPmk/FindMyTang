@@ -65,6 +65,31 @@
 
 ### 1. สิ่งที่พัฒนาเสร็จสิ้นแล้ว (Completed)
 
+- **Animate-UI Components Code Alignment with DESIGN.md**:
+  - ดำเนินการปรับแต่งซอร์สโค้ดของคอมโพเนนต์ที่ติดตั้งใหม่ ได้แก่ [checkbox.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/components/radix/checkbox.tsx), [dialog.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/components/radix/dialog.tsx) และ [alert-dialog.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/components/radix/alert-dialog.tsx) ให้เปลี่ยนจาก Tailwind Default Classes ดั้งเดิม มาเรียกใช้ **Semantic Design Tokens** ตามที่ระบุไว้ใน [DESIGN.md](file:///Users/torikiton/Desktop/PocketNote/docs/DESIGN.md) 100%:
+    1. **`Checkbox`**: ใช้ `bg-surface border-border` สำหรับสถานะปกติ, `bg-primary text-primary-foreground` สำหรับสถานะเช็กเลือก, และ `focus-visible:ring-primary/40`
+    2. **`Dialog` & `AlertDialog`**: ใช้ `bg-surface border-border text-primary-text` สำหรับ Dialog Content, `bg-primary-text/25 backdrop-blur-xs` สำหรับ Backdrop Overlay, `text-primary-text font-bold` สำหรับ Title และ `text-secondary-text` สำหรับ Description
+  - ผ่านการตรวจทานและทดสอบ `npx tsc --noEmit` 100% ไร้ข้อผิดพลาด
+
+- **Checkbox Indicator Color Animation Fix (Light Theme)**:
+  - แก้ไขปัญหาไอคอนเช็กถูก (`stroke="currentColor"`) แสดงผลเป็นสีดำระหว่างกำลังรันอนิเมชันวาดเส้น แล้วค่อยเปลี่ยนเป็นสีขาวหลังอนิเมชันจบใน Light Theme
+  - **สาเหตุเกิดจาก**: `transition-colors duration-500` บนปุ่ม Checkbox ทำให้ค่าสีตัวอักษร (`color`) ใช้เวลาเปลี่ยนจากสีดำดั้งเดิมไปเป็น `text-primary-foreground` (สีขาว) นาน 500ms ขณะที่อนิเมชันวาดเส้นเริ่มทำงานทันทีด้วยสี `currentColor` ที่ยังคงเป็นสีดำในตอนแรก
+  - **การแก้ไข**: กำหนดคลาส `text-primary-foreground` ให้กับ [checkbox.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/components/radix/checkbox.tsx) (`checkboxIndicatorVariants`) โดยตรง เพื่อให้เส้น SVG เช็กถูกใช้สีขาวตั้งแต่วินาทีแรกที่เริ่มอนิเมชัน พร้อมปรับเวลา `transition-colors` เป็น `duration-200` ตอบสนองฉับไว สวยงาม 100%
+  - **เอกสารดีไซน์**: อัปเดตมาตรฐานคอมโพเนนต์ปฏิสัมพันธ์ (Section 4) ในเอกสาร [DESIGN.md](file:///Users/torikiton/Desktop/PocketNote/docs/DESIGN.md) ครอบคลุมมาตรฐานการออกแบบ สไตล์ อนิเมชัน และการใช้งานของ Checkbox, Dialog และ AlertDialog ครบถ้วน 100%
+
+- **Confirmation Modals Animate-UI Radix AlertDialog Migration (Group 1)**:
+  - ติดตั้งคอมโพเนนต์ `@animate-ui/components-radix-alert-dialog` ([alert-dialog.tsx (Component)](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/components/radix/alert-dialog.tsx) และ [alert-dialog.tsx (Primitive)](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/primitives/radix/alert-dialog.tsx))
+  - ดำเนินการ Refactor คอมโพเนนต์ศูนย์กลาง [ConfirmModal.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/ConfirmModal.tsx) ให้ย้ายมาใช้งาน `AlertDialog`, `AlertDialogContent`, `AlertDialogHeader`, `AlertDialogTitle`, `AlertDialogDescription` และ `AlertDialogFooter` จาก `animate-ui`
+  - ส่งผลให้ทุกฟีเจอร์ในระบบที่เรียกใช้งาน Modal ยืนยันการกระทำ (ได้แก่ ยืนยันการออกจากระบบ `NavContainer`, ยืนยันการลบบัญชีผู้ใช้ `AccountContainer`, ยืนยันการลบธุรกรรม `TransactionsContainer` & `TransactionListContainer`, ยืนยันการลบสินทรัพย์ `ManageAssetsContainer` & `AssetsMenu`, และยืนยันการลบหมวดหมู่ `CategoryContainer`) ได้รับความสามารถ Focus Trap, ARIA Alert Dialog Role และ Motion Animations สวยงาม สมบูรณ์ 100% ผ่านการตรวจ TypeScript Check ปราศจากข้อผิดพลาด
+
+- **General Modals Animate-UI Radix Dialog Migration (Group 2)**:
+  - ติดตั้งคอมโพเนนต์ `@animate-ui/components-radix-dialog` ([dialog.tsx (Component)](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/components/radix/dialog.tsx) และ [dialog.tsx (Primitive)](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/primitives/radix/dialog.tsx))
+  - ดำเนินการ Refactor กลุ่ม General Modals (กลุ่มที่ 2) ทั้ง 3 ไฟล์ ได้แก่:
+    1. [FeatureLockModal.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/FeatureLockModal.tsx): Modal แจ้งเตือนฟีเจอร์ที่ต้องอัปเกรด/สมัครสมาชิก
+    2. [ImagePreviewModal.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/ImagePreviewModal.tsx): Modal แสดงพรีวิวรูปภาพสลิป/หลักฐานขยายใหญ่ (ปรับปรุงการเว้นช่องไฟด้านข้าง `w-[calc(100%-2.5rem)]` และปรับตำแหน่งปุ่ม `X` Close Button `z-20` ให้ลอยอยู่ด้านบนสุดและเห็นเด่นชัด 100%)
+    3. [GuestMigrationModal.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/GuestMigrationModal.tsx): Modal แจ้งเตือนย้ายข้อมูล Guest ไปยังบัญชีผู้ใช้
+  - เปลี่ยนจาก Custom Overlay Divs / Manual Portal เดิม มาใช้งาน Radix UI Dialog ร่วมกับ Motion Animations จาก `animate-ui` สวยงาม ราบรื่น มี Accessibility และ Focus Trap สมบูรณ์ 100% ผ่านการตรวจ TypeScript Check ปราศจากข้อผิดพลาด
+
 - **AssetDetail TopAppBar Mobile Dropdown Animate-UI Migration & Touch Fix**:
   - ปรับปรุงเมนูดรอปดาวน์ของรายละเอียดสินทรัพย์ (`AssetsMenu`) บน `TopAppBarMobile` ให้ย้ายมาใช้งาน Radix Dropdown Menu จาก `animate-ui` (`@/shared/components/animate-ui/components/radix/dropdown-menu`)
   - รองรับ Submenu ของ Filter และ Sort (ย่อยตาม Date และ Money) พร้อมอนิเมชันเปิด-ปิดที่นุ่มนวลและเป็นธรรมชาติจาก `animate-ui`
