@@ -13,12 +13,25 @@ import { AnalyticsModule } from "./modules/analytics/analytics.module";
 import jwtConfig from "./common/config/jwt.config";
 import cookieConfig from "./common/config/cookie.config";
 import { StorageModule } from "./common/storage/storage.module";
+import { ThrottlerModule, ThrottlerGuard } from "@nestjs/throttler";
+import { CacheModule } from "@nestjs/cache-manager";
+import { APP_GUARD } from "@nestjs/core";
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       load: [jwtConfig, cookieConfig],
+    }),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 100,
+      },
+    ]),
+    CacheModule.register({
+      isGlobal: true,
+      ttl: 300000, // 5 minutes
     }),
     PrismaModule,
     StorageModule,
@@ -31,6 +44,12 @@ import { StorageModule } from "./common/storage/storage.module";
     AnalyticsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}

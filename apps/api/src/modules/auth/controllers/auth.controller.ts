@@ -18,6 +18,7 @@ import { SyncGuestDto } from "../dto/sync-guest.dto";
 import { JwtAuthGuard } from "../guards/jwt-auth.guard";
 import { JwtRefreshGuard } from "../guards/jwt-refresh.guard";
 import { CurrentUser } from "../decorators/current-user.decorator";
+import { Throttle } from "@nestjs/throttler";
 import type { User } from "@prisma/client";
 
 type CookieSameSite = "lax" | "strict" | "none";
@@ -30,6 +31,7 @@ export class AuthController {
   ) {}
 
   @Post("register")
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   async register(@Body() registerDto: RegisterDto) {
     const user = await this.authService.register(registerDto);
     return {
@@ -41,6 +43,7 @@ export class AuthController {
   }
 
   @Post("login")
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   async login(
     @Body() loginDto: LoginDto,
     @Response({ passthrough: true }) res: express.Response,

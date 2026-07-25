@@ -18,6 +18,8 @@ import { JwtAuthGuard } from "../../auth/guards/jwt-auth.guard";
 import { CurrentUser } from "../../auth/decorators/current-user.decorator";
 import type { User } from "@prisma/client";
 
+import { Throttle } from "@nestjs/throttler";
+
 type CookieSameSite = "lax" | "strict" | "none";
 
 @Controller("users")
@@ -46,6 +48,7 @@ export class UserController {
 
   @Post("change-password")
   @HttpCode(HttpStatus.OK)
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @UseGuards(JwtAuthGuard)
   async changePassword(
     @CurrentUser() user: User,
