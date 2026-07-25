@@ -29,7 +29,7 @@ export default function TransactionAssetList({
   const renderAssetList = () => {
     if (isLoadingAssetList) {
       return (
-        <div className="flex gap-2 py-1 overflow-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
+        <div className="flex gap-2 py-1 overflow-auto">
           {SKELETON_ASSETS.map((id) => (
             <div key={id}>
               <Skeleton className="h-14 w-30 rounded-md" />
@@ -48,7 +48,7 @@ export default function TransactionAssetList({
     }
 
     return (
-      <div className="flex gap-2 py-1 overflow-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
+      <div className="flex gap-2 py-1 overflow-auto">
         {assets.map((asset) => (
           <TransactionAssetItem
             key={asset.id}
@@ -64,7 +64,7 @@ export default function TransactionAssetList({
   const renderTransferAssetList = () => {
     if (isLoadingAssetList) {
       return (
-        <div className="flex gap-2 py-1 overflow-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
+        <div className="flex gap-2 py-1 overflow-auto">
           {SKELETON_ASSETS.map((id) => (
             <div key={id}>
               <Skeleton className="h-14 w-30 rounded-md" />
@@ -87,7 +87,7 @@ export default function TransactionAssetList({
     }
 
     return (
-      <div className="flex gap-2 py-1 overflow-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
+      <div className="flex gap-2 py-1 overflow-auto">
         {availableAssets.map((asset) => (
           <TransactionAssetItem
             key={asset.id}

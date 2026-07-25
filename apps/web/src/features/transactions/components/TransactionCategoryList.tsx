@@ -31,7 +31,7 @@ export default function TransactionCategoryList({
         {t("categoryUppercase")}
       </p>
       {isLoadingCategoryList ? (
-        <div className="grid grid-cols-4 gap-y-2 overflow-auto max-h-[24vh] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
+        <div className="grid grid-cols-4 gap-y-2 overflow-auto max-h-[24vh]">
           {SKELETON_CATEGORIES.map((id) => (
             <div key={id} className="flex flex-col items-center gap-1">
               <Skeleton className="h-10.5 w-10.5 rounded-xl" />
@@ -40,7 +40,7 @@ export default function TransactionCategoryList({
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-4 gap-y-2 overflow-auto max-h-[24vh] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
+        <div className="grid grid-cols-4 gap-y-2 overflow-auto max-h-[24vh]">
           {categories.map((category) => {
             const Icon = getCategoryIcon(category.icon);
             const isSelected = activeCategoryId === category.id;
