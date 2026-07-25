@@ -14,6 +14,7 @@ import {
   useCreateCategoryMutation,
   useUpdateCategoryMutation,
   useDeleteCategoryMutation,
+  useRestoreCategoryMutation,
   useCategoryUIStore,
   useReorderCategoriesMutation,
 } from "../hooks/category.hook";
@@ -32,15 +33,24 @@ import {
 } from "../helpers/category.helper";
 import { handleFormError } from "@/shared/lib/helpers/form.helper";
 import { AxiosError } from "axios";
-import { Button } from "@/shared/components/animate-ui/components/buttons/button";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContents,
+  TabsContent,
+} from "@/shared/components/animate-ui/components/animate/tabs";
+
+type TabType = "EXPENSE" | "INCOME" | "DELETED";
 
 export default function CategoryContainer() {
   const { t } = useTranslation();
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [activeTab, setActiveTab] = useState<"EXPENSE" | "INCOME">("EXPENSE");
+  const [activeTab, setActiveTab] = useState<TabType>("EXPENSE");
   const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(
     null,
   );
+  const [isHardDeleteChecked, setIsHardDeleteChecked] = useState(false);
   const [isCUModalOpen, setIsCUModalOpen] = useState(false);
   const { modalState, setModalState, resetModalState } = useModalState();
 
@@ -101,7 +111,7 @@ export default function CategoryContainer() {
 
   const mounted = useMounted();
 
-  const { data: categories, isPending } = useCategories();
+  const { data: categories, isPending } = useCategories(true);
   const isCategoriesLoading = !mounted || isPending;
 
   const [prevCategories, setPrevCategories] = useState(categories);
@@ -128,7 +138,12 @@ export default function CategoryContainer() {
 
   const handleDragOver = (e: React.DragEvent, index: number) => {
     e.preventDefault();
-    if (draggedIndex === null || draggedIndex === index) return;
+    if (
+      draggedIndex === null ||
+      draggedIndex === index ||
+      activeTab === "DELETED"
+    )
+      return;
 
     setLocalCategories(
       reorderCategoriesList(localCategories, activeTab, draggedIndex, index),
@@ -137,20 +152,22 @@ export default function CategoryContainer() {
   };
 
   const handleDragEnd = () => {
+    if (activeTab === "DELETED") return;
     setDraggedIndex(null);
     const currentTabCategories = localCategories.filter(
-      (c) => c.type === activeTab,
+      (c) => c.type === activeTab && !c.deletedAt,
     );
     const ids = currentTabCategories.map((c) => c.id);
     reorderCategories(ids);
   };
 
   const handleTouchStart = (index: number) => {
+    if (activeTab === "DELETED") return;
     setDraggedIndex(index);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (draggedIndex === null) return;
+    if (draggedIndex === null || activeTab === "DELETED") return;
     const targetIndex = getTargetIndexFromTouch(e);
     if (targetIndex === null || draggedIndex === targetIndex) return;
 
@@ -166,7 +183,7 @@ export default function CategoryContainer() {
   };
 
   const handleTouchEnd = () => {
-    if (draggedIndex === null) return;
+    if (draggedIndex === null || activeTab === "DELETED") return;
     handleDragEnd();
   };
 
@@ -192,6 +209,32 @@ export default function CategoryContainer() {
         });
         setEditingCategory(null);
         setIsCUModalOpen(false);
+      },
+    });
+
+  const { mutate: restoreCategory, isPending: isRestoring } =
+    useRestoreCategoryMutation({
+      onSuccess: (data) => {
+        setModalState({
+          isOpen: true,
+          status: "success",
+          message: t("categoryRestoredSuccess").replace("{name}", data.name),
+        });
+        if (editingCategory?.id === data.id) {
+          setIsCUModalOpen(false);
+          setEditingCategory(null);
+        }
+      },
+      onError: (err) => {
+        const message = err.response?.data?.message;
+        const errorMsg = Array.isArray(message)
+          ? message[0]
+          : message || t("errRestoreCategory");
+        setModalState({
+          isOpen: true,
+          status: "error",
+          message: errorMsg,
+        });
       },
     });
 
@@ -240,17 +283,29 @@ export default function CategoryContainer() {
 
   const handleDelete = (category: Category) => {
     // ponytail: Sets category state to open custom ConfirmModal.
+    setIsHardDeleteChecked(false);
     setCategoryToDelete(category);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = (isHardFromModal?: boolean) => {
     if (categoryToDelete) {
-      deleteCategory(categoryToDelete.id);
+      const isAlreadyDeleted =
+        Boolean(categoryToDelete.deletedAt) || activeTab === "DELETED";
+      const isHardDelete =
+        isAlreadyDeleted || Boolean(isHardFromModal || isHardDeleteChecked);
+
+      deleteCategory({
+        id: categoryToDelete.id,
+        isHardDelete,
+      });
       setCategoryToDelete(null);
+      setIsHardDeleteChecked(false);
     }
   };
 
   const onSubmit = (values: CreateCategoryFormValues) => {
+    if (editingCategory?.deletedAt) return;
+
     const mutationOptions = {
       onError: (err: AxiosError<ApiErrorResponse>) => {
         handleFormError(err, setError, t("errSaveCategory"), {
@@ -290,10 +345,11 @@ export default function CategoryContainer() {
 
   const cancelEdit = () => {
     setEditingCategory(null);
+    setIsCUModalOpen(false);
   };
 
-  const filteredCategories =
-    localCategories.filter((category) => category.type === activeTab) || [];
+  const isDeletingSoftDeletedCategory =
+    Boolean(categoryToDelete?.deletedAt) || activeTab === "DELETED";
 
   return (
     <div className="space-y-2 px-4 py-2">
@@ -302,62 +358,102 @@ export default function CategoryContainer() {
         <p className="text-sm">{t("categoryManagementDesc")}</p>
       </div>
 
-      {/* Select Option Tab */}
-      <div className="flex border-b border-border/10 mb-1 cursor-pointer">
-        <Button
-          variant="unstyled"
-          type="button"
-          onClick={() => setActiveTab("EXPENSE")}
-          className={`grow text-center py-2 text-base font-medium border-b-2 ${
-            activeTab === "EXPENSE"
-              ? "border-primary text-primary"
-              : "border-transparent text-secondary-text hover:text-primary-text"
-          }`}
-        >
-          {t("expenses")}
-        </Button>
-        <Button
-          variant="unstyled"
-          type="button"
-          onClick={() => setActiveTab("INCOME")}
-          className={`grow text-center py-2 text-base font-medium border-b-2 ${
-            activeTab === "INCOME"
-              ? "border-primary text-primary"
-              : "border-transparent text-secondary-text hover:text-primary-text"
-          }`}
-        >
-          {t("income")}
-        </Button>
-      </div>
-      {/* Select Option Tab */}
+      {/* Select Option Tab & Animated Category Grid Contents */}
+      <Tabs
+        value={activeTab}
+        onValueChange={(val) => setActiveTab(val as TabType)}
+        className="w-full gap-1"
+      >
+        <div className="relative z-10 w-full">
+          <TabsList className="w-full grid grid-cols-3">
+            <TabsTrigger value="EXPENSE" className="text-sm py-2 truncate">
+              {t("expenses")}
+            </TabsTrigger>
+            <TabsTrigger value="INCOME" className="text-sm py-2 truncate">
+              {t("income")}
+            </TabsTrigger>
+            <TabsTrigger value="DELETED" className="text-sm py-2 truncate">
+              {t("deletedCategories")}
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
-      {/* Categories Grid */}
-      <CategoryGrid
-        categories={filteredCategories}
-        isLoading={isCategoriesLoading}
-        isEditingList={isEditingList}
-        draggedIndex={draggedIndex}
-        onNewCategoryClick={openCreateModal}
-        onCategoryClick={openEditModal}
-        onDeleteClick={handleDelete}
-        onDragStart={handleDragStart}
-        onDragOver={handleDragOver}
-        onDragEnd={handleDragEnd}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      />
+        <TabsContents className="w-full">
+          <TabsContent value="EXPENSE" className="w-full">
+            <CategoryGrid
+              categories={localCategories.filter(
+                (cat) => cat.type === "EXPENSE" && !cat.deletedAt,
+              )}
+              isLoading={isCategoriesLoading}
+              isEditingList={isEditingList}
+              draggedIndex={activeTab === "EXPENSE" ? draggedIndex : null}
+              onNewCategoryClick={openCreateModal}
+              onCategoryClick={openEditModal}
+              onDeleteClick={handleDelete}
+              onDragStart={handleDragStart}
+              onDragOver={handleDragOver}
+              onDragEnd={handleDragEnd}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            />
+          </TabsContent>
+          <TabsContent value="INCOME" className="w-full">
+            <CategoryGrid
+              categories={localCategories.filter(
+                (cat) => cat.type === "INCOME" && !cat.deletedAt,
+              )}
+              isLoading={isCategoriesLoading}
+              isEditingList={isEditingList}
+              draggedIndex={activeTab === "INCOME" ? draggedIndex : null}
+              onNewCategoryClick={openCreateModal}
+              onCategoryClick={openEditModal}
+              onDeleteClick={handleDelete}
+              onDragStart={handleDragStart}
+              onDragOver={handleDragOver}
+              onDragEnd={handleDragEnd}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            />
+          </TabsContent>
+          <TabsContent value="DELETED" className="w-full">
+            <CategoryGrid
+              categories={localCategories.filter((cat) =>
+                Boolean(cat.deletedAt),
+              )}
+              isLoading={isCategoriesLoading}
+              isEditingList={isEditingList}
+              isDeletedTab={true}
+              draggedIndex={null}
+              onNewCategoryClick={openCreateModal}
+              onCategoryClick={openEditModal}
+              onDeleteClick={handleDelete}
+              onRestoreClick={(cat) => restoreCategory(cat.id)}
+              onDragStart={handleDragStart}
+              onDragOver={handleDragOver}
+              onDragEnd={handleDragEnd}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            />
+          </TabsContent>
+        </TabsContents>
+      </Tabs>
 
       <CUCategoryModal
         isOpen={isCUModalOpen}
-        onClose={() => {
-          setIsCUModalOpen(false);
-          setEditingCategory(null);
-          setCustomColor("#e11d48");
-        }}
+        onClose={cancelEdit}
         category={editingCategory}
+        isDeletedCategory={Boolean(editingCategory?.deletedAt)}
+        onRestore={() => {
+          if (editingCategory) restoreCategory(editingCategory.id);
+        }}
+        onDeletePermanent={() => {
+          if (editingCategory) handleDelete(editingCategory);
+        }}
         onSubmit={onSubmit}
-        isPending={isCreating || isUpdating}
+        isPending={isCreating || isUpdating || isRestoring}
         register={register}
         handleSubmit={handleSubmit}
         setValue={setValue}
@@ -372,19 +468,43 @@ export default function CategoryContainer() {
       {/* Delete Confirmation Modal */}
       <ConfirmModal
         isOpen={categoryToDelete !== null}
-        onClose={() => setCategoryToDelete(null)}
+        onClose={() => {
+          setCategoryToDelete(null);
+          setIsHardDeleteChecked(false);
+        }}
         onConfirm={handleConfirmDelete}
         icon={CircleX}
-        title={t("deleteCategoryTitle")}
-        des={t("deleteCategoryDesc").replace(
-          "{name}",
-          categoryToDelete?.name || "",
-        )}
+        title={
+          isDeletingSoftDeletedCategory
+            ? t("deleteCategoryPermanentTitle")
+            : t("deleteCategoryTitle")
+        }
+        des={
+          isDeletingSoftDeletedCategory
+            ? t("deleteCategoryPermanentDesc").replace(
+                "{name}",
+                categoryToDelete?.name || "",
+              )
+            : t("deleteCategoryDesc").replace(
+                "{name}",
+                categoryToDelete?.name || "",
+              )
+        }
         confirmLabel={t("delete")}
+        withHardDeleteOption={!isDeletingSoftDeletedCategory}
+        hardDeleteCheckboxLabel={t("hardDeleteCheckboxLabel")}
+        isHardDelete={isHardDeleteChecked}
+        onHardDeleteChange={setIsHardDeleteChecked}
       />
 
       <LoadingModal
-        isOpen={modalState.isOpen || isCreating || isUpdating || isDeleting}
+        isOpen={
+          modalState.isOpen ||
+          isCreating ||
+          isUpdating ||
+          isDeleting ||
+          isRestoring
+        }
         status={modalState.isOpen ? modalState.status : "loading"}
         message={modalState.isOpen ? modalState.message : undefined}
         onClose={resetModalState}

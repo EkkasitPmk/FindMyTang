@@ -1,6 +1,5 @@
-import { useState, useRef, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { addMonths, subMonths, setMonth, setYear } from "date-fns";
-import { useClickOutside } from "@/shared/lib/hooks/useClickOutside.hook";
 import { useTransactionYearsQuery } from "@/features/transactions/hooks/transaction.hook";
 
 export function useJournalCalendar(
@@ -13,12 +12,6 @@ export function useJournalCalendar(
   // Navigator UI State
   const [isMonthOpen, setIsMonthOpen] = useState(false);
   const [isYearOpen, setIsYearOpen] = useState(false);
-
-  const monthRef = useRef<HTMLDivElement>(null);
-  const yearRef = useRef<HTMLDivElement>(null);
-
-  useClickOutside(monthRef, () => setIsMonthOpen(false), isMonthOpen);
-  useClickOutside(yearRef, () => setIsYearOpen(false), isYearOpen);
 
   const handlePrevMonth = useCallback(() => {
     setCurrentMonth((prev) => subMonths(prev, 1));
@@ -74,8 +67,6 @@ export function useJournalCalendar(
       currentMonth,
       isMonthOpen,
       isYearOpen,
-      monthRef,
-      yearRef,
       monthLabel: Intl.DateTimeFormat(locale, { month: "long" })
         .format(currentMonth)
         .toUpperCase(),

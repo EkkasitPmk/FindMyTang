@@ -162,7 +162,7 @@ export default function MainLayoutContainer({
           variant="unstyled"
           type="button"
           onClick={toggleEditingList}
-          className="text-sm mr-4 text-primary hover:text-primary-dark font-medium transition-colors cursor-pointer"
+          className="text-sm mr-5 text-primary hover:text-primary-dark font-medium transition-colors cursor-pointer"
         >
           {isEditingList ? t("done") : t("edit")}
         </Button>
@@ -203,7 +203,7 @@ export default function MainLayoutContainer({
           variant="unstyled"
           type="button"
           onClick={toggleEditingAssets}
-          className="text-sm mr-3 text-primary hover:text-primary-dark font-medium transition-colors cursor-pointer"
+          className="text-sm mr-4 text-primary hover:text-primary-dark font-medium transition-colors cursor-pointer"
         >
           {isEditingAssets ? t("done") : t("edit")}
         </Button>

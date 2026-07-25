@@ -8,37 +8,14 @@ import { AssetRepository } from "../repositories/asset.repository";
 import { CreateAssetDto } from "../dto/create-asset.dto";
 import { UpdateAssetDto } from "../dto/update-asset.dto";
 import { Asset } from "@prisma/client";
-import { createClient } from "@supabase/supabase-js";
+import { StorageService } from "../../../common/storage/storage.service";
 
 @Injectable()
 export class AssetService {
-  private readonly supabase = createClient(
-    process.env.SUPABASE_URL || "",
-    process.env.SUPABASE_SERVICE_ROLE_KEY ||
-      process.env.SUPABASE_ANON_KEY ||
-      "",
-  );
-
-  constructor(private readonly assetRepository: AssetRepository) {}
-
-  private async removeAttachmentFromSupabase(
-    attachmentUrl: string,
-  ): Promise<void> {
-    const bucketName = process.env.SUPABASE_BUCKET || "attachments";
-    let path = attachmentUrl;
-    if (path.startsWith("http")) {
-      const parts = path.split(`/${bucketName}/`);
-      if (parts.length > 1) {
-        path = parts[1];
-      }
-    }
-    const { error } = await this.supabase.storage
-      .from(bucketName)
-      .remove([path]);
-    if (error) {
-      console.error("Failed to delete attachment from Supabase:", error);
-    }
-  }
+  constructor(
+    private readonly assetRepository: AssetRepository,
+    private readonly storageService: StorageService,
+  ) {}
 
   async create(userId: string, dto: CreateAssetDto): Promise<Asset> {
     // ponytail: Trims asset name and validates it is not empty, then creates the asset.
@@ -126,7 +103,7 @@ export class AssetService {
       userId,
     );
     await Promise.all(
-      attachments.map((url) => this.removeAttachmentFromSupabase(url)),
+      attachments.map((url) => this.storageService.removeFile(url)),
     );
 
     return this.assetRepository.hardDelete(id, userId);
@@ -164,7 +141,7 @@ export class AssetService {
     );
     const allAttachments = attachments.flat();
     await Promise.all(
-      allAttachments.map((url) => this.removeAttachmentFromSupabase(url)),
+      allAttachments.map((url) => this.storageService.removeFile(url)),
     );
     return this.assetRepository.bulkHardDelete(userId, ids);
   }

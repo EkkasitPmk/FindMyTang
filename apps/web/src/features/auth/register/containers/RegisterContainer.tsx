@@ -25,6 +25,7 @@ export default function RegisterContainer() {
 
   const {
     register,
+    control,
     handleSubmit,
     setError,
     formState: { errors },
@@ -82,6 +83,7 @@ export default function RegisterContainer() {
     <>
       <RegisterForm
         register={register}
+        control={control}
         handleSubmit={handleSubmit}
         onSubmit={onSubmit}
         errors={errors}

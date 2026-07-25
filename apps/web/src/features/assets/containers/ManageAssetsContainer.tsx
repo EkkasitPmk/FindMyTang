@@ -21,6 +21,7 @@ import { useModalState } from "@/shared/lib/hooks/useModalState.hook";
 import ManageAssetItem from "../components/ManageAssetItem";
 import EditAssetsContainer from "./EditAssetsContainer";
 import { RotateCcw, Trash2, Archive } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { reorderList } from "../helpers/asset.helper";
@@ -335,7 +336,7 @@ export default function ManageAssetsContainer() {
       >
         {/* Active Assets */}
         {localActiveAssets.length > 0 && (
-          <div className="space-y-1 pt-2">
+          <motion.div layout className="space-y-1 pt-2">
             {localActiveAssets.map((asset, index) => (
               <ManageAssetItem
                 key={asset.id}
@@ -359,6 +360,7 @@ export default function ManageAssetsContainer() {
                 isSelected={selectedIds.has(asset.id)}
                 onToggleSelect={() => toggleSelect(asset.id)}
                 index={index}
+                draggedIndex={draggedIndex}
                 draggable={isEditingList}
                 onDragStart={handleDragStart}
                 onDragOver={handleDragOver}
@@ -368,12 +370,13 @@ export default function ManageAssetsContainer() {
                 onTouchEnd={handleTouchEnd}
               />
             ))}
-          </div>
+          </motion.div>
         )}
 
         {/* Deleted Assets Section */}
         {deletedAssets.length > 0 && (
-          <div
+          <motion.div
+            layout
             className={cn(
               "space-y-1",
               localActiveAssets.length !== 0 && "pt-2 border-t border-border",
@@ -409,7 +412,7 @@ export default function ManageAssetsContainer() {
                 draggable={false}
               />
             ))}
-          </div>
+          </motion.div>
         )}
 
         {/* Empty state */}
@@ -421,46 +424,54 @@ export default function ManageAssetsContainer() {
       </section>
 
       {/* Bulk Bottom Bar */}
-      {isEditingList && (
-        <div className="fixed bottom-0 left-0 right-0 bg-surface border-t border-border p-4 shadow-[0_-4px_10px_-4px_rgba(0,0,0,0.1)] z-50 flex items-center justify-between gap-2 overflow-x-auto">
-          <span className="text-sm font-medium text-secondary-text whitespace-nowrap pl-2">
-            {selectedIds.size} {t("selected")}
-          </span>
-          <div className="flex gap-2 min-w-max">
-            {hasActiveSelected && (
+      <AnimatePresence>
+        {isEditingList && (
+          <motion.div
+            initial={{ y: 80, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 80, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            className="fixed bottom-0 left-0 right-0 bg-surface border-t border-border p-4 shadow-[0_-4px_10px_-4px_rgba(0,0,0,0.1)] z-50 flex items-center justify-between gap-2 overflow-x-auto"
+          >
+            <span className="text-sm font-medium text-secondary-text whitespace-nowrap pl-2">
+              {selectedIds.size} {t("selected")}
+            </span>
+            <div className="flex gap-2 min-w-max">
+              {hasActiveSelected && (
+                <Button
+                  variant="default"
+                  className="bg-investment-light hover:bg-investment/20 text-investment rounded-full px-4 text-xs h-9"
+                  disabled={selectedIds.size === 0}
+                  onClick={openBulkArchiveModal}
+                >
+                  <Archive size={16} className="mr-1.5 inline" />
+                  {t("archive")}
+                </Button>
+              )}
+              {hasDeletedSelected && (
+                <Button
+                  variant="default"
+                  className="bg-income-light hover:bg-income/20 text-income rounded-full px-4 text-xs h-9"
+                  disabled={selectedIds.size === 0}
+                  onClick={openBulkRestoreModal}
+                >
+                  <RotateCcw size={16} className="mr-1.5 inline" />
+                  {t("restore")}
+                </Button>
+              )}
               <Button
                 variant="default"
-                className="bg-investment-light hover:bg-investment/20 text-investment rounded-full px-4 text-xs h-9"
+                className="bg-expense hover:bg-expense-dark text-white rounded-full px-4 text-xs h-9"
                 disabled={selectedIds.size === 0}
-                onClick={openBulkArchiveModal}
+                onClick={openBulkDeleteModal}
               >
-                <Archive size={16} className="mr-1.5 inline" />
-                {t("archive")}
+                <Trash2 size={16} className="mr-1.5 inline" />
+                {t("delete")}
               </Button>
-            )}
-            {hasDeletedSelected && (
-              <Button
-                variant="default"
-                className="bg-income-light hover:bg-income/20 text-income rounded-full px-4 text-xs h-9"
-                disabled={selectedIds.size === 0}
-                onClick={openBulkRestoreModal}
-              >
-                <RotateCcw size={16} className="mr-1.5 inline" />
-                {t("restore")}
-              </Button>
-            )}
-            <Button
-              variant="default"
-              className="bg-expense hover:bg-expense-dark text-white rounded-full px-4 text-xs h-9"
-              disabled={selectedIds.size === 0}
-              onClick={openBulkDeleteModal}
-            >
-              <Trash2 size={16} className="mr-1.5 inline" />
-              {t("delete")}
-            </Button>
-          </div>
-        </div>
-      )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Edit Modal */}
       {editingAsset && (

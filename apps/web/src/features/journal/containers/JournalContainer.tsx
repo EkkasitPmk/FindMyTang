@@ -160,9 +160,9 @@ export default function JournalContainer() {
                           key={type.value}
                           onClick={() => setSelectedType(type.value)}
                           className={cn(
-                            "flex-none px-4 py-1.5 rounded-full text-sm font-medium transition-colors",
+                            "flex-none px-4 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer",
                             selectedType === type.value
-                              ? "bg-primary text-white"
+                              ? type.activeColorClass
                               : "bg-surface border border-border text-secondary-text hover:bg-surface-secondary",
                           )}
                         >

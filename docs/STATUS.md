@@ -65,6 +65,80 @@
 
 ### 1. สิ่งที่พัฒนาเสร็จสิ้นแล้ว (Completed)
 
+- **Deleted Categories Management & Hard Delete Flow (DELETED Tab & Hard Delete Confirmation)**:
+  - เพิ่มแท็บ **"หมวดหมู่ที่ถูกลบ" (`DELETED`)** ไว้ทางขวาของแท็บ `INCOME` ในหน้า Manage Categories (`/categories`)
+  - แสดงผลรายการหมวดหมู่ที่ถูก Soft Delete (`deletedAt != null`) ในรูปแบบ Grid พร้อมแสดง Badge บอกประเภท (`รายรับ` / `รายจ่าย`)
+  - เพิ่มฟังก์ชัน **"กู้คืนหมวดหมู่" (Restore Category)** ให้สามารถกู้คืนหมวดหมู่ที่ถูก Soft Delete กลับมาใช้งานหลักในแท็บ `EXPENSE` หรือ `INCOME` ได้
+  - ปรับแต่งแท็บ **"ถังขยะ" (`DELETED`)**: ปิดการคลิกเปิด Sheet ที่การ์ดหมวดหมู่ที่ถูกลบ (คลิกปกติไม่แสดง Sheet) โดยผู้ใช้สามารถกดเข้าโหมดแก้ไข (Edit) เพื่อดำเนินการ **"กู้คืน"** หรือ **"ลบถาวร"** บนการ์ดได้สะดวก
+  - เพิ่มตัวเลือก Checkbox **"ลบถาวร (Hard delete)"** ใน `ConfirmModal` สำหรับการลบหมวดหมู่ในแท็บปกติ (รายรับ/รายจ่าย) และหากอยู่ในแท็บหมวดหมู่ที่ถูกลบ ระบบจะไม่ถาม Checkbox ซ้ำ แต่ให้ยืนยันการลบออกจากฐานข้อมูลถาวรได้ทันที
+  - ปรับปรุง Backend API (`CategoryRepository`, `CategoryService`, `CategoryController`) และ Guest Storage (Dexie) ให้รองรับการ Hard Delete อย่างปลอดภัย โดยการเคลียร์ `categoryId` ในรายการธุรกรรมที่อ้างอิงเป็น `null` ก่อนลบจริง เพื่อรักษาประวัติธุรกรรมไว้
+  - ผ่านการทดสอบ Typecheck, NestJS Build และ Vitest 100% ไร้ข้อผิดพลาด
+
+- **Manage Assets & Categories Selection Circle, Grid Item & Animate-UI Animated Tabs Integration**:
+  - ปรับปรุงโครงสร้าง Tabs ของหน้า **Manage Categories** ([CategoryContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/category/containers/CategoryContainer.tsx)) ให้ใช้งาน `Tabs`, `TabsList`, `TabsTrigger`, `TabsContents`, และ `TabsContent` จาก `animate-ui` (`@/shared/components/animate-ui/components/animate/tabs`) แบบสมบูรณ์ 100%
+  - เพิ่มอนิเมชัน **Horizontal Sliding Content Motion Transition** สไลด์เปลี่ยนหน้าเนื้อหาการ์ดหมวดหมู่รายรับ/รายจ่ายเมื่อคลิกสลับแท็บ ร่วมกับ Sliding Highlight Indicator ในปุ่มแท็บ
+  - แก้ไขปัญหาอาการขยับกระตุกนิดนึงหลังเล่นอนิเมชันเปิดตัวจบในหน้า **Manage Categories** ([CategoryGrid.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/category/components/CategoryGrid.tsx)) โดยการถอดการครอบทับของ `Button` ซ้ำซ้อน ซึ่งมี Default `whileHover={{ scale: 1.02 }}` มาใช้งาน `<motion.button>` โดยตรงชิ้นเดียว และปิด `hoverScale={1}` บนการ์ดหลักเพื่อให้อนิเมชันเปิดตัวเล่นจบลงนิ่งสนิทอยู่กับที่ 100%
+  - แก้ไขปัญหาวงกลมเลือกรายการไม่แสดงผลอนิเมชันตอนเปิดโหมด Edit โดยเพิ่มอนิเมชันขยายคลี่ตัววงกลม (`scale: 0` -> `1`, `rotate: -90` -> `0`, `width: 0` -> `auto`) ทันทีทุกครั้งเมื่อเข้าโหมด Edit บนหน้า Manage Assets ([ManageAssetItem.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/assets/components/ManageAssetItem.tsx))
+
+- **FinancialSnapshot & ListAssets Strict Architecture Alignment**:
+  - ปรับโครงสร้าง [FinancialSnapshotCard.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/home/components/FinancialSnapshotCard.tsx) และ [FinancialSnapshotContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/home/containers/FinancialSnapshotContainer.tsx) ให้สอดคล้องเป๊ะตามมาตรฐานใน [FRONTEND_IMPLEMENTATION.md](file:///Users/torikiton/Desktop/PocketNote/docs/FRONTEND_IMPLEMENTATION.md) 100%:
+    1. **Pure UI Component (Dumb Component)**: `FinancialSnapshotCard` รับผิดชอบเฉพาะการแสดงผล UI ไม่มี internal state/effect ซับซ้อน พร้อมใช้ `export default` และ typing `Readonly<FinancialSnapshotCardProps>` ตามรูปแบบหลักของโปรเจกต์
+    2. **Reused UI Component**: เปลี่ยนจากการใช้แท็ก HTML `<button>` แบบดั้งเดิม มาเรียกใช้คอมโพเนนต์ `<Button variant="unstyled">` จาก `@/shared/components/animate-ui/components/buttons/button` ตามลำดับความสำคัญของ UI Component ในโปรเจกต์
+    3. **Pixel-Perfect Skeleton Loading**: ปรับแต่งโครงสร้าง Skeleton ใน `FinancialSnapshotCard` ให้ตรงกับเลย์เอาต์ UI ตอนโหลดข้อมูลเสร็จสมบูรณ์แบบ 1-to-1 (รวม Header, Balance Amount, Cash Flow Grid และ Monthly Net Change Footer Pill)
+    4. **Render Helper Patterns**: ใช้ฟังก์ชัน helper การเรนเดอร์ย่อยภายในตัวคอมโพเนนต์ (`renderNetWorthAmount`, `renderCashFlowCard`, `renderNetChangeBadge`) เพื่อให้สอดคล้องกับแพทเทิร์นการเขียนใน [TransactionAssetList.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/transactions/components/TransactionAssetList.tsx) ช่วยลด Cognitive Complexity เหลือเพียง ~2
+    5. **Container State & Pure Props**: `FinancialSnapshotContainer` รับหน้าที่ดึงข้อมูลจาก Hooks (`useAssets`, `useThisMonthSummary`) และจัดการ local state (`isPrivate` พร้อม lazy initializer) และส่ง Props ไปยัง Component
+  - เพิ่ม **Privacy Mode** (ซ่อน/แสดงยอดเงิน) และ **Cash Flow Split Grid** (แสดง Income 🟢 / Expense 🔴 ประจำเดือน)
+  - **ลบส่วนแสดงผล Income/Expense ที่ซ้ำซ้อน** ออกจาก [ListAssetsContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/assets/containers/ListAssetsContainer.tsx)
+  - ผ่านการทดสอบ Typecheck (`npx tsc --noEmit`) และ Linter 100% ไร้ข้อผิดพลาด
+
+- **Auth Me Query Optimization (`useMeQuery`)**:
+  - กำหนดค่ามาตรฐาน `staleTime: 1000 * 60 * 5` (5 นาที) และ `refetchOnWindowFocus: false` ใน [useMeQuery.hook.ts](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/lib/hooks/useMeQuery.hook.ts#L12)
+  - ช่วยลดการยิง API `/auth/me` ซ้ำซ้อนโดยไม่จำเป็นเมื่อผู้ใช้สลับแท็บเบราว์เซอร์ ประหยัด Bandwidth และเพิ่มประสิทธิภาพในการทำงานของหน้าบ้าน 100% ผ่านการทดสอบ TypeScript Check ปราศจากข้อผิดพลาด
+
+- **Virtualization Lazy Load Trigger Indicator (Journal Timeline & Transaction Lists)**:
+  - เชื่อมต่อ `isFetchingNextPage` จาก `TransactionListContainer` เข้ากับ `TransactionList` และสร้างคอมโพเนนต์แยกไฟล์เฉพาะ [TransactionVirtuosoFooter.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/TransactionVirtuosoFooter.tsx) ในโฟลเดอร์ `shared/components/customs/` ให้สอดคล้องเป๊ะตามโครงสร้างของ `TransactionVirtuosoGroup` และ `TransactionVirtuosoItem` ตามหลักการสถาปัตยกรรมใน [FRONTEND_IMPLEMENTATION.md](file:///Users/torikiton/Desktop/PocketNote/docs/FRONTEND_IMPLEMENTATION.md)
+  - ส่งผลให้ในโหมด Virtualization (เช่น หน้า Journal Timeline) ขณะที่ผู้ใช้งานเลื่อนสกรอลล์ลงไปด้านล่างอย่างรวดเร็ว ระบบจะแสดงผล Trigger for Lazy load (`<TransactionListSkeleton />`) ที่ท้ายรายการอย่างถูกต้อง 100% ควบคู่ไปกับ Virtualization
+  - ผ่านการทดสอบ Typecheck (`npx tsc --noEmit`) 100% ไร้ข้อผิดพลาด
+
+- **ListAssetsContainer & RecentJournalContainer Animate-UI Hover & Active Animations**:
+  - เพิ่มอนิเมชัน hover scale (`hoverScale={1.01}`) และ tap active scale (`tapScale={0.98}`) สไตล์ `animate-ui` ให้กับรายการสินทรัพย์ (Asset items) และลิงก์หัวข้อ "สินทรัพย์" ใน [ListAssetsContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/assets/containers/ListAssetsContainer.tsx)
+  - เพิ่มอนิเมชัน hover scale (`1.05`) และ tap active scale (`0.95`) สไตล์ `animate-ui` ให้กับปุ่ม "ดูทั้งหมด" (seeAll) ใน [RecentJournalContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/journal/containers/RecentJournalContainer.tsx) โดยใช้ `motion.div` เพื่อคงดีไซน์ เลย์เอาต์ และ Styling เดิมไว้ 100%
+  - **แก้ไขปัญหา `Button` `asChild` Content ไม่แสดงผล**: แก้ไข [button.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/components/buttons/button.tsx) เมื่อมีการใช้งาน prop `asChild={true}` ให้ส่ง `children` เป็น React Element เดี่ยวๆ ให้กับ `ButtonPrimitive` / `Slot` โดยไม่ถูกห่อหุ้มด้วยโหนดข้างเคียง เพื่อให้ Radix/Animate-UI Slot สามารถ clone/merge props ได้อย่างถูกต้อง 100%
+
+- **Journal Transaction Type Active Tab Colors**:
+  - ปรับแต่งการแสดงผลสี Active ของแท็บสลับประเภทธุรกรรมในหน้า Journal Timeline ([JournalContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/journal/containers/JournalContainer.tsx) และ [journal.config.ts](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/journal/configs/journal.config.ts)) ให้เปลี่ยนสี Active ตามสีของแต่ละประเภทธุรกรรม:
+    - **ทั้งหมด (All)**: สี Primary (`bg-primary text-white`)
+    - **รายรับ (Income)**: สี Income (`bg-income text-white`)
+    - **รายจ่าย (Expense)**: สี Expense (`bg-expense text-white`)
+    - **โอนเงิน (Transfer)**: สี Transfer (`bg-transfer text-white`)
+    - **ปรับยอด (Adjustment)**: สี Info (`bg-info text-white`)
+  - ผ่านการทดสอบ Typecheck (`npx tsc --noEmit`) และ Unit Tests 100% ไร้ข้อผิดพลาด
+
+- **Animate-UI Components Code Alignment with DESIGN.md**:
+  - ดำเนินการปรับแต่งซอร์สโค้ดของคอมโพเนนต์ที่ติดตั้งใหม่ ได้แก่ [checkbox.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/components/radix/checkbox.tsx), [dialog.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/components/radix/dialog.tsx) และ [alert-dialog.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/components/radix/alert-dialog.tsx) ให้เปลี่ยนจาก Tailwind Default Classes ดั้งเดิม มาเรียกใช้ **Semantic Design Tokens** ตามที่ระบุไว้ใน [DESIGN.md](file:///Users/torikiton/Desktop/PocketNote/docs/DESIGN.md) 100%:
+    1. **`Checkbox`**: ใช้ `bg-surface border-border` สำหรับสถานะปกติ, `bg-primary text-primary-foreground` สำหรับสถานะเช็กเลือก, และ `focus-visible:ring-primary/40`
+    2. **`Dialog` & `AlertDialog`**: ใช้ `bg-surface border-border text-primary-text` สำหรับ Dialog Content, `bg-primary-text/25 backdrop-blur-xs` สำหรับ Backdrop Overlay, `text-primary-text font-bold` สำหรับ Title และ `text-secondary-text` สำหรับ Description
+  - ผ่านการตรวจทานและทดสอบ `npx tsc --noEmit` 100% ไร้ข้อผิดพลาด
+
+- **Checkbox Indicator Color Animation Fix (Light Theme)**:
+  - แก้ไขปัญหาไอคอนเช็กถูก (`stroke="currentColor"`) แสดงผลเป็นสีดำระหว่างกำลังรันอนิเมชันวาดเส้น แล้วค่อยเปลี่ยนเป็นสีขาวหลังอนิเมชันจบใน Light Theme
+  - **สาเหตุเกิดจาก**: `transition-colors duration-500` บนปุ่ม Checkbox ทำให้ค่าสีตัวอักษร (`color`) ใช้เวลาเปลี่ยนจากสีดำดั้งเดิมไปเป็น `text-primary-foreground` (สีขาว) นาน 500ms ขณะที่อนิเมชันวาดเส้นเริ่มทำงานทันทีด้วยสี `currentColor` ที่ยังคงเป็นสีดำในตอนแรก
+  - **การแก้ไข**: กำหนดคลาส `text-primary-foreground` ให้กับ [checkbox.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/components/radix/checkbox.tsx) (`checkboxIndicatorVariants`) โดยตรง เพื่อให้เส้น SVG เช็กถูกใช้สีขาวตั้งแต่วินาทีแรกที่เริ่มอนิเมชัน พร้อมปรับเวลา `transition-colors` เป็น `duration-200` ตอบสนองฉับไว สวยงาม 100%
+  - **เอกสารดีไซน์**: อัปเดตมาตรฐานคอมโพเนนต์ปฏิสัมพันธ์ (Section 4) ในเอกสาร [DESIGN.md](file:///Users/torikiton/Desktop/PocketNote/docs/DESIGN.md) ครอบคลุมมาตรฐานการออกแบบ สไตล์ อนิเมชัน และการใช้งานของ Checkbox, Dialog และ AlertDialog ครบถ้วน 100%
+
+- **Confirmation Modals Animate-UI Radix AlertDialog Migration (Group 1)**:
+  - ติดตั้งคอมโพเนนต์ `@animate-ui/components-radix-alert-dialog` ([alert-dialog.tsx (Component)](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/components/radix/alert-dialog.tsx) และ [alert-dialog.tsx (Primitive)](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/primitives/radix/alert-dialog.tsx))
+  - ดำเนินการ Refactor คอมโพเนนต์ศูนย์กลาง [ConfirmModal.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/ConfirmModal.tsx) ให้ย้ายมาใช้งาน `AlertDialog`, `AlertDialogContent`, `AlertDialogHeader`, `AlertDialogTitle`, `AlertDialogDescription` และ `AlertDialogFooter` จาก `animate-ui`
+  - ส่งผลให้ทุกฟีเจอร์ในระบบที่เรียกใช้งาน Modal ยืนยันการกระทำ (ได้แก่ ยืนยันการออกจากระบบ `NavContainer`, ยืนยันการลบบัญชีผู้ใช้ `AccountContainer`, ยืนยันการลบธุรกรรม `TransactionsContainer` & `TransactionListContainer`, ยืนยันการลบสินทรัพย์ `ManageAssetsContainer` & `AssetsMenu`, และยืนยันการลบหมวดหมู่ `CategoryContainer`) ได้รับความสามารถ Focus Trap, ARIA Alert Dialog Role และ Motion Animations สวยงาม สมบูรณ์ 100% ผ่านการตรวจ TypeScript Check ปราศจากข้อผิดพลาด
+
+- **General Modals Animate-UI Radix Dialog Migration (Group 2)**:
+  - ติดตั้งคอมโพเนนต์ `@animate-ui/components-radix-dialog` ([dialog.tsx (Component)](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/components/radix/dialog.tsx) และ [dialog.tsx (Primitive)](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/primitives/radix/dialog.tsx))
+  - ดำเนินการ Refactor กลุ่ม General Modals (กลุ่มที่ 2) ทั้ง 3 ไฟล์ ได้แก่:
+    1. [FeatureLockModal.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/FeatureLockModal.tsx): Modal แจ้งเตือนฟีเจอร์ที่ต้องอัปเกรด/สมัครสมาชิก
+    2. [ImagePreviewModal.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/ImagePreviewModal.tsx): Modal แสดงพรีวิวรูปภาพสลิป/หลักฐานขยายใหญ่ (ปรับปรุงการเว้นช่องไฟด้านข้าง `w-[calc(100%-2.5rem)]` และปรับตำแหน่งปุ่ม `X` Close Button `z-20` ให้ลอยอยู่ด้านบนสุดและเห็นเด่นชัด 100%)
+    3. [GuestMigrationModal.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/GuestMigrationModal.tsx): Modal แจ้งเตือนย้ายข้อมูล Guest ไปยังบัญชีผู้ใช้
+  - เปลี่ยนจาก Custom Overlay Divs / Manual Portal เดิม มาใช้งาน Radix UI Dialog ร่วมกับ Motion Animations จาก `animate-ui` สวยงาม ราบรื่น มี Accessibility และ Focus Trap สมบูรณ์ 100% ผ่านการตรวจ TypeScript Check ปราศจากข้อผิดพลาด
+
 - **AssetDetail TopAppBar Mobile Dropdown Animate-UI Migration & Touch Fix**:
   - ปรับปรุงเมนูดรอปดาวน์ของรายละเอียดสินทรัพย์ (`AssetsMenu`) บน `TopAppBarMobile` ให้ย้ายมาใช้งาน Radix Dropdown Menu จาก `animate-ui` (`@/shared/components/animate-ui/components/radix/dropdown-menu`)
   - รองรับ Submenu ของ Filter และ Sort (ย่อยตาม Date และ Money) พร้อมอนิเมชันเปิด-ปิดที่นุ่มนวลและเป็นธรรมชาติจาก `animate-ui`
@@ -98,6 +172,7 @@
   - ติดตั้งและย้ายมาใช้แพ็กเกจคอมโพเนนต์ `@animate-ui/components-radix-dropdown-menu` ([components/radix/dropdown-menu.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/components/radix/dropdown-menu.tsx))
   - ลบคอมโพเนนต์ดรอปดาวน์เดิมที่ซ้ำซ้อนออก และอัปเดตจุดเรียกใช้งานทั้งหมด ([MonthYearNavigator.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/journal/components/MonthYearNavigator.tsx) และ [ThemeSwitcher.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/ThemeSwitcher.tsx)) ให้ชี้ไปยังคอมโพเนนต์ Radix Dropdown Menu ตัวใหม่ของ `animate-ui`
   - อัปเดต [journal-calendar.hook.ts](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/journal/hooks/journal-calendar.hook.ts) ให้ฟังก์ชัน `handleMonthToggle` และ `handleYearToggle` รองรับพารามิเตอร์ `open?: boolean` เพื่อทำงานร่วมกับ Radix UI & Motion transition entry animations ได้อย่างราบรื่นและเสถียร 100%
+  - **Journal Calendar Dropdown Fast-Close Fix**: แก้ไขปัญหากดเปิด Dropdown เดือน/ปีแล้วเมนูปิดลงทันที โดยยกเลิกการใช้ `useClickOutside` และ `monthRef`/`yearRef` ใน [journal-calendar.hook.ts](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/journal/hooks/journal-calendar.hook.ts) และ [MonthYearNavigator.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/journal/components/MonthYearNavigator.tsx) เนื่องจาก Radix UI DropdownMenu มีระบบจัดการ Dismiss/Outside Click ในตัวแบบ Portal อยู่แล้ว การใส่ custom `useClickOutside` ไปครอบเฉพาะปุ่ม Trigger ทำให้เมื่อเปิดเมนู เมนูดรอปดาวน์ที่ถูก Portal ไปอยู่ด้านนอก DOM Node ถูก `useClickOutside` ตรวจจับว่าเป็น "นอกพื้นที่" และสั่งปิดทันที การนำ Custom Hook ออกช่วยให้ Radix UI ควบคุม Open/Close State ได้อย่างสมบูรณ์และเสถียร 100%
 
 
 - **Sidebar Collapse Animation Refactoring**:
@@ -209,7 +284,21 @@
   - ปรับเปลี่ยนดรอปดาวน์เมนูในหน้าจอรายละเอียดสินทรัพย์ ([AssetDetail.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/assets/components/AssetDetail.tsx)) ได้แก่ ดรอปดาวน์เลือกมุมมอง (View Option), เลือกเดือน (Month), เลือกปี (Year) รวมถึงเมนูตัวเลือกเพิ่มธุรกรรม (Add Transaction Menu) ให้มาใช้งาน `DropdownMenu` จาก `@/shared/components/animate-ui/components/radix/dropdown-menu`
   - ปรับปรุงคอมโพเนนต์ส่วนกลาง [DropdownSelect.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/DropdownSelect.tsx) จาก custom absolute positioning list มาใช้ Radix UI `DropdownMenu` ร่วมกับ Spring animation ของ `animate-ui` สวยงาม ราบรื่น และมี accessibility สมบูรณ์ 100%
   - เพิ่มสถานะสี **Active / Selected State** (`bg-primary-light/60 text-primary font-semibold` สำหรับโหมดปกติ หรือใช้สีสินทรัพย์ `themeColor` ร่วมกับ `text-white`) พร้อมแสดงไอคอนสัญลักษณ์ติ๊กถูก (`Check` Icon) ด้านขวามือของตัวเลือกที่ถูกเปิดใช้งานเพื่อความชัดเจนทาง visual และตรงตาม [DESIGN.md](file:///Users/torikiton/Desktop/PocketNote/docs/DESIGN.md)
-  - Refactor โค้ดใน [DropdownSelect.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/DropdownSelect.tsx) โดยสกัด (extract) nested ternary operations ออกมาเป็น helper functions (`getTriggerStyle` และ `getItemClassName`) เพื่อให้อ่านง่าย สะอาดขึ้น และลดความซับซ้อนตามมาตรฐานโค้ดที่ดี
+- **Deployment Readiness & Preparation Documentation**:
+  - จัดทำเอกสารฉบับใหม่ [DEPLOYMENT_PREPARATION.md](file:///Users/torikiton/Desktop/PocketNote/docs/DEPLOYMENT_PREPARATION.md) รวบรวมสรุปความพร้อมของระบบ (~80%-85%), รายการตรวจสอบการทดสอบ Build, การจัดเตรียม Cloud Database (PostgreSQL), การเลือก App Hosting (Frontend Vercel / Backend Render), การตั้งค่า Environment Variables (`.env.production`) และประเมินหัวข้อสำหรับการนำมาประชุมตัดสินใจร่วมกันก่อน Launch ขึ้นเซิร์ฟเวอร์จริง
+
+- **Supabase Centralized Storage Service & Security Refactoring**:
+  - **สร้าง Centralized Storage Module & Service**: สร้าง [storage.module.ts](file:///Users/torikiton/Desktop/PocketNote/apps/api/src/common/storage/storage.module.ts) และ [storage.service.ts](file:///Users/torikiton/Desktop/PocketNote/apps/api/src/common/storage/storage.service.ts) ไว้ที่ฝั่ง Backend สื่อสารผ่าน NestJS `ConfigService` เพื่อเป็นศูนย์กลางเดี่ยวในการสร้าง Supabase Client (Singleton) สำหรับจัดการ Storage
+  - **ขจัด Code Duplication**: ลบการประกาศ `createClient(...)` ซ้ำซ้อน 3 จุด และลบ Helper Method ที่สร้างกระจัดกระจายใน [AssetService](file:///Users/torikiton/Desktop/PocketNote/apps/api/src/modules/asset/services/asset.service.ts), [AuthService](file:///Users/torikiton/Desktop/PocketNote/apps/api/src/modules/auth/services/auth.service.ts), และ [TransactionService](file:///Users/torikiton/Desktop/PocketNote/apps/api/src/modules/transaction/services/transaction.service.ts) โดยเปลี่ยนมา Inject `StorageService` แทน
+  - **ลบ Unused Config & Keys**: ลบ `SUPABASE_ANON_KEY` ที่ไม่ได้ใช้งานในฝั่ง Backend ออกจากไฟล์ `.env` เพื่อป้องกันความสับสน
+  - **Frontend Wildcard Domain Pattern**: ปรับปรุง [next.config.ts](file:///Users/torikiton/Desktop/PocketNote/apps/web/next.config.ts) ฝั่งหน้าบ้าน จากเดิมที่ระบุ Hostname เจาะจงเฉพาะโครงการ ให้รองรับ Wildcard Pattern `*.supabase.co` เพื่อความยืดหยุ่นและการเปลี่ยนผ่าน Environment
+  - **Animate UI Radix Checkbox Integration & Native Input Migration**:
+  - ติดตั้งและตั้งค่าคอมโพเนนต์ `@animate-ui/components-radix-checkbox` ([checkbox.tsx (Component)](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/components/radix/checkbox.tsx) และ [checkbox.tsx (Primitive)](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/primitives/radix/checkbox.tsx))
+  - ดำเนินการลบไฟล์ซ้ำซ้อนที่ถูกเพิ่มเข้ามาจากการติดตั้ง ได้แก่ `src/hooks/use-controlled-state.tsx`, `src/lib/get-strict-context.tsx`, และ `src/components/animate-ui/primitives/radix/checkbox.tsx`
+  - ปรับเปลี่ยนการใช้งาน HTML `<input type="checkbox">` เดิมทั้ง 2 จุดในระบบให้ใช้ `Checkbox` ของ `@animate-ui`:
+    1. **RegisterForm ([RegisterForm.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/auth/register/components/RegisterForm.tsx))**: ปรับใช้ `Checkbox` ร่วมกับ `Controller` จาก `react-hook-form` สำหรับตัวเลือกยอมรับเงื่อนไขบริการ (`agreeToTerms`)
+    2. **ConfirmModal ([ConfirmModal.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/ConfirmModal.tsx))**: ปรับเปลี่ยนจาก pseudo-checkbox `<div ...><Check /></div>` และ `<input type="checkbox" className="hidden">` มาใช้ `Checkbox` ของ `@animate-ui` ในตัวเลือกลบข้อมูลถาวร (`isHardDelete`)
+  - ผ่านการตรวจสอบ TypeScript Type Checking และ Unit Tests ทั้งหมด 100%
 
 ---
 

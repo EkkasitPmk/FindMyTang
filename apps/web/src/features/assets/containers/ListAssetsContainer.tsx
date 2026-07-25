@@ -1,10 +1,10 @@
 "use client";
 import Link from "next/link";
 import { ChevronRight, Plus } from "lucide-react";
+import { motion } from "motion/react";
 import { useAssets } from "@/shared/lib/hooks/useAssets.hook";
 import { getAssetIcon } from "@/shared/components/customs/AssetIcon";
 import { EmptyAssetList } from "../../../shared/components/customs/EmptyAssetList";
-import { useThisMonthSummary } from "@/features/home/hooks/summary.hook";
 import { AssetIconWrapper } from "@/shared/components/customs/AssetIconWrapper";
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
@@ -30,10 +30,8 @@ export default function ListAssetsContainer({
   const mounted = useMounted();
 
   const { data: assets, isPending: isAssetsPending } = useAssets();
-  const { data: summary, isPending: isSummaryPending } = useThisMonthSummary();
 
   const isLoading = !mounted || isAssetsPending;
-  const isSummaryLoading = !mounted || isSummaryPending;
 
   const renderAssetsList = () => {
     if (isLoading) {
@@ -67,38 +65,43 @@ export default function ListAssetsContainer({
         return (
           <div className="space-y-1">
             {activeAssets.map((asset) => (
-              <Link
-                href={`/assets?id=${asset.id}&name=${encodeURIComponent(asset.name)}`}
+              <motion.div
                 key={asset.id}
-                className="flex items-center justify-between bg-surface px-3 py-2 rounded-lg cursor-pointer hover:bg-surface-secondary transition-colors border-l-4"
-                style={{
-                  borderLeftColor: asset.color || "transparent",
-                }}
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.98 }}
               >
-                <div className="flex items-center gap-3">
-                  <AssetIconWrapper color={asset.color}>
-                    {getAssetIcon(asset.type, asset.color)}
-                  </AssetIconWrapper>
-                  <div className="flex flex-col text-primary-text">
-                    <span className="text-base font-semibold">
-                      {asset.name}
-                    </span>
-                    <span className="text-xs">
-                      {t(`assetType${asset.type}` as TranslationKey)}
-                    </span>
+                <Link
+                  href={`/assets?id=${asset.id}&name=${encodeURIComponent(asset.name)}`}
+                  className="flex items-center justify-between bg-surface px-3 py-2 rounded-lg cursor-pointer hover:bg-surface-secondary transition-colors border-l-4"
+                  style={{
+                    borderLeftColor: asset.color || "transparent",
+                  }}
+                >
+                  <div className="flex items-center gap-3">
+                    <AssetIconWrapper color={asset.color}>
+                      {getAssetIcon(asset.type, asset.color)}
+                    </AssetIconWrapper>
+                    <div className="flex flex-col text-primary-text">
+                      <span className="text-base font-semibold">
+                        {asset.name}
+                      </span>
+                      <span className="text-xs">
+                        {t(`assetType${asset.type}` as TranslationKey)}
+                      </span>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-center gap-1">
-                  <span className="font-semibold text-base text-primary-text">
-                    ฿
-                    {asset.balance.toLocaleString(locale, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                  </span>
-                  <ChevronRight size={18} className="text-disabled-text" />
-                </div>
-              </Link>
+                  <div className="flex items-center gap-1">
+                    <span className="font-semibold text-base text-primary-text">
+                      ฿
+                      {asset.balance.toLocaleString(locale, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </span>
+                    <ChevronRight size={18} className="text-disabled-text" />
+                  </div>
+                </Link>
+              </motion.div>
             ))}
           </div>
         );
@@ -115,16 +118,18 @@ export default function ListAssetsContainer({
       ) : (
         <section className="space-y-4">
           <div className="flex items-center justify-between mb-2">
-            <Link
-              href="/assets"
-              className="text-lg font-medium hover:text-primary transition-colors cursor-pointer flex items-center gap-1 group"
-            >
-              {t("assetsTitle")}
-              <ChevronRight
-                size={18}
-                className="text-disabled-text group-hover:text-primary transition-colors"
-              />
-            </Link>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.96 }}>
+              <Link
+                href="/assets"
+                className="text-lg font-medium hover:text-primary transition-colors cursor-pointer flex items-center gap-1 group"
+              >
+                {t("assetsTitle")}
+                <ChevronRight
+                  size={18}
+                  className="text-disabled-text group-hover:text-primary transition-colors"
+                />
+              </Link>
+            </motion.div>
             <Button
               variant="unstyled"
               type="button"
@@ -137,37 +142,6 @@ export default function ListAssetsContainer({
           </div>
 
           {renderAssetsList()}
-
-          <div className="flex gap-4">
-            <div className="flex flex-col grow w-full px-4 py-3 rounded-md bg-surface border border-border/30">
-              <span className="text-sm font-medium">{t("income")}</span>
-              {isSummaryLoading ? (
-                <Skeleton className="h-6 w-24" />
-              ) : (
-                <span className="text-base font-bold">
-                  ฿{" "}
-                  {summary?.income?.toLocaleString(locale, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  }) ?? "0.00"}
-                </span>
-              )}
-            </div>
-            <div className="flex flex-col grow w-full px-4 py-3 rounded-md bg-surface border border-border/30">
-              <span className="text-sm font-medium">{t("expense")}</span>
-              {isSummaryLoading ? (
-                <Skeleton className="h-6 w-24" />
-              ) : (
-                <span className="text-base font-bold">
-                  ฿{" "}
-                  {summary?.expense?.toLocaleString(locale, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  }) ?? "0.00"}
-                </span>
-              )}
-            </div>
-          </div>
         </section>
       )}
     </>

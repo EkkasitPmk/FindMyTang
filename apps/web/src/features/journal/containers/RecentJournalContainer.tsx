@@ -5,6 +5,7 @@ import { TransactionListContainer } from "@/features/transactions/containers/Tra
 import { TransactionResponse } from "@/shared/lib/types/transaction.type";
 import { useMemo } from "react";
 import Link from "next/link";
+import { motion } from "motion/react";
 import { cn } from "@/shared/lib/utils/core.util";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
@@ -60,13 +61,15 @@ export default function RecentJournalContainer() {
       >
         <span className="text-lg font-medium">{t("recentJournal")}</span>
         {groupedTransactions.length > 0 && (
-          <Link
-            href="/journal"
-            className="flex items-center text-sm text-primary"
-          >
-            {t("seeAll")}
-            <ChevronRight size={16} />
-          </Link>
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Link
+              href="/journal"
+              className="flex items-center text-sm text-primary"
+            >
+              {t("seeAll")}
+              <ChevronRight size={16} />
+            </Link>
+          </motion.div>
         )}
       </div>
 

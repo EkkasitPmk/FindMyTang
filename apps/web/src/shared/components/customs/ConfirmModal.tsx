@@ -1,7 +1,14 @@
-import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
-import { LucideIcon, Check } from "lucide-react";
-import { createPortal } from "react-dom";
+import { LucideIcon } from "lucide-react";
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
+import { Checkbox } from "@/shared/components/animate-ui/components/radix/checkbox";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+} from "@/shared/components/animate-ui/components/radix/alert-dialog";
 
 interface ConfirmModalProps {
   isOpen: boolean;
@@ -38,10 +45,6 @@ export default function ConfirmModal({
   inputValue = "",
   onInputChange,
 }: Readonly<ConfirmModalProps>) {
-  const mounted = useMounted();
-
-  if (!isOpen || !mounted) return null;
-
   const isConfirmDisabled =
     withHardDeleteOption &&
     isHardDelete &&
@@ -93,19 +96,15 @@ export default function ConfirmModal({
 
   const colors = colorMap[variant];
 
-  const modalContent = (
-    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-primary-text/20 backdrop-blur-xs transition-opacity duration-300">
-      {/* Click outside to close */}
-      <div
-        className="absolute inset-0 cursor-default"
-        onClick={onClose}
-        aria-hidden="true"
-      />
-
-      {/* Modal Dialog Content */}
-      <div className="relative bg-surface border border-border rounded-lg shadow-lg max-w-sm w-full p-6 animate-subtle-pop z-10">
-        <div className="flex flex-col items-center text-center gap-3">
-          {/* Accent container for action */}
+  return (
+    <AlertDialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+    >
+      <AlertDialogContent className="w-[calc(100%-2.5rem)] max-w-sm rounded-2xl border border-border bg-surface p-6 shadow-2xl">
+        <AlertDialogHeader className="flex flex-col items-center text-center gap-3">
           <div
             className={`w-12 h-12 rounded-full ${colors.bgLight} ${colors.text} flex items-center justify-center mb-1`}
           >
@@ -113,82 +112,75 @@ export default function ConfirmModal({
           </div>
 
           <div className="space-y-1.5">
-            <h3 className="text-base font-bold text-primary-text">{title}</h3>
-            <p className="text-xs text-secondary-text/85 leading-relaxed">
+            <AlertDialogTitle className="text-base font-bold text-primary-text">
+              {title}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-xs text-secondary-text/85 leading-relaxed text-center">
               {des}
-            </p>
+            </AlertDialogDescription>
           </div>
+        </AlertDialogHeader>
 
-          {withHardDeleteOption && (
-            <div className="w-full flex flex-col gap-3 mt-2 text-left">
-              <label className="flex gap-2 cursor-pointer group">
-                <div
-                  className={`w-4 h-4 rounded-sm border flex items-center justify-center transition-colors ${
-                    isHardDelete
-                      ? `${colors.bg} ${colors.border} text-white`
-                      : `border-border bg-surface group-hover:${colors.border}`
-                  }`}
-                >
-                  {isHardDelete && (
-                    <Check size={12} strokeWidth={3} className="text-white" />
-                  )}
-                </div>
-                <input
-                  type="checkbox"
-                  className="hidden"
-                  checked={isHardDelete}
-                  onChange={(e) => onHardDeleteChange?.(e.target.checked)}
-                />
-                <span className="text-xs font-medium text-primary-text">
-                  {hardDeleteCheckboxLabel}
-                </span>
+        {withHardDeleteOption && (
+          <div className="w-full flex flex-col gap-3 mt-2 text-left">
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="hard-delete-option"
+                size="sm"
+                checked={isHardDelete}
+                onCheckedChange={(checked) =>
+                  onHardDeleteChange?.(Boolean(checked))
+                }
+              />
+              <label
+                htmlFor="hard-delete-option"
+                className="text-xs font-medium text-primary-text cursor-pointer select-none"
+              >
+                {hardDeleteCheckboxLabel}
               </label>
-
-              {isHardDelete && expectedInputToConfirm && (
-                <div className="flex flex-col gap-1.5 animate-subtle-pop">
-                  <span className="text-[11px] text-secondary-text">
-                    Type <strong>{expectedInputToConfirm}</strong> to confirm
-                  </span>
-                  <input
-                    type="text"
-                    value={inputValue}
-                    onChange={(e) => onInputChange?.(e.target.value)}
-                    placeholder={expectedInputToConfirm}
-                    className={`w-full px-3 py-2 text-xs border border-border rounded-md bg-surface-secondary focus:outline-none ${colors.focusBorder} focus:ring-1 ${colors.focusRing} transition-all`}
-                  />
-                </div>
-              )}
             </div>
-          )}
 
-          {/* Action buttons */}
-          <div className="flex gap-3 w-full mt-2">
-            <Button
-              variant="unstyled"
-              type="button"
-              onClick={onClose}
-              className="flex-1 py-2.5 px-4 rounded-md border border-border hover:bg-surface-secondary text-secondary-text text-xs font-semibold transition-colors cursor-pointer"
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="unstyled"
-              type="button"
-              onClick={() => onConfirm(isHardDelete)}
-              disabled={Boolean(isConfirmDisabled)}
-              className={`flex-1 py-2.5 px-4 rounded-md text-xs font-semibold transition-colors ${
-                isConfirmDisabled
-                  ? `${colors.disabledBg} text-white/70 cursor-not-allowed`
-                  : `${colors.bg} ${colors.hoverBg} text-white cursor-pointer`
-              }`}
-            >
-              {confirmLabel}
-            </Button>
+            {isHardDelete && expectedInputToConfirm && (
+              <div className="flex flex-col gap-1.5 animate-subtle-pop">
+                <span className="text-[11px] text-secondary-text">
+                  Type <strong>{expectedInputToConfirm}</strong> to confirm
+                </span>
+                <input
+                  type="text"
+                  value={inputValue}
+                  onChange={(e) => onInputChange?.(e.target.value)}
+                  placeholder={expectedInputToConfirm}
+                  className={`w-full px-3 py-2 text-xs border border-border rounded-md bg-surface-secondary focus:outline-none ${colors.focusBorder} focus:ring-1 ${colors.focusRing} transition-all`}
+                />
+              </div>
+            )}
           </div>
-        </div>
-      </div>
-    </div>
-  );
+        )}
 
-  return createPortal(modalContent, document.body);
+        <AlertDialogFooter className="flex gap-3 w-full mt-2 sm:flex-row flex-row">
+          <Button
+            variant="unstyled"
+            type="button"
+            onClick={onClose}
+            className="flex-1 py-2.5 px-4 rounded-md border border-border hover:bg-surface-secondary text-secondary-text text-xs font-semibold transition-colors cursor-pointer"
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="unstyled"
+            type="button"
+            onClick={() => onConfirm(isHardDelete)}
+            disabled={Boolean(isConfirmDisabled)}
+            className={`flex-1 py-2.5 px-4 rounded-md text-xs font-semibold transition-colors ${
+              isConfirmDisabled
+                ? `${colors.disabledBg} text-white/70 cursor-not-allowed`
+                : `${colors.bg} ${colors.hoverBg} text-white cursor-pointer`
+            }`}
+          >
+            {confirmLabel}
+          </Button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
 }

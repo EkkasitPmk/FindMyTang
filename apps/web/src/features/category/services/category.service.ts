@@ -36,14 +36,18 @@ export const createCategoryApi = async (
   return categoryResponseSchema.parse(response.data);
 };
 
-export const getCategoriesApi = async (): Promise<CategoryResponse[]> => {
+export const getCategoriesApi = async (
+  includeDeleted = true,
+): Promise<CategoryResponse[]> => {
   if (useGuestStore.getState().isGuest) {
-    const categories = await db.categories
-      .filter((c) => !c.deletedAt)
-      .sortBy("displayOrder");
+    const categories = includeDeleted
+      ? await db.categories.toCollection().sortBy("displayOrder")
+      : await db.categories.filter((c) => !c.deletedAt).sortBy("displayOrder");
     return categoryListResponseSchema.parse(categories);
   }
-  const response = await http.get("/categories");
+  const response = await http.get("/categories", {
+    params: { includeDeleted: includeDeleted ? "true" : "false" },
+  });
   return categoryListResponseSchema.parse(response.data);
 };
 
@@ -70,17 +74,55 @@ export const updateCategory = async (
   return categoryResponseSchema.parse(response.data);
 };
 
-export const deleteCategory = async (id: string): Promise<CategoryResponse> => {
+export const restoreCategoryApi = async (
+  id: string,
+): Promise<CategoryResponse> => {
   if (useGuestStore.getState().isGuest) {
     const existing = await db.categories.get(id);
     if (!existing) throw new Error("Category not found");
+    existing.deletedAt = null;
+    existing.updatedAt = new Date().toISOString();
+    existing.syncStatus = "pending";
+    await db.categories.put(existing);
+    return categoryResponseSchema.parse(existing);
+  }
+  const response = await http.patch(`/categories/${id}/restore`);
+  return categoryResponseSchema.parse(response.data);
+};
+
+export const deleteCategory = async (
+  id: string,
+  isHardDelete = false,
+): Promise<CategoryResponse> => {
+  if (useGuestStore.getState().isGuest) {
+    const existing = await db.categories.get(id);
+    if (!existing) throw new Error("Category not found");
+
+    if (isHardDelete) {
+      // Disassociate transactions in Dexie
+      const linkedTransactions = await db.transactions
+        .filter((t) => t.categoryId === id)
+        .toArray();
+      for (const tx of linkedTransactions) {
+        tx.categoryId = null as unknown as string;
+        await db.transactions.put(tx);
+      }
+      await db.categories.delete(id);
+      return categoryResponseSchema.parse({
+        ...existing,
+        deletedAt: new Date().toISOString(),
+      });
+    }
+
     existing.deletedAt = new Date().toISOString();
     existing.updatedAt = new Date().toISOString();
     existing.syncStatus = "pending";
     await db.categories.put(existing);
     return categoryResponseSchema.parse(existing);
   }
-  const response = await http.delete(`/categories/${id}`);
+  const response = await http.delete(
+    `/categories/${id}${isHardDelete ? "?isHardDelete=true" : ""}`,
+  );
   return categoryResponseSchema.parse(response.data);
 };
 

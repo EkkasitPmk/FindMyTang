@@ -126,7 +126,7 @@ describe("CategoryService", () => {
       const result = await service.delete("cat-123", "user-123");
 
       expect(result).toEqual(category);
-      expect(repository.findById).toHaveBeenCalledWith("cat-123");
+      expect(repository.findById).toHaveBeenCalledWith("cat-123", true);
       expect(repository.delete).toHaveBeenCalledWith("cat-123", "user-123");
     });
 
@@ -136,7 +136,7 @@ describe("CategoryService", () => {
       await expect(service.delete("invalid-id", "user-123")).rejects.toThrow(
         NotFoundException,
       );
-      expect(repository.findById).toHaveBeenCalledWith("invalid-id");
+      expect(repository.findById).toHaveBeenCalledWith("invalid-id", true);
       expect(repository.delete).not.toHaveBeenCalled();
     });
 
@@ -152,7 +152,7 @@ describe("CategoryService", () => {
       await expect(service.delete("cat-123", "user-123")).rejects.toThrow(
         ForbiddenException,
       );
-      expect(repository.findById).toHaveBeenCalledWith("cat-123");
+      expect(repository.findById).toHaveBeenCalledWith("cat-123", true);
       expect(repository.delete).not.toHaveBeenCalled();
     });
   });

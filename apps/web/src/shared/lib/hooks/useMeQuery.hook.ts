@@ -9,6 +9,8 @@ export const useMeQuery = (options?: { enabled?: boolean }) => {
     queryKey: ["auth", "me"],
     queryFn: getMeApi,
     retry: false,
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
     ...options,
     enabled: options?.enabled !== false && !isGuest,
   });

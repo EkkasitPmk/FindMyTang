@@ -85,6 +85,7 @@ export const getManageAssetItemClasses = ({
   isSelected,
   draggable,
   hasColor,
+  isBeingDragged,
 }: {
   isDeleted: boolean;
   isArchived: boolean;
@@ -94,6 +95,7 @@ export const getManageAssetItemClasses = ({
   isSelected: boolean;
   draggable: boolean;
   hasColor: boolean;
+  isBeingDragged?: boolean;
 }) => {
   let titleClass = "text-primary-text";
   if (isDeleted) titleClass = "text-disabled-text line-through";
@@ -114,6 +116,9 @@ export const getManageAssetItemClasses = ({
     ? "bg-surface-secondary opacity-60 border-l-border"
     : "bg-surface";
   const containerDrag = draggable ? "cursor-grab active:cursor-grabbing" : "";
+  const containerDraggingState = isBeingDragged
+    ? "opacity-40 border-dashed border-primary"
+    : "";
 
   const headerBase =
     "w-full flex items-center justify-between px-3 py-2.5 transition-colors";
@@ -125,12 +130,49 @@ export const getManageAssetItemClasses = ({
     titleClass,
     rowBgClass,
     iconBgClass,
-    containerClasses: [containerBase, containerState, containerDrag]
+    containerClasses: [
+      containerBase,
+      containerState,
+      containerDrag,
+      containerDraggingState,
+    ]
       .filter(Boolean)
       .join(" "),
     headerClasses: [headerBase, headerState, rowBgClass]
       .filter(Boolean)
       .join(" "),
     balanceClass: `font-semibold text-base ${balanceClass}`,
+  };
+};
+
+export const getAssetItemStatus = (
+  asset: Asset,
+  index?: number,
+  draggedIndex?: number | null,
+) => {
+  const isDeleted = Boolean(asset.deletedAt);
+  const isArchived = Boolean(asset.isArchived) && !isDeleted;
+  const isInactive = isDeleted || isArchived;
+  const isBeingDragged =
+    draggedIndex !== undefined &&
+    draggedIndex !== null &&
+    index === draggedIndex;
+
+  const iconStyle =
+    asset.color && !isInactive
+      ? { backgroundColor: `${asset.color}1a`, color: asset.color }
+      : undefined;
+
+  const containerStyle = !isInactive
+    ? { borderLeftColor: asset.color || "transparent" }
+    : undefined;
+
+  return {
+    isDeleted,
+    isArchived,
+    isInactive,
+    isBeingDragged,
+    iconStyle,
+    containerStyle,
   };
 };

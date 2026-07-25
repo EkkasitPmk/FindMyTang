@@ -4,7 +4,13 @@ import {
   UseFormSetValue,
   FieldErrors,
 } from "react-hook-form";
-import { CircleMinus, CirclePlus, Check } from "lucide-react";
+import {
+  CircleMinus,
+  CirclePlus,
+  Check,
+  RotateCcw,
+  Trash2,
+} from "lucide-react";
 import { Category } from "@/shared/lib/types/category.type";
 import { CreateCategoryFormValues } from "../schemas/category.form.schema";
 import { PREMIUM_COLORS } from "../configs/category.config";
@@ -41,6 +47,9 @@ interface CUCategoryModalProps {
   transactionType: "EXPENSE" | "INCOME";
   selectedColor: string;
   selectedIconName: string;
+  isDeletedCategory?: boolean;
+  onRestore?: () => void;
+  onDeletePermanent?: () => void;
 }
 
 export default function CUCategoryModal({
@@ -58,10 +67,21 @@ export default function CUCategoryModal({
   transactionType,
   selectedColor,
   selectedIconName,
+  isDeletedCategory = false,
+  onRestore,
+  onDeletePermanent,
 }: Readonly<CUCategoryModalProps>) {
   const { t } = useTranslation();
 
+  let modalTitle = t("newCategory");
+  if (isDeletedCategory) {
+    modalTitle = t("deletedCategories");
+  } else if (category) {
+    modalTitle = t("editCategory");
+  }
+
   const handleCustomColorChange = (color: string) => {
+    if (isDeletedCategory) return;
     setCustomColor(color);
     setValue("color", color);
   };
@@ -79,7 +99,7 @@ export default function CUCategoryModal({
       >
         <SheetHeader className="text-left pb-1 px-0">
           <SheetTitle className="text-xl font-bold text-foreground">
-            {category ? t("editCategory") : t("newCategory")}
+            {modalTitle}
           </SheetTitle>
           <SheetDescription className="text-sm text-secondary-text">
             {t("categoryManagementDesc")}
@@ -90,7 +110,10 @@ export default function CUCategoryModal({
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-4 flex-1 flex flex-col min-h-0"
         >
-          <div className="space-y-4 overflow-y-auto custom-scrollbar px-1">
+          <fieldset
+            disabled={isDeletedCategory}
+            className="space-y-4 overflow-y-auto custom-scrollbar px-1 group-disabled:opacity-80"
+          >
             {/* Category Name */}
             <div className="space-y-1">
               <label
@@ -102,6 +125,7 @@ export default function CUCategoryModal({
               <Input
                 id="category-name"
                 type="text"
+                disabled={isDeletedCategory}
                 placeholder={t("egCoffee")}
                 error={!!errors.name}
                 {...register("name")}
@@ -122,23 +146,35 @@ export default function CUCategoryModal({
                 <Button
                   variant="unstyled"
                   type="button"
-                  onClick={() => setValue("type", "EXPENSE")}
+                  disabled={isDeletedCategory}
+                  onClick={() =>
+                    !isDeletedCategory && setValue("type", "EXPENSE")
+                  }
                   className={cn(
-                    "grow flex gap-2 items-center justify-center border rounded-md text-center px-2 py-3 text-sm font-medium transition-all cursor-pointer",
+                    "grow flex gap-2 items-center justify-center border rounded-md text-center px-2 py-3 text-sm font-medium transition-all",
+                    isDeletedCategory
+                      ? "cursor-default opacity-80"
+                      : "cursor-pointer",
                     transactionType === "EXPENSE"
                       ? "border-primary bg-primary/5 text-primary"
                       : "border-border text-muted-foreground hover:bg-muted",
                   )}
                 >
                   <CircleMinus size={16} />
-                  {t("expense")}
+                  {t("expenses")}
                 </Button>
                 <Button
                   variant="unstyled"
                   type="button"
-                  onClick={() => setValue("type", "INCOME")}
+                  disabled={isDeletedCategory}
+                  onClick={() =>
+                    !isDeletedCategory && setValue("type", "INCOME")
+                  }
                   className={cn(
-                    "grow flex gap-2 items-center justify-center border rounded-md text-center px-2 py-3 text-sm font-medium transition-all cursor-pointer",
+                    "grow flex gap-2 items-center justify-center border rounded-md text-center px-2 py-3 text-sm font-medium transition-all",
+                    isDeletedCategory
+                      ? "cursor-default opacity-80"
+                      : "cursor-pointer",
                     transactionType === "INCOME"
                       ? "border-primary bg-primary/5 text-primary"
                       : "border-border text-muted-foreground hover:bg-muted",
@@ -169,9 +205,13 @@ export default function CUCategoryModal({
                       variant="unstyled"
                       key={iconName}
                       type="button"
-                      onClick={() => setValue("icon", iconName)}
+                      disabled={isDeletedCategory}
+                      onClick={() =>
+                        !isDeletedCategory && setValue("icon", iconName)
+                      }
                       className={cn(
-                        "relative rounded-md transition-all duration-200 border border-transparent overflow-hidden flex items-center justify-center group w-10 h-10 cursor-pointer",
+                        "relative rounded-md transition-all duration-200 border border-transparent overflow-hidden flex items-center justify-center group w-10 h-10",
+                        isDeletedCategory ? "cursor-default" : "cursor-pointer",
                         isSelected ? "" : "hover:bg-muted",
                       )}
                     >
@@ -223,8 +263,14 @@ export default function CUCategoryModal({
                       variant="unstyled"
                       key={color}
                       type="button"
-                      onClick={() => setValue("color", color)}
-                      className="w-8 h-8 mx-auto rounded-full flex items-center justify-center transition-transform hover:scale-110 focus:outline-none cursor-pointer"
+                      disabled={isDeletedCategory}
+                      onClick={() =>
+                        !isDeletedCategory && setValue("color", color)
+                      }
+                      className={cn(
+                        "w-8 h-8 mx-auto rounded-full flex items-center justify-center transition-transform hover:scale-110 focus:outline-none",
+                        isDeletedCategory ? "cursor-default" : "cursor-pointer",
+                      )}
                       style={{ backgroundColor: color }}
                       aria-label={`Select color ${color}`}
                     >
@@ -244,7 +290,11 @@ export default function CUCategoryModal({
                   <Button
                     variant="unstyled"
                     type="button"
-                    className="w-full h-full rounded-full flex items-center justify-center transition-transform hover:scale-110 focus:outline-none cursor-pointer"
+                    disabled={isDeletedCategory}
+                    className={cn(
+                      "w-full h-full rounded-full flex items-center justify-center transition-transform hover:scale-110 focus:outline-none",
+                      isDeletedCategory ? "cursor-default" : "cursor-pointer",
+                    )}
                     style={{
                       backgroundImage:
                         "linear-gradient(45deg, #ff007f, #ff7f00, #ffeb00, #00ff7f, #007fff, #7f00ff, #ff007f)",
@@ -266,12 +316,14 @@ export default function CUCategoryModal({
                       )}
                     </div>
                   </Button>
-                  <input
-                    type="color"
-                    value={customColor}
-                    onChange={(e) => handleCustomColorChange(e.target.value)}
-                    className="absolute inset-0 opacity-0 cursor-pointer w-full h-full rounded-full pointer-events-auto z-20"
-                  />
+                  {!isDeletedCategory && (
+                    <input
+                      type="color"
+                      value={customColor}
+                      onChange={(e) => handleCustomColorChange(e.target.value)}
+                      className="absolute inset-0 opacity-0 cursor-pointer w-full h-full rounded-full pointer-events-auto z-20"
+                    />
+                  )}
                 </div>
               </div>
               {errors.color && (
@@ -280,29 +332,52 @@ export default function CUCategoryModal({
                 </p>
               )}
             </div>
-          </div>
+          </fieldset>
 
-          <SheetFooter className="px-4 py-2 flex-row gap-3">
-            <SheetClose asChild>
+          {isDeletedCategory ? (
+            <SheetFooter className="px-4 py-2 flex-row gap-2">
               <Button
                 variant="unstyled"
                 type="button"
-                onClick={onClose}
-                className="w-full border border-border rounded-lg py-2.5 text-sm font-medium hover:bg-surface-secondary transition-colors cursor-pointer text-secondary-text bg-surface shadow-sm"
+                onClick={onDeletePermanent}
+                className="flex-1 bg-destructive hover:bg-destructive/90 text-white rounded-lg py-2.5 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
               >
-                {t("cancel")}
+                <Trash2 size={14} />
+                {t("hardDeleteCheckboxLabel")}
               </Button>
-            </SheetClose>
-            <Button
-              variant="unstyled"
-              type="submit"
-              disabled={isPending}
-              className="w-full text-white rounded-lg py-2.5 text-sm font-medium transition-all shadow-md disabled:opacity-50 cursor-pointer hover:opacity-90 hover:shadow-lg"
-              style={{ backgroundColor: selectedColor }}
-            >
-              {isPending ? t("saving") : t("saveCategory")}
-            </Button>
-          </SheetFooter>
+              <Button
+                variant="unstyled"
+                type="button"
+                onClick={onRestore}
+                className="flex-1 bg-primary hover:bg-primary/90 text-white rounded-lg py-2.5 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <RotateCcw size={14} />
+                {t("restoreCategory")}
+              </Button>
+            </SheetFooter>
+          ) : (
+            <SheetFooter className="px-4 py-2 flex-row gap-3">
+              <SheetClose asChild>
+                <Button
+                  variant="unstyled"
+                  type="button"
+                  onClick={onClose}
+                  className="w-full border border-border rounded-lg py-2.5 text-sm font-medium hover:bg-surface-secondary transition-colors cursor-pointer text-secondary-text bg-surface shadow-sm"
+                >
+                  {t("cancel")}
+                </Button>
+              </SheetClose>
+              <Button
+                variant="unstyled"
+                type="submit"
+                disabled={isPending}
+                className="w-full text-white rounded-lg py-2.5 text-sm font-medium transition-all shadow-md disabled:opacity-50 cursor-pointer hover:opacity-90 hover:shadow-lg"
+                style={{ backgroundColor: selectedColor }}
+              >
+                {isPending ? t("saving") : t("saveCategory")}
+              </Button>
+            </SheetFooter>
+          )}
         </form>
       </SheetContent>
     </Sheet>

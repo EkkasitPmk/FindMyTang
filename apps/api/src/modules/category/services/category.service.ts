@@ -30,9 +30,9 @@ export class CategoryService {
     });
   }
 
-  async findAll(userId: string): Promise<Category[]> {
-    // ponytail: Retrieves all categories belonging to the specified user.
-    return this.categoryRepository.findAll(userId);
+  async findAll(userId: string, includeDeleted = false): Promise<Category[]> {
+    // ponytail: Retrieves categories belonging to user. Optional includeDeleted flag.
+    return this.categoryRepository.findAll(userId, includeDeleted);
   }
 
   async update(
@@ -63,9 +63,13 @@ export class CategoryService {
     return this.categoryRepository.update(id, userId, dto);
   }
 
-  async delete(id: string, userId: string): Promise<Category> {
-    // ponytail: Deletes a category by checking existence and ownership first.
-    const category = await this.categoryRepository.findById(id);
+  async delete(
+    id: string,
+    userId: string,
+    isHardDelete = false,
+  ): Promise<Category> {
+    // ponytail: Soft or hard deletes a category by checking existence and ownership first.
+    const category = await this.categoryRepository.findById(id, true);
     if (!category) {
       throw new NotFoundException("Category not found");
     }
@@ -74,7 +78,25 @@ export class CategoryService {
       throw new ForbiddenException("You do not own this category");
     }
 
+    if (isHardDelete) {
+      return this.categoryRepository.hardDelete(id, userId);
+    }
+
     return this.categoryRepository.delete(id, userId);
+  }
+
+  async restore(id: string, userId: string): Promise<Category> {
+    // ponytail: Restores a soft-deleted category after checking ownership.
+    const category = await this.categoryRepository.findById(id, true);
+    if (!category) {
+      throw new NotFoundException("Category not found");
+    }
+
+    if (category.userId !== userId) {
+      throw new ForbiddenException("You do not own this category");
+    }
+
+    return this.categoryRepository.restore(id, userId);
   }
 
   async reorder(userId: string, ids: string[]): Promise<void> {

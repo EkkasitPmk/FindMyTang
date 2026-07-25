@@ -2,17 +2,21 @@ import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import {
   UseFormRegister,
+  Control,
+  Controller,
   FieldErrors,
   UseFormHandleSubmit,
 } from "react-hook-form";
 import { RegisterFormValues } from "../schemas/register.form.schema";
 import { Input } from "@/shared/components/customs/Input";
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
+import { Checkbox } from "@/shared/components/animate-ui/components/radix/checkbox";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { TranslationKey } from "@/shared/lib/configs/translations.config";
 
 interface RegisterFormProps {
   register: UseFormRegister<RegisterFormValues>;
+  control: Control<RegisterFormValues>;
   handleSubmit: UseFormHandleSubmit<RegisterFormValues>;
   onSubmit: (values: RegisterFormValues) => void;
   errors: FieldErrors<RegisterFormValues>;
@@ -25,6 +29,7 @@ interface RegisterFormProps {
 
 export default function RegisterForm({
   register,
+  control,
   handleSubmit,
   onSubmit,
   errors,
@@ -145,11 +150,18 @@ export default function RegisterForm({
           {/* Legal Checkbox */}
           <div className="flex flex-col gap-1.5">
             <div className="flex items-start gap-3 py-1">
-              <input
-                id="terms"
-                type="checkbox"
-                {...register("agreeToTerms")}
-                className="h-4.5 w-4.5 rounded border-border text-primary focus:ring-primary cursor-pointer transition-colors mt-0.5"
+              <Controller
+                name="agreeToTerms"
+                control={control}
+                render={({ field }) => (
+                  <Checkbox
+                    id="terms"
+                    size={"sm"}
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    className="mt-0.5"
+                  />
+                )}
               />
               <label
                 htmlFor="terms"

@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from "@nestjs/common";
 import { CategoryService } from "../services/category.service";
@@ -38,14 +39,21 @@ export class CategoryController {
       icon: category.icon,
       isSystem: category.isSystem,
       displayOrder: category.displayOrder,
+      deletedAt: category.deletedAt ? category.deletedAt.toISOString() : null,
     };
   }
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  async findAll(@CurrentUser() user: User) {
+  async findAll(
+    @CurrentUser() user: User,
+    @Query("includeDeleted") includeDeleted?: string,
+  ) {
     // ponytail: Get categories endpoint.
-    const categories = await this.categoryService.findAll(user.id);
+    const categories = await this.categoryService.findAll(
+      user.id,
+      includeDeleted === "true",
+    );
     return categories.map((category) => ({
       id: category.id,
       name: category.name,
@@ -54,6 +62,7 @@ export class CategoryController {
       icon: category.icon,
       isSystem: category.isSystem,
       displayOrder: category.displayOrder,
+      deletedAt: category.deletedAt ? category.deletedAt.toISOString() : null,
     }));
   }
 
@@ -63,6 +72,23 @@ export class CategoryController {
     // ponytail: Reorder categories endpoint.
     await this.categoryService.reorder(user.id, ids);
     return { success: true };
+  }
+
+  @Patch(":id/restore")
+  @UseGuards(JwtAuthGuard)
+  async restore(@Param("id") id: string, @CurrentUser() user: User) {
+    // ponytail: Restore soft-deleted category endpoint.
+    const category = await this.categoryService.restore(id, user.id);
+    return {
+      id: category.id,
+      name: category.name,
+      type: category.type,
+      color: category.color,
+      icon: category.icon,
+      isSystem: category.isSystem,
+      displayOrder: category.displayOrder,
+      deletedAt: null,
+    };
   }
 
   @Patch(":id")
@@ -86,14 +112,23 @@ export class CategoryController {
       icon: category.icon,
       isSystem: category.isSystem,
       displayOrder: category.displayOrder,
+      deletedAt: category.deletedAt ? category.deletedAt.toISOString() : null,
     };
   }
 
   @Delete(":id")
   @UseGuards(JwtAuthGuard)
-  async delete(@Param("id") id: string, @CurrentUser() user: User) {
-    // ponytail: Delete category endpoint.
-    const category = await this.categoryService.delete(id, user.id);
+  async delete(
+    @Param("id") id: string,
+    @CurrentUser() user: User,
+    @Query("isHardDelete") isHardDelete?: string,
+  ) {
+    // ponytail: Delete category endpoint (soft or hard).
+    const category = await this.categoryService.delete(
+      id,
+      user.id,
+      isHardDelete === "true",
+    );
     return {
       id: category.id,
       name: category.name,
@@ -102,6 +137,7 @@ export class CategoryController {
       icon: category.icon,
       isSystem: category.isSystem,
       displayOrder: category.displayOrder,
+      deletedAt: category.deletedAt ? category.deletedAt.toISOString() : null,
     };
   }
 }
