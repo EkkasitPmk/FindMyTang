@@ -1,7 +1,9 @@
-import { createPortal } from "react-dom";
 import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
-import { X } from "lucide-react";
-import { Button } from "@/shared/components/animate-ui/components/buttons/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from "@/shared/components/animate-ui/components/radix/dialog";
 import Image from "next/image";
 
 export interface ImagePreviewModalProps {
@@ -17,23 +19,17 @@ export default function ImagePreviewModal({
 }: Readonly<ImagePreviewModalProps>) {
   const mounted = useMounted();
 
-  if (!isOpen || !imageUrl || !mounted) return null;
+  if (!mounted || !imageUrl) return null;
 
-  const modalContent = (
-    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-primary-text/60 backdrop-blur-sm transition-opacity duration-300">
-      <div
-        className="absolute inset-0 cursor-pointer"
-        onClick={onClose}
-        aria-hidden="true"
-      />
-      <div className="relative z-10 max-w-4xl w-full max-h-[90vh] flex flex-col items-center justify-center animate-subtle-pop">
-        <Button
-          variant="unstyled"
-          onClick={onClose}
-          className="absolute -top-10 right-0 p-2 text-white/80 hover:text-white bg-black/20 hover:bg-black/40 rounded-full transition-colors cursor-pointer"
-        >
-          <X size={24} />
-        </Button>
+  return (
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+    >
+      <DialogContent className="w-[calc(100%-2.5rem)] max-w-4xl border-none bg-surface p-0 shadow-2xl flex flex-col items-center justify-center">
+        <DialogTitle className="sr-only">Image Preview</DialogTitle>
         <div className="relative w-full h-[70vh]">
           <Image
             src={imageUrl}
@@ -44,9 +40,7 @@ export default function ImagePreviewModal({
             priority
           />
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
-
-  return createPortal(modalContent, document.body);
 }
