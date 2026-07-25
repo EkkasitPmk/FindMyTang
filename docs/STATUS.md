@@ -65,6 +65,20 @@
 
 ### 1. สิ่งที่พัฒนาเสร็จสิ้นแล้ว (Completed)
 
+- **ListAssetsContainer & RecentJournalContainer Animate-UI Hover & Active Animations**:
+  - เพิ่มอนิเมชัน hover scale (`hoverScale={1.01}`) และ tap active scale (`tapScale={0.98}`) สไตล์ `animate-ui` ให้กับรายการสินทรัพย์ (Asset items) และลิงก์หัวข้อ "สินทรัพย์" ใน [ListAssetsContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/assets/containers/ListAssetsContainer.tsx)
+  - เพิ่มอนิเมชัน hover scale (`1.05`) และ tap active scale (`0.95`) สไตล์ `animate-ui` ให้กับปุ่ม "ดูทั้งหมด" (seeAll) ใน [RecentJournalContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/journal/containers/RecentJournalContainer.tsx) โดยใช้ `motion.div` เพื่อคงดีไซน์ เลย์เอาต์ และ Styling เดิมไว้ 100%
+  - **แก้ไขปัญหา `Button` `asChild` Content ไม่แสดงผล**: แก้ไข [button.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/components/buttons/button.tsx) เมื่อมีการใช้งาน prop `asChild={true}` ให้ส่ง `children` เป็น React Element เดี่ยวๆ ให้กับ `ButtonPrimitive` / `Slot` โดยไม่ถูกห่อหุ้มด้วยโหนดข้างเคียง เพื่อให้ Radix/Animate-UI Slot สามารถ clone/merge props ได้อย่างถูกต้อง 100%
+
+- **Journal Transaction Type Active Tab Colors**:
+  - ปรับแต่งการแสดงผลสี Active ของแท็บสลับประเภทธุรกรรมในหน้า Journal Timeline ([JournalContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/journal/containers/JournalContainer.tsx) และ [journal.config.ts](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/journal/configs/journal.config.ts)) ให้เปลี่ยนสี Active ตามสีของแต่ละประเภทธุรกรรม:
+    - **ทั้งหมด (All)**: สี Primary (`bg-primary text-white`)
+    - **รายรับ (Income)**: สี Income (`bg-income text-white`)
+    - **รายจ่าย (Expense)**: สี Expense (`bg-expense text-white`)
+    - **โอนเงิน (Transfer)**: สี Transfer (`bg-transfer text-white`)
+    - **ปรับยอด (Adjustment)**: สี Info (`bg-info text-white`)
+  - ผ่านการทดสอบ Typecheck (`npx tsc --noEmit`) และ Unit Tests 100% ไร้ข้อผิดพลาด
+
 - **Animate-UI Components Code Alignment with DESIGN.md**:
   - ดำเนินการปรับแต่งซอร์สโค้ดของคอมโพเนนต์ที่ติดตั้งใหม่ ได้แก่ [checkbox.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/components/radix/checkbox.tsx), [dialog.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/components/radix/dialog.tsx) และ [alert-dialog.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/components/radix/alert-dialog.tsx) ให้เปลี่ยนจาก Tailwind Default Classes ดั้งเดิม มาเรียกใช้ **Semantic Design Tokens** ตามที่ระบุไว้ใน [DESIGN.md](file:///Users/torikiton/Desktop/PocketNote/docs/DESIGN.md) 100%:
     1. **`Checkbox`**: ใช้ `bg-surface border-border` สำหรับสถานะปกติ, `bg-primary text-primary-foreground` สำหรับสถานะเช็กเลือก, และ `focus-visible:ring-primary/40`
