@@ -65,6 +65,12 @@
 
 ### 1. สิ่งที่พัฒนาเสร็จสิ้นแล้ว (Completed)
 
+- **Manage Assets & Categories Selection Circle, Grid Item & Animate-UI Animated Tabs Integration**:
+  - ปรับปรุงโครงสร้าง Tabs ของหน้า **Manage Categories** ([CategoryContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/category/containers/CategoryContainer.tsx)) ให้ใช้งาน `Tabs`, `TabsList`, `TabsTrigger`, `TabsContents`, และ `TabsContent` จาก `animate-ui` (`@/shared/components/animate-ui/components/animate/tabs`) แบบสมบูรณ์ 100%
+  - เพิ่มอนิเมชัน **Horizontal Sliding Content Motion Transition** สไลด์เปลี่ยนหน้าเนื้อหาการ์ดหมวดหมู่รายรับ/รายจ่ายเมื่อคลิกสลับแท็บ ร่วมกับ Sliding Highlight Indicator ในปุ่มแท็บ
+  - แก้ไขปัญหาอาการขยับกระตุกนิดนึงหลังเล่นอนิเมชันเปิดตัวจบในหน้า **Manage Categories** ([CategoryGrid.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/category/components/CategoryGrid.tsx)) โดยการถอดการครอบทับของ `Button` ซ้ำซ้อน ซึ่งมี Default `whileHover={{ scale: 1.02 }}` มาใช้งาน `<motion.button>` โดยตรงชิ้นเดียว และปิด `hoverScale={1}` บนการ์ดหลักเพื่อให้อนิเมชันเปิดตัวเล่นจบลงนิ่งสนิทอยู่กับที่ 100%
+  - แก้ไขปัญหาวงกลมเลือกรายการไม่แสดงผลอนิเมชันตอนเปิดโหมด Edit โดยเพิ่มอนิเมชันขยายคลี่ตัววงกลม (`scale: 0` -> `1`, `rotate: -90` -> `0`, `width: 0` -> `auto`) ทันทีทุกครั้งเมื่อเข้าโหมด Edit บนหน้า Manage Assets ([ManageAssetItem.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/assets/components/ManageAssetItem.tsx))
+
 - **FinancialSnapshot & ListAssets Strict Architecture Alignment**:
   - ปรับโครงสร้าง [FinancialSnapshotCard.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/home/components/FinancialSnapshotCard.tsx) และ [FinancialSnapshotContainer.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/home/containers/FinancialSnapshotContainer.tsx) ให้สอดคล้องเป๊ะตามมาตรฐานใน [FRONTEND_IMPLEMENTATION.md](file:///Users/torikiton/Desktop/PocketNote/docs/FRONTEND_IMPLEMENTATION.md) 100%:
     1. **Pure UI Component (Dumb Component)**: `FinancialSnapshotCard` รับผิดชอบเฉพาะการแสดงผล UI ไม่มี internal state/effect ซับซ้อน พร้อมใช้ `export default` และ typing `Readonly<FinancialSnapshotCardProps>` ตามรูปแบบหลักของโปรเจกต์
