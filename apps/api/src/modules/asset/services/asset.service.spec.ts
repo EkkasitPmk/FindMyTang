@@ -9,6 +9,8 @@ import {
   ForbiddenException,
 } from "@nestjs/common";
 
+import { StorageService } from "../../../common/storage/storage.service";
+
 describe("AssetService", () => {
   let service: AssetService;
   let repository: AssetRepository;
@@ -24,6 +26,12 @@ describe("AssetService", () => {
     restore: jest.fn(),
   };
 
+  const mockStorageService = {
+    uploadFile: jest.fn(),
+    getSignedUrl: jest.fn(),
+    removeFile: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -31,6 +39,10 @@ describe("AssetService", () => {
         {
           provide: AssetRepository,
           useValue: mockAssetRepository,
+        },
+        {
+          provide: StorageService,
+          useValue: mockStorageService,
         },
       ],
     }).compile();

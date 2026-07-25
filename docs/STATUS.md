@@ -46,11 +46,11 @@
   - รายงานแนวโน้มทางการเงินรายเดือน (Monthly Trends)
   - ระบบ Drill-down เพื่อกดเจาะดูรายละเอียดรายการธุรกรรมภายใต้หมวดหมู่ในเดือนนั้น ๆ
 
-### Sprint 5: ความปลอดภัยและฟังก์ชันเสริมระบบคลาวด์ (Security & Cloud Features) - ⏳ รอดำเนินการ
+### Sprint 5: ความปลอดภัยและฟังก์ชันเสริมระบบคลาวด์ (Security & Cloud Features) - ✅ สำเร็จ 100%
 
 - **ฟีเจอร์หลัก**:
-  - ระบบความปลอดภัยและการจัดการสิทธิ์ขั้นสูง
-  - การปรับปรุงประสิทธิภาพระบบในกรณีมีข้อมูลธุรกรรมปริมาณมาก
+  - ระบบความปลอดภัยและการจัดการสิทธิ์ขั้นสูง (NestJS Helmet, Throttler Rate Limiting, Exception Filter & CORS Hardening)
+  - การปรับปรุงประสิทธิภาพระบบในกรณีมีข้อมูลธุรกรรมปริมาณมาก (Prisma Composite Indexes & NestJS In-Memory Caching)
 
 ### Sprint 6: การขัดเกลาและติดตั้งขึ้นระบบจริง (Polish & Deployment) - ⏳ รอดำเนินการ
 
@@ -64,6 +64,62 @@
 ## 🛠️ สถานะปัจจุบัน (Current Status)
 
 ### 1. สิ่งที่พัฒนาเสร็จสิ้นแล้ว (Completed)
+
+- **Analytics & Summary Modules Swagger Documentation & ApiProperty Completion (Backend API)**:
+  - เพิ่มและปรับปรุง `@ApiProperty` และ Swagger Decorators ในระบบ Analytics และ Summary Module ฝั่ง Backend (`apps/api`) อย่างสมบูรณ์ครบถ้วน 100%:
+    - **Summary Module**:
+      - **`SummaryResponseDto` (ใหม่)**: สร้าง DTO สำหรับผลลัพธ์รายวันและรายเดือน (`income`, `expense`, `net`, `totalNetWorth`) ตกแต่งด้วย `@ApiProperty` ครบถ้วน
+      - **`SummaryController`**: เพิ่ม `@ApiTags("Summary")`, `@ApiBearerAuth()`, `@ApiOperation()`, และ `@ApiResponse()` สำหรับ `GET /summary/today` และ `GET /summary/monthly`
+    - **Analytics Module**:
+      - **Query DTOs (ใหม่)**: สร้าง `CategoryBreakdownQueryDto`, `MonthlyTrendsQueryDto`, และ `CategoryTransactionsQueryDto` ระบุตัวเลือก `month`, `year`, และ `type` พร้อมคำอธิบายบน Swagger UI
+      - **Response DTOs (ใหม่)**: สร้าง `CategoryBreakdownResponseDto`, `MonthlyTrendsResponseDto`, `AssetDistributionResponseDto`, และ `CategoryTransactionsResponseDto` พร้อม Sub-DTOs ที่เกี่ยวข้อง ตกแต่งด้วย `@ApiProperty` ละเอียดทุกฟิลด์
+      - **`AnalyticsController`**: เพิ่ม `@ApiTags("Analytics")`, `@ApiBearerAuth()`, `@ApiOperation()`, `@ApiQuery()`, `@ApiParam()`, และ `@ApiResponse()` ครอบคลุมทั้ง 4 endpoints (`GET /analytics/categories`, `GET /analytics/trends`, `GET /analytics/assets`, `GET /analytics/categories/:id/transactions`)
+  - ผ่านการทดสอบ NestJS Build (`npm run build`) และ Jest Unit Tests (`npm test`) 100% ไร้ข้อผิดพลาด
+
+- **Auth Module Swagger Documentation & ApiProperty Completion (Backend API)**:
+  - เพิ่มและปรับปรุง `@ApiProperty` และ Swagger Decorators ในระบบ Auth Module ฝั่ง Backend (`apps/api`) อย่างสมบูรณ์ครบถ้วน 100%:
+    - **`LoginDto`**: ใส่ข้อมูล `description`, `example`, `required`, `minLength: 8`, `format: "password"` สำหรับ `email` และ `password`
+    - **`RegisterDto`**: ใส่ข้อมูล `description`, `example`, `required`, `minLength: 8`, `format: "password"` สำหรับ `email`, `password`, `confirmPassword`, และ `displayName`
+    - **`SyncGuestDto` (รวม `SyncAssetItemDto`, `SyncCategoryItemDto`, `SyncTransactionItemDto`)**: ใส่ข้อมูล `@ApiProperty` ละเอียดสำหรับทุกฟิลด์การซิงค์ข้อมูล offline guest
+    - **`auth-response.dto.ts` (ใหม่)**: สร้าง `AuthUserObjectDto`, `RegisterResponseDto`, `AuthUserResponseDto`, `SyncUserResponseDto`, `MeResponseDto`, `AuthMessageResponseDto`, และ `AuthActionResponseDto` พร้อมตกแต่งด้วย `@ApiProperty` สำหรับ Response Schema ทุก Endpoint
+    - **`AuthController`**: เพิ่ม `@ApiTags("Auth")`, `@ApiBearerAuth()`, `@ApiOperation()`, `@ApiBody()`, และ `@ApiResponse()` ครอบคลุมทั้ง 7 endpoints (`POST /auth/register`, `POST /auth/login`, `POST /auth/sync`, `POST /auth/sync-guest`, `POST /auth/refresh`, `GET /auth/me`, `POST /auth/logout`)
+  - ผ่านการทดสอบ NestJS Build (`npm run build`) และ Jest Unit Tests (`npm test`) 100% ไร้ข้อผิดพลาด
+
+- **Transaction Module Swagger Documentation & ApiProperty Completion (Backend API)**:
+  - เพิ่มและปรับปรุง `@ApiProperty` และ Swagger Decorators ในระบบ Transaction Module ฝั่ง Backend (`apps/api`) อย่างสมบูรณ์ครบถ้วน 100%:
+    - **`TransactionQueryDto`**: เพิ่ม `@ApiProperty` ครบ 10 ฟิลด์สำหรับ Query Parameters (`page`, `limit`, `type`, `assetId`, `categoryId`, `searchKeyword`, `from`, `to`, `isDeleted`, `sortType`)
+    - **`CreateTransactionDto`, `CreateExpenseDto`, `CreateIncomeDto`, `CreateTransferDto`, `CreateAdjustmentDto`**: ใส่ข้อมูล `description`, `example`, `required`, `maxLength`, `enum` (`INCOME`, `EXPENSE`, `TRANSFER`, `ADJUSTMENT`), และ `type` ครบถ้วน
+    - **`UpdateTransactionDto`**: ใส่ข้อมูล `@ApiProperty` ละเอียดสำหรับทุกฟิลด์การอัปเดต (`type`, `amount`, `date`, `categoryId`, `assetId`, `toAssetId`, `note`, `attachmentUrl`, `deletedAt`)
+    - **`transaction-response.dto.ts` (ใหม่)**: สร้าง `TransactionResponseDto`, `TransactionAssetRelationDto`, `TransactionCategoryRelationDto`, `TransactionPaginationMetaDto`, และ `PaginatedTransactionResponseDto` พร้อมตกแต่งด้วย `@ApiProperty` สำหรับ Response Schema ทุก Endpoint
+    - **`TransactionController`**: เพิ่ม `@ApiTags("Transaction")`, `@ApiBearerAuth()`, `@ApiOperation()`, `@ApiConsumes("multipart/form-data", "application/json")`, `@ApiQuery()`, `@ApiParam()`, `@ApiBody()`, และ `@ApiResponse()` ครอบคลุมทั้ง 7 endpoints (`GET available-dates`, `GET years`, `GET :id`, `POST /`, `GET /`, `PATCH :id`, `DELETE :id`)
+  - ผ่านการทดสอบ NestJS Build (`npm run build`) และ Jest Unit Tests (`npm test`) 100% ไร้ข้อผิดพลาด
+
+- **Category Module Swagger Documentation & ApiProperty Completion (Backend API)**:
+  - เพิ่มและปรับปรุง `@ApiProperty` และ Swagger Decorators ในระบบ Category Module ฝั่ง Backend (`apps/api`) อย่างสมบูรณ์ครบถ้วน 100%:
+    - **`CreateCategoryDto`**: ใส่ข้อมูล `description`, `example`, `required`, `maxLength`, `enum` (`INCOME` / `EXPENSE`), และ `type` สำหรับ `name`, `type`, `color`, `icon`, และ `displayOrder`
+    - **`UpdateCategoryDto`**: ใส่ข้อมูล `@ApiProperty` ละเอียดสำหรับทุกฟิลด์การอัปเดต (`name`, `icon`, `color`, `type`)
+    - **`ReorderCategoriesDto` (ใหม่)**: สร้าง DTO สำหรับรับ `ids: string[]` พร้อมระบุ `@ApiProperty` สำหรับ endpoint `PATCH /categories/reorder`
+    - **`CategoryResponseDto` (ใหม่)**: สร้าง `CategoryResponseDto` และ `CategoryActionResponseDto` ตกแต่งด้วย `@ApiProperty` ครบถ้วน สำหรับ Response Schema ของทุก Endpoint
+    - **`CategoryController`**: เพิ่ม `@ApiTags("Category")`, `@ApiBearerAuth()`, `@ApiOperation()`, `@ApiQuery()`, `@ApiParam()`, `@ApiBody()`, และ `@ApiResponse()` ครอบคลุมทั้ง 6 endpoints (`POST`, `GET`, `PATCH reorder`, `PATCH :id/restore`, `PATCH :id`, `DELETE :id`)
+  - ผ่านการทดสอบ NestJS Build (`npm run build`) 100% ไร้ข้อผิดพลาด
+
+- **Asset Module Swagger Documentation & ApiProperty Completion (Backend API)**:
+  - เพิ่มและปรับปรุง `@ApiProperty` และ Swagger Decorators ในระบบ Asset Module ฝั่ง Backend (`apps/api`) อย่างสมบูรณ์ครบถ้วน 100%:
+    - **`CreateAssetDto`**: ใส่ข้อมูล `description`, `example`, `required`, `maxLength`, `enum`, `default`, และ `type` สำหรับ `name`, `type`, `balance`, และ `color`
+    - **`UpdateAssetDto`**: ใส่ข้อมูล `description`, `example`, `required: false`, และ `type: Boolean` สำหรับ `isArchived`
+    - **`BulkAssetIdsDto` (ใหม่)**: สร้าง DTO รองรับการส่ง `ids: string[]` พร้อมระบุ `@ApiProperty` สำหรับ `reorder`, `bulk-delete`, `bulk-archive`, และ `bulk-restore`
+    - **`AssetResponseDto` (ใหม่)**: สร้าง `AssetResponseDto` และ `AssetActionResponseDto` ตกแต่งด้วย `@ApiProperty` ครบถ้วน เพื่อให้ Swagger UI แสดง Response Schema สำหรับทุก Endpoint
+    - **`AssetController`**: เพิ่ม `@ApiTags("Asset")`, `@ApiBearerAuth()`, `@ApiOperation()`, `@ApiQuery()`, `@ApiParam()`, `@ApiBody()`, และ `@ApiResponse()` ครอบคลุมทั้ง 9 endpoints (`POST`, `GET`, `PATCH :id`, `PATCH :id/restore`, `DELETE :id`, `PATCH reorder`, `POST bulk-delete`, `POST bulk-archive`, `POST bulk-restore`)
+  - ผ่านการทดสอบ NestJS Build (`npm run build`) 100% ไร้ข้อผิดพลาด
+
+- **User Module Swagger Documentation & ApiProperty Completion (Backend API)**:
+  - เพิ่มและปรับปรุง `@ApiProperty` และ Decorator ของ Swagger ในระบบ User Module ฝั่ง Backend (`apps/api`) อย่างสมบูรณ์ครบถ้วน 100%:
+    - **`UpdateProfileDto`**: ใส่ข้อมูล `description`, `example`, `required`, `maxLength`, และ `enum` สำหรับ `displayName`, `avatarUrl`, และ `language`
+    - **`ChangePasswordDto`**: ใส่ข้อมูล `description`, `example`, `minLength`, `format: "password"`, และ `required` สำหรับ `currentPassword`, `newPassword`, และ `confirmNewPassword`
+    - **`UserResponseDto` (ใหม่)**: สร้าง `UserProfileResponseDto` และ `UserActionResponseDto` พร้อมตกแต่งด้วย `@ApiProperty` ครบถ้วน เพื่อให้ Swagger แสดง Response Schema สำหรับ `PATCH /users/profile`, `POST /users/change-password`, และ `DELETE /users`
+    - **`UserController`**: เพิ่ม `@ApiTags("User")`, `@ApiBearerAuth()`, `@ApiOperation()`, `@ApiBody()`, และ `@ApiResponse()` ครอบคลุม HTTP Status Codes (200, 400, 401)
+    - **`main.ts`**: เพิ่ม `.addBearerAuth()` ให้กับ DocumentBuilder Swagger เพื่อให้สามารถทดสอบ API ด้วย Bearer Token บน Swagger UI หน้าเว็บได้ทันที
+  - ผ่านการทดสอบ NestJS Build (`npm run build`) 100% ไร้ข้อผิดพลาด
 
 - **Transaction Hard-Deleted Category Fallback Icon (ไอคอนทดแทนสำหรับรายการที่หมวดหมู่ถูกลบถาวร)**:
   - ปรับปรุง [TransactionIcon.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/TransactionIcon.tsx) ให้แสดงไอคอนสื่อความหมายมาตรฐาน (`CircleQuestionMark` ในกล่อง `bg-surface-secondary text-secondary-text`) เมื่อรายการธุรกรรมไม่มีหมวดหมู่ หรือหมวดหมู่อ้างอิงถูกลบถาวร (Hard Delete) ไปแล้ว
@@ -305,14 +361,27 @@
     2. **ConfirmModal ([ConfirmModal.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/ConfirmModal.tsx))**: ปรับเปลี่ยนจาก pseudo-checkbox `<div ...><Check /></div>` และ `<input type="checkbox" className="hidden">` มาใช้ `Checkbox` ของ `@animate-ui` ในตัวเลือกลบข้อมูลถาวร (`isHardDelete`)
   - ผ่านการตรวจสอบ TypeScript Type Checking และ Unit Tests ทั้งหมด 100%
 
+- **Sprint 5 Security Hardening & Rate Limiting (NestJS Helmet, Throttler & Global Exception Filter)**:
+  - ติดตั้งและตั้งค่า `helmet()` ใน [main.ts](file:///Users/torikiton/Desktop/PocketNote/apps/api/src/main.ts) เพื่อเปิดใช้งาน HTTP Security Headers (X-Frame-Options, X-Content-Type-Options, HSTS, CSP) ป้องกันภัยคุกคาม XSS & Clickjacking
+  - ติดตั้งและตั้งค่า `@nestjs/throttler` ใน [app.module.ts](file:///Users/torikiton/Desktop/PocketNote/apps/api/src/app.module.ts) จำกัดโควตา API (Global Limit: 100 req/60s, Auth Limits: 10 req/60s บน `/auth/login`, `/auth/register` และ `/users/change-password`) ป้องกัน Brute-force & DDoS Attacks
+  - สร้าง [http-exception.filter.ts](file:///Users/torikiton/Desktop/PocketNote/apps/api/src/common/filters/http-exception.filter.ts) แปลงโครงสร้าง Error Response เป็นมาตรฐาน และซ่อน Internal Database Stack Traces ใน Production
+  - เพิ่มการรองรับ `ALLOWED_ORIGINS` สำหรับ CORS ใน [main.ts](file:///Users/torikiton/Desktop/PocketNote/apps/api/src/main.ts) รองรับ Production Domain
+  - ปรับปรุง Axios Interceptor ใน [http.ts](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/lib/api/http.ts) ฝั่ง Web ให้แสดงผลแจ้งเตือนแบบ Toast เมื่อได้รับ HTTP Status `429 Too Many Requests`
+
+- **Sprint 5 Database Composite Indexing & In-Memory Response Caching (Prisma & NestJS CacheManager)**:
+  - เพิ่ม Composite Indexes ใน [schema.prisma](file:///Users/torikiton/Desktop/PocketNote/apps/api/prisma/schema.prisma) สำหรับ `Asset` (`@@index([userId, deletedAt])`), `Category` (`@@index([userId, deletedAt])`, `@@index([userId, type])`), และ `Transaction` (`@@index([userId, date(sort: Desc)])`, `@@index([userId, categoryId])`, `@@index([userId, deletedAt])`) เพิ่มความเร็ว Query O(log N)
+  - ติดตั้ง `@nestjs/cache-manager` และทำ In-Memory Caching สำหรับ API หมวดหมู่ [CategoryService](file:///Users/torikiton/Desktop/PocketNote/apps/api/src/modules/category/services/category.service.ts) และสรุปยอดเงิน [SummaryService](file:///Users/torikiton/Desktop/PocketNote/apps/api/src/modules/summary/services/summary.service.ts)
+  - เพิ่มระบบ Cache Invalidation อัตโนมัติใน [TransactionService](file:///Users/torikiton/Desktop/PocketNote/apps/api/src/modules/transaction/services/transaction.service.ts) และ [CategoryService](file:///Users/torikiton/Desktop/PocketNote/apps/api/src/modules/category/services/category.service.ts) เมื่อเกิดการสร้าง/แก้ไข/ลบรายการ
+
 ---
 
 ### 2. สิ่งที่จะต้องทำเป็นลำดับถัดไป (Next Actions)
 
-งานหลักที่ต้องดำเนินการใน **Sprint 5: ความปลอดภัยและฟังก์ชันเสริมระบบคลาวด์ (Security & Cloud Features)**:
+งานหลักที่ต้องดำเนินการใน **Sprint 6: การขัดเกลาและติดตั้งขึ้นระบบจริง (Polish & Deployment)**:
 
-- **[ ] ระบบความปลอดภัยและการจัดการสิทธิ์ขั้นสูง:** ตรวจสอบความปลอดภัย API, JWT, Middleware
-- **[ ] การปรับปรุงประสิทธิภาพระบบ:** การแบ่งหน้าข้อมูล (Pagination), ทำ Caching กรณีข้อมูลธุรกรรมปริมาณมาก
+- **[ ] จัดเตรียมสภาพแวดล้อม Production Cloud:** ตั้งค่า Production Database (Supabase PostgreSQL / Cloud DB) และกำหนดค่า Environment Variables ในเซิร์ฟเวอร์
+- **[ ] Production Build & Deployment:** ดำเนินการ Deploy Web บน Vercel และ API บน Render / Railway ตามคู่มือ [DEPLOYMENT_PREPARATION.md](file:///Users/torikiton/Desktop/PocketNote/docs/DEPLOYMENT_PREPARATION.md)
+- **[ ] QA & Real-World User Testing:** ทดสอบระบบ End-to-End บน Production Domain จริงก่อนปล่อยใช้งานอย่างเป็นทางการ
 
 ---
 

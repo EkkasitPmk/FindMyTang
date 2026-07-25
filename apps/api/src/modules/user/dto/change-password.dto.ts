@@ -3,8 +3,12 @@ import { IsNotEmpty, IsString, MinLength } from "class-validator";
 
 export class ChangePasswordDto {
   @ApiProperty({
-    description: "Current password of the user",
+    description: "Current account password (minimum 8 characters)",
     example: "oldpassword123",
+    minLength: 8,
+    required: true,
+    type: String,
+    format: "password",
   })
   @IsString()
   @IsNotEmpty({ message: "Current password is required" })
@@ -14,8 +18,12 @@ export class ChangePasswordDto {
   currentPassword!: string;
 
   @ApiProperty({
-    description: "New password of the user",
+    description: "New password to set (minimum 8 characters)",
     example: "newpassword123",
+    minLength: 8,
+    required: true,
+    type: String,
+    format: "password",
   })
   @IsString()
   @IsNotEmpty({ message: "New password is required" })
@@ -23,8 +31,12 @@ export class ChangePasswordDto {
   newPassword!: string;
 
   @ApiProperty({
-    description: "Confirmation of the new password",
+    description: "Confirmation of the new password (must match newPassword)",
     example: "newpassword123",
+    minLength: 8,
+    required: true,
+    type: String,
+    format: "password",
   })
   @IsString()
   @IsNotEmpty({ message: "Confirm new password is required" })

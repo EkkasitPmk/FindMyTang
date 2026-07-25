@@ -4,14 +4,21 @@ import { ValidationPipe, VersioningType } from "@nestjs/common";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import cookieParser from "cookie-parser";
 import { json, urlencoded } from "express";
+import helmet from "helmet";
+import { HttpExceptionFilter } from "./common/filters/http-exception.filter";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.use(helmet());
   app.use(json({ limit: "50mb" }));
   app.use(urlencoded({ extended: true, limit: "50mb" }));
 
   app.use(cookieParser(process.env.COOKIE_SECRET));
+
+  const allowedOriginsEnv = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(",").map((s) => s.trim())
+    : [];
 
   app.enableCors({
     origin: (
@@ -30,7 +37,9 @@ async function bootstrap() {
         /^http:\/\/172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}(:\d+)?$/.test(
           origin,
         );
-      if (isLocal) {
+      const isAllowedDomain = allowedOriginsEnv.includes(origin);
+
+      if (isLocal || isAllowedDomain) {
         callback(null, true);
       } else {
         callback(new Error("Not allowed by CORS"));
@@ -54,10 +63,13 @@ async function bootstrap() {
     }),
   );
 
+  app.useGlobalFilters(new HttpExceptionFilter());
+
   const config = new DocumentBuilder()
     .setTitle("PocketNoteMe API")
     .setDescription("PocketNoteMe Backend API")
     .setVersion("1.0")
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup("docs", app, document);

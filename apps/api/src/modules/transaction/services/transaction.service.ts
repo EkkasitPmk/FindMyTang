@@ -1,10 +1,13 @@
 import {
   Injectable,
+  Inject,
   NotFoundException,
   ForbiddenException,
   BadRequestException,
   OnModuleInit,
 } from "@nestjs/common";
+import { CACHE_MANAGER } from "@nestjs/cache-manager";
+import type { Cache } from "cache-manager";
 import "multer";
 import { TransactionRepository } from "../repositories/transaction.repository";
 import { AssetRepository } from "../../asset/repositories/asset.repository";
@@ -24,7 +27,15 @@ export class TransactionService implements OnModuleInit {
     private readonly categoryRepository: CategoryRepository,
     private readonly prisma: PrismaService,
     private readonly storageService: StorageService,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
+
+  private async invalidateSummaryCache(userId: string): Promise<void> {
+    await Promise.all([
+      this.cacheManager.del(`summary_today_${userId}`),
+      this.cacheManager.del(`summary_month_${userId}`),
+    ]);
+  }
 
   onModuleInit() {
     // ponytail: using native setInterval instead of @nestjs/schedule to avoid unnecessary dependency.
@@ -295,6 +306,7 @@ export class TransactionService implements OnModuleInit {
         resultTransaction.attachmentUrl,
       );
     }
+    await this.invalidateSummaryCache(userId);
     return resultTransaction;
   }
 
@@ -409,6 +421,7 @@ export class TransactionService implements OnModuleInit {
         updatedTx.attachmentUrl,
       );
     }
+    await this.invalidateSummaryCache(userId);
     return updatedTx;
   }
 
@@ -427,7 +440,7 @@ export class TransactionService implements OnModuleInit {
       await this.storageService.removeFile(tx.attachmentUrl);
     }
 
-    return this.prisma.$transaction(async (prismaTx) => {
+    const deletedTx = await this.prisma.$transaction(async (prismaTx) => {
       // If it's not already soft deleted, revert its balances
       if (!tx.deletedAt) {
         await this.updateBalances(
@@ -449,6 +462,9 @@ export class TransactionService implements OnModuleInit {
         data: { deletedAt: new Date() },
       });
     });
+
+    await this.invalidateSummaryCache(userId);
+    return deletedTx;
   }
 
   async getAvailableDates(

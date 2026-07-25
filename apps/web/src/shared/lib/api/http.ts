@@ -28,6 +28,15 @@ http.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    if (error.response?.status === 429) {
+      const { toast } = await import("react-toastify");
+      toast.error(
+        error.response?.data?.message ||
+          "คุณส่งคำขอถี่เกินไป กรุณารอสักครู่แล้วลองใหม่อีกครั้ง (Too Many Requests)",
+      );
+      throw error;
+    }
+
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&

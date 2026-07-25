@@ -7,6 +7,7 @@ export class UpdateAssetDto extends PartialType(CreateAssetDto) {
     description: "Whether the asset is archived",
     example: false,
     required: false,
+    type: Boolean,
   })
   @IsBoolean()
   @IsOptional()

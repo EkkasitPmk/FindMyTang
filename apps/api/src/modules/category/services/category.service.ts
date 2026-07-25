@@ -3,7 +3,10 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
+  Inject,
 } from "@nestjs/common";
+import { CACHE_MANAGER } from "@nestjs/cache-manager";
+import type { Cache } from "cache-manager";
 import { CategoryRepository } from "../repositories/category.repository";
 import { CreateCategoryDto } from "../dto/create-category.dto";
 import { UpdateCategoryDto } from "../dto/update-category.dto";
@@ -11,7 +14,17 @@ import { Category } from "@prisma/client";
 
 @Injectable()
 export class CategoryService {
-  constructor(private readonly categoryRepository: CategoryRepository) {}
+  constructor(
+    private readonly categoryRepository: CategoryRepository,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
+  ) {}
+
+  private async invalidateCache(userId: string): Promise<void> {
+    await Promise.all([
+      this.cacheManager.del(`cat_${userId}_true`),
+      this.cacheManager.del(`cat_${userId}_false`),
+    ]);
+  }
 
   async create(userId: string, dto: CreateCategoryDto): Promise<Category> {
     // ponytail: Trims category name and validates it is not empty, then creates the category.
@@ -22,17 +35,31 @@ export class CategoryService {
       );
     }
 
-    return this.categoryRepository.create(userId, {
+    const category = await this.categoryRepository.create(userId, {
       name: trimmedName,
       type: dto.type,
       color: dto.color,
       icon: dto.icon,
     });
+
+    await this.invalidateCache(userId);
+    return category;
   }
 
   async findAll(userId: string, includeDeleted = false): Promise<Category[]> {
-    // ponytail: Retrieves categories belonging to user. Optional includeDeleted flag.
-    return this.categoryRepository.findAll(userId, includeDeleted);
+    // ponytail: Retrieves categories belonging to user with 5-min in-memory cache.
+    const cacheKey = `cat_${userId}_${includeDeleted}`;
+    const cached = await this.cacheManager.get<Category[]>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
+    const categories = await this.categoryRepository.findAll(
+      userId,
+      includeDeleted,
+    );
+    await this.cacheManager.set(cacheKey, categories, 300000);
+    return categories;
   }
 
   async update(
@@ -60,7 +87,13 @@ export class CategoryService {
       dto.name = trimmedName;
     }
 
-    return this.categoryRepository.update(id, userId, dto);
+    const updatedCategory = await this.categoryRepository.update(
+      id,
+      userId,
+      dto,
+    );
+    await this.invalidateCache(userId);
+    return updatedCategory;
   }
 
   async delete(
@@ -78,11 +111,15 @@ export class CategoryService {
       throw new ForbiddenException("You do not own this category");
     }
 
+    let deletedCategory: Category;
     if (isHardDelete) {
-      return this.categoryRepository.hardDelete(id, userId);
+      deletedCategory = await this.categoryRepository.hardDelete(id, userId);
+    } else {
+      deletedCategory = await this.categoryRepository.delete(id, userId);
     }
 
-    return this.categoryRepository.delete(id, userId);
+    await this.invalidateCache(userId);
+    return deletedCategory;
   }
 
   async restore(id: string, userId: string): Promise<Category> {
@@ -96,11 +133,14 @@ export class CategoryService {
       throw new ForbiddenException("You do not own this category");
     }
 
-    return this.categoryRepository.restore(id, userId);
+    const restoredCategory = await this.categoryRepository.restore(id, userId);
+    await this.invalidateCache(userId);
+    return restoredCategory;
   }
 
   async reorder(userId: string, ids: string[]): Promise<void> {
     // ponytail: Triggers bulk update for category ordering in the repository.
     await this.categoryRepository.reorder(userId, ids);
+    await this.invalidateCache(userId);
   }
 }

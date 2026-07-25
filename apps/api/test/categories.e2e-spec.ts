@@ -62,7 +62,7 @@ describe("Category (e2e)", () => {
       })
       .expect(201);
 
-    userCookies = loginRes.headers["set-cookie"] as string[];
+    userCookies = loginRes.headers["set-cookie"] as unknown as string[];
   });
 
   afterAll(async () => {
