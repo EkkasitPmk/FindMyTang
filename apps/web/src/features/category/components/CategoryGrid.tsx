@@ -1,5 +1,6 @@
 import { Category } from "@/shared/lib/types/category.type";
 import { CircleX, Grip, Plus } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 import { getCategoryIcon } from "@/shared/lib/configs/category-icons.config";
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
@@ -57,19 +58,23 @@ export default function CategoryGrid({
   }
 
   return (
-    <div className="grid grid-cols-3 gap-2 overflow-auto max-h-[75vh]">
+    <div className="grid grid-cols-3 gap-2 overflow-auto max-h-[75vh] p-1">
       {/* New Category */}
-      <Button
-        variant="unstyled"
-        type="button"
-        onClick={onNewCategoryClick}
-        className="flex flex-col items-center justify-center gap-3 border border-border border-dashed p-4 rounded-lg cursor-pointer hover:bg-surface-variant/10 transition-colors"
-      >
-        <span className="bg-surface-secondary p-2 rounded-lg text-secondary-text">
-          <Plus size={16} />
-        </span>
-        <span className="text-xs font-medium truncate">{t("newCategory")}</span>
-      </Button>
+      <div>
+        <Button
+          variant="unstyled"
+          type="button"
+          onClick={onNewCategoryClick}
+          className="w-full flex flex-col items-center justify-center gap-3 border border-border border-dashed p-4 rounded-lg cursor-pointer hover:bg-surface-variant/10 transition-colors"
+        >
+          <span className="bg-surface-secondary p-2 rounded-lg text-secondary-text">
+            <Plus size={16} />
+          </span>
+          <span className="text-xs font-medium truncate">
+            {t("newCategory")}
+          </span>
+        </Button>
+      </div>
       {/* New Category */}
 
       {categories.map((category, index) => {
@@ -79,9 +84,9 @@ export default function CategoryGrid({
         return (
           <div
             key={category.id}
-            className={`relative select-none transition-all
-              ${draggedIndex === index ? "opacity-40" : ""}
-            `}
+            className={`relative select-none ${
+              draggedIndex === index ? "opacity-40" : ""
+            }`}
           >
             <Button
               variant="unstyled"
@@ -104,7 +109,7 @@ export default function CategoryGrid({
               style={{
                 touchAction: isDraggable ? "none" : "auto",
               }}
-              className={`w-full flex flex-col items-center justify-center gap-3 border border-border p-4 rounded-lg transition-all
+              className={`w-full flex flex-col items-center justify-center gap-3 border border-border p-4 rounded-lg transition-colors
                 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2
                 ${
                   isDraggable
@@ -130,30 +135,56 @@ export default function CategoryGrid({
               </span>
             </Button>
 
-            {!category.isSystem && isEditingList && (
-              <Button
-                variant="unstyled"
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDeleteClick(category);
-                }}
-                className="absolute top-1 right-1 text-destructive transition-colors"
-              >
-                <CircleX size={16} />
-              </Button>
-            )}
+            <AnimatePresence>
+              {!category.isSystem && isEditingList && (
+                <motion.div
+                  layout={false}
+                  key={`delete-${category.id}`}
+                  initial={{ scale: 0, opacity: 0, rotate: -45 }}
+                  animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                  exit={{ scale: 0, opacity: 0, rotate: -45 }}
+                  whileHover={{ scale: 1.15 }}
+                  whileTap={{ scale: 0.8 }}
+                  transition={{ type: "spring", stiffness: 450, damping: 28 }}
+                  className="absolute top-1 right-1 z-10"
+                >
+                  <Button
+                    variant="unstyled"
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDeleteClick(category);
+                    }}
+                    className="rounded-full text-destructive shadow-xs border border-border hover:bg-destructive/10 transition-colors"
+                  >
+                    <CircleX size={18} className="fill-destructive/10" />
+                  </Button>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-            {!category.isSystem && isEditingList && (
-              <Button
-                variant="unstyled"
-                className="absolute bottom-1 right-1 cursor-grab"
-                type="button"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <Grip size={14} />
-              </Button>
-            )}
+            <AnimatePresence>
+              {!category.isSystem && isEditingList && (
+                <motion.div
+                  layout={false}
+                  key={`grip-${category.id}`}
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0, opacity: 0 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                  className="absolute bottom-0.5 right-1.5 cursor-grab"
+                >
+                  <Button
+                    variant="unstyled"
+                    className="text-secondary-text hover:text-primary-text"
+                    type="button"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <Grip size={14} />
+                  </Button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         );
       })}

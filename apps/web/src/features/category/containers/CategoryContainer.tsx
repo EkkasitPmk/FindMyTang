@@ -32,7 +32,13 @@ import {
 } from "../helpers/category.helper";
 import { handleFormError } from "@/shared/lib/helpers/form.helper";
 import { AxiosError } from "axios";
-import { Button } from "@/shared/components/animate-ui/components/buttons/button";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContents,
+  TabsContent,
+} from "@/shared/components/animate-ui/components/animate/tabs";
 
 export default function CategoryContainer() {
   const { t } = useTranslation();
@@ -292,9 +298,6 @@ export default function CategoryContainer() {
     setEditingCategory(null);
   };
 
-  const filteredCategories =
-    localCategories.filter((category) => category.type === activeTab) || [];
-
   return (
     <div className="space-y-2 px-4 py-2">
       <div className="mb-2">
@@ -302,51 +305,64 @@ export default function CategoryContainer() {
         <p className="text-sm">{t("categoryManagementDesc")}</p>
       </div>
 
-      {/* Select Option Tab */}
-      <div className="flex border-b border-border/10 mb-1 cursor-pointer">
-        <Button
-          variant="unstyled"
-          type="button"
-          onClick={() => setActiveTab("EXPENSE")}
-          className={`grow text-center py-2 text-base font-medium border-b-2 ${
-            activeTab === "EXPENSE"
-              ? "border-primary text-primary"
-              : "border-transparent text-secondary-text hover:text-primary-text"
-          }`}
-        >
-          {t("expenses")}
-        </Button>
-        <Button
-          variant="unstyled"
-          type="button"
-          onClick={() => setActiveTab("INCOME")}
-          className={`grow text-center py-2 text-base font-medium border-b-2 ${
-            activeTab === "INCOME"
-              ? "border-primary text-primary"
-              : "border-transparent text-secondary-text hover:text-primary-text"
-          }`}
-        >
-          {t("income")}
-        </Button>
-      </div>
-      {/* Select Option Tab */}
+      {/* Select Option Tab & Animated Category Grid Contents */}
+      <Tabs
+        value={activeTab}
+        onValueChange={(val) => setActiveTab(val as "EXPENSE" | "INCOME")}
+        className="w-full gap-1"
+      >
+        <div className="relative z-10 w-full">
+          <TabsList className="w-full">
+            <TabsTrigger value="EXPENSE" className="text-sm py-2">
+              {t("expenses")}
+            </TabsTrigger>
+            <TabsTrigger value="INCOME" className="text-sm py-2">
+              {t("income")}
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
-      {/* Categories Grid */}
-      <CategoryGrid
-        categories={filteredCategories}
-        isLoading={isCategoriesLoading}
-        isEditingList={isEditingList}
-        draggedIndex={draggedIndex}
-        onNewCategoryClick={openCreateModal}
-        onCategoryClick={openEditModal}
-        onDeleteClick={handleDelete}
-        onDragStart={handleDragStart}
-        onDragOver={handleDragOver}
-        onDragEnd={handleDragEnd}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      />
+        <TabsContents className="w-full">
+          <TabsContent value="EXPENSE" className="w-full">
+            <CategoryGrid
+              categories={localCategories.filter(
+                (cat) => cat.type === "EXPENSE",
+              )}
+              isLoading={isCategoriesLoading}
+              isEditingList={isEditingList}
+              draggedIndex={activeTab === "EXPENSE" ? draggedIndex : null}
+              onNewCategoryClick={openCreateModal}
+              onCategoryClick={openEditModal}
+              onDeleteClick={handleDelete}
+              onDragStart={handleDragStart}
+              onDragOver={handleDragOver}
+              onDragEnd={handleDragEnd}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            />
+          </TabsContent>
+          <TabsContent value="INCOME" className="w-full">
+            <CategoryGrid
+              categories={localCategories.filter(
+                (cat) => cat.type === "INCOME",
+              )}
+              isLoading={isCategoriesLoading}
+              isEditingList={isEditingList}
+              draggedIndex={activeTab === "INCOME" ? draggedIndex : null}
+              onNewCategoryClick={openCreateModal}
+              onCategoryClick={openEditModal}
+              onDeleteClick={handleDelete}
+              onDragStart={handleDragStart}
+              onDragOver={handleDragOver}
+              onDragEnd={handleDragEnd}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            />
+          </TabsContent>
+        </TabsContents>
+      </Tabs>
 
       <CUCategoryModal
         isOpen={isCUModalOpen}
