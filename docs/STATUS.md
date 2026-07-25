@@ -65,6 +65,11 @@
 
 ### 1. สิ่งที่พัฒนาเสร็จสิ้นแล้ว (Completed)
 
+- **Transaction Hard-Deleted Category Fallback Icon (ไอคอนทดแทนสำหรับรายการที่หมวดหมู่ถูกลบถาวร)**:
+  - ปรับปรุง [TransactionIcon.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/TransactionIcon.tsx) ให้แสดงไอคอนสื่อความหมายมาตรฐาน (`CircleQuestionMark` ในกล่อง `bg-surface-secondary text-secondary-text`) เมื่อรายการธุรกรรมไม่มีหมวดหมู่ หรือหมวดหมู่อ้างอิงถูกลบถาวร (Hard Delete) ไปแล้ว
+  - ป้องกันปัญหาการไม่แสดงไอคอนเลย (กล่องว่างเปล่า) เมื่อ `transaction.category` เป็น `null` หรือ `undefined`
+  - ผ่านการทดสอบ TypeScript Typecheck (`npx tsc --noEmit`) และ Vitest Unit Tests 100% ปราศจากข้อผิดพลาด
+
 - **Deleted Categories Management & Hard Delete Flow (DELETED Tab & Hard Delete Confirmation)**:
   - เพิ่มแท็บ **"หมวดหมู่ที่ถูกลบ" (`DELETED`)** ไว้ทางขวาของแท็บ `INCOME` ในหน้า Manage Categories (`/categories`)
   - แสดงผลรายการหมวดหมู่ที่ถูก Soft Delete (`deletedAt != null`) ในรูปแบบ Grid พร้อมแสดง Badge บอกประเภท (`รายรับ` / `รายจ่าย`)
