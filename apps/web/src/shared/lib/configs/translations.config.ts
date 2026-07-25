@@ -163,11 +163,19 @@ export const translations = {
     categoryCreatedSuccess: 'สร้างหมวดหมู่ "{name}" สำเร็จ!',
     categoryUpdatedSuccess: 'อัปเดตหมวดหมู่ "{name}" สำเร็จ!',
     categoryDeletedSuccess: 'ลบหมวดหมู่ "{name}" สำเร็จ!',
+    categoryRestoredSuccess: 'กู้คืนหมวดหมู่ "{name}" สำเร็จ!',
     errSaveCategory: "ไม่สามารถบันทึกหมวดหมู่ได้ โปรดตรวจสอบข้อมูลอีกครั้ง",
     errDeleteCategory: "ไม่สามารถลบหมวดหมู่ได้",
+    errRestoreCategory: "ไม่สามารถกู้คืนหมวดหมู่ได้",
     deleteCategoryTitle: "ลบหมวดหมู่?",
     deleteCategoryDesc:
       'คุณแน่ใจหรือไม่ว่าต้องการลบหมวดหมู่ "{name}"? (รายการธุรกรรมในหมวดหมู่นี้จะไม่ถูกลบ)',
+    deletedCategories: "ถังขยะ",
+    restoreCategory: "กู้คืนหมวดหมู่",
+    hardDeleteCheckboxLabel: "ลบถาวร (Hard delete)",
+    deleteCategoryPermanentTitle: "ลบหมวดหมู่ถาวร?",
+    deleteCategoryPermanentDesc:
+      'คุณแน่ใจหรือไม่ว่าต้องการลบหมวดหมู่ "{name}" แบบถาวร? การดำเนินการนี้ไม่สามารถย้อนกลับได้',
 
     // Transactions Feature
     editTransaction: "แก้ไขธุรกรรม",
@@ -509,11 +517,19 @@ export const translations = {
     categoryCreatedSuccess: 'Category "{name}" created successfully!',
     categoryUpdatedSuccess: 'Category "{name}" updated successfully!',
     categoryDeletedSuccess: 'Category "{name}" deleted successfully!',
+    categoryRestoredSuccess: 'Category "{name}" restored successfully!',
     errSaveCategory: "Failed to save category. Please check your inputs.",
     errDeleteCategory: "Failed to delete category.",
+    errRestoreCategory: "Failed to restore category.",
     deleteCategoryTitle: "Delete Category?",
     deleteCategoryDesc:
       'Are you sure you want to delete category "{name}"? (Transactions in this category will not be deleted)',
+    deletedCategories: "Trash",
+    restoreCategory: "Restore Category",
+    hardDeleteCheckboxLabel: "Delete permanently (Hard delete)",
+    deleteCategoryPermanentTitle: "Permanently Delete Category?",
+    deleteCategoryPermanentDesc:
+      'Are you sure you want to permanently delete category "{name}"? This action cannot be undone.',
 
     // Transactions Feature
     editTransaction: "Edit Transaction",
