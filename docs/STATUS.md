@@ -46,11 +46,11 @@
   - รายงานแนวโน้มทางการเงินรายเดือน (Monthly Trends)
   - ระบบ Drill-down เพื่อกดเจาะดูรายละเอียดรายการธุรกรรมภายใต้หมวดหมู่ในเดือนนั้น ๆ
 
-### Sprint 5: ความปลอดภัยและฟังก์ชันเสริมระบบคลาวด์ (Security & Cloud Features) - ⏳ รอดำเนินการ
+### Sprint 5: ความปลอดภัยและฟังก์ชันเสริมระบบคลาวด์ (Security & Cloud Features) - ✅ สำเร็จ 100%
 
 - **ฟีเจอร์หลัก**:
-  - ระบบความปลอดภัยและการจัดการสิทธิ์ขั้นสูง
-  - การปรับปรุงประสิทธิภาพระบบในกรณีมีข้อมูลธุรกรรมปริมาณมาก
+  - ระบบความปลอดภัยและการจัดการสิทธิ์ขั้นสูง (NestJS Helmet, Throttler Rate Limiting, Exception Filter & CORS Hardening)
+  - การปรับปรุงประสิทธิภาพระบบในกรณีมีข้อมูลธุรกรรมปริมาณมาก (Prisma Composite Indexes & NestJS In-Memory Caching)
 
 ### Sprint 6: การขัดเกลาและติดตั้งขึ้นระบบจริง (Polish & Deployment) - ⏳ รอดำเนินการ
 
@@ -305,14 +305,27 @@
     2. **ConfirmModal ([ConfirmModal.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/ConfirmModal.tsx))**: ปรับเปลี่ยนจาก pseudo-checkbox `<div ...><Check /></div>` และ `<input type="checkbox" className="hidden">` มาใช้ `Checkbox` ของ `@animate-ui` ในตัวเลือกลบข้อมูลถาวร (`isHardDelete`)
   - ผ่านการตรวจสอบ TypeScript Type Checking และ Unit Tests ทั้งหมด 100%
 
+- **Sprint 5 Security Hardening & Rate Limiting (NestJS Helmet, Throttler & Global Exception Filter)**:
+  - ติดตั้งและตั้งค่า `helmet()` ใน [main.ts](file:///Users/torikiton/Desktop/PocketNote/apps/api/src/main.ts) เพื่อเปิดใช้งาน HTTP Security Headers (X-Frame-Options, X-Content-Type-Options, HSTS, CSP) ป้องกันภัยคุกคาม XSS & Clickjacking
+  - ติดตั้งและตั้งค่า `@nestjs/throttler` ใน [app.module.ts](file:///Users/torikiton/Desktop/PocketNote/apps/api/src/app.module.ts) จำกัดโควตา API (Global Limit: 100 req/60s, Auth Limits: 10 req/60s บน `/auth/login`, `/auth/register` และ `/users/change-password`) ป้องกัน Brute-force & DDoS Attacks
+  - สร้าง [http-exception.filter.ts](file:///Users/torikiton/Desktop/PocketNote/apps/api/src/common/filters/http-exception.filter.ts) แปลงโครงสร้าง Error Response เป็นมาตรฐาน และซ่อน Internal Database Stack Traces ใน Production
+  - เพิ่มการรองรับ `ALLOWED_ORIGINS` สำหรับ CORS ใน [main.ts](file:///Users/torikiton/Desktop/PocketNote/apps/api/src/main.ts) รองรับ Production Domain
+  - ปรับปรุง Axios Interceptor ใน [http.ts](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/lib/api/http.ts) ฝั่ง Web ให้แสดงผลแจ้งเตือนแบบ Toast เมื่อได้รับ HTTP Status `429 Too Many Requests`
+
+- **Sprint 5 Database Composite Indexing & In-Memory Response Caching (Prisma & NestJS CacheManager)**:
+  - เพิ่ม Composite Indexes ใน [schema.prisma](file:///Users/torikiton/Desktop/PocketNote/apps/api/prisma/schema.prisma) สำหรับ `Asset` (`@@index([userId, deletedAt])`), `Category` (`@@index([userId, deletedAt])`, `@@index([userId, type])`), และ `Transaction` (`@@index([userId, date(sort: Desc)])`, `@@index([userId, categoryId])`, `@@index([userId, deletedAt])`) เพิ่มความเร็ว Query O(log N)
+  - ติดตั้ง `@nestjs/cache-manager` และทำ In-Memory Caching สำหรับ API หมวดหมู่ [CategoryService](file:///Users/torikiton/Desktop/PocketNote/apps/api/src/modules/category/services/category.service.ts) และสรุปยอดเงิน [SummaryService](file:///Users/torikiton/Desktop/PocketNote/apps/api/src/modules/summary/services/summary.service.ts)
+  - เพิ่มระบบ Cache Invalidation อัตโนมัติใน [TransactionService](file:///Users/torikiton/Desktop/PocketNote/apps/api/src/modules/transaction/services/transaction.service.ts) และ [CategoryService](file:///Users/torikiton/Desktop/PocketNote/apps/api/src/modules/category/services/category.service.ts) เมื่อเกิดการสร้าง/แก้ไข/ลบรายการ
+
 ---
 
 ### 2. สิ่งที่จะต้องทำเป็นลำดับถัดไป (Next Actions)
 
-งานหลักที่ต้องดำเนินการใน **Sprint 5: ความปลอดภัยและฟังก์ชันเสริมระบบคลาวด์ (Security & Cloud Features)**:
+งานหลักที่ต้องดำเนินการใน **Sprint 6: การขัดเกลาและติดตั้งขึ้นระบบจริง (Polish & Deployment)**:
 
-- **[ ] ระบบความปลอดภัยและการจัดการสิทธิ์ขั้นสูง:** ตรวจสอบความปลอดภัย API, JWT, Middleware
-- **[ ] การปรับปรุงประสิทธิภาพระบบ:** การแบ่งหน้าข้อมูล (Pagination), ทำ Caching กรณีข้อมูลธุรกรรมปริมาณมาก
+- **[ ] จัดเตรียมสภาพแวดล้อม Production Cloud:** ตั้งค่า Production Database (Supabase PostgreSQL / Cloud DB) และกำหนดค่า Environment Variables ในเซิร์ฟเวอร์
+- **[ ] Production Build & Deployment:** ดำเนินการ Deploy Web บน Vercel และ API บน Render / Railway ตามคู่มือ [DEPLOYMENT_PREPARATION.md](file:///Users/torikiton/Desktop/PocketNote/docs/DEPLOYMENT_PREPARATION.md)
+- **[ ] QA & Real-World User Testing:** ทดสอบระบบ End-to-End บน Production Domain จริงก่อนปล่อยใช้งานอย่างเป็นทางการ
 
 ---
 
