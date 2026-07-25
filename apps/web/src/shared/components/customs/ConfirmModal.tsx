@@ -1,7 +1,8 @@
 import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
-import { LucideIcon, Check } from "lucide-react";
+import { LucideIcon } from "lucide-react";
 import { createPortal } from "react-dom";
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
+import { Checkbox } from "@/shared/components/animate-ui/components/radix/checkbox";
 
 interface ConfirmModalProps {
   isOpen: boolean;
@@ -121,28 +122,22 @@ export default function ConfirmModal({
 
           {withHardDeleteOption && (
             <div className="w-full flex flex-col gap-3 mt-2 text-left">
-              <label className="flex gap-2 cursor-pointer group">
-                <div
-                  className={`w-4 h-4 rounded-sm border flex items-center justify-center transition-colors ${
-                    isHardDelete
-                      ? `${colors.bg} ${colors.border} text-white`
-                      : `border-border bg-surface group-hover:${colors.border}`
-                  }`}
-                >
-                  {isHardDelete && (
-                    <Check size={12} strokeWidth={3} className="text-white" />
-                  )}
-                </div>
-                <input
-                  type="checkbox"
-                  className="hidden"
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="hard-delete-option"
+                  size={"sm"}
                   checked={isHardDelete}
-                  onChange={(e) => onHardDeleteChange?.(e.target.checked)}
+                  onCheckedChange={(checked) =>
+                    onHardDeleteChange?.(Boolean(checked))
+                  }
                 />
-                <span className="text-xs font-medium text-primary-text">
+                <label
+                  htmlFor="hard-delete-option"
+                  className="text-xs font-medium text-primary-text cursor-pointer select-none"
+                >
                   {hardDeleteCheckboxLabel}
-                </span>
-              </label>
+                </label>
+              </div>
 
               {isHardDelete && expectedInputToConfirm && (
                 <div className="flex flex-col gap-1.5 animate-subtle-pop">

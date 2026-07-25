@@ -218,7 +218,13 @@
   - **ขจัด Code Duplication**: ลบการประกาศ `createClient(...)` ซ้ำซ้อน 3 จุด และลบ Helper Method ที่สร้างกระจัดกระจายใน [AssetService](file:///Users/torikiton/Desktop/PocketNote/apps/api/src/modules/asset/services/asset.service.ts), [AuthService](file:///Users/torikiton/Desktop/PocketNote/apps/api/src/modules/auth/services/auth.service.ts), และ [TransactionService](file:///Users/torikiton/Desktop/PocketNote/apps/api/src/modules/transaction/services/transaction.service.ts) โดยเปลี่ยนมา Inject `StorageService` แทน
   - **ลบ Unused Config & Keys**: ลบ `SUPABASE_ANON_KEY` ที่ไม่ได้ใช้งานในฝั่ง Backend ออกจากไฟล์ `.env` เพื่อป้องกันความสับสน
   - **Frontend Wildcard Domain Pattern**: ปรับปรุง [next.config.ts](file:///Users/torikiton/Desktop/PocketNote/apps/web/next.config.ts) ฝั่งหน้าบ้าน จากเดิมที่ระบุ Hostname เจาะจงเฉพาะโครงการ ให้รองรับ Wildcard Pattern `*.supabase.co` เพื่อความยืดหยุ่นและการเปลี่ยนผ่าน Environment
-  - **Verification**: ทดสอบผ่าน TypeScript Compilation และการ Build ผ่าน 100% ทั้งฝั่ง `apps/api` และ `apps/web`
+  - **Animate UI Radix Checkbox Integration & Native Input Migration**:
+  - ติดตั้งและตั้งค่าคอมโพเนนต์ `@animate-ui/components-radix-checkbox` ([checkbox.tsx (Component)](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/components/radix/checkbox.tsx) และ [checkbox.tsx (Primitive)](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/animate-ui/primitives/radix/checkbox.tsx))
+  - ดำเนินการลบไฟล์ซ้ำซ้อนที่ถูกเพิ่มเข้ามาจากการติดตั้ง ได้แก่ `src/hooks/use-controlled-state.tsx`, `src/lib/get-strict-context.tsx`, และ `src/components/animate-ui/primitives/radix/checkbox.tsx`
+  - ปรับเปลี่ยนการใช้งาน HTML `<input type="checkbox">` เดิมทั้ง 2 จุดในระบบให้ใช้ `Checkbox` ของ `@animate-ui`:
+    1. **RegisterForm ([RegisterForm.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/features/auth/register/components/RegisterForm.tsx))**: ปรับใช้ `Checkbox` ร่วมกับ `Controller` จาก `react-hook-form` สำหรับตัวเลือกยอมรับเงื่อนไขบริการ (`agreeToTerms`)
+    2. **ConfirmModal ([ConfirmModal.tsx](file:///Users/torikiton/Desktop/PocketNote/apps/web/src/shared/components/customs/ConfirmModal.tsx))**: ปรับเปลี่ยนจาก pseudo-checkbox `<div ...><Check /></div>` และ `<input type="checkbox" className="hidden">` มาใช้ `Checkbox` ของ `@animate-ui` ในตัวเลือกลบข้อมูลถาวร (`isHardDelete`)
+  - ผ่านการตรวจสอบ TypeScript Type Checking และ Unit Tests ทั้งหมด 100%
 
 ---
 
