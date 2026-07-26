@@ -1,226 +1,281 @@
 "use client";
-import React, { useState } from "react";
+import { useState, useMemo } from "react";
+import { TransactionListContainer } from "@/features/transactions/containers/TransactionListContainer";
 import {
-  Plus,
-  Search,
-  Filter,
-  Calendar,
-  ArrowRightLeft,
-  FileText,
-  Eye,
-} from "lucide-react";
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContents,
+  TabsContent,
+} from "@/shared/components/animate-ui/components/animate/tabs";
+import { Input } from "@/shared/components/customs/Input";
+import { Search, X, ArrowUpDown } from "lucide-react";
+import { cn } from "@/shared/lib/utils/core.util";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+  DropdownMenuCheckboxItem,
+} from "@/shared/components/animate-ui/components/radix/dropdown-menu";
+import { useInfiniteTransactionsQuery } from "@/features/transactions/hooks/transaction.hook";
+import { TransactionResponse } from "@/shared/lib/types/transaction.type";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
+import JournalCalendarContainer from "./JournalCalendarContainer";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { TranslationKey } from "@/shared/lib/configs/translations.config";
+import {
+  JOURNAL_TRANSACTION_TYPES,
+  JournalTransactionType,
+} from "../configs/journal.config";
+
+type ViewMode = "timeline" | "calendar";
 
 export default function JournalContainer() {
-  const [activeFilter, setActiveFilter] = useState("ALL");
-  const [searchQuery, setSearchQuery] = useState("");
+  const { t, locale } = useTranslation();
+  const [viewMode, setViewMode] = useState<ViewMode>("timeline");
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [selectedType, setSelectedType] =
+    useState<JournalTransactionType>("all");
+  const [sortType, setSortType] = useState<
+    "DATE_NEWEST" | "DATE_OLDEST" | "AMOUNT_HIGHEST" | "AMOUNT_LOWEST"
+  >("DATE_NEWEST");
+  const [isSortOpen, setIsSortOpen] = useState(false);
 
-  const daysData = [
-    {
-      date: "Today, June 16",
-      summary: -140,
-      transactions: [
-        {
-          id: "1",
-          desc: "Starbucks Coffee",
-          type: "EXPENSE",
-          category: "Food & Drinks",
-          amount: -140,
-          asset: "Cash",
-          hasAttachment: true,
-        },
-      ],
-    },
-    {
-      date: "Yesterday, June 15",
-      summary: 12500,
-      transactions: [
-        {
-          id: "2",
-          desc: "Freelance Design Payment",
-          type: "INCOME",
-          category: "Salary",
-          amount: 12500,
-          asset: "KBank Savings",
-          hasAttachment: false,
-        },
-      ],
-    },
-    {
-      date: "June 14, 2026",
-      summary: -850,
-      transactions: [
-        {
-          id: "3",
-          desc: "Gas Station",
-          type: "EXPENSE",
-          category: "Transport",
-          amount: -850,
-          asset: "Credit Card",
-          hasAttachment: true,
-        },
-      ],
-    },
-    {
-      date: "June 12, 2026",
-      summary: -6500,
-      transactions: [
-        {
-          id: "4",
-          desc: "Monthly Rent",
-          type: "EXPENSE",
-          category: "Housing",
-          amount: -6500,
-          asset: "KBank Savings",
-          hasAttachment: false,
-        },
-      ],
-    },
-  ];
+  const queryType =
+    selectedType === "all" ? undefined : selectedType.toUpperCase();
+  const {
+    data: transactionsData,
+    isLoading: isLoadingTransactions,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteTransactionsQuery({
+    limit: 20, // Load 20 per page
+    type: queryType,
+    sortType,
+  });
+
+  const groupedTransactions = useMemo(() => {
+    if (!transactionsData?.pages) return [];
+
+    // Flatten all pages, deduplicate by id in case page boundaries overlap
+    const seen = new Set<string>();
+    let filteredItems = transactionsData.pages
+      .flatMap((page) => page.items)
+      .filter((tx) => {
+        if (seen.has(tx.id)) return false;
+        seen.add(tx.id);
+        return true;
+      });
+
+    if (searchKeyword.trim()) {
+      const lowerKeyword = searchKeyword.toLowerCase();
+      filteredItems = filteredItems.filter(
+        (tx) =>
+          tx.note?.toLowerCase().includes(lowerKeyword) ||
+          tx.category?.name?.toLowerCase().includes(lowerKeyword) ||
+          tx.asset?.name?.toLowerCase().includes(lowerKeyword) ||
+          tx.toAsset?.name?.toLowerCase().includes(lowerKeyword) ||
+          tx.amount.toString().includes(lowerKeyword) ||
+          tx.type.toLowerCase().includes(lowerKeyword),
+      );
+    }
+
+    const groupsMap = new Map<string, TransactionResponse[]>();
+
+    filteredItems.forEach((tx) => {
+      const date = new Date(tx.transactionDate);
+      const dateStr = Intl.DateTimeFormat(locale, {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }).format(date);
+
+      if (!groupsMap.has(dateStr)) {
+        groupsMap.set(dateStr, []);
+      }
+      groupsMap.get(dateStr)!.push(tx);
+    });
+
+    return Array.from(groupsMap.entries()).map(([dateStr, items]) => ({
+      dateStr,
+      items,
+    }));
+  }, [transactionsData, searchKeyword, locale]);
 
   return (
-    <div className="animate-in fade-in duration-300">
-      {/* Page Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="">
-            Transaction Journal
-          </h1>
-          <p className="text-on-surface-variant mt-1">
-            History of your earnings, expenditures, and transfers
-          </p>
-        </div>
-        <button className="flex items-center gap-2 py-2.5 px-4 rounded-full bg-primary-container hover:bg-primary transition-all text-xs font-semibold shadow-sm active-press">
-          <Plus className="w-4 h-4" strokeWidth={2} />
-          Add Transaction
-        </button>
-      </div>
-
-      {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between border border-outline-variant/60 p-4 rounded-md">
-        <div className="relative w-full sm:max-w-xs">
-          <Search className="absolute left-3.5 top-3 w-4 h-4 text-on-surface-variant/80" strokeWidth={1.5} />
-          <input
-            type="text"
-            placeholder="Search transactions..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-outline-variant/60 focus:border-primary-container rounded-md text-xs sm:text-sm outline-none transition-all"
-          />
+    <div className="flex flex-col h-[calc(100vh-80px)] bg-background space-y-2">
+      <Tabs
+        value={viewMode}
+        onValueChange={(val) => setViewMode(val as ViewMode)}
+        className="flex-1 flex flex-col min-h-0 gap-1"
+      >
+        {/* 1. ใส่ Timeline สลับ Calendar */}
+        <div className="px-4 shrink-0 pt-1 pb-1 bg-background z-10">
+          <TabsList className="w-full">
+            <TabsTrigger value="timeline">{t("timeline")}</TabsTrigger>
+            <TabsTrigger value="calendar">{t("calendar")}</TabsTrigger>
+          </TabsList>
         </div>
 
-        {/* Filter buttons */}
-        <div className="flex w-full sm:w-auto items-center overflow-x-auto gap-1 sm:gap-2 pb-1 sm:pb-0 scrollbar-none">
-          {["ALL", "INCOME", "EXPENSE"].map((filter) => {
-            const isActive = activeFilter === filter;
-            return (
-              <button
-                key={filter}
-                onClick={() => setActiveFilter(filter)}
-                className={`py-1.5 px-3.5 rounded-md text-xs font-semibold uppercase tracking-wider transition-all shrink-0 active-press ${
-                  isActive
-                    ? ""
-                    : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container"
-                }`}
-              >
-                {filter}
-              </button>
-            );
-          })}
-          <button className="p-1.5 rounded-md border border-outline-variant/60 text-on-surface-variant hover:text-on-surface hover:bg-surface-container active-press">
-            <Filter className="w-4 h-4" strokeWidth={1.5} />
-          </button>
-        </div>
-      </div>
-
-      {/* Daily grouped list */}
-      <div className="space-y-6">
-        {daysData.map((day, dIdx) => {
-          // Filter transactions
-          const filteredTxs = day.transactions.filter((tx) => {
-            const matchesFilter =
-              activeFilter === "ALL" || tx.type === activeFilter;
-            const matchesSearch =
-              tx.desc.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              tx.category.toLowerCase().includes(searchQuery.toLowerCase());
-            return matchesFilter && matchesSearch;
-          });
-
-          if (filteredTxs.length === 0) return null;
-
-          return (
-            <div key={dIdx} className="space-y-3">
-              {/* Daily Header */}
-              <div className="flex justify-between items-center px-2">
-                <div className="flex items-center gap-2 text-on-surface-variant">
-                  <Calendar className="w-3.5 h-3.5" strokeWidth={1.5} />
-                  <span className="tracking-normal font-semibold">{day.date}</span>
-                </div>
-                <span
-                  className={`font-semibold ${day.summary > 0 ? "text-emerald-600" : "text-on-surface-variant"} tnum`}
-                >
-                  {day.summary > 0 ? "+" : ""}
-                  {day.summary.toLocaleString()} ฿
-                </span>
-              </div>
-
-              {/* Transactions in the Day */}
-              <div className="space-y-2">
-                {filteredTxs.map((tx) => (
-                  <div
-                    key={tx.id}
-                    className="flex justify-between items-center p-4 rounded-md border border-outline-variant/60 hover:bg-surface-container-low/20 transition-all duration-200 group"
-                  >
-                    <div className="flex items-center gap-4">
-                      {/* Icon */}
-                      <div
-                        className={`p-2.5 rounded-md border ${
-                          tx.type === "INCOME"
-                            ? "bg-emerald-500/8 border-emerald-500/10 text-emerald-600"
-                            : "text-error"
-                        }`}
+        <div className="flex-1 min-h-0">
+          <TabsContents className="h-full">
+            <TabsContent value="timeline" className="h-full">
+              <div className="flex flex-col h-full space-y-4">
+                {/* ส่วนแสดงผล timeline */}
+                <section className="px-4 space-y-4 shrink-0 bg-background z-10">
+                  {/* 2. แสดง ui input search transactions */}
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Search className="h-5 w-5 text-secondary-text/60" />
+                    </div>
+                    <Input
+                      type="text"
+                      placeholder={t("searchTransactions")}
+                      value={searchKeyword}
+                      onChange={(e) => setSearchKeyword(e.target.value)}
+                      className="pl-10 pr-10 h-10 text-sm"
+                    />
+                    {searchKeyword.length > 0 && (
+                      <Button
+                        variant="unstyled"
+                        type="button"
+                        onClick={() => setSearchKeyword("")}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-secondary-text/60 hover:text-primary transition-colors cursor-pointer"
                       >
-                        <ArrowRightLeft className="w-4 h-4" strokeWidth={1.5} />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="font-bold">
-                            {tx.desc}
-                          </p>
-                          {tx.hasAttachment && (
-                            <span className="px-1.5 py-0.5 rounded-sm text-[9px] text-on-surface-variant font-medium flex items-center gap-0.5 border border-outline-variant/40">
-                              <FileText className="w-2.5 h-2.5" strokeWidth={1.5} />
-                              Receipt
-                            </span>
+                        <X className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+
+                  {/* 3. แสดง ui tabs switch และ sort */}
+                  <div className="flex items-center gap-2 pb-1">
+                    <div className="flex-1 flex overflow-x-auto gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
+                      {JOURNAL_TRANSACTION_TYPES.map((type) => (
+                        <Button
+                          variant={"unstyled"}
+                          key={type.value}
+                          onClick={() => setSelectedType(type.value)}
+                          className={cn(
+                            "flex-none px-4 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer",
+                            selectedType === type.value
+                              ? type.activeColorClass
+                              : "bg-surface border border-border text-secondary-text hover:bg-surface-secondary",
                           )}
-                        </div>
-                        <p className="text-[10px] text-on-surface-variant/80 mt-0.5 uppercase tracking-wider font-semibold">
-                          {tx.category} • {tx.asset}
-                        </p>
-                      </div>
+                        >
+                          {type.value === "all"
+                            ? t("all")
+                            : t(type.value as TranslationKey)}
+                        </Button>
+                      ))}
                     </div>
 
-                    {/* Amount */}
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center gap-1.5">
-                        <span className={`w-1.5 h-1.5 rounded-full ${tx.type === "INCOME" ? "bg-emerald-500" : "bg-error"}`} />
-                        <p
-                          className={`text-sm font-bold ${tx.type === "INCOME" ? "text-emerald-600" : "text-error"} tnum`}
+                    <DropdownMenu
+                      open={isSortOpen}
+                      onOpenChange={setIsSortOpen}
+                    >
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="unstyled"
+                          hoverScale={1}
+                          tapScale={1}
+                          type="button"
+                          className="p-1.5 bg-surface border border-border rounded-md text-secondary-text hover:bg-surface-secondary cursor-pointer outline-none"
                         >
-                          {tx.type === "INCOME" ? "+" : ""}
-                          {tx.amount.toLocaleString()} ฿
-                        </p>
-                      </div>
-                      <button className="opacity-0 group-hover:opacity-100 p-1.5 rounded-md hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-opacity active-press">
-                        <Eye className="w-4 h-4" strokeWidth={1.5} />
-                      </button>
-                    </div>
+                          <ArrowUpDown size={18} />
+                        </Button>
+                      </DropdownMenuTrigger>
+
+                      <DropdownMenuContent
+                        align="end"
+                        sideOffset={4}
+                        className="w-44 p-1 rounded-xl shadow-lg border border-border bg-surface text-primary-text z-50"
+                      >
+                        <DropdownMenuSub>
+                          <DropdownMenuSubTrigger className="cursor-pointer text-sm py-2">
+                            <span>{t("date")}</span>
+                          </DropdownMenuSubTrigger>
+                          <DropdownMenuSubContent className="w-40 p-1 rounded-xl shadow-lg border border-border bg-surface text-primary-text">
+                            <DropdownMenuCheckboxItem
+                              checked={sortType === "DATE_NEWEST"}
+                              onSelect={() => {
+                                setSortType("DATE_NEWEST");
+                                setIsSortOpen(false);
+                              }}
+                              className="cursor-pointer text-sm"
+                            >
+                              {t("newestFirst")}
+                            </DropdownMenuCheckboxItem>
+                            <DropdownMenuCheckboxItem
+                              checked={sortType === "DATE_OLDEST"}
+                              onSelect={() => {
+                                setSortType("DATE_OLDEST");
+                                setIsSortOpen(false);
+                              }}
+                              className="cursor-pointer text-sm"
+                            >
+                              {t("oldestFirst")}
+                            </DropdownMenuCheckboxItem>
+                          </DropdownMenuSubContent>
+                        </DropdownMenuSub>
+
+                        <DropdownMenuSub>
+                          <DropdownMenuSubTrigger className="cursor-pointer text-sm py-2">
+                            <span>{t("amountStr")}</span>
+                          </DropdownMenuSubTrigger>
+                          <DropdownMenuSubContent className="w-40 p-1 rounded-xl shadow-lg border border-border bg-surface text-primary-text">
+                            <DropdownMenuCheckboxItem
+                              checked={sortType === "AMOUNT_HIGHEST"}
+                              onSelect={() => {
+                                setSortType("AMOUNT_HIGHEST");
+                                setIsSortOpen(false);
+                              }}
+                              className="cursor-pointer text-sm"
+                            >
+                              {t("highestAmount")}
+                            </DropdownMenuCheckboxItem>
+                            <DropdownMenuCheckboxItem
+                              checked={sortType === "AMOUNT_LOWEST"}
+                              onSelect={() => {
+                                setSortType("AMOUNT_LOWEST");
+                                setIsSortOpen(false);
+                              }}
+                              className="cursor-pointer text-sm"
+                            >
+                              {t("lowestAmount")}
+                            </DropdownMenuCheckboxItem>
+                          </DropdownMenuSubContent>
+                        </DropdownMenuSub>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
-                ))}
+                </section>
+
+                {/* 4. แสดง transaction เรียงลงมาแบบปกติ และมี Lazy Load ด้วย Intersection Observer */}
+                <div className="flex-1 min-h-0">
+                  <TransactionListContainer
+                    groupedTransactions={groupedTransactions}
+                    isLoadingTransactions={isLoadingTransactions}
+                    isFetchingNextPage={isFetchingNextPage}
+                    hasNextPage={hasNextPage}
+                    fetchNextPage={fetchNextPage}
+                    isSearchMode={searchKeyword.length > 0}
+                    searchKeyword={searchKeyword}
+                    page="journal"
+                    useVirtualization={true}
+                  />
+                </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            </TabsContent>
+            <TabsContent value="calendar" className="h-full flex flex-col">
+              <JournalCalendarContainer />
+            </TabsContent>
+          </TabsContents>
+        </div>
+      </Tabs>
     </div>
   );
 }

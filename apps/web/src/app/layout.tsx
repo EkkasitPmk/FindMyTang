@@ -3,12 +3,21 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import Providers from "./providers";
-import { cn } from "@/shared/lib/utils";
+import { cn } from "@/shared/lib/utils/core.util";
 
 export const metadata: Metadata = {
-  title: "PocketNote - Kinetic Precision Command Center",
+  title: "FindMyTang - Smart Personal Asset Tracker & Command Center",
   description:
     "Graceful personal finance tracker designed with modern minimalism.",
+  openGraph: {
+    title: "FindMyTang - Smart Personal Asset Tracker & Command Center",
+    description:
+      "Graceful personal finance tracker designed with modern minimalism.",
+    siteName: "FindMyTang",
+    locale: "th_TH",
+    alternateLocale: ["en_US"],
+    type: "website",
+  },
 };
 
 export const viewport: Viewport = {
@@ -27,6 +36,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={cn("antialiased", GeistSans.variable, GeistMono.variable)}
     >
       <body className="bg-background min-h-screen flex flex-col">

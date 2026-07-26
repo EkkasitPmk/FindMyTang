@@ -2,14 +2,16 @@
 import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "react-toastify";
 import {
   createAssetSchema,
   CreateAssetFormValues,
-} from "../schemas/assets.schema";
+} from "../schemas/assets.form.schema";
 import { useCreateAssetMutation } from "../hooks/assets.hook";
-import { AssetType } from "../types/assets.type";
 import AssetForm from "../components/AssetForm";
+import LoadingModal from "@/shared/components/customs/LoadingModal";
+import { handleFormError } from "@/shared/lib/helpers/form.helper";
+import { AssetType } from "@/shared/lib/types/asset.type";
+import { useModalState } from "@/shared/lib/hooks/useModalState.hook";
 
 interface CreateAssetsContainerProps {
   onClose?: () => void;
@@ -20,6 +22,7 @@ export default function CreateAssetsContainer({
 }: Readonly<CreateAssetsContainerProps>) {
   const [isSelectOpen, setIsSelectOpen] = useState(false);
   const [selected, setSelected] = useState<string>(AssetType.CASH);
+  const { modalState, setModalState, resetModalState } = useModalState();
 
   const assetTypeList = Object.values(AssetType);
 
@@ -52,38 +55,38 @@ export default function CreateAssetsContainer({
 
   const { mutate: createAsset, isPending } = useCreateAssetMutation({
     onSuccess: (data) => {
-      toast.success(`Asset "${data.name}" created successfully!`);
-      reset();
-      if (onClose) onClose();
+      setModalState({
+        isOpen: true,
+        status: "success",
+        message: `Asset "${data.name}" created successfully!`,
+      });
     },
     onError: (error) => {
-      const message = error.response?.data?.message;
-      let errorList: string[] = [];
-      if (Array.isArray(message)) {
-        errorList = message;
-      } else if (message) {
-        errorList = [message];
-      }
-
-      if (errorList.length === 0) {
-        toast.error("Failed to create asset. Please check validation rules.");
-        return;
-      }
-
-      errorList.forEach((msg) => {
-        const lowerMsg = msg.toLowerCase();
-        if (lowerMsg.includes("name")) {
-          setError("name", { type: "server", message: msg });
-        } else if (lowerMsg.includes("type")) {
-          setError("type", { type: "server", message: msg });
-        } else if (lowerMsg.includes("balance")) {
-          setError("balance", { type: "server", message: msg });
-        } else {
-          toast.error(msg);
-        }
+      handleFormError(
+        error,
+        setError,
+        "Failed to create asset. Please check validation rules.",
+        {
+          name: "name",
+          type: "type",
+          balance: "balance",
+        },
+      );
+      setModalState({
+        isOpen: true,
+        status: "error",
+        message: "Failed to create asset.",
       });
     },
   });
+
+  const handleModalClose = () => {
+    resetModalState();
+    if (modalState.status === "success") {
+      reset();
+      if (onClose) onClose();
+    }
+  };
 
   const onSubmit = (values: CreateAssetFormValues) => {
     const balanceNum =
@@ -109,21 +112,29 @@ export default function CreateAssetsContainer({
   };
 
   return (
-    <AssetForm
-      register={register}
-      handleSubmit={handleSubmit}
-      onSubmit={onSubmit}
-      errors={errors}
-      isPending={isPending}
-      selected={selected}
-      isOpen={isSelectOpen}
-      setIsOpen={setIsSelectOpen}
-      assetTypeList={assetTypeList}
-      handleSelect={handleSelect}
-      onClose={onClose}
-      currentColor={currentColor}
-      onSelectColor={(color) => setValue("color", color)}
-      onBlurBalance={handleBlurBalance}
-    />
+    <>
+      <AssetForm
+        register={register}
+        handleSubmit={handleSubmit}
+        onSubmit={onSubmit}
+        errors={errors}
+        isPending={isPending}
+        selected={selected}
+        isOpen={isSelectOpen}
+        setIsOpen={setIsSelectOpen}
+        assetTypeList={assetTypeList}
+        handleSelect={handleSelect}
+        onClose={onClose}
+        currentColor={currentColor}
+        onSelectColor={(color) => setValue("color", color)}
+        onBlurBalance={handleBlurBalance}
+      />
+      <LoadingModal
+        isOpen={modalState.isOpen || isPending}
+        status={modalState.isOpen ? modalState.status : "loading"}
+        message={modalState.isOpen ? modalState.message : undefined}
+        onClose={handleModalClose}
+      />
+    </>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import FinancialSnapshotContainer from "../../financialSnapshot/containers/FinancialSnapshotContainer";
+import FinancialSnapshotContainer from "./FinancialSnapshotContainer";
 import RecentJournalContainer from "@/features/journal/containers/RecentJournalContainer";
 import ListAssetsContainer from "../../assets/containers/ListAssetsContainer";
 import CreateAssetsContainer from "@/features/assets/containers/CreateAssetsContainer";
@@ -10,10 +10,14 @@ export default function HomeContainer() {
 
   return (
     <>
-      <div className="space-y-4">
-        <FinancialSnapshotContainer />
+      <div className="space-y-4 py-1 pb-22">
+        <div className="px-4">
+          <FinancialSnapshotContainer />
+        </div>
 
-        <ListAssetsContainer onAddAsset={() => setIsCreateAssetOpen(true)} />
+        <div className="px-4">
+          <ListAssetsContainer onAddAsset={() => setIsCreateAssetOpen(true)} />
+        </div>
 
         <RecentJournalContainer />
       </div>

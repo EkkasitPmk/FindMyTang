@@ -1,16 +1,15 @@
+import {
+  UpdateProfileResponse as ZodUpdateProfileResponse,
+  ChangePasswordResponse as ZodChangePasswordResponse,
+} from "../schemas/account.response.schema";
+
 export interface UpdateProfileRequest {
   displayName?: string;
   avatarUrl?: string | null;
   language?: string;
 }
 
-export interface UpdateProfileResponse {
-  id: string;
-  email: string | null;
-  displayName: string;
-  avatarUrl?: string | null;
-  language: string;
-}
+export type UpdateProfileResponse = ZodUpdateProfileResponse;
 
 export interface ChangePasswordRequest {
   currentPassword?: string;
@@ -18,7 +17,4 @@ export interface ChangePasswordRequest {
   confirmNewPassword?: string;
 }
 
-export interface ChangePasswordResponse {
-  success: boolean;
-  message: string;
-}
+export type ChangePasswordResponse = ZodChangePasswordResponse;

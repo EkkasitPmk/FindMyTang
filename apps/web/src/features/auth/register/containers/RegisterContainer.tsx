@@ -3,18 +3,29 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
 import { useRegisterMutation } from "../hooks/register.hook";
-import { registerSchema, RegisterFormValues } from "../schemas/register.schema";
+import {
+  registerSchema,
+  RegisterFormValues,
+} from "../schemas/register.form.schema";
 import RegisterForm from "../components/RegisterForm";
+import { handleFormError } from "@/shared/lib/helpers/form.helper";
+import LoadingModal from "@/shared/components/customs/LoadingModal";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { useModalState } from "@/shared/lib/hooks/useModalState.hook";
 
 export default function RegisterContainer() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
+  const { modalState, setModalState, resetModalState } = useModalState();
+
+  const { t } = useTranslation();
 
   const {
     register,
+    control,
     handleSubmit,
     setError,
     formState: { errors },
@@ -31,47 +42,33 @@ export default function RegisterContainer() {
 
   const { mutate: registerUser, isPending } = useRegisterMutation({
     onSuccess: () => {
-      toast.success("Registration successful! Redirecting to login...");
-      // Redirect to login page on success
-      router.push("/login");
+      setModalState({
+        isOpen: true,
+        status: "success",
+        message: t("registerSuccess"),
+        shouldRedirect: true,
+      });
     },
     onError: (error) => {
-      // Handle API errors
-      const message = error.response?.data?.message;
-      let errorList: string[] = [];
-      if (Array.isArray(message)) {
-        errorList = message;
-      } else if (message) {
-        errorList = [message];
-      }
-
-      if (errorList.length === 0) {
-        toast.error("Registration failed. Please try again.");
-        return;
-      }
-
-      errorList.forEach((msg) => {
-        const lowerMsg = msg.toLowerCase();
-        if (lowerMsg.includes("email")) {
-          setError("email", { type: "server", message: msg });
-        } else if (
-          lowerMsg.includes("display name") ||
-          lowerMsg.includes("displayname")
-        ) {
-          setError("displayName", { type: "server", message: msg });
-        } else if (
-          lowerMsg.includes("confirm password") ||
-          lowerMsg.includes("confirmpassword")
-        ) {
-          setError("confirmPassword", { type: "server", message: msg });
-        } else if (lowerMsg.includes("password")) {
-          setError("password", { type: "server", message: msg });
-        } else {
-          toast.error(msg);
-        }
+      handleFormError(error, setError, t("registerFailed"), {
+        email: "email",
+        "display name": "displayName",
+        displayname: "displayName",
+        "confirm password": "confirmPassword", // NOSONAR
+        confirmpassword: "confirmPassword", // NOSONAR
+        password: "password", // NOSONAR
       });
     },
   });
+
+  const handleModalClose = () => {
+    const shouldRedirect = modalState.shouldRedirect;
+    resetModalState();
+    if (shouldRedirect) {
+      setIsRedirecting(true);
+      router.push("/login");
+    }
+  };
 
   const onSubmit = (values: RegisterFormValues) => {
     registerUser({
@@ -83,16 +80,27 @@ export default function RegisterContainer() {
   };
 
   return (
-    <RegisterForm
-      register={register}
-      handleSubmit={handleSubmit}
-      onSubmit={onSubmit}
-      errors={errors}
-      isPending={isPending}
-      showPassword={showPassword}
-      showConfirmPassword={showConfirmPassword}
-      onToggleShowPassword={() => setShowPassword(!showPassword)}
-      onToggleShowConfirmPassword={() => setShowConfirmPassword(!showConfirmPassword)}
-    />
+    <>
+      <RegisterForm
+        register={register}
+        control={control}
+        handleSubmit={handleSubmit}
+        onSubmit={onSubmit}
+        errors={errors}
+        isPending={isPending || isRedirecting}
+        showPassword={showPassword}
+        showConfirmPassword={showConfirmPassword}
+        onToggleShowPassword={() => setShowPassword(!showPassword)}
+        onToggleShowConfirmPassword={() =>
+          setShowConfirmPassword(!showConfirmPassword)
+        }
+      />
+      <LoadingModal
+        isOpen={modalState.isOpen || isPending || isRedirecting}
+        status={modalState.isOpen ? modalState.status : "loading"}
+        message={modalState.isOpen ? modalState.message : t("registering")}
+        onClose={handleModalClose}
+      />
+    </>
   );
 }

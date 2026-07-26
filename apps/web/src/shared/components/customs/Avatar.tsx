@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { UserRound } from "lucide-react";
-import { cn } from "@/shared/lib/utils";
+import { cn } from "@/shared/lib/utils/core.util";
+import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 
 interface AvatarProps {
   url?: string | null;
@@ -15,10 +16,11 @@ export default function Avatar({
   iconSize,
   className,
 }: Readonly<AvatarProps>) {
+  const mounted = useMounted();
   // ponytail: automatically calculate icon size based on avatar size if not provided
   const calculatedIconSize = iconSize ?? Math.round(size * 0.36);
 
-  if (url) {
+  if (mounted && url) {
     return (
       <Image
         src={url}

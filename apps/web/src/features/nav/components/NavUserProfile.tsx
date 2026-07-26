@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { LogIn, LogOut } from "lucide-react";
 import Avatar from "@/shared/components/customs/Avatar";
-import { UserProfile } from "@/features/nav/types/auth.type";
-import { useTranslation } from "@/shared/lib/i18n/useTranslation";
-import { cn } from "@/shared/lib/utils";
+import { UserProfile } from "@/shared/lib/types/user.type";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { cn } from "@/shared/lib/utils/core.util";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
+import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 
 interface NavUserProfileProps {
   user?: UserProfile | null;
@@ -20,10 +22,11 @@ export default function NavUserProfile({
   onActionClick,
   className,
 }: Readonly<NavUserProfileProps>) {
+  const mounted = useMounted();
   const { t } = useTranslation();
 
   const userProfileContent = (() => {
-    if (isLoading) {
+    if (!mounted || isLoading) {
       return (
         <div className="space-y-1.5 animate-pulse">
           <div className="h-3 w-20 bg-surface-secondary rounded" />
@@ -46,44 +49,83 @@ export default function NavUserProfile({
     }
 
     return (
-      <p className="text-xs font-semibold leading-tight text-primary-text truncate">
+      <p className="text-xs font-semibold text-primary-text truncate leading-tight">
         Guest User
       </p>
     );
   })();
 
   return (
-    <div className={cn("space-y-2 pt-4 border-t border-border", className)}>
-      <div className="flex items-center gap-3 px-2">
-        <div className="w-10 h-10 rounded-full bg-surface-secondary border border-border flex items-center justify-center overflow-hidden">
-          <Avatar url={user?.avatarUrl} size={40} iconSize={20} />
+    <div className={cn("w-full space-y-2 border-t border-border", className)}>
+      {/* Expanded User Profile */}
+      <div className="group-data-[collapsible=icon]:hidden space-y-2">
+        <div className="flex items-center gap-3 px-2">
+          <div className="w-10 h-10 rounded-full bg-surface-secondary border border-border flex items-center justify-center overflow-hidden shrink-0">
+            <Avatar url={user?.avatarUrl} size={40} iconSize={20} />
+          </div>
+          <div className="overflow-hidden min-h-9 flex flex-col justify-center">
+            {userProfileContent}
+          </div>
         </div>
-        <div className="overflow-hidden min-h-9 flex flex-col justify-center">
-          {userProfileContent}
-        </div>
+        {mounted &&
+          !isLoading &&
+          (user ? (
+            <Button
+              variant="unstyled"
+              onClick={() => {
+                onLogout();
+                onActionClick?.();
+              }}
+              className="w-full flex items-center gap-2 px-4 py-3 rounded-md text-sm font-medium text-secondary-text hover:text-expense hover:bg-expense-light/50 transition-all duration-200 border border-transparent cursor-pointer"
+            >
+              <LogOut
+                className="w-4 h-4 text-expense shrink-0"
+                strokeWidth={1.5}
+              />
+              <span className="text-expense truncate">{t("signOut")}</span>
+            </Button>
+          ) : (
+            <Link
+              href="/login"
+              onClick={onActionClick}
+              className="flex items-center gap-2 px-4 py-3 truncate rounded-md text-sm font-medium text-secondary-text hover:text-primary hover:bg-primary-light/50 transition-all duration-200 border border-transparent"
+            >
+              <LogIn className="w-4 h-4 shrink-0" strokeWidth={1.5} />
+              <span>{t("connectBtn")}</span>
+            </Link>
+          ))}
       </div>
-      {!isLoading &&
-        (user ? (
-          <button
-            onClick={() => {
-              onLogout();
-              onActionClick?.();
-            }}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium text-secondary-text hover:text-expense hover:bg-expense-light/50 transition-all duration-200 border border-transparent active-press cursor-pointer"
-          >
-            <LogOut className="w-4 h-4 text-expense" strokeWidth={1.5} />
-            <span className="text-expense">Log Out</span>
-          </button>
-        ) : (
-          <Link
-            href="/login"
-            onClick={onActionClick}
-            className="flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium text-secondary-text hover:text-primary hover:bg-primary-light/50 transition-all duration-200 border border-transparent active-press"
-          >
-            <LogIn className="w-4 h-4" strokeWidth={1.5} />
-            {t("connectBtn")}
-          </Link>
-        ))}
+
+      {/* Collapsed User Profile (Icon only) */}
+      <div className="hidden group-data-[collapsible=icon]:flex flex-col items-center gap-2 py-1">
+        <div className="w-8 h-8 rounded-full bg-surface-secondary border border-border flex items-center justify-center overflow-hidden shrink-0">
+          <Avatar url={user?.avatarUrl} size={32} iconSize={16} />
+        </div>
+        {mounted &&
+          !isLoading &&
+          (user ? (
+            <Button
+              variant="unstyled"
+              onClick={() => {
+                onLogout();
+                onActionClick?.();
+              }}
+              title={t("signOut")}
+              className="p-1.5 rounded-lg text-secondary-text hover:text-expense hover:bg-expense-light/50 transition-all duration-200 border border-transparent cursor-pointer"
+            >
+              <LogOut className="w-4 h-4 text-expense" strokeWidth={1.5} />
+            </Button>
+          ) : (
+            <Link
+              href="/login"
+              onClick={onActionClick}
+              title={t("connectBtn")}
+              className="p-1.5 rounded-lg text-secondary-text hover:text-primary hover:bg-primary-light/50 transition-all duration-200 border border-transparent cursor-pointer"
+            >
+              <LogIn className="w-4 h-4 text-primary" strokeWidth={1.5} />
+            </Link>
+          ))}
+      </div>
     </div>
   );
 }

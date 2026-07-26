@@ -1,6 +1,6 @@
-# PocketNote Documentation
+# FindMyTang Documentation
 
-ยินดีต้อนรับสู่เอกสารหลักของโปรเจกต์ PocketNote เอกสารทั้งหมดได้รับการจัดระเบียบใหม่ตามแนวทาง **Ponytail Mode (Minimalism & Consolidated Docs)** เพื่อให้อ่านง่าย กระชับ และไม่เกิดข้อมูลซ้ำซ้อนหรือขัดแย้งกัน
+ยินดีต้อนรับสู่เอกสารหลักของโปรเจกต์ FindMyTang เอกสารทั้งหมดได้รับการจัดระเบียบใหม่ตามแนวทาง **Ponytail Mode (Minimalism & Consolidated Docs)** เพื่อให้อ่านง่าย กระชับ และไม่เกิดข้อมูลซ้ำซ้อนหรือขัดแย้งกัน
 
 ---
 

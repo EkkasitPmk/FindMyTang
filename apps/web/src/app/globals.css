@@ -2,61 +2,34 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
-
 @theme {
   /* Neutral Colors */
-  --color-background: #FAFAFA;
-  --color-surface: #FFFFFF;
-  --color-surface-secondary: #F5F5F5;
-  --color-border: #E5E7EB;
+  --color-background: var(--semantic-background);
+  --color-surface: var(--semantic-surface);
+  --color-surface-secondary: var(--semantic-surface-secondary);
+  --color-border: var(--semantic-border);
 
-  --color-primary-text: #111827;
-  --color-secondary-text: #6B7280;
-  --color-disabled-text: #9CA3AF;
+  --color-primary-text: var(--semantic-primary-text);
+  --color-secondary-text: var(--semantic-secondary-text);
+  --color-disabled-text: var(--semantic-disabled-text);
 
   /* Brand Colors */
-  --color-primary: #2563EB;
-  --color-primary-hover: #1D4ED8;
-  --color-primary-light: #DBEAFE;
+  --color-primary: var(--semantic-primary);
+  --color-primary-hover: var(--semantic-primary-hover);
+  --color-primary-light: var(--semantic-primary-light);
 
   /* Financial Data & Status Colors */
-  --color-income: #16A34A;
-  --color-income-light: #DCFCE7;
-  --color-expense: #DC2626;
-  --color-expense-light: #FEE2E2;
-  --color-transfer: #7C3AED;
-  --color-investment: #F59E0B;
-  --color-investment-light: #FEF3C7;
-  --color-info: #0EA5E9;
-  --color-info-light: #E0F2FE;
-  --color-accent: #EA580C;
-  --color-accent-light: #FFEDD5;
-
-  /* 
-    ponytail: backward compatibility for M3 to semantic mapping. 
-    Ceiling: Limits color granularity on legacy components.
-    Upgrade path: Replace legacy classes (like text-on-surface-variant) in components with semantic classes and delete this block.
-  */
-  --color-error: #DC2626;
-  --color-success: #16A34A;
-  --color-warning: #F59E0B;
-  --color-on-surface-variant: #6B7280;
-  --color-primary-container: #DBEAFE;
-  --color-outline: #E5E7EB;
-  --color-outline-variant: #E5E7EB;
-}
-
-/* Micro-animations and interaction updates */
-.active-press {
-  transition:
-    transform 0.1s ease,
-    opacity 0.1s ease;
-}
-
-.active-press:active {
-  transform: scale(0.98);
-  opacity: 0.9;
+  --color-income: var(--semantic-income);
+  --color-income-light: var(--semantic-income-light);
+  --color-expense: var(--semantic-expense);
+  --color-expense-light: var(--semantic-expense-light);
+  --color-transfer: var(--semantic-transfer);
+  --color-investment: var(--semantic-investment);
+  --color-investment-light: var(--semantic-investment-light);
+  --color-info: var(--semantic-info);
+  --color-info-light: var(--semantic-info-light);
+  --color-highlight: var(--semantic-highlight);
+  --color-highlight-light: var(--semantic-highlight-light);
 }
 
 .ambient-shadow {
@@ -121,79 +94,154 @@
 }
 
 :root {
-  --background: #FAFAFA;
-  --foreground: #111827;
-  --card: #FFFFFF;
-  --card-foreground: #111827;
-  --popover: #FFFFFF;
-  --popover-foreground: #111827;
-  --primary: #2563EB;
+  /* Semantic Color System (Light) */
+  --semantic-background: #FAFAFA;
+  --semantic-surface: #FFFFFF;
+  --semantic-surface-secondary: #F5F5F5;
+  --semantic-border: #E5E7EB;
+  --semantic-primary-text: #111827;
+  --semantic-secondary-text: #6B7280;
+  --semantic-disabled-text: #9CA3AF;
+  --semantic-primary: #2563EB;
+  --semantic-primary-hover: #1D4ED8;
+  --semantic-primary-light: #DBEAFE;
+  --semantic-income: #16A34A;
+  --semantic-income-light: #DCFCE7;
+  --semantic-expense: #DC2626;
+  --semantic-expense-light: #FEE2E2;
+  --semantic-transfer: #7C3AED;
+  --semantic-investment: #F59E0B;
+  --semantic-investment-light: #FEF3C7;
+  --semantic-info: #0EA5E9;
+  --semantic-info-light: #E0F2FE;
+  --semantic-highlight: #EA580C;
+  --semantic-highlight-light: #FFEDD5;
+
+  /* Standard Shadcn / App Tokens mapped to Semantic Design Tokens */
+  --background: var(--semantic-background);
+  --foreground: var(--semantic-primary-text);
+  --card: var(--semantic-surface);
+  --card-foreground: var(--semantic-primary-text);
+  --popover: var(--semantic-surface);
+  --popover-foreground: var(--semantic-primary-text);
+  --primary: var(--semantic-primary);
   --primary-foreground: #FFFFFF;
-  --secondary: #F5F5F5;
-  --secondary-foreground: #111827;
-  --muted: #F5F5F5;
-  --muted-foreground: #6B7280;
-  --accent: #F5F5F5;
-  --accent-foreground: #111827;
-  --destructive: #DC2626;
+  --secondary: var(--semantic-surface-secondary);
+  --secondary-foreground: var(--semantic-primary-text);
+  --muted: var(--semantic-surface-secondary);
+  --muted-foreground: var(--semantic-secondary-text);
+  --accent: var(--semantic-surface-secondary);
+  --accent-foreground: var(--semantic-primary-text);
+  --destructive: var(--semantic-expense);
   --destructive-foreground: #FAFAFA;
-  --border: #E5E7EB;
-  --input: #E5E7EB;
-  --ring: #2563EB;
-  --chart-1: #16A34A;
-  --chart-2: #DC2626;
-  --chart-3: #7C3AED;
-  --chart-4: #F59E0B;
-  --chart-5: #0EA5E9;
+  --border: var(--semantic-border);
+  --input: var(--semantic-border);
+  --ring: var(--semantic-primary);
+  --chart-1: var(--semantic-income);
+  --chart-2: var(--semantic-expense);
+  --chart-3: var(--semantic-transfer);
+  --chart-4: var(--semantic-investment);
+  --chart-5: var(--semantic-info);
   --radius: 0.625rem;
-  --sidebar: #FAFAFA;
-  --sidebar-foreground: #111827;
-  --sidebar-primary: #2563EB;
+  --sidebar: var(--semantic-surface);
+  --sidebar-foreground: var(--semantic-primary-text);
+  --sidebar-primary: var(--semantic-primary);
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #F5F5F5;
-  --sidebar-accent-foreground: #111827;
-  --sidebar-border: #E5E7EB;
-  --sidebar-ring: #2563EB;
+  --sidebar-accent: var(--semantic-surface-secondary);
+  --sidebar-accent-foreground: var(--semantic-primary-text);
+  --sidebar-border: var(--semantic-border);
+  --sidebar-ring: var(--semantic-primary);
 }
 
 .dark {
-  --background: #111827;
-  --foreground: #FAFAFA;
-  --card: #1F2937;
-  --card-foreground: #FAFAFA;
-  --popover: #1F2937;
-  --popover-foreground: #FAFAFA;
-  --primary: #3B82F6;
+  /* Semantic Color System (Dark) */
+  --semantic-background: #111827;
+  /* Tailwind gray-900 */
+  --semantic-surface: #1F2937;
+  /* Tailwind gray-800 */
+  --semantic-surface-secondary: #374151;
+  /* Tailwind gray-700 */
+  --semantic-border: #374151;
+  /* Tailwind gray-700 */
+  --semantic-primary-text: #F9FAFB;
+  /* Tailwind gray-50 */
+  --semantic-secondary-text: #9CA3AF;
+  /* Tailwind gray-400 */
+  --semantic-disabled-text: #4B5563;
+  /* Tailwind gray-600 */
+  --semantic-primary: #3B82F6;
+  /* Tailwind blue-500 */
+  --semantic-primary-hover: #60A5FA;
+  /* Tailwind blue-400 */
+  --semantic-primary-light: #1E3A8A;
+  /* Tailwind blue-900 */
+  --semantic-income: #22C55E;
+  /* Tailwind green-500 */
+  --semantic-income-light: #14532D;
+  /* Tailwind green-900 */
+  --semantic-expense: #EF4444;
+  /* Tailwind red-500 */
+  --semantic-expense-light: #7F1D1D;
+  /* Tailwind red-900 */
+  --semantic-transfer: #8B5CF6;
+  /* Tailwind violet-500 */
+  --semantic-investment: #F59E0B;
+  /* Tailwind amber-500 */
+  --semantic-investment-light: #78350F;
+  /* Tailwind amber-900 */
+  --semantic-info: #0EA5E9;
+  /* Tailwind sky-500 */
+  --semantic-info-light: #0C4A6E;
+  /* Tailwind sky-900 */
+  --semantic-highlight: #F97316;
+  /* Tailwind orange-500 */
+  --semantic-highlight-light: #7C2D12;
+  /* Tailwind orange-900 */
+
+  /* Standard Shadcn / App Tokens mapped to Semantic Design Tokens */
+  --background: var(--semantic-background);
+  --foreground: var(--semantic-primary-text);
+  --card: var(--semantic-surface);
+  --card-foreground: var(--semantic-primary-text);
+  --popover: var(--semantic-surface);
+  --popover-foreground: var(--semantic-primary-text);
+  --primary: var(--semantic-primary);
   --primary-foreground: #FFFFFF;
-  --secondary: #374151;
-  --secondary-foreground: #FAFAFA;
-  --muted: #374151;
-  --muted-foreground: #9CA3AF;
-  --accent: #374151;
-  --accent-foreground: #FAFAFA;
-  --destructive: #EF4444;
+  --secondary: var(--semantic-surface-secondary);
+  --secondary-foreground: var(--semantic-primary-text);
+  --muted: var(--semantic-surface-secondary);
+  --muted-foreground: var(--semantic-secondary-text);
+  --accent: var(--semantic-surface-secondary);
+  --accent-foreground: var(--semantic-primary-text);
+  --destructive: var(--semantic-expense);
   --destructive-foreground: #FAFAFA;
-  --border: #374151;
-  --input: #374151;
-  --ring: #3B82F6;
-  --chart-1: #22C55E;
-  --chart-2: #EF4444;
-  --chart-3: #8B5CF6;
-  --chart-4: #F59E0B;
-  --chart-5: #0EA5E9;
-  --sidebar: #111827;
-  --sidebar-foreground: #FAFAFA;
-  --sidebar-primary: #3B82F6;
+  --border: var(--semantic-border);
+  --input: var(--semantic-border);
+  --ring: var(--semantic-primary);
+  --chart-1: var(--semantic-income);
+  --chart-2: var(--semantic-expense);
+  --chart-3: var(--semantic-transfer);
+  --chart-4: var(--semantic-investment);
+  --chart-5: var(--semantic-info);
+  --sidebar: var(--semantic-surface);
+  --sidebar-foreground: var(--semantic-primary-text);
+  --sidebar-primary: var(--semantic-primary);
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #374151;
-  --sidebar-accent-foreground: #FAFAFA;
-  --sidebar-border: #374151;
-  --sidebar-ring: #3B82F6;
+  --sidebar-accent: var(--semantic-surface-secondary);
+  --sidebar-accent-foreground: var(--semantic-primary-text);
+  --sidebar-border: var(--semantic-border);
+  --sidebar-ring: var(--semantic-primary);
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-ring/50 transition-colors duration-300;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  *::-webkit-scrollbar {
+    display: none;
   }
 
   body {

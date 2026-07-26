@@ -34,9 +34,12 @@ model Asset {
   color                String?
   deletedAt            DateTime?
   isArchived           Boolean       @default(false)
+  displayOrder         Int           @default(0)
   user                 User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   transactions         Transaction[] @relation("AssetToTransaction")
   transferTransactions Transaction[] @relation("ToAssetToTransaction")
+  @@index([userId])
+  @@index([userId, deletedAt])
 }
 
 model Category {
@@ -53,6 +56,10 @@ model Category {
   displayOrder Int           @default(0)
   user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   transactions Transaction[]
+
+  @@index([userId])
+  @@index([userId, deletedAt])
+  @@index([userId, type])
 }
 
 model Transaction {
@@ -76,7 +83,10 @@ model Transaction {
 
   @@index([userId])
   @@index([assetId])
+  @@index([categoryId])
   @@index([date])
+  @@index([userId, date(sort: Desc)])
+  @@index([userId, deletedAt])
 }
 
 enum AssetType {

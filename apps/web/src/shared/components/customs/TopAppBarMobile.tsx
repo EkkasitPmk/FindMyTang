@@ -1,8 +1,9 @@
-import { cn } from "@/shared/lib/utils";
+import { cn } from "@/shared/lib/utils/core.util";
 import { ChevronLeft } from "lucide-react";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 
 interface TopAppBarMobileProps {
-  title: string;
+  title: React.ReactNode;
   showBackButton?: boolean;
   onBack?: () => void;
   rightAction?: React.ReactNode;
@@ -17,23 +18,24 @@ export default function TopAppBarMobile({
   return (
     <div
       className={cn(
-        "flex items-center relative border-b border-gray-200 pb-2",
+        "flex items-center relative border-b border-border h-12",
         !showBackButton && rightAction && "justify-end",
         showBackButton && rightAction && "justify-between",
       )}
     >
       {showBackButton && onBack && (
-        <button
+        <Button
+          variant="unstyled"
           type="button"
           onClick={onBack}
           className="p-1 ml-1 cursor-pointer"
         >
           <ChevronLeft size={24} />
-        </button>
+        </Button>
       )}
-      <span className="absolute left-1/2 -translate-x-1/2 text-base font-medium">
+      <div className="absolute left-1/2 -translate-x-1/2 text-base font-medium flex items-center justify-center">
         {title}
-      </span>
+      </div>
       {rightAction}
     </div>
   );

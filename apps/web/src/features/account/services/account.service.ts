@@ -5,6 +5,10 @@ import {
   ChangePasswordRequest,
   ChangePasswordResponse,
 } from "../types/account.type";
+import {
+  updateProfileResponseSchema,
+  changePasswordResponseSchema,
+} from "../schemas/account.response.schema";
 
 export const updateProfileApi = async (
   data: UpdateProfileRequest,
@@ -13,7 +17,7 @@ export const updateProfileApi = async (
     "/users/profile",
     data,
   );
-  return response.data;
+  return updateProfileResponseSchema.parse(response.data);
 };
 
 export const changePasswordApi = async (
@@ -23,5 +27,9 @@ export const changePasswordApi = async (
     "/users/change-password",
     data,
   );
-  return response.data;
+  return changePasswordResponseSchema.parse(response.data);
+};
+
+export const deleteAccountApi = async (): Promise<void> => {
+  await http.delete("/users");
 };

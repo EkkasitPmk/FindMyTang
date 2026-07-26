@@ -1,5 +1,5 @@
 import { LucideIcon } from "lucide-react";
-import { TranslationKey } from "@/shared/lib/i18n/translations";
+import { TranslationKey } from "@/shared/lib/configs/translations.config";
 
 export interface NavItem {
   href: string;

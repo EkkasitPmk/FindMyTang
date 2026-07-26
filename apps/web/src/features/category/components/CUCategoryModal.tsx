@@ -4,15 +4,33 @@ import {
   UseFormSetValue,
   FieldErrors,
 } from "react-hook-form";
-import { CircleMinus, CirclePlus, X } from "lucide-react";
-import { Category } from "../types/category.type";
-import { CreateCategoryFormValues } from "../schemas/category.schema";
+import {
+  CircleMinus,
+  CirclePlus,
+  Check,
+  RotateCcw,
+  Trash2,
+} from "lucide-react";
+import { Category } from "@/shared/lib/types/category.type";
+import { CreateCategoryFormValues } from "../schemas/category.form.schema";
 import { PREMIUM_COLORS } from "../configs/category.config";
 import {
   getCategoryIcon,
   SELECTABLE_ICONS,
 } from "@/shared/lib/configs/category-icons.config";
-import { cn } from "@/shared/lib/utils";
+import { cn } from "@/shared/lib/utils/core.util";
+import { Input } from "@/shared/components/customs/Input";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  SheetFooter,
+  SheetClose,
+} from "@/shared/components/animate-ui/components/radix/sheet";
 
 interface CUCategoryModalProps {
   isOpen: boolean;
@@ -29,6 +47,9 @@ interface CUCategoryModalProps {
   transactionType: "EXPENSE" | "INCOME";
   selectedColor: string;
   selectedIconName: string;
+  isDeletedCategory?: boolean;
+  onRestore?: () => void;
+  onDeletePermanent?: () => void;
 }
 
 export default function CUCategoryModal({
@@ -46,246 +67,319 @@ export default function CUCategoryModal({
   transactionType,
   selectedColor,
   selectedIconName,
+  isDeletedCategory = false,
+  onRestore,
+  onDeletePermanent,
 }: Readonly<CUCategoryModalProps>) {
+  const { t } = useTranslation();
+
+  let modalTitle = t("newCategory");
+  if (isDeletedCategory) {
+    modalTitle = t("deletedCategories");
+  } else if (category) {
+    modalTitle = t("editCategory");
+  }
+
   const handleCustomColorChange = (color: string) => {
+    if (isDeletedCategory) return;
     setCustomColor(color);
     setValue("color", color);
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-primary-text/20 backdrop-blur-xs transition-opacity duration-300">
-      {/* Click outside to close */}
-      <div
-        className="absolute inset-0 cursor-default"
-        onClick={onClose}
-        aria-hidden="true"
-      />
-
-      {/* Modal Dialog Content */}
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="relative bg-surface border border-border rounded-lg shadow-lg max-w-sm w-full animate-subtle-pop z-10"
+    <Sheet
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+    >
+      <SheetContent
+        side="bottom"
+        className="h-auto max-h-[90vh] rounded-t-2xl sm:max-w-lg sm:mx-auto border-border bg-surface p-4 shadow-2xl overflow-y-auto custom-scrollbar flex flex-col gap-2"
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-          <span className="text-lg font-medium">
-            {category ? "Edit Category" : "New Category"}
-          </span>
-          <button
-            type="button"
-            onClick={onClose}
-            className="text-muted-foreground hover:text-foreground"
+        <SheetHeader className="text-left pb-1 px-0">
+          <SheetTitle className="text-xl font-bold text-foreground">
+            {modalTitle}
+          </SheetTitle>
+          <SheetDescription className="text-sm text-secondary-text">
+            {t("categoryManagementDesc")}
+          </SheetDescription>
+        </SheetHeader>
+
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-4 flex-1 flex flex-col min-h-0"
+        >
+          <fieldset
+            disabled={isDeletedCategory}
+            className="space-y-4 overflow-y-auto custom-scrollbar px-1 group-disabled:opacity-80"
           >
-            <X size={20} />
-          </button>
-        </div>
-        <div className="px-6 py-4 space-y-4">
-          <div className="space-y-1">
-            <p className="text-xs text-muted-foreground font-semibold">
-              CATEGORY NAME
-            </p>
-            <input
-              type="text"
-              {...register("name")}
-              placeholder="e.g. Coffee"
-              className="w-full px-3 py-2 border border-border rounded-md focus:border-primary/35 focus:ring-2 focus:ring-primary/10 outline-none transition-all text-foreground bg-background"
-            />
-            {errors.name && (
-              <p className="text-xs text-error">{errors.name.message}</p>
-            )}
-          </div>
-
-          <div className="space-y-1">
-            <p className="text-xs text-muted-foreground font-semibold">
-              TRANSACTION TYPE
-            </p>
-            {/* Select Option Tab */}
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => setValue("type", "EXPENSE")}
-                className={cn(
-                  "grow flex gap-2 items-center justify-center border rounded-md text-center px-2 py-3 text-sm font-medium transition-all cursor-pointer",
-                  transactionType === "EXPENSE"
-                    ? "border-primary bg-primary/5 text-primary"
-                    : "border-border text-muted-foreground hover:bg-muted",
-                )}
+            {/* Category Name */}
+            <div className="space-y-1">
+              <label
+                htmlFor="category-name"
+                className="text-xs text-muted-foreground font-semibold"
               >
-                <CircleMinus size={16} />
-                Expense
-              </button>
-              <button
-                type="button"
-                onClick={() => setValue("type", "INCOME")}
-                className={cn(
-                  "grow flex gap-2 items-center justify-center border rounded-md text-center px-2 py-3 text-sm font-medium transition-all cursor-pointer",
-                  transactionType === "INCOME"
-                    ? "border-primary bg-primary/5 text-primary"
-                    : "border-border text-muted-foreground hover:bg-muted",
-                )}
-              >
-                <CirclePlus size={16} />
-                Income
-              </button>
+                {t("categoryNameLabel")}
+              </label>
+              <Input
+                id="category-name"
+                type="text"
+                disabled={isDeletedCategory}
+                placeholder={t("egCoffee")}
+                error={!!errors.name}
+                {...register("name")}
+              />
+              {errors.name && (
+                <p className="text-xs text-destructive">
+                  {errors.name.message}
+                </p>
+              )}
             </div>
-            {errors.type && (
-              <p className="text-xs text-error">{errors.type.message}</p>
-            )}
-          </div>
 
-          <div className="space-y-1">
-            <p className="text-xs text-muted-foreground font-semibold">ICON</p>
-            <div className="grid grid-cols-6 place-items-center max-h-[18vh] overflow-auto border border-border rounded-md p-1 bg-background">
-              {SELECTABLE_ICONS.map((iconName) => {
-                const Icon = getCategoryIcon(iconName, transactionType);
-                const isSelected = selectedIconName === iconName;
-                return (
-                  <button
-                    key={iconName}
-                    type="button"
-                    onClick={() => setValue("icon", iconName)}
-                    className={cn(
-                      "relative rounded-md transition-all duration-200 border border-transparent overflow-hidden flex items-center justify-center group w-10 h-10 cursor-pointer",
-                      isSelected ? "" : "hover:bg-muted",
-                    )}
-                  >
-                    {/* Background tint overlay */}
-                    {isSelected && (
-                      <div
-                        className="absolute inset-0 pointer-events-none"
-                        style={{
-                          backgroundColor: selectedColor,
-                          opacity: 0.15,
-                        }}
-                      />
-                    )}
-
-                    {/* Icon container */}
-                    <span
-                      className={cn(
-                        "relative z-10 transition-colors pointer-events-none",
-                        isSelected
-                          ? ""
-                          : "text-muted-foreground group-hover:text-foreground",
-                      )}
-                      style={isSelected ? { color: selectedColor } : undefined}
-                    >
-                      <Icon size={18} />
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-            {errors.icon && (
-              <p className="text-xs text-error">{errors.icon.message}</p>
-            )}
-          </div>
-
-          <div className="space-y-1">
-            <div className="flex justify-between items-center">
+            {/* Transaction Type */}
+            <div className="space-y-1">
               <p className="text-xs text-muted-foreground font-semibold">
-                ACCENT COLOR
+                {t("transactionType")}
               </p>
+              <div className="flex gap-2">
+                <Button
+                  variant="unstyled"
+                  type="button"
+                  disabled={isDeletedCategory}
+                  onClick={() =>
+                    !isDeletedCategory && setValue("type", "EXPENSE")
+                  }
+                  className={cn(
+                    "grow flex gap-2 items-center justify-center border rounded-md text-center px-2 py-3 text-sm font-medium transition-all",
+                    isDeletedCategory
+                      ? "cursor-default opacity-80"
+                      : "cursor-pointer",
+                    transactionType === "EXPENSE"
+                      ? "border-primary bg-primary/5 text-primary"
+                      : "border-border text-muted-foreground hover:bg-muted",
+                  )}
+                >
+                  <CircleMinus size={16} />
+                  {t("expenses")}
+                </Button>
+                <Button
+                  variant="unstyled"
+                  type="button"
+                  disabled={isDeletedCategory}
+                  onClick={() =>
+                    !isDeletedCategory && setValue("type", "INCOME")
+                  }
+                  className={cn(
+                    "grow flex gap-2 items-center justify-center border rounded-md text-center px-2 py-3 text-sm font-medium transition-all",
+                    isDeletedCategory
+                      ? "cursor-default opacity-80"
+                      : "cursor-pointer",
+                    transactionType === "INCOME"
+                      ? "border-primary bg-primary/5 text-primary"
+                      : "border-border text-muted-foreground hover:bg-muted",
+                  )}
+                >
+                  <CirclePlus size={16} />
+                  {t("income")}
+                </Button>
+              </div>
+              {errors.type && (
+                <p className="text-xs text-destructive font-medium">
+                  {errors.type.message}
+                </p>
+              )}
             </div>
-            <div className="grid grid-cols-6 place-items-center max-h-[18vh] overflow-auto py-2 gap-y-2 bg-muted/5 rounded-md">
-              {PREMIUM_COLORS.map((color) => {
-                const isSelected = selectedColor === color;
-                return (
-                  <button
-                    key={color}
+
+            {/* Icon Picker */}
+            <div className="space-y-1">
+              <p className="text-xs text-muted-foreground font-semibold">
+                {t("icon")}
+              </p>
+              <div className="grid grid-cols-6 place-items-center max-h-[16vh] overflow-auto border border-border rounded-md p-1 bg-background">
+                {SELECTABLE_ICONS.map((iconName) => {
+                  const Icon = getCategoryIcon(iconName);
+                  const isSelected = selectedIconName === iconName;
+                  return (
+                    <Button
+                      variant="unstyled"
+                      key={iconName}
+                      type="button"
+                      disabled={isDeletedCategory}
+                      onClick={() =>
+                        !isDeletedCategory && setValue("icon", iconName)
+                      }
+                      className={cn(
+                        "relative rounded-md transition-all duration-200 border border-transparent overflow-hidden flex items-center justify-center group w-10 h-10",
+                        isDeletedCategory ? "cursor-default" : "cursor-pointer",
+                        isSelected ? "" : "hover:bg-muted",
+                      )}
+                    >
+                      {isSelected && (
+                        <div
+                          className="absolute inset-0 pointer-events-none"
+                          style={{
+                            backgroundColor: selectedColor,
+                            opacity: 0.15,
+                          }}
+                        />
+                      )}
+                      <span
+                        className={cn(
+                          "relative z-10 transition-colors pointer-events-none",
+                          isSelected
+                            ? ""
+                            : "text-muted-foreground group-hover:text-foreground",
+                        )}
+                        style={
+                          isSelected ? { color: selectedColor } : undefined
+                        }
+                      >
+                        <Icon size={18} />
+                      </span>
+                    </Button>
+                  );
+                })}
+              </div>
+              {errors.icon && (
+                <p className="text-xs text-destructive">
+                  {errors.icon.message}
+                </p>
+              )}
+            </div>
+
+            {/* Color Palette */}
+            <div className="space-y-1">
+              <div className="flex justify-between items-center">
+                <p className="text-xs text-muted-foreground font-semibold">
+                  {t("accentColor")}
+                </p>
+              </div>
+              <div className="grid grid-cols-7 gap-2 p-3 max-h-[16vh] overflow-auto bg-surface-secondary/50 rounded-lg border border-border">
+                {PREMIUM_COLORS.map((color) => {
+                  const isSelected = selectedColor === color;
+                  return (
+                    <Button
+                      variant="unstyled"
+                      key={color}
+                      type="button"
+                      disabled={isDeletedCategory}
+                      onClick={() =>
+                        !isDeletedCategory && setValue("color", color)
+                      }
+                      className={cn(
+                        "w-8 h-8 mx-auto rounded-full flex items-center justify-center transition-transform hover:scale-110 focus:outline-none",
+                        isDeletedCategory ? "cursor-default" : "cursor-pointer",
+                      )}
+                      style={{ backgroundColor: color }}
+                      aria-label={`Select color ${color}`}
+                    >
+                      {isSelected && (
+                        <div className="bg-surface/30 rounded-full p-0.5 backdrop-blur-sm shadow-sm">
+                          <Check
+                            size={16}
+                            className="text-white drop-shadow-md"
+                          />
+                        </div>
+                      )}
+                    </Button>
+                  );
+                })}
+
+                <div className="relative w-8 h-8 mx-auto">
+                  <Button
+                    variant="unstyled"
                     type="button"
-                    onClick={() => setValue("color", color)}
+                    disabled={isDeletedCategory}
                     className={cn(
-                      "relative w-8 h-8 rounded-full transition-all duration-200 cursor-pointer overflow-hidden border-2",
-                      isSelected
-                        ? "scale-110 shadow-md border-solid"
-                        : "hover:scale-105 border-transparent",
+                      "w-full h-full rounded-full flex items-center justify-center transition-transform hover:scale-110 focus:outline-none",
+                      isDeletedCategory ? "cursor-default" : "cursor-pointer",
                     )}
                     style={{
-                      borderColor: isSelected ? "black" : "transparent",
-                      backgroundColor: isSelected ? "transparent" : color,
+                      backgroundImage:
+                        "linear-gradient(45deg, #ff007f, #ff7f00, #ffeb00, #00ff7f, #007fff, #7f00ff, #ff007f)",
                     }}
+                    title="Choose custom color"
                   >
-                    {/* Inner color tint overlay (30% opacity) */}
-                    {isSelected && (
-                      <div
-                        className="absolute inset-0 pointer-events-none"
-                        style={{ backgroundColor: color }}
-                      />
-                    )}
-                  </button>
-                );
-              })}
-
-              <div className="relative">
-                <div
-                  className={cn(
-                    "w-8 h-8 rounded-full p-0.5 transition-all duration-200 flex items-center justify-center relative",
-                    selectedColor === customColor
-                      ? "scale-110 shadow-md"
-                      : "hover:scale-105",
+                    <div className="w-full h-full rounded-full bg-surface/50 flex items-center justify-center border border-white/20">
+                      {selectedColor === customColor ? (
+                        <div className="bg-surface/30 rounded-full p-0.5 backdrop-blur-sm shadow-sm">
+                          <Check
+                            size={16}
+                            className="text-white drop-shadow-md"
+                          />
+                        </div>
+                      ) : (
+                        <span className="text-sm font-extrabold text-white drop-shadow-sm">
+                          +
+                        </span>
+                      )}
+                    </div>
+                  </Button>
+                  {!isDeletedCategory && (
+                    <input
+                      type="color"
+                      value={customColor}
+                      onChange={(e) => handleCustomColorChange(e.target.value)}
+                      className="absolute inset-0 opacity-0 cursor-pointer w-full h-full rounded-full pointer-events-auto z-20"
+                    />
                   )}
-                  style={{
-                    backgroundImage:
-                      "linear-gradient(45deg, #ff007f, #ff7f00, #ffeb00, #00ff7f, #007fff, #7f00ff, #ff007f)",
-                  }}
-                  title="Choose custom color"
-                >
-                  <div className="w-full h-full rounded-full bg-surface flex items-center justify-center relative overflow-hidden pointer-events-none border border-border/20">
-                    {/* Inner color tint overlay (30% opacity) when selected */}
-                    {selectedColor === customColor && (
-                      <div
-                        className="absolute inset-0 pointer-events-none"
-                        style={{ backgroundColor: customColor, opacity: 0.3 }}
-                      />
-                    )}
-                    <span
-                      className="relative z-10 text-sm font-extrabold"
-                      style={{
-                        color:
-                          selectedColor === customColor
-                            ? customColor
-                            : "#888888",
-                      }}
-                    >
-                      +
-                    </span>
-                  </div>
-                  {/* HTML5 Native Color input laid transparently on top to handle click/tap directly on mobile */}
-                  <input
-                    type="color"
-                    value={customColor}
-                    onChange={(e) => handleCustomColorChange(e.target.value)}
-                    className="absolute inset-0 opacity-0 cursor-pointer w-full h-full rounded-full pointer-events-auto z-20"
-                  />
                 </div>
               </div>
+              {errors.color && (
+                <p className="text-xs text-destructive mt-1">
+                  {errors.color.message}
+                </p>
+              )}
             </div>
-            {errors.color && (
-              <p className="text-xs text-error mt-1">{errors.color.message}</p>
-            )}
-          </div>
-        </div>
+          </fieldset>
 
-        <div className="flex items-center gap-2 px-6 py-4 bg-background/50 border-t border-border">
-          <button
-            type="button"
-            onClick={onClose}
-            className="w-full border border-border rounded-md py-2 text-sm hover:bg-muted transition-colors cursor-pointer text-foreground bg-background"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            disabled={isPending}
-            className="w-full text-white rounded-md py-2 text-sm font-medium transition-all shadow-sm disabled:opacity-50 cursor-pointer"
-            style={{ backgroundColor: selectedColor }}
-          >
-            {isPending ? "Saving..." : "Save Category"}
-          </button>
-        </div>
-      </form>
-    </div>
+          {isDeletedCategory ? (
+            <SheetFooter className="px-4 py-2 flex-row gap-2">
+              <Button
+                variant="unstyled"
+                type="button"
+                onClick={onDeletePermanent}
+                className="flex-1 bg-destructive hover:bg-destructive/90 text-white rounded-lg py-2.5 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <Trash2 size={14} />
+                {t("hardDeleteCheckboxLabel")}
+              </Button>
+              <Button
+                variant="unstyled"
+                type="button"
+                onClick={onRestore}
+                className="flex-1 bg-primary hover:bg-primary/90 text-white rounded-lg py-2.5 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <RotateCcw size={14} />
+                {t("restoreCategory")}
+              </Button>
+            </SheetFooter>
+          ) : (
+            <SheetFooter className="px-4 py-2 flex-row gap-3">
+              <SheetClose asChild>
+                <Button
+                  variant="unstyled"
+                  type="button"
+                  onClick={onClose}
+                  className="w-full border border-border rounded-lg py-2.5 text-sm font-medium hover:bg-surface-secondary transition-colors cursor-pointer text-secondary-text bg-surface shadow-sm"
+                >
+                  {t("cancel")}
+                </Button>
+              </SheetClose>
+              <Button
+                variant="unstyled"
+                type="submit"
+                disabled={isPending}
+                className="w-full text-white rounded-lg py-2.5 text-sm font-medium transition-all shadow-md disabled:opacity-50 cursor-pointer hover:opacity-90 hover:shadow-lg"
+                style={{ backgroundColor: selectedColor }}
+              >
+                {isPending ? t("saving") : t("saveCategory")}
+              </Button>
+            </SheetFooter>
+          )}
+        </form>
+      </SheetContent>
+    </Sheet>
   );
 }

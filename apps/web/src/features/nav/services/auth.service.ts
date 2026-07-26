@@ -1,12 +1,30 @@
 import http from "@/shared/lib/api/http";
-import { UserProfile } from "../types/auth.type";
+import { UserProfile } from "@/shared/lib/types/user.type";
+import {
+  navUserProfileResponseSchema,
+  navLogoutResponseSchema,
+  NavLogoutResponse,
+} from "../schemas/nav.response.schema";
 
 export const getMeApi = async (): Promise<UserProfile> => {
   const response = await http.get<UserProfile>("/auth/me");
-  return response.data;
+  return navUserProfileResponseSchema.parse(response.data);
 };
 
-export const logoutApi = async (): Promise<{ success: boolean }> => {
-  const response = await http.post<{ success: boolean }>("/auth/logout");
+export const logoutApi = async (): Promise<NavLogoutResponse> => {
+  const response = await http.post<NavLogoutResponse>("/auth/logout");
+  return navLogoutResponseSchema.parse(response.data);
+};
+
+export const syncUserApi = async (): Promise<{
+  success: boolean;
+  lastSyncedAt: string;
+  lastSyncStatus: string;
+}> => {
+  const response = await http.post<{
+    success: boolean;
+    lastSyncedAt: string;
+    lastSyncStatus: string;
+  }>("/auth/sync");
   return response.data;
 };

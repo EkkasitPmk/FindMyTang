@@ -1,6 +1,7 @@
-import { cn } from "@/shared/lib/utils";
+import { cn } from "@/shared/lib/utils/core.util";
 import { Coins, Landmark } from "lucide-react";
-import { Asset } from "@/features/assets/types/assets.type";
+import { Asset } from "@/shared/lib/types/asset.type";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 
 interface TransactionAssetItemProps {
   asset: Asset;
@@ -14,37 +15,42 @@ export default function TransactionAssetItem({
   onClick,
 }: Readonly<TransactionAssetItemProps>) {
   return (
-    <button
+    <Button
+      variant="unstyled"
       type="button"
       onClick={() => onClick(asset.id)}
       className={cn(
-        "flex items-center justify-center border gap-2 w-fit max-w-30 rounded-md px-4 py-2 transition-all shrink-0",
-        isSelected
-          ? "border-primary bg-primary-light"
-          : "border-border bg-surface-secondary",
+        "flex items-center justify-center border gap-2 h-14 w-fit rounded-md px-4 py-2 transition-all shrink-0",
+        isSelected && !asset.color && "border-primary bg-primary-light",
+        !isSelected && "border-border bg-surface-secondary",
       )}
+      style={{
+        borderColor: isSelected && asset.color ? asset.color : undefined,
+        backgroundColor:
+          isSelected && asset.color ? `${asset.color}1A` : undefined, // 10% opacity
+      }}
     >
       <span className="bg-background p-2 rounded-full">
         {asset.type === "BANK" ? (
           <Landmark
             size={18}
-            className="text-primary"
+            className={cn(!asset.color && "text-primary")}
             style={{
-              color: isSelected && asset.color ? asset.color : undefined,
+              color: asset.color ? asset.color : undefined,
             }}
           />
         ) : (
           <Coins
             size={18}
-            className="text-primary-text"
+            className={cn(!asset.color && "text-primary-text")}
             style={{
-              color: isSelected && asset.color ? asset.color : undefined,
+              color: asset.color ? asset.color : undefined,
             }}
           />
         )}
       </span>
       <div className="flex flex-col text-left">
-        <span className="text-sm font-bold text-primary-text truncate max-w-20">
+        <span className="text-sm font-bold text-primary-text truncate max-w-30">
           {asset.name}
         </span>
         <span className="text-xs text-secondary-text truncate max-w-20">
@@ -55,6 +61,6 @@ export default function TransactionAssetItem({
           })}
         </span>
       </div>
-    </button>
+    </Button>
   );
 }

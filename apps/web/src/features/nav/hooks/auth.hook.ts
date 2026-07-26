@@ -1,31 +1,28 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getMeApi, logoutApi } from "../services/auth.service";
-import { UserProfile } from "../types/auth.type";
-import { useIsGuest } from "@/shared/lib/store/guest-store";
-
-export const useMeQuery = (options?: { enabled?: boolean }) => {
-  const isGuest = useIsGuest();
-  return useQuery<UserProfile>({
-    queryKey: ["auth", "me"],
-    queryFn: getMeApi,
-    retry: false,
-    ...options,
-    enabled: options?.enabled !== false && !isGuest,
-  });
-};
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { logoutApi, syncUserApi } from "../services/auth.service";
+import { NavLogoutResponse } from "../schemas/nav.response.schema";
 
 export const useLogoutMutation = (options?: {
   onSuccess?: () => void;
   onError?: (error: Error) => void;
 }) => {
   const queryClient = useQueryClient();
-  return useMutation<{ success: boolean }, Error, void>({
+  return useMutation<NavLogoutResponse, Error, void>({
     mutationFn: logoutApi,
     onSuccess: () => {
-      queryClient.setQueryData(["auth", "me"], null);
-      void queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+      queryClient.clear();
       options?.onSuccess?.();
     },
     onError: options?.onError,
+  });
+};
+
+export const useSyncUserMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: syncUserApi,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["me"] });
+    },
   });
 };

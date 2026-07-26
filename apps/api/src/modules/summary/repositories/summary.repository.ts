@@ -63,7 +63,11 @@ export class SummaryRepository {
   async getThisMonthIncome(userId: string): Promise<number> {
     const today = new Date();
     const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    const startOfNextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+    const startOfNextMonth = new Date(
+      today.getFullYear(),
+      today.getMonth() + 1,
+      1,
+    );
 
     const result = await this.prisma.transaction.aggregate({
       where: {
@@ -89,7 +93,11 @@ export class SummaryRepository {
   async getThisMonthExpense(userId: string): Promise<number> {
     const today = new Date();
     const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    const startOfNextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+    const startOfNextMonth = new Date(
+      today.getFullYear(),
+      today.getMonth() + 1,
+      1,
+    );
 
     const result = await this.prisma.transaction.aggregate({
       where: {
@@ -110,5 +118,20 @@ export class SummaryRepository {
     });
 
     return Number(result._sum.amount || 0);
+  }
+
+  // ponytail: Calculates the total net worth of the user by summing the balance of all non-deleted assets.
+  async getTotalNetWorth(userId: string): Promise<number> {
+    const result = await this.prisma.asset.aggregate({
+      where: {
+        userId,
+        deletedAt: null,
+      },
+      _sum: {
+        balance: true,
+      },
+    });
+
+    return Number(result._sum.balance || 0);
   }
 }

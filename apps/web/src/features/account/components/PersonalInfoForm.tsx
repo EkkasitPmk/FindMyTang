@@ -4,8 +4,10 @@ import {
   UseFormHandleSubmit,
   FieldErrors,
 } from "react-hook-form";
-import { UpdateProfileFormValues } from "../schemas/account.schema";
-import { useTranslation } from "@/shared/lib/i18n/useTranslation";
+import { UpdateProfileFormValues } from "../schemas/account.form.schema";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { Input } from "@/shared/components/customs/Input";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 
 interface PersonalInfoFormProps {
   user:
@@ -40,23 +42,25 @@ export default function PersonalInfoForm({
         {t("personalInfo")}
       </p>
 
-      <form onSubmit={handleSubmit(onUpdateProfile)}>
-        <div className="bg-white rounded-b-none rounded-md border border-border p-4 m-0">
+      <form onSubmit={handleSubmit(onUpdateProfile)} className="m-0">
+        <div className="bg-surface rounded-b-none rounded-md border border-border p-4 m-0">
           <div className="space-y-1">
             <p className="text-xs text-secondary-text font-semibold uppercase">
               {t("displayName")}
             </p>
             <div className="relative flex flex-col gap-1">
               <div className="relative flex items-center">
-                <input
+                <Input
                   type="text"
                   disabled={isUpdating}
                   placeholder={t("placeholderDisplayName")}
+                  className="pr-10"
+                  error={!!errors.displayName}
                   {...register("displayName")}
-                  className="w-full px-3 py-2 border border-border rounded-md focus:border-primary/35 focus:ring-2 focus:ring-primary/10 outline-none transition-all text-foreground bg-background pr-10"
                 />
                 {isDirty ? (
-                  <button
+                  <Button
+                    variant="unstyled"
                     type="submit"
                     disabled={isUpdating}
                     className="absolute right-3 p-1 text-primary hover:bg-primary-light rounded-full transition-colors cursor-pointer"
@@ -67,7 +71,7 @@ export default function PersonalInfoForm({
                     ) : (
                       <Check className="w-4 h-4" />
                     )}
-                  </button>
+                  </Button>
                 ) : (
                   <Pencil className="absolute right-3 w-4 h-4 text-secondary-text/60 pointer-events-none" />
                 )}
@@ -82,17 +86,17 @@ export default function PersonalInfoForm({
         </div>
       </form>
 
-      <div className="bg-white rounded-t-none rounded-md border-t-0 border border-border p-4">
+      <div className="bg-surface rounded-t-none rounded-md border-t-0 border border-border p-4">
         <div className="space-y-1">
           <p className="text-xs text-secondary-text font-semibold uppercase">
             {t("emailAddressLabel")}
           </p>
-          <input
+          <Input
             type="text"
             readOnly
             value={user?.email || t("guestUserText")}
             placeholder=""
-            className="w-full px-3 py-2 border border-border rounded-md text-secondary-text/80 bg-background/50 cursor-not-allowed outline-none"
+            className="text-secondary-text/80 bg-background/50 cursor-not-allowed"
           />
         </div>
       </div>

@@ -8,10 +8,14 @@ import { AssetRepository } from "../repositories/asset.repository";
 import { CreateAssetDto } from "../dto/create-asset.dto";
 import { UpdateAssetDto } from "../dto/update-asset.dto";
 import { Asset } from "@prisma/client";
+import { StorageService } from "../../../common/storage/storage.service";
 
 @Injectable()
 export class AssetService {
-  constructor(private readonly assetRepository: AssetRepository) {}
+  constructor(
+    private readonly assetRepository: AssetRepository,
+    private readonly storageService: StorageService,
+  ) {}
 
   async create(userId: string, dto: CreateAssetDto): Promise<Asset> {
     // ponytail: Trims asset name and validates it is not empty, then creates the asset.
@@ -30,9 +34,12 @@ export class AssetService {
     });
   }
 
-  async findAll(userId: string): Promise<Asset[]> {
-    // ponytail: Retrieves all assets belonging to the specified user.
-    return this.assetRepository.findAllByUserId(userId);
+  async findAllActive(userId: string): Promise<Asset[]> {
+    return this.assetRepository.findAllActiveByUserId(userId);
+  }
+
+  async findAllIncludingDeleted(userId: string): Promise<Asset[]> {
+    return this.assetRepository.findAllIncludingDeletedByUserId(userId);
   }
 
   async update(
@@ -60,26 +67,90 @@ export class AssetService {
       dto.name = trimmedName;
     }
 
-    return this.assetRepository.update(id, userId, {
-      name: dto.name,
-      type: dto.type,
-      balance: dto.balance,
-      color: dto.color,
-      isArchived: dto.isArchived,
-    });
+    const updateData = {
+      ...(dto.name !== undefined && { name: dto.name }),
+      ...(dto.type !== undefined && { type: dto.type }),
+      ...(dto.balance !== undefined && { balance: dto.balance }),
+      ...(dto.color !== undefined && { color: dto.color }),
+      ...(dto.isArchived !== undefined && { isArchived: dto.isArchived }),
+    };
+
+    return this.assetRepository.update(id, userId, updateData);
   }
 
-  async delete(id: string, userId: string): Promise<Asset> {
-    // ponytail: Deletes an asset by checking existence and ownership first.
+  async softDelete(id: string, userId: string): Promise<Asset> {
     const asset = await this.assetRepository.findById(id);
     if (!asset) {
       throw new NotFoundException("Asset not found");
     }
+    if (asset.userId !== userId) {
+      throw new ForbiddenException("You do not own this asset");
+    }
+    return this.assetRepository.softDelete(id, userId);
+  }
 
+  async hardDelete(id: string, userId: string): Promise<Asset> {
+    const asset = await this.assetRepository.findByIdAny(id);
+    if (!asset) {
+      throw new NotFoundException("Asset not found");
+    }
     if (asset.userId !== userId) {
       throw new ForbiddenException("You do not own this asset");
     }
 
-    return this.assetRepository.delete(id, userId);
+    const attachments = await this.assetRepository.findAttachmentsByAssetId(
+      id,
+      userId,
+    );
+    await Promise.all(
+      attachments.map((url) => this.storageService.removeFile(url)),
+    );
+
+    return this.assetRepository.hardDelete(id, userId);
+  }
+
+  async restore(id: string, userId: string): Promise<Asset> {
+    // ponytail: Restores a soft-deleted asset. Validates ownership.
+    const asset = await this.assetRepository.findByIdAny(id);
+    if (!asset) {
+      throw new NotFoundException("Asset not found");
+    }
+    if (asset.userId !== userId) {
+      throw new ForbiddenException("You do not own this asset");
+    }
+    if (!asset.deletedAt) {
+      throw new BadRequestException("Asset is not deleted");
+    }
+    return this.assetRepository.restore(id, userId);
+  }
+
+  async reorder(userId: string, ids: string[]): Promise<void> {
+    // ponytail: Triggers bulk update for asset ordering.
+    await this.assetRepository.reorder(userId, ids);
+  }
+
+  async bulkSoftDelete(userId: string, ids: string[]): Promise<void> {
+    return this.assetRepository.bulkSoftDelete(userId, ids);
+  }
+
+  async bulkHardDelete(userId: string, ids: string[]): Promise<void> {
+    const attachments = await Promise.all(
+      ids.map((id) =>
+        this.assetRepository.findAttachmentsByAssetId(id, userId),
+      ),
+    );
+    const allAttachments = attachments.flat();
+    await Promise.all(
+      allAttachments.map((url) => this.storageService.removeFile(url)),
+    );
+    return this.assetRepository.bulkHardDelete(userId, ids);
+  }
+
+  async bulkArchive(userId: string, ids: string[]): Promise<void> {
+    return this.assetRepository.bulkArchive(userId, ids);
+  }
+
+  async bulkRestore(userId: string, ids: string[]): Promise<void> {
+    return this.assetRepository.bulkRestore(userId, ids);
   }
 }

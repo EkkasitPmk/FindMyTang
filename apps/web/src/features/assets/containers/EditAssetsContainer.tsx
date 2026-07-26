@@ -1,19 +1,21 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "react-toastify";
 import {
   createAssetSchema,
   CreateAssetFormValues,
-} from "../schemas/assets.schema";
+} from "../schemas/assets.form.schema";
 import { useUpdateAssetMutation } from "../hooks/assets.hook";
-import { Asset, AssetType } from "../types/assets.type";
+import { Asset, AssetType } from "@/shared/lib/types/asset.type";
 import AssetForm from "../components/AssetForm";
+import LoadingModal from "@/shared/components/customs/LoadingModal";
+import { handleFormError } from "@/shared/lib/helpers/form.helper";
+import { useModalState } from "@/shared/lib/hooks/useModalState.hook";
 
 interface EditAssetsContainerProps {
   asset: Asset;
-  onClose?: () => void;
+  onClose?: (newName?: string) => void;
 }
 
 export default function EditAssetsContainer({
@@ -21,6 +23,9 @@ export default function EditAssetsContainer({
   onClose,
 }: Readonly<EditAssetsContainerProps>) {
   const [isSelectOpen, setIsSelectOpen] = useState(false);
+  const { modalState, setModalState, resetModalState } = useModalState<{
+    updatedName?: string;
+  }>();
 
   const assetTypeList = Object.values(AssetType);
 
@@ -28,7 +33,6 @@ export default function EditAssetsContainer({
     register,
     handleSubmit,
     setError,
-    reset,
     control,
     setValue,
     getValues,
@@ -38,23 +42,22 @@ export default function EditAssetsContainer({
     defaultValues: {
       name: asset.name,
       type: asset.type,
-      balance: asset.balance,
+      balance: asset.balance.toString(),
       color: asset.color || "#2563EB",
+    },
+    values: {
+      name: asset.name,
+      type: asset.type,
+      balance: asset.balance.toString(),
+      color: asset.color || "#2563EB",
+    },
+    resetOptions: {
+      keepDirtyValues: true,
     },
   });
 
   const currentColor = useWatch({ control, name: "color" });
   const selected = useWatch({ control, name: "type" }) || AssetType.CASH;
-
-  // Keep internal state synced if asset changes
-  useEffect(() => {
-    reset({
-      name: asset.name,
-      type: asset.type,
-      balance: asset.balance,
-      color: asset.color || "#2563EB",
-    });
-  }, [asset, reset]);
 
   const handleSelect = (type: string) => {
     setValue("type", type as AssetType);
@@ -63,53 +66,48 @@ export default function EditAssetsContainer({
 
   const { mutate: updateAsset, isPending } = useUpdateAssetMutation({
     onSuccess: (data) => {
-      toast.success(`Asset "${data.name}" updated successfully!`);
-      if (onClose) onClose();
+      setModalState({
+        isOpen: true,
+        status: "success",
+        message: `Asset "${data.name}" updated successfully!`,
+        updatedName: data.name,
+      });
     },
     onError: (error) => {
-      const message = error.response?.data?.message;
-      let errorList: string[] = [];
-      if (Array.isArray(message)) {
-        errorList = message;
-      } else if (message) {
-        errorList = [message];
-      }
-
-      if (errorList.length === 0) {
-        toast.error("Failed to update asset. Please check validation rules.");
-        return;
-      }
-
-      errorList.forEach((msg) => {
-        const lowerMsg = msg.toLowerCase();
-        if (lowerMsg.includes("name")) {
-          setError("name", { type: "server", message: msg });
-        } else if (lowerMsg.includes("type")) {
-          setError("type", { type: "server", message: msg });
-        } else if (lowerMsg.includes("balance")) {
-          setError("balance", { type: "server", message: msg });
-        } else {
-          toast.error(msg);
-        }
+      handleFormError(
+        error,
+        setError,
+        "Failed to update asset. Please check validation rules.",
+        {
+          name: "name",
+          type: "type",
+          balance: "balance",
+        },
+      );
+      setModalState({
+        isOpen: true,
+        status: "error",
+        message: "Failed to update asset.",
       });
     },
   });
 
-  const onSubmit = (values: CreateAssetFormValues) => {
-    const balanceNum =
-      values.balance === "" ||
-      values.balance === null ||
-      values.balance === undefined
-        ? undefined
-        : Number(values.balance);
+  const handleModalClose = () => {
+    const name = modalState.updatedName;
+    resetModalState();
+    if (modalState.status === "success" && onClose) {
+      onClose(name);
+    }
+  };
 
+  const onSubmit = (values: CreateAssetFormValues) => {
     updateAsset({
       id: asset.id,
       data: {
         name: values.name,
         type: values.type,
-        balance: balanceNum,
         color: values.color,
+        balance: Number(values.balance),
       },
     });
   };
@@ -122,22 +120,30 @@ export default function EditAssetsContainer({
   };
 
   return (
-    <AssetForm
-      isEdit={true}
-      register={register}
-      handleSubmit={handleSubmit}
-      onSubmit={onSubmit}
-      errors={errors}
-      isPending={isPending}
-      selected={selected}
-      isOpen={isSelectOpen}
-      setIsOpen={setIsSelectOpen}
-      assetTypeList={assetTypeList}
-      handleSelect={handleSelect}
-      onClose={onClose}
-      currentColor={currentColor}
-      onSelectColor={(color) => setValue("color", color)}
-      onBlurBalance={handleBlurBalance}
-    />
+    <>
+      <AssetForm
+        isEdit={true}
+        register={register}
+        handleSubmit={handleSubmit}
+        onSubmit={onSubmit}
+        errors={errors}
+        isPending={isPending}
+        selected={selected}
+        isOpen={isSelectOpen}
+        setIsOpen={setIsSelectOpen}
+        assetTypeList={assetTypeList}
+        handleSelect={handleSelect}
+        onClose={onClose}
+        currentColor={currentColor}
+        onSelectColor={(color) => setValue("color", color)}
+        onBlurBalance={handleBlurBalance}
+      />
+      <LoadingModal
+        isOpen={modalState.isOpen || isPending}
+        status={modalState.isOpen ? modalState.status : "loading"}
+        message={modalState.isOpen ? modalState.message : undefined}
+        onClose={handleModalClose}
+      />
+    </>
   );
 }

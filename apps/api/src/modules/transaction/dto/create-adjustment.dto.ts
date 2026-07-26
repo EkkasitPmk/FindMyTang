@@ -10,20 +10,32 @@ import {
 import { Type } from "class-transformer";
 
 export class CreateAdjustmentDto {
-  @ApiProperty({ description: "Asset ID", example: "uuid-here" })
+  @ApiProperty({
+    description: "Target asset ID (UUID) adjusting balance for",
+    example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    required: true,
+    type: String,
+  })
   @IsString()
   @IsNotEmpty()
-  assetId: string;
-
-  @ApiProperty({ description: "Adjustment amount", example: 150.5 })
-  @Type(() => Number)
-  @IsNumber()
-  amount: number;
+  assetId!: string;
 
   @ApiProperty({
-    description: "Optional note",
-    example: "Adjust balance",
+    description: "New balance amount or adjustment difference",
+    example: 1250.5,
+    required: true,
+    type: Number,
+  })
+  @Type(() => Number)
+  @IsNumber()
+  amount!: number;
+
+  @ApiProperty({
+    description: "Optional note or memo explaining adjustment",
+    example: "Adjust balance to match wallet cash count",
     required: false,
+    maxLength: 500,
+    type: String,
   })
   @IsString()
   @MaxLength(500)
@@ -31,10 +43,12 @@ export class CreateAdjustmentDto {
   note?: string;
 
   @ApiProperty({
-    description: "Transaction date (ISO 8601)",
+    description: "Transaction date (ISO 8601 string)",
     example: "2026-06-17T12:00:00.000Z",
+    required: true,
+    type: String,
   })
   @IsDateString()
   @IsNotEmpty()
-  transactionDate: string;
+  transactionDate!: string;
 }

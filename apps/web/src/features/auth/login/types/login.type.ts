@@ -1,18 +1,8 @@
+import { LoginResponse as ZodLoginResponse } from "../../schemas/auth.response.schema";
+
 export interface LoginRequest {
-  email: string;
+  email?: string;
   password?: string;
 }
 
-export interface LoginResponse {
-  user: {
-    id: string;
-    email: string;
-    displayName: string;
-  };
-}
-
-export interface ApiErrorResponse {
-  message: string | string[];
-  error: string;
-  statusCode: number;
-}
+export type LoginResponse = ZodLoginResponse;

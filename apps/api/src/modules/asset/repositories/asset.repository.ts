@@ -14,15 +14,32 @@ export class AssetRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(userId: string, data: CreateAssetData): Promise<Asset> {
-    // ponytail: Creates a new asset associated with the authenticated user.
-    return this.prisma.asset.create({
-      data: {
-        name: data.name,
-        type: data.type,
-        balance: data.balance,
-        color: data.color,
-        userId,
-      },
+    // ponytail: Creates a new asset and its initial adjustment transaction in one go if balance > 0.
+    return this.prisma.$transaction(async (tx) => {
+      const asset = await tx.asset.create({
+        data: {
+          name: data.name,
+          type: data.type,
+          balance: data.balance ?? 0,
+          color: data.color,
+          userId,
+        },
+      });
+
+      if (data.balance && data.balance > 0) {
+        await tx.transaction.create({
+          data: {
+            amount: data.balance,
+            date: new Date(),
+            userId,
+            assetId: asset.id,
+            type: "ADJUSTMENT",
+            note: "Initial Balance",
+          },
+        });
+      }
+
+      return asset;
     });
   }
 
@@ -33,14 +50,45 @@ export class AssetRepository {
     });
   }
 
-  async findAllByUserId(userId: string): Promise<Asset[]> {
-    // ponytail: Fetches all assets associated with the authenticated user that are not soft-deleted.
+  async findByIdAny(id: string): Promise<Asset | null> {
+    // ponytail: Finds an asset by ID regardless of soft-delete status. Used for restore/hard-delete of trashed assets.
+    return this.prisma.asset.findFirst({
+      where: { id },
+    });
+  }
+
+  async findAllActiveByUserId(userId: string): Promise<Asset[]> {
+    // ponytail: Fetches active user assets.
     return this.prisma.asset.findMany({
+      where: { userId, deletedAt: null },
+      orderBy: { displayOrder: "asc" },
+    });
+  }
+
+  async findAllIncludingDeletedByUserId(userId: string): Promise<Asset[]> {
+    // ponytail: Fetches all user assets, including soft-deleted.
+    return this.prisma.asset.findMany({
+      where: { userId },
+      orderBy: { displayOrder: "asc" },
+    });
+  }
+
+  async findAttachmentsByAssetId(
+    id: string,
+    userId: string,
+  ): Promise<string[]> {
+    // ponytail: Finds all non-null attachment URLs for transactions associated with this asset.
+    const transactions = await this.prisma.transaction.findMany({
       where: {
         userId,
-        deletedAt: null,
+        OR: [{ assetId: id }, { toAssetId: id }],
+        attachmentUrl: { not: null },
       },
+      select: { attachmentUrl: true },
     });
+    return transactions
+      .map((t) => t.attachmentUrl)
+      .filter((url): url is string => Boolean(url));
   }
 
   async update(
@@ -61,8 +109,7 @@ export class AssetRepository {
     });
   }
 
-  async delete(id: string, userId: string): Promise<Asset> {
-    // ponytail: Soft deletes an asset matching id and userId.
+  async softDelete(id: string, userId: string): Promise<Asset> {
     const asset = await this.prisma.asset.findFirst({
       where: { id, userId, deletedAt: null },
     });
@@ -72,6 +119,33 @@ export class AssetRepository {
     return this.prisma.asset.update({
       where: { id },
       data: { deletedAt: new Date() },
+    });
+  }
+
+  async hardDelete(id: string, userId: string): Promise<Asset> {
+    const asset = await this.prisma.asset.findFirst({ where: { id, userId } });
+    if (!asset) {
+      throw new Error("Asset not found or access denied");
+    }
+    await this.prisma.transaction.deleteMany({
+      where: { toAssetId: id },
+    });
+    return this.prisma.asset.delete({
+      where: { id },
+    });
+  }
+
+  async restore(id: string, userId: string): Promise<Asset> {
+    // ponytail: Restores a soft-deleted asset by clearing deletedAt.
+    const asset = await this.prisma.asset.findFirst({
+      where: { id, userId, deletedAt: { not: null } },
+    });
+    if (!asset) {
+      throw new Error("Asset not found or not deleted");
+    }
+    return this.prisma.asset.update({
+      where: { id },
+      data: { deletedAt: null },
     });
   }
 
@@ -96,6 +170,50 @@ export class AssetRepository {
     return this.prisma.asset.update({
       where: { id, userId },
       data: { balance: { decrement: amount } },
+    });
+  }
+
+  async reorder(userId: string, ids: string[]): Promise<void> {
+    // ponytail: Bulk update displayOrder for assets in a transaction.
+    await this.prisma.$transaction(
+      ids.map((id, index) =>
+        this.prisma.asset.updateMany({
+          where: { id, userId },
+          data: { displayOrder: index + 1 },
+        }),
+      ),
+    );
+  }
+
+  async bulkSoftDelete(userId: string, ids: string[]): Promise<void> {
+    await this.prisma.asset.updateMany({
+      where: { userId, id: { in: ids } },
+      data: { deletedAt: new Date() },
+    });
+  }
+
+  async bulkHardDelete(userId: string, ids: string[]): Promise<void> {
+    await this.prisma.transaction.deleteMany({
+      where: {
+        OR: [{ assetId: { in: ids } }, { toAssetId: { in: ids } }],
+      },
+    });
+    await this.prisma.asset.deleteMany({
+      where: { userId, id: { in: ids } },
+    });
+  }
+
+  async bulkArchive(userId: string, ids: string[]): Promise<void> {
+    await this.prisma.asset.updateMany({
+      where: { userId, id: { in: ids } },
+      data: { isArchived: true },
+    });
+  }
+
+  async bulkRestore(userId: string, ids: string[]): Promise<void> {
+    await this.prisma.asset.updateMany({
+      where: { userId, id: { in: ids } },
+      data: { deletedAt: null, isArchived: false },
     });
   }
 }

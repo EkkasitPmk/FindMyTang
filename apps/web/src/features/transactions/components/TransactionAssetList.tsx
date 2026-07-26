@@ -1,5 +1,9 @@
-import { Asset } from "@/features/assets/types/assets.type";
+import { Asset } from "@/shared/lib/types/asset.type";
 import TransactionAssetItem from "./TransactionAssetItem";
+import { Skeleton } from "@/shared/components/ui/skeleton";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+
+const SKELETON_ASSETS = Array.from({ length: 4 }, (_, i) => i);
 
 interface TransactionAssetListProps {
   assets: Asset[];
@@ -8,6 +12,7 @@ interface TransactionAssetListProps {
   activeAssetToId?: string | null;
   onSelectAssetTo?: (id: string) => void;
   transactionType: "EXPENSE" | "INCOME" | "TRANSFER" | "ADJUSTMENT";
+  isLoadingAssetList: boolean;
 }
 
 export default function TransactionAssetList({
@@ -17,14 +22,33 @@ export default function TransactionAssetList({
   activeAssetToId,
   onSelectAssetTo,
   transactionType,
+  isLoadingAssetList,
 }: Readonly<TransactionAssetListProps>) {
-  return (
-    <section className="space-y-1">
-      <p className="uppercase text-sm text-secondary-text font-medium">
-        ASSET
-        {transactionType === "TRANSFER" && " (from)"}
-      </p>
-      <div className="flex gap-2 py-1 overflow-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
+  const { t } = useTranslation();
+
+  const renderAssetList = () => {
+    if (isLoadingAssetList) {
+      return (
+        <div className="flex gap-2 py-1 overflow-auto">
+          {SKELETON_ASSETS.map((id) => (
+            <div key={id}>
+              <Skeleton className="h-14 w-30 rounded-md" />
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    if (assets.length === 0) {
+      return (
+        <p className="text-xs text-expense border border-error text-center py-4 rounded-md my-1">
+          {t("noAssetsFound")}
+        </p>
+      );
+    }
+
+    return (
+      <div className="flex gap-2 py-1 overflow-auto">
         {assets.map((asset) => (
           <TransactionAssetItem
             key={asset.id}
@@ -34,32 +58,64 @@ export default function TransactionAssetList({
           />
         ))}
       </div>
+    );
+  };
+
+  const renderTransferAssetList = () => {
+    if (isLoadingAssetList) {
+      return (
+        <div className="flex gap-2 py-1 overflow-auto">
+          {SKELETON_ASSETS.map((id) => (
+            <div key={id}>
+              <Skeleton className="h-14 w-30 rounded-md" />
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    const availableAssets = assets.filter(
+      (asset) => asset.id !== activeAssetId,
+    );
+
+    if (availableAssets.length === 0) {
+      return (
+        <p className="text-xs text-expense border border-error text-center py-4 rounded-md">
+          {t("needTwoAssetsForTransfer")}
+        </p>
+      );
+    }
+
+    return (
+      <div className="flex gap-2 py-1 overflow-auto">
+        {availableAssets.map((asset) => (
+          <TransactionAssetItem
+            key={asset.id}
+            asset={asset}
+            isSelected={activeAssetToId === asset.id}
+            onClick={(id) => onSelectAssetTo?.(id)}
+          />
+        ))}
+      </div>
+    );
+  };
+
+  return (
+    <section className="space-y-1">
+      <p className="uppercase text-sm text-secondary-text font-medium">
+        {transactionType === "TRANSFER" ? t("assetFrom") : t("asset")}
+      </p>
+
+      {renderAssetList()}
 
       {transactionType === "TRANSFER" && (
         <>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mt-2">
             <p className="uppercase text-sm text-secondary-text font-medium">
-              ASSET (to)
+              {t("assetTo")}
             </p>
           </div>
-          {assets.filter((asset) => asset.id !== activeAssetId).length === 0 ? (
-            <p className="text-xs text-red-500 border border-error text-center py-4 rounded-md">
-              You need at least two assets to make a transfer.
-            </p>
-          ) : (
-            <div className="flex gap-2 py-1 overflow-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
-              {assets
-                .filter((asset) => asset.id !== activeAssetId)
-                .map((asset) => (
-                  <TransactionAssetItem
-                    key={asset.id}
-                    asset={asset}
-                    isSelected={activeAssetToId === asset.id}
-                    onClick={(id) => onSelectAssetTo?.(id)}
-                  />
-                ))}
-            </div>
-          )}
+          {renderTransferAssetList()}
         </>
       )}
     </section>

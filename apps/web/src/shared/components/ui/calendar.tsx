@@ -1,18 +1,67 @@
-"use client";
 import * as React from "react";
+import { VariantProps } from "class-variance-authority";
 import {
   DayPicker,
   getDefaultClassNames,
   type DayButton,
   type Locale,
 } from "react-day-picker";
-import { cn } from "@/shared/lib/utils";
-import { Button, buttonVariants } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils/core.util";
+import {
+  Button,
+  buttonVariants,
+} from "@/shared/components/animate-ui/components/buttons/button";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   ChevronDownIcon,
 } from "lucide-react";
+
+function CalendarRoot({
+  className,
+  rootRef,
+  ...props
+}: React.ComponentProps<"div"> & { rootRef?: React.Ref<HTMLDivElement> }) {
+  return (
+    <div
+      data-slot="calendar"
+      ref={rootRef}
+      className={cn(className)}
+      {...props}
+    />
+  );
+}
+
+function CalendarChevron({
+  className,
+  orientation,
+  ...props
+}: React.ComponentProps<"svg"> & {
+  orientation?: "left" | "right" | "up" | "down";
+}) {
+  if (orientation === "left") {
+    return <ChevronLeftIcon className={cn("size-4", className)} {...props} />;
+  }
+
+  if (orientation === "right") {
+    return <ChevronRightIcon className={cn("size-4", className)} {...props} />;
+  }
+
+  return <ChevronDownIcon className={cn("size-4", className)} {...props} />;
+}
+
+function CalendarWeekNumber({
+  children,
+  ...props
+}: React.ComponentProps<"td">) {
+  return (
+    <td {...props}>
+      <div className="flex size-(--cell-size) items-center justify-center text-center">
+        {children}
+      </div>
+    </td>
+  );
+}
 
 function Calendar({
   className,
@@ -25,7 +74,7 @@ function Calendar({
   components,
   ...props
 }: React.ComponentProps<typeof DayPicker> & {
-  buttonVariant?: React.ComponentProps<typeof Button>["variant"];
+  buttonVariant?: NonNullable<VariantProps<typeof buttonVariants>["variant"]>;
 }) {
   const defaultClassNames = getDefaultClassNames();
 
@@ -53,40 +102,37 @@ function Calendar({
         ),
         month: cn("flex w-full flex-col gap-4", defaultClassNames.month),
         nav: cn(
-          "absolute inset-x-0 top-0 flex w-full items-center justify-between gap-1",
+          "absolute inset-x-0 top-0 flex w-full items-center justify-between gap-1 pointer-events-none z-10",
           defaultClassNames.nav,
         ),
         button_previous: cn(
           buttonVariants({ variant: buttonVariant }),
-          "size-(--cell-size) p-0 select-none aria-disabled:opacity-50",
+          "size-(--cell-size) p-0 select-none pointer-events-auto aria-disabled:opacity-50 hover:bg-surface-secondary rounded-lg transition-colors",
           defaultClassNames.button_previous,
         ),
         button_next: cn(
           buttonVariants({ variant: buttonVariant }),
-          "size-(--cell-size) p-0 select-none aria-disabled:opacity-50",
+          "size-(--cell-size) p-0 select-none pointer-events-auto aria-disabled:opacity-50 hover:bg-surface-secondary rounded-lg transition-colors",
           defaultClassNames.button_next,
         ),
         month_caption: cn(
-          "flex h-(--cell-size) w-full items-center justify-center px-(--cell-size)",
+          "flex h-(--cell-size) w-full items-center justify-center px-10",
           defaultClassNames.month_caption,
         ),
         dropdowns: cn(
-          "flex h-(--cell-size) w-full items-center justify-center gap-1.5 text-sm font-medium",
+          "flex h-(--cell-size) w-full items-center justify-center gap-1.5 text-xs font-semibold z-20 pointer-events-auto",
           defaultClassNames.dropdowns,
         ),
         dropdown_root: cn(
-          "relative rounded-(--cell-radius)",
+          "relative flex items-center justify-center rounded-lg border border-border/70 bg-surface-secondary/50 px-2.5 py-1 hover:bg-surface-secondary transition-colors cursor-pointer",
           defaultClassNames.dropdown_root,
         ),
         dropdown: cn(
-          "absolute inset-0 bg-popover opacity-0",
+          "absolute inset-0 bg-transparent opacity-0 pointer-events-auto cursor-pointer w-full h-full z-10",
           defaultClassNames.dropdown,
         ),
         caption_label: cn(
-          "font-medium select-none",
-          captionLayout === "label"
-            ? "text-sm"
-            : "flex items-center gap-1 rounded-(--cell-radius) text-sm [&>svg]:size-3.5 [&>svg]:text-muted-foreground",
+          "font-semibold select-none text-primary-text flex items-center gap-1 text-xs [&>svg]:size-3.5 [&>svg]:text-secondary-text",
           defaultClassNames.caption_label,
         ),
         month_grid: cn("w-full border-collapse", defaultClassNames.month_grid),
@@ -136,48 +182,10 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        Root: ({ className, rootRef, ...props }) => {
-          return (
-            <div
-              data-slot="calendar"
-              ref={rootRef}
-              className={cn(className)}
-              {...props}
-            />
-          );
-        },
-        Chevron: ({ className, orientation, ...props }) => {
-          if (orientation === "left") {
-            return (
-              <ChevronLeftIcon className={cn("size-4", className)} {...props} />
-            );
-          }
-
-          if (orientation === "right") {
-            return (
-              <ChevronRightIcon
-                className={cn("size-4", className)}
-                {...props}
-              />
-            );
-          }
-
-          return (
-            <ChevronDownIcon className={cn("size-4", className)} {...props} />
-          );
-        },
-        DayButton: ({ ...props }) => (
-          <CalendarDayButton locale={locale} {...props} />
-        ),
-        WeekNumber: ({ children, ...props }) => {
-          return (
-            <td {...props}>
-              <div className="flex size-(--cell-size) items-center justify-center text-center">
-                {children}
-              </div>
-            </td>
-          );
-        },
+        Root: CalendarRoot,
+        Chevron: CalendarChevron,
+        DayButton: CalendarDayButton,
+        WeekNumber: CalendarWeekNumber,
         ...components,
       }}
       {...props}

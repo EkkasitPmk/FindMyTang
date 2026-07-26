@@ -1,11 +1,14 @@
 import Link from "next/link";
 import { navItems } from "../configs/navigation.config";
-import { useTranslation } from "@/shared/lib/i18n/useTranslation";
-import { cn } from "@/shared/lib/utils";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { cn } from "@/shared/lib/utils/core.util";
 
 interface NavLinksProps {
   pathname: string;
-  onLinkClick?: () => void;
+  onLinkClick?: (
+    e?: React.MouseEvent<HTMLAnchorElement>,
+    href?: string,
+  ) => void;
   className?: string;
   itemClassName?: string;
 }
@@ -31,9 +34,9 @@ export default function NavLinks({
           <Link
             key={item.href}
             href={item.href}
-            onClick={onLinkClick}
+            onClick={(e) => onLinkClick?.(e, item.href)}
             className={cn(
-              "flex items-center gap-3 px-4 rounded-md text-sm font-medium transition-all duration-200 active-press",
+              "flex items-center gap-3 px-4 rounded-md text-sm font-medium transition-all duration-200",
               isActive
                 ? "bg-primary-light/50 text-primary border border-primary-light"
                 : "text-secondary-text hover:text-primary-text hover:bg-surface-secondary border border-transparent",

@@ -3,21 +3,25 @@ import {
   FieldErrors,
   UseFormHandleSubmit,
 } from "react-hook-form";
-import { CreateAssetFormValues } from "../schemas/assets.schema";
-import { Check, X, Tag } from "lucide-react";
-import { cn } from "@/shared/lib/utils";
-import { getAssetIcon } from "../utils/assets.util";
-import { AssetType } from "../types/assets.type";
-
-const ASSET_COLORS = [
-  "#2563EB", // Primary
-  "#16A34A", // Income / Success
-  "#DC2626", // Expense / Danger
-  "#7C3AED", // Transfer
-  "#F59E0B", // Investment / Warning
-  "#0EA5E9", // Info
-  "#EA580C", // Accent
-];
+import { CreateAssetFormValues } from "../schemas/assets.form.schema";
+import { Check, Tag } from "lucide-react";
+import { cn } from "@/shared/lib/utils/core.util";
+import { getAssetIcon } from "@/shared/components/customs/AssetIcon";
+import { AssetType } from "@/shared/lib/types/asset.type";
+import { Input } from "@/shared/components/customs/Input";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
+import { ASSET_COLORS } from "../configs/assets.config";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { TranslationKey } from "@/shared/lib/configs/translations.config";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  SheetFooter,
+  SheetClose,
+} from "@/shared/components/animate-ui/components/radix/sheet";
 
 interface AssetFormProps {
   register: UseFormRegister<CreateAssetFormValues>;
@@ -54,242 +58,238 @@ export default function AssetForm({
   onBlurBalance,
   isEdit = false,
 }: Readonly<AssetFormProps>) {
-  let submitButtonText = "Create Asset";
+  const { t } = useTranslation();
+
+  let submitButtonText = t("createAsset");
   if (isPending) {
-    submitButtonText = "Saving...";
+    submitButtonText = t("saving");
   } else if (isEdit) {
-    submitButtonText = "Save Changes";
+    submitButtonText = t("saveChanges");
   }
 
   return (
-    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-primary-text/20 backdrop-blur-xs transition-opacity duration-300">
-      {/* Click outside to close */}
-      <div
-        className="absolute inset-0 cursor-default"
-        onClick={onClose}
-        aria-hidden="true"
-      />
-      {/* Modal Dialog Content */}
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="relative bg-surface border border-border rounded-xl shadow-2xl max-w-sm w-full animate-subtle-pop z-10 overflow-hidden flex flex-col max-h-[90vh]"
+    <Sheet
+      open={true}
+      onOpenChange={(open) => {
+        if (!open) onClose?.();
+      }}
+    >
+      <SheetContent
+        side="bottom"
+        className="h-auto max-h-[90vh] rounded-t-2xl sm:max-w-lg sm:mx-auto border-border bg-surface p-4 shadow-2xl overflow-y-auto custom-scrollbar flex flex-col gap-2"
       >
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-gray-50/50">
-          <div className="text-lg font-medium">
-            <h2 className="text-xl font-bold">
-              {isEdit ? "Edit Asset" : "Create New Asset"}
-            </h2>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-2 -mr-2 text-muted-foreground hover:text-foreground hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
-          >
-            <X size={20} />
-          </button>
-        </div>
+        <SheetHeader className="text-left pb-1 px-0">
+          <SheetTitle className="text-xl font-bold text-foreground">
+            {isEdit ? t("editAsset") : t("createNewAsset")}
+          </SheetTitle>
+          <SheetDescription className="text-sm text-secondary-text">
+            {isEdit ? t("updateAssetDesc") : t("createAssetDesc")}
+          </SheetDescription>
+        </SheetHeader>
 
-        {/* Scrollable Content */}
-        <div className="px-6 py-4 space-y-4 overflow-y-auto custom-scrollbar">
-          <p className="text-sm text-on-surface-variant">
-            {isEdit
-              ? "Update your financial account or wallet details."
-              : "Add a new financial account or wallet to track your balance."}
-          </p>
-
-          {/* Name */}
-          <div className="flex flex-col gap-1.5">
-            <label
-              htmlFor="name"
-              className="text-sm font-semibold text-on-surface-variant"
-            >
-              Asset Name
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                <Tag size={18} className="text-gray-400" />
-              </div>
-              <input
-                id="name"
-                type="text"
-                placeholder="e.g. Cash, Main Bank"
-                className={cn(
-                  "w-full h-12 pl-10 pr-4 bg-background border rounded-lg outline-none transition-all",
-                  errors.name
-                    ? "border-error focus:border-error"
-                    : "border-outline/20 focus:border-primary/50 focus:ring-2 focus:ring-primary/20",
-                )}
-                {...register("name")}
-              />
-            </div>
-            {errors.name && (
-              <p className="text-xs text-error font-medium">
-                {errors.name.message}
-              </p>
-            )}
-          </div>
-
-          {/* Type */}
-          <div className="flex flex-col gap-1.5 relative">
-            <label
-              htmlFor="type"
-              className="text-sm font-semibold text-on-surface-variant"
-            >
-              Asset Type
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none z-10">
-                {getAssetIcon(selected as AssetType, currentColor, 18)}
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsOpen(!isOpen)}
-                className={cn(
-                  "w-full h-12 pl-10 pr-4 text-left bg-background border rounded-lg outline-none transition-all cursor-pointer flex items-center justify-between",
-                  errors.type
-                    ? "border-error focus:border-error"
-                    : "border-outline/20 focus:border-primary/50 focus:ring-2 focus:ring-primary/20",
-                )}
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-4 flex-1 flex flex-col min-h-0"
+        >
+          <div className="space-y-4 overflow-y-auto custom-scrollbar px-1">
+            {/* Type */}
+            <div className="flex flex-col gap-1.5 relative">
+              <label
+                htmlFor="type"
+                className="text-sm font-semibold text-secondary-text"
               >
-                <span className="font-medium text-gray-700">{selected}</span>
-                <svg
-                  className={`w-5 h-5 transition-transform duration-200 ${isOpen ? "rotate-0 text-primary" : "-rotate-90 text-gray-400"}`}
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </button>
-            </div>
-            {isOpen && (
-              <ul className="absolute top-19 w-full bg-white border border-gray-200 rounded-lg shadow-xl py-1.5 z-20 max-h-52 overflow-y-auto animate-in fade-in zoom-in-95">
-                {assetTypeList.map((type) => (
-                  <li key={type}>
-                    <button
-                      type="button"
-                      className={cn(
-                        "w-full px-4 py-2.5 text-sm flex items-center justify-between hover:bg-gray-50 cursor-pointer text-left transition-colors",
-                        selected === type &&
-                          "bg-primary/5 text-primary font-medium",
-                      )}
-                      onClick={() => handleSelect(type)}
-                    >
-                      <div className="flex items-center gap-2">
-                        {getAssetIcon(
-                          type as AssetType,
-                          selected === type ? currentColor : undefined,
-                          16,
-                        )}
-                        <span>{type}</span>
-                      </div>
-                      {selected === type && (
-                        <Check size={16} className="text-primary" />
-                      )}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            {errors.type && (
-              <p className="text-xs text-error font-medium">
-                {errors.type.message}
-              </p>
-            )}
-          </div>
-
-          {/* Balance */}
-          <div className="flex flex-col gap-1.5">
-            <label
-              htmlFor="balance"
-              className="text-sm font-semibold text-on-surface-variant"
-            >
-              {isEdit ? "Current Balance" : "Initial Balance"}
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <span className="font-semibold text-gray-400">฿</span>
-              </div>
-              <input
-                id="balance"
-                type="number"
-                step="any"
-                placeholder="0.00"
-                className={cn(
-                  "w-full h-12 pl-9 pr-4 bg-background border rounded-lg outline-none transition-all font-medium",
-                  "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
-                  errors.balance
-                    ? "border-error focus:border-error"
-                    : "border-outline/20 focus:border-primary/50 focus:ring-2 focus:ring-primary/20",
-                )}
-                {...register("balance")}
-                onBlur={(e) => {
-                  void register("balance").onBlur(e);
-                  onBlurBalance?.();
-                }}
-              />
-            </div>
-            {errors.balance && (
-              <p className="text-xs text-error font-medium">
-                {errors.balance.message}
-              </p>
-            )}
-          </div>
-
-          {/* Color Selection */}
-          <div className="flex flex-col gap-1.5">
-            <p className="text-sm font-semibold text-on-surface-variant flex items-center justify-between">
-              Theme Color
-            </p>
-            <div className="grid grid-cols-7 gap-2 p-3 bg-gray-50/50 rounded-lg border border-gray-100">
-              {ASSET_COLORS.map((color) => (
-                <button
-                  key={color}
+                {t("assetType")}
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none z-10">
+                  {getAssetIcon(selected as AssetType, currentColor, 18)}
+                </div>
+                <Button
+                  variant="unstyled"
                   type="button"
-                  onClick={() => onSelectColor?.(color)}
-                  className="w-8 h-8 mx-auto rounded-full flex items-center justify-center transition-transform hover:scale-110 active:scale-95 focus:outline-none"
-                  style={{ backgroundColor: color }}
-                  aria-label={`Select color ${color}`}
-                >
-                  {currentColor === color && (
-                    <div className="bg-white/30 rounded-full p-0.5 backdrop-blur-sm shadow-sm">
-                      <Check size={16} className="text-white drop-shadow-md" />
-                    </div>
+                  onClick={() => setIsOpen(!isOpen)}
+                  className={cn(
+                    "w-full h-12 pl-10 pr-4 text-left bg-background border rounded-lg outline-none transition-all cursor-pointer flex items-center justify-between",
+                    errors.type
+                      ? "border-error focus:border-error"
+                      : "border-border/20 focus:border-primary/50 focus:ring-2 focus:ring-primary/20",
                   )}
-                </button>
-              ))}
-            </div>
-            {/* hidden input for form registration */}
-            <input type="hidden" {...register("color")} />
-          </div>
-        </div>
+                >
+                  <span className="font-medium text-secondary-text">
+                    {t(`assetType${selected}` as TranslationKey)}
+                  </span>
+                  <svg
+                    className={`w-5 h-5 transition-transform duration-200 ${isOpen ? "rotate-0 text-primary" : "-rotate-90 text-disabled-text"}`}
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </Button>
+              </div>
+              {isOpen && (
+                <ul className="absolute top-19 w-full bg-surface border border-border rounded-lg shadow-xl py-1.5 z-20 max-h-52 overflow-y-auto animate-in fade-in zoom-in-95">
+                  {assetTypeList.map((type) => (
+                    <li key={type}>
+                      <Button
+                        variant="unstyled"
+                        type="button"
+                        className={cn(
+                          "w-full px-4 py-2.5 text-sm flex items-center justify-between hover:bg-surface-secondary cursor-pointer text-left transition-colors",
+                          selected === type &&
+                            "bg-primary/5 text-primary font-medium",
+                        )}
+                        onClick={() => handleSelect(type)}
+                      >
+                        <div className="flex items-center gap-2">
+                          {getAssetIcon(
+                            type as AssetType,
+                            selected === type ? currentColor : undefined,
+                            16,
+                          )}
+                          <span>{t(`assetType${type}` as TranslationKey)}</span>
+                        </div>
+                        {selected === type && (
+                          <Check size={16} className="text-primary" />
+                        )}
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              )}
 
-        {/* Submit */}
-        <div className="flex items-center gap-3 px-6 py-4 bg-gray-50/80 border-t border-border mt-auto">
-          <button
-            type="button"
-            onClick={onClose}
-            className="w-full border border-gray-300 rounded-lg py-2.5 text-sm font-medium hover:bg-gray-100 transition-colors cursor-pointer text-gray-700 bg-white shadow-sm"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            disabled={isPending}
-            className="w-full text-white rounded-lg py-2.5 text-sm font-medium transition-all shadow-md disabled:opacity-50 cursor-pointer bg-primary hover:bg-primary/90 hover:shadow-lg active:scale-[0.98]"
-          >
-            {submitButtonText}
-          </button>
-        </div>
-      </form>
-    </div>
+              {errors.type && (
+                <p className="text-xs text-destructive font-medium">
+                  {errors.type.message}
+                </p>
+              )}
+            </div>
+
+            {/* Name */}
+            <div className="flex flex-col gap-1.5">
+              <label
+                htmlFor="name"
+                className="text-sm font-semibold text-secondary-text"
+              >
+                {t("assetName")}
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                  <Tag size={18} className="text-disabled-text" />
+                </div>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder={t("assetNamePlaceholder")}
+                  className="pl-10"
+                  error={!!errors.name}
+                  {...register("name")}
+                />
+              </div>
+              {errors.name && (
+                <p className="text-xs text-destructive font-medium">
+                  {errors.name.message}
+                </p>
+              )}
+            </div>
+
+            {/* Balance */}
+            {!isEdit && (
+              <div className="flex flex-col gap-1.5">
+                <label
+                  htmlFor="balance"
+                  className="text-sm font-semibold text-secondary-text"
+                >
+                  {t("initialBalance")}
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <span className="font-semibold text-disabled-text">฿</span>
+                  </div>
+                  <Input
+                    id="balance"
+                    type="number"
+                    inputMode="decimal"
+                    step="any"
+                    placeholder="0.00"
+                    className="pl-9 font-medium [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    error={!!errors.balance}
+                    {...register("balance")}
+                    onBlur={(e) => {
+                      void register("balance").onBlur(e);
+                      onBlurBalance?.();
+                    }}
+                  />
+                </div>
+                {errors.balance && (
+                  <p className="text-xs text-destructive font-medium">
+                    {errors.balance.message}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Color Selection */}
+            <div className="flex flex-col gap-1.5">
+              <p className="text-sm font-semibold text-secondary-text flex items-center justify-between">
+                {t("themeColor")}
+              </p>
+              <div className="grid grid-cols-7 gap-2 p-3 bg-surface-secondary/50 rounded-lg border border-border">
+                {ASSET_COLORS.map((color) => (
+                  <Button
+                    variant="unstyled"
+                    key={color}
+                    type="button"
+                    onClick={() => onSelectColor?.(color)}
+                    className="w-8 h-8 mx-auto rounded-full flex items-center justify-center transition-transform hover:scale-110 focus:outline-none cursor-pointer"
+                    style={{ backgroundColor: color }}
+                    aria-label={`Select color ${color}`}
+                  >
+                    {currentColor === color && (
+                      <div className="bg-surface/30 rounded-full p-0.5 backdrop-blur-sm shadow-sm">
+                        <Check
+                          size={16}
+                          className="text-white drop-shadow-md"
+                        />
+                      </div>
+                    )}
+                  </Button>
+                ))}
+              </div>
+              <input type="hidden" {...register("color")} />
+            </div>
+          </div>
+
+          <SheetFooter className="px-4 py-2 flex-row gap-3">
+            <SheetClose asChild>
+              <Button
+                variant="unstyled"
+                type="button"
+                onClick={() => onClose?.()}
+                className="w-full border border-border rounded-lg py-2.5 text-sm font-medium hover:bg-surface-secondary transition-colors cursor-pointer text-secondary-text bg-surface shadow-sm"
+              >
+                {t("cancel")}
+              </Button>
+            </SheetClose>
+            <Button
+              variant="unstyled"
+              type="submit"
+              disabled={isPending}
+              style={{ backgroundColor: currentColor }}
+              className="w-full text-white rounded-lg py-2.5 text-sm font-medium transition-all shadow-md disabled:opacity-50 cursor-pointer hover:opacity-90 hover:shadow-lg"
+            >
+              {submitButtonText}
+            </Button>
+          </SheetFooter>
+        </form>
+      </SheetContent>
+    </Sheet>
   );
 }

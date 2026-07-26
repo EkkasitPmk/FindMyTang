@@ -1,7 +1,11 @@
 import { Wallet, X } from "lucide-react";
 import NavLinks from "./NavLinks";
+import ThemeSwitcher from "@/shared/components/customs/ThemeSwitcher";
+import SyncStatusButton from "@/shared/components/customs/SyncStatusButton";
 import NavUserProfile from "./NavUserProfile";
-import { UserProfile } from "@/features/nav/types/auth.type";
+import { UserProfile } from "@/shared/lib/types/user.type";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
+import { cn } from "@/shared/lib/utils/core.util";
 
 interface MobileDrawerProps {
   isOpen: boolean;
@@ -10,6 +14,11 @@ interface MobileDrawerProps {
   user?: UserProfile | null;
   isLoading: boolean;
   onLogout: () => void;
+  isGuest: boolean;
+  isSyncing: boolean;
+  syncStatus: "synced" | "syncing" | "offline";
+  onSyncClick?: () => void;
+  onNavigate?: (e?: React.MouseEvent<HTMLAnchorElement>, href?: string) => void;
 }
 
 export default function MobileDrawer({
@@ -19,22 +28,39 @@ export default function MobileDrawer({
   user,
   isLoading,
   onLogout,
+  isGuest,
+  isSyncing,
+  syncStatus,
+  onSyncClick,
+  onNavigate,
 }: Readonly<MobileDrawerProps>) {
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 md:hidden">
+    <div
+      className={cn(
+        "fixed inset-0 z-50 md:hidden overflow-hidden transition-all duration-200",
+        isOpen ? "pointer-events-auto" : "pointer-events-none delay-200",
+      )}
+    >
       {/* Backdrop */}
-      <button
+      <Button
+        variant="unstyled"
         type="button"
         aria-hidden="true"
         tabIndex={-1}
         onClick={onClose}
-        className="fixed inset-0 bg-primary-text/25 backdrop-blur-xs w-full h-full border-none p-0 outline-none"
+        className={cn(
+          "fixed inset-0 bg-primary-text/30 w-full h-full border-none p-0 outline-none transition-opacity duration-200 ease-out",
+          isOpen ? "opacity-100" : "opacity-0",
+        )}
       />
 
       {/* Drawer */}
-      <div className="fixed top-0 bottom-0 left-0 z-50 w-64 max-w-[80vw] bg-surface border-r border-border p-4 flex flex-col justify-between animate-in slide-in-from-left duration-200">
+      <div
+        className={cn(
+          "fixed top-0 bottom-0 left-0 z-50 w-64 max-w-[80vw] bg-surface border-r border-border p-4 flex flex-col justify-between transition-transform duration-200 ease-out shadow-xl transform-gpu will-change-transform",
+          isOpen ? "translate-x-0" : "-translate-x-full",
+        )}
+      >
         <div className="space-y-6">
           {/* Header */}
           <div className="flex items-center justify-between">
@@ -43,33 +69,50 @@ export default function MobileDrawer({
                 <Wallet className="w-4 h-4 text-primary" />
               </div>
               <span className="text-base font-bold tracking-tight text-primary-text">
-                PocketNote
+                FindMyTang
               </span>
             </div>
-            <button
+            <Button
+              variant="unstyled"
               onClick={onClose}
-              className="p-1.5 rounded-md hover:bg-surface-secondary text-secondary-text"
+              className="p-1.5 rounded-md hover:bg-surface-secondary text-secondary-text transition-colors"
             >
               <X className="w-5 h-5" strokeWidth={1.5} />
-            </button>
+            </Button>
           </div>
 
           {/* Navigation list */}
           <NavLinks
             pathname={pathname}
-            onLinkClick={onClose}
+            onLinkClick={(e, href) => {
+              onNavigate?.(e, href);
+              onClose();
+            }}
             itemClassName="py-2"
           />
         </div>
 
-        {/* User profile & Action */}
-        <NavUserProfile
-          user={user}
-          isLoading={isLoading}
-          onLogout={onLogout}
-          onActionClick={onClose}
-          className="pt-4 border-t border-border"
-        />
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
+            <SyncStatusButton
+              isGuest={isGuest}
+              isSyncing={isSyncing}
+              syncStatus={syncStatus}
+              onSyncClick={onSyncClick}
+            />
+            <div className="px-4">
+              <ThemeSwitcher />
+            </div>
+          </div>
+          {/* User profile & Action */}
+          <NavUserProfile
+            user={user}
+            isLoading={isLoading}
+            onLogout={onLogout}
+            onActionClick={onClose}
+            className="pt-4 border-t border-border"
+          />
+        </div>
       </div>
     </div>
   );

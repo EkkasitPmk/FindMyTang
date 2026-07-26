@@ -1,21 +1,23 @@
 import React from "react";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 
 interface MenuItemProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
 }
 
 export default function MenuItem({
-  className = "hover:bg-gray-50",
+  className = "hover:bg-surface-secondary",
   children,
   ...props
 }: Readonly<MenuItemProps>) {
   return (
-    <button
+    <Button
+      variant="unstyled"
       type="button"
-      className={`text-sm py-1 px-3 w-full text-left ${className}`}
+      className={`py-2 px-3 w-full text-left ${className}`}
       {...props}
     >
       {children}
-    </button>
+    </Button>
   );
 }

@@ -30,21 +30,18 @@ export class CategoryRepository {
     });
   }
 
-  async findById(id: string): Promise<Category | null> {
-    // ponytail: Finds a category by its ID, ensuring it's not soft-deleted.
+  async findById(id: string, includeDeleted = false): Promise<Category | null> {
+    // ponytail: Finds a category by ID. If includeDeleted is false, filters out soft-deleted items.
     return this.prisma.category.findFirst({
-      where: { id, deletedAt: null },
+      where: { id, ...(includeDeleted ? {} : { deletedAt: null }) },
     });
   }
 
-  async findAll(userId: string): Promise<Category[]> {
-    // ponytail: Fetches all categories belonging to the user that are not soft-deleted, sorted by displayOrder ASC, then createdAt ASC.
+  async findAll(userId: string, includeDeleted = false): Promise<Category[]> {
+    // ponytail: Fetches all categories belonging to the user. Filters out soft-deleted if includeDeleted is false.
     return this.prisma.category.findMany({
-      where: { userId, deletedAt: null },
-      orderBy: [
-        { displayOrder: "asc" },
-        { createdAt: "asc" },
-      ],
+      where: { userId, ...(includeDeleted ? {} : { deletedAt: null }) },
+      orderBy: [{ displayOrder: "asc" }, { createdAt: "asc" }],
     });
   }
 
@@ -77,6 +74,37 @@ export class CategoryRepository {
     return this.prisma.category.update({
       where: { id },
       data: { deletedAt: new Date() },
+    });
+  }
+
+  async restore(id: string, userId: string): Promise<Category> {
+    // ponytail: Restores a soft-deleted category by setting deletedAt to null.
+    const category = await this.prisma.category.findFirst({
+      where: { id, userId, deletedAt: { not: null } },
+    });
+    if (!category) {
+      throw new Error("Category not found or not deleted");
+    }
+    return this.prisma.category.update({
+      where: { id },
+      data: { deletedAt: null },
+    });
+  }
+
+  async hardDelete(id: string, userId: string): Promise<Category> {
+    // ponytail: Permanently deletes a category after setting referencing transactions' categoryId to null.
+    const category = await this.prisma.category.findFirst({
+      where: { id, userId },
+    });
+    if (!category) {
+      throw new Error("Category not found or access denied");
+    }
+    await this.prisma.transaction.updateMany({
+      where: { categoryId: id },
+      data: { categoryId: null },
+    });
+    return this.prisma.category.delete({
+      where: { id },
     });
   }
 

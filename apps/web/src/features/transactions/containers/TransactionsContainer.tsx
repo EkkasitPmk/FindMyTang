@@ -1,148 +1,313 @@
 "use client";
-import { useState, useEffect, useRef, Suspense } from "react";
-import { ArrowRight, ChevronLeft } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
+import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
+import { ArrowRight, ChevronLeft, Trash } from "lucide-react";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useCategories } from "@/features/category/hooks/category.hook";
-import { useAssets } from "@/features/assets/hooks/assets.hook";
+import { useCategories } from "@/shared/lib/hooks/useCategories.hook";
 import {
-  useCreateExpenseMutation,
-  useCreateIncomeMutation,
-  useCreateTransferMutation,
-  useCreateAdjustmentMutation,
+  useCreateTransactionMutation,
+  useTransactionQuery,
+  useUpdateTransactionMutation,
+  useDeleteTransactionMutation,
 } from "../hooks/transaction.hook";
 import {
   createTransactionSchema,
   CreateTransactionFormValues,
-} from "../schemas/transaction.schema";
+} from "../schemas/transaction.form.schema";
 import { toast } from "react-toastify";
 import TransactionCategoryList from "../components/TransactionCategoryList";
 import TransactionAssetList from "../components/TransactionAssetList";
 import TransactionMoreDetails from "../components/TransactionMoreDetails";
-import { SegmentedControl } from "@/shared/components/customs/SegmentedControl";
+import ChooseADate from "../components/ChooseADate";
+import {
+  useTransactionFormSync,
+  useTransactionInitialization,
+} from "../hooks/transaction-form.hook";
+import ConfirmModal from "@/shared/components/customs/ConfirmModal";
+import { useConfirmModal } from "@/shared/lib/hooks/useConfirmModal.hook";
+import LoadingModal from "@/shared/components/customs/LoadingModal";
+import { useModalState } from "@/shared/lib/hooks/useModalState.hook";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContents,
+  TabsContent,
+} from "@/shared/components/animate-ui/components/animate/tabs";
 import { CurrencyInput } from "@/shared/components/customs/CurrencyInput";
-import { getFormattedAmount } from "../utils/currency.util";
-import { formatDisplayDate } from "../helpers/date.helper";
-import { cn } from "@/shared/lib/utils";
+import { useCurrencyInput } from "../hooks/useCurrencyInput.hook";
+import {
+  getFormattedAmount,
+  parseAmountDigits,
+  convertDigitsToAmount,
+  convertAmountToDigits,
+} from "@/shared/lib/utils/currency.util";
+import {
+  formatDisplayDate,
+  updatePresetDate,
+} from "@/shared/lib/helpers/date.helper";
+import { th, enUS } from "date-fns/locale";
+import {
+  submitTransaction,
+  resolveDefaultTransactionType,
+  createDefaultFormValues,
+  getActiveItemId,
+  getTransactionTypeOptions,
+  getTypeLabel,
+  parseErrorMessage,
+  checkIsLoading,
+  checkIsTxLoading,
+  checkIsSubmitting,
+  isCategoryType,
+  getLoadingModalProps,
+} from "../helpers/transaction.helper";
+import { cn } from "@/shared/lib/utils/core.util";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
+import { TransactionType } from "@/shared/lib/types/transaction.type";
+import { Category } from "@/shared/lib/types/category.type";
+import { Skeleton } from "@/shared/components/ui/skeleton";
+import { compressImageFile } from "../utils/image.util";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { useAssets } from "@/shared/lib/hooks/useAssets.hook";
+import { AxiosError } from "axios";
+import { ApiErrorResponse } from "@/shared/lib/types/api.type";
 
 export default function TransactionsContainer() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <TransactionsContainerContent />
-    </Suspense>
-  );
-}
-
-function TransactionsContainerContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const typeParam = searchParams.get("type");
+  const editId = searchParams.get("id");
   const hasAssetId = searchParams.has("assetId");
-  const defaultType =
-    typeParam === "INCOME" ||
-    typeParam === "EXPENSE" ||
-    typeParam === "TRANSFER" ||
-    typeParam === "ADJUSTMENT"
-      ? typeParam
-      : "EXPENSE";
   const defaultAssetId = searchParams.get("assetId") || null;
+  const typeParam = searchParams.get("type");
+  const { t, locale, currentLanguage } = useTranslation();
+
+  const {
+    data: existingTx,
+    isPending: isTxPending,
+    isFetching: isTxFetching,
+  } = useTransactionQuery(editId || undefined);
+
+  const mounted = useMounted();
+  const isTxLoading = checkIsTxLoading(
+    mounted,
+    editId,
+    isTxPending,
+    isTxFetching,
+  );
+
+  const defaultType = useMemo(
+    () => resolveDefaultTransactionType(existingTx, typeParam),
+    [existingTx, typeParam],
+  );
+
+  const [transactionType, setTransactionType] =
+    useState<TransactionType>(defaultType);
+
+  const [prevTxId, setPrevTxId] = useState<string | null>(null);
+  const [prevTypeParam, setPrevTypeParam] = useState<string | null>(typeParam);
+
+  const [amountDigits, setAmountDigits] = useState<string>("");
+  const [removedAttachment, setRemovedAttachment] = useState(false);
+  const [isMoreDetailsOpen, setIsMoreDetailsOpen] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const { modalState, setModalState, resetModalState } = useModalState();
+
+  const {
+    isOpen: isDeleteModalOpen,
+    open: openDeleteModal,
+    close: closeDeleteModal,
+    isHardDelete,
+    setIsHardDelete,
+    inputValue: confirmInput,
+    setInputValue: setConfirmInput,
+  } = useConfirmModal();
+
+  const currentMonth = useMemo(
+    () => new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+    [],
+  );
+
+  const [displayMonth, setDisplayMonth] = useState<Date | undefined>(
+    currentMonth,
+  );
+
+  useTransactionInitialization({
+    existingTx,
+    prevTxId,
+    setPrevTxId,
+    setTransactionType,
+    setAmountDigits,
+    setDisplayMonth,
+    setRemovedAttachment,
+    setIsMoreDetailsOpen,
+    typeParam,
+    prevTypeParam,
+    setPrevTypeParam,
+    resolveDefaultTransactionType,
+    convertAmountToDigits,
+    setFile,
+  });
+
+  const defaultValues = useMemo(
+    () => createDefaultFormValues(existingTx, defaultAssetId),
+    [existingTx, defaultAssetId],
+  );
 
   const {
     handleSubmit,
     setValue,
+    control,
     reset,
-    formState: { errors },
+    register,
+    clearErrors,
+    formState: { errors, isSubmitted, touchedFields },
   } = useForm<CreateTransactionFormValues>({
     resolver: zodResolver(createTransactionSchema),
-    defaultValues: {
-      amount: 0,
-      note: "",
-      transactionDate: new Date().toISOString(),
-      assetId: "",
-      categoryId: "",
-    },
+    defaultValues,
   });
 
-  const [date, setDate] = useState<Date | undefined>(new Date());
-  const [amountDigits, setAmountDigits] = useState<string>("");
-  const [file, setFile] = useState<File | null>(null);
+  useEffect(() => {
+    reset(defaultValues);
+  }, [defaultValues, reset]);
 
-  const createExpense = useCreateExpenseMutation({
-    onSuccess: () => {
-      toast.success("Expense saved successfully!");
-      handleResetForm();
-    },
-  });
-  const createIncome = useCreateIncomeMutation({
-    onSuccess: () => {
-      toast.success("Income saved successfully!");
-      handleResetForm();
-    },
-  });
-  const createTransfer = useCreateTransferMutation({
-    onSuccess: () => {
-      toast.success("Transfer saved successfully!");
-      handleResetForm();
-    },
-  });
-  const createAdjustment = useCreateAdjustmentMutation({
-    onSuccess: () => {
-      toast.success("Adjustment saved successfully!");
-      handleResetForm();
-    },
-  });
+  const watchTransactionDate = useWatch({ control, name: "transactionDate" });
+  const watchCategoryId = useWatch({ control, name: "categoryId" });
+  const watchAssetId = useWatch({ control, name: "assetId" });
+  const watchToAssetId = useWatch({ control, name: "toAssetId" });
 
-  const [currentMonth] = useState<Date>(
-    new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+  const date = useMemo(
+    () => (watchTransactionDate ? new Date(watchTransactionDate) : new Date()),
+    [watchTransactionDate],
   );
+
+  const handleSuccess = useCallback(
+    (message: string, shouldRedirect: boolean = false) => {
+      setModalState({
+        isOpen: true,
+        status: "success",
+        message,
+        shouldRedirect,
+      });
+      reset(defaultValues);
+      setAmountDigits("");
+      setFile(null);
+    },
+    [reset, defaultValues, setModalState],
+  );
+
+  const createTransaction = useCreateTransactionMutation({
+    onSuccess: (_, variables) => {
+      const typeStr = getTypeLabel(variables.type, t);
+      handleSuccess(t("transactionSavedSuccess").replace("{type}", typeStr));
+    },
+    onError: (err: AxiosError<ApiErrorResponse>) => {
+      setModalState({
+        isOpen: true,
+        status: "error",
+        message: parseErrorMessage(err, "Failed to save transaction"),
+      });
+    },
+  });
+
+  const updateTransaction = useUpdateTransactionMutation({
+    onSuccess: () => {
+      handleSuccess(t("transactionUpdatedSuccess"), !!editId);
+    },
+    onError: (err: AxiosError<ApiErrorResponse>) => {
+      setModalState({
+        isOpen: true,
+        status: "error",
+        message: parseErrorMessage(err, "Failed to update transaction"),
+      });
+    },
+  });
+
+  const deleteTransaction = useDeleteTransactionMutation({
+    onSuccess: () => {
+      setModalState({
+        isOpen: true,
+        status: "success",
+        message: t("transactionDeletedSuccess"),
+        shouldRedirect: true,
+      });
+    },
+    onError: (err: AxiosError<ApiErrorResponse>) => {
+      setModalState({
+        isOpen: true,
+        status: "error",
+        message: parseErrorMessage(err, "Failed to delete transaction"),
+      });
+    },
+  });
+
+  const isSubmitting = checkIsSubmitting(
+    createTransaction.isPending,
+    updateTransaction.isPending,
+    deleteTransaction.isPending,
+  );
+
+  const handleModalClose = () => {
+    const shouldRedirect = modalState.shouldRedirect;
+    resetModalState();
+    if (shouldRedirect) {
+      router.back();
+    }
+  };
+
+  const handleConfirmDelete = () => {
+    if (editId) {
+      deleteTransaction.mutate({
+        id: editId,
+        isHardDelete: Boolean(isHardDelete),
+      });
+      closeDeleteModal();
+    }
+  };
 
   const [tempDate, setTempDate] = useState<Date | undefined>(date);
-  const [displayMonth, setDisplayMonth] = useState<Date | undefined>(
-    currentMonth || date || new Date(),
-  );
+  const [prevDate, setPrevDate] = useState<Date>(date);
+
+  if (date !== prevDate) {
+    setPrevDate(date);
+    setTempDate(date);
+    setDisplayMonth(date);
+  }
 
   const handleConfirmDate = () => {
     if (tempDate) {
-      setDate(tempDate);
+      setValue("transactionDate", tempDate.toISOString(), {
+        shouldValidate: true,
+      });
     }
     setIsCalendarOpen(false);
   };
 
   const handlePresetClick = (daysToAdd: number) => {
-    const newDate = new Date();
-    newDate.setDate(newDate.getDate() + daysToAdd);
+    const newDate = updatePresetDate(daysToAdd, tempDate);
     setTempDate(newDate);
     setDisplayMonth(newDate);
   };
 
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  const [isMoreDetailsOpen, setIsMoreDetailsOpen] = useState(false);
-  const [transactionType, setTransactionType] = useState<
-    "EXPENSE" | "INCOME" | "TRANSFER" | "ADJUSTMENT"
-  >(defaultType);
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
-    null,
-  );
-  const [selectedAssetId, setSelectedAssetId] = useState<string | null>(
-    defaultAssetId,
-  );
-  const [selectedAssetToId, setSelectedAssetToId] = useState<string | null>(
-    null,
-  );
-
   const [isPhotoMenuOpen, setIsPhotoMenuOpen] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0]);
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const originalFile = e.target.files?.[0];
+    if (originalFile) {
+      const newFile = await compressImageFile(originalFile);
+      setFile(newFile);
     }
   };
 
-  const handleRemoveFile = () => setFile(null);
+  const handleRemoveFile = () => {
+    setFile(null);
+    setRemovedAttachment(true);
+  };
 
   const handleTakeAPhoto = () => {
     setIsPhotoMenuOpen(false);
@@ -154,91 +319,83 @@ function TransactionsContainerContent() {
     fileInputRef.current?.click();
   };
 
-  const { data: categories } = useCategories();
-  const filteredCategories =
-    categories?.filter((c) => c.type === (transactionType as string)) || [];
-
-  const { data: assets } = useAssets();
-
-  const activeCategoryId =
-    selectedCategoryId &&
-    filteredCategories.some((c) => c.id === selectedCategoryId)
-      ? selectedCategoryId
-      : filteredCategories[0]?.id || null;
-
-  const activeAssetId =
-    selectedAssetId && assets?.some((a) => a.id === selectedAssetId)
-      ? selectedAssetId
-      : assets?.[0]?.id || null;
-
-  const availableToAssets = assets?.filter((a) => a.id !== activeAssetId) || [];
-  const activeAssetToId =
-    selectedAssetToId &&
-    availableToAssets.some((a) => a.id === selectedAssetToId)
-      ? selectedAssetToId
-      : availableToAssets[0]?.id || null;
-
-  const handleResetForm = () => {
-    reset({
-      amount: 0,
-      note: "",
-      transactionDate: new Date().toISOString(),
-      assetId: activeAssetId || "",
-      categoryId: activeCategoryId || "",
-      toAssetId: activeAssetToId || "",
-    });
-    setAmountDigits("");
-    setFile(null);
-    setDate(new Date());
+  const handleEditCategoryClick = () => {
+    router.push("/categories");
   };
 
-  useEffect(() => {
-    if (
-      activeCategoryId &&
-      (transactionType === "EXPENSE" || transactionType === "INCOME")
-    ) {
-      setValue("categoryId", activeCategoryId, { shouldValidate: true });
-    }
-  }, [activeCategoryId, setValue, transactionType]);
+  const {
+    data: categories,
+    isPending: isCategoryPending,
+    isFetching: isCategoryFetching,
+  } = useCategories();
+  const isLoadingCategoryList = checkIsLoading(
+    mounted,
+    isCategoryPending,
+    isCategoryFetching,
+  );
+  const filteredCategories = useMemo(
+    () =>
+      categories?.filter(
+        (c: Category) =>
+          c.type === (transactionType as string) &&
+          (!c.deletedAt || c.id === watchCategoryId),
+      ) || [],
+    [categories, transactionType, watchCategoryId],
+  );
 
-  useEffect(() => {
-    if (activeAssetId)
-      setValue("assetId", activeAssetId, { shouldValidate: true });
-  }, [activeAssetId, setValue]);
+  const {
+    data: assets,
+    isPending: isAssetPending,
+    isFetching: isAssetFetching,
+  } = useAssets();
+  const isLoadingAssetList = checkIsLoading(
+    mounted,
+    isAssetPending,
+    isAssetFetching,
+  );
+  const safeAssets = useMemo(() => assets ?? [], [assets]);
 
-  useEffect(() => {
-    if (date)
-      setValue("transactionDate", date.toISOString(), { shouldValidate: true });
-  }, [date, setValue]);
+  const activeCategoryId = getActiveItemId(watchCategoryId, filteredCategories);
+  const activeAssetId = getActiveItemId(watchAssetId, safeAssets);
 
-  useEffect(() => {
-    if (transactionType === "TRANSFER" && activeAssetToId) {
-      setValue("toAssetId", activeAssetToId, { shouldValidate: true });
-    }
-  }, [activeAssetToId, setValue, transactionType]);
+  const availableToAssets = useMemo(
+    () => safeAssets.filter((a) => a.id !== activeAssetId),
+    [safeAssets, activeAssetId],
+  );
+  const activeAssetToId = getActiveItemId(watchToAssetId, availableToAssets);
 
-  // --- Currency formatting logic ---
+  useTransactionFormSync({
+    transactionType,
+    activeCategoryId,
+    watchCategoryId,
+    activeAssetId,
+    watchAssetId,
+    activeAssetToId,
+    watchToAssetId,
+    setValue,
+  });
+
+  const handleResetForm = () => {
+    reset(defaultValues);
+    setAmountDigits("");
+    setFile(null);
+  };
+
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let digits = e.target.value.replace(/\D/g, "");
-    digits = digits.replace(/^0+/, "");
-    if (digits.length > 10) {
-      digits = digits.slice(0, 10);
-    }
+    const digits = parseAmountDigits(e.target.value);
     setAmountDigits(digits);
-
-    if (digits.length > 0) {
-      const padded = digits.padStart(3, "0");
-      const integerPart = padded.slice(0, -2);
-      const decimalPart = padded.slice(-2);
-      const numericVal = Number(`${integerPart}.${decimalPart}`);
-      setValue("amount", numericVal, { shouldValidate: true });
-    } else {
-      setValue("amount", 0, { shouldValidate: true });
-    }
+    setValue("amount", convertDigitsToAmount(digits), {
+      shouldValidate: true,
+      shouldTouch: true,
+    });
   };
 
   const { displayAmount, numericAmount } = getFormattedAmount(amountDigits);
-  const displayDate = formatDisplayDate(date);
+  const displayDate = formatDisplayDate(date, true, locale, t);
+  const calendarLocale = currentLanguage === "th" ? th : enUS;
+
+  const { inputRef: amountInputRef, handleChange: handleCurrencyInput } =
+    useCurrencyInput(displayAmount, handleAmountChange);
 
   const onSubmit = (
     data: CreateTransactionFormValues,
@@ -247,153 +404,216 @@ function TransactionsContainerContent() {
     const formData = new FormData(e?.target as HTMLFormElement);
     const note = formData.get("note") as string;
 
-    const finalData = { ...data, note, file: file || undefined };
-
-    if (transactionType === "TRANSFER") {
-      if (!data.toAssetId) {
-        toast.error("Please select a target asset");
-        return;
-      }
-    } else if (transactionType === "EXPENSE" || transactionType === "INCOME") {
-      if (!data.categoryId) {
-        toast.error("Please select a category");
-        return;
-      }
-    }
-
-    if (transactionType === "EXPENSE") {
-      createExpense.mutate({
-        ...finalData,
-        categoryId: data.categoryId as string,
-      });
-    } else if (transactionType === "INCOME") {
-      createIncome.mutate({
-        ...finalData,
-        categoryId: data.categoryId as string,
-      });
-    } else if (transactionType === "TRANSFER") {
-      createTransfer.mutate({
-        ...finalData,
-        toAssetId: data.toAssetId as string,
-      });
-    } else if (transactionType === "ADJUSTMENT") {
-      const selectedAsset = assets?.find((a) => a.id === data.assetId);
-      const currentBalance = selectedAsset ? selectedAsset.balance : 0;
-      const difference = finalData.amount - currentBalance;
-
-      createAdjustment.mutate({
-        ...finalData,
-        amount: difference,
-      });
-    }
+    submitTransaction({
+      transactionType,
+      data: { ...data, note },
+      file,
+      createTransaction,
+      updateTransaction,
+      editId,
+      removedAttachment,
+      toast,
+    });
   };
+
+  const transactionTypeOptions = useMemo(
+    () => getTransactionTypeOptions(editId, existingTx?.type, t),
+    [editId, existingTx?.type, t],
+  );
+
+  const transactionTypeStr = getTypeLabel(transactionType, t);
+  const showCategoryList = isCategoryType(transactionType);
+  const loadingModalProps = getLoadingModalProps(modalState, isSubmitting);
+  const attachmentUrl = removedAttachment ? null : existingTx?.attachmentUrl;
 
   return (
     <form
-      className="space-y-4 pb-24"
       onSubmit={handleSubmit(onSubmit)}
       onReset={handleResetForm}
+      className={cn(isMoreDetailsOpen && "pb-32")}
     >
-      <div
+      <header
         className={cn(
-          "flex items-center relative",
-          hasAssetId ? "" : "my-4 mb-8",
+          "flex items-center relative mb-2 px-4",
+          hasAssetId ? "" : "mb-2 justify-center",
+          editId ? "justify-between" : "",
         )}
       >
         {hasAssetId && (
-          <button
+          <Button
+            variant="unstyled"
             type="button"
             onClick={() => router.back()}
-            className="p-1 -ml-1 cursor-pointer hover:bg-gray-100 transition-colors"
+            className="p-1 -ml-1 cursor-pointer hover:bg-surface-secondary transition-colors"
           >
             <ChevronLeft size={24} />
-          </button>
+          </Button>
         )}
-        <p className="text-center text-2xl font-bold absolute left-1/2 -translate-x-1/2 truncate">
-          Add Transaction
-        </p>
-      </div>
-
-      <SegmentedControl
-        value={transactionType}
-        onChange={setTransactionType}
-        options={[
-          { label: "Expense", value: "EXPENSE" },
-          { label: "Income", value: "INCOME" },
-          { label: "Transfer", value: "TRANSFER" },
-          { label: "Adjustment", value: "ADJUSTMENT" },
-        ]}
-      />
-
-      <div className="flex flex-col items-center gap-1">
-        <CurrencyInput
-          id="balance"
-          value={displayAmount}
-          onChange={handleAmountChange}
-        />
-        <input type="hidden" name="amount" value={numericAmount} />
-        {errors.amount && (
-          <p className="text-red-500 text-xs">{errors.amount.message}</p>
-        )}
-      </div>
-
-      {(transactionType === "EXPENSE" || transactionType === "INCOME") && (
-        <TransactionCategoryList
-          categories={filteredCategories}
-          activeCategoryId={activeCategoryId}
-          onSelectCategory={setSelectedCategoryId}
-        />
-      )}
-
-      <TransactionAssetList
-        assets={assets ?? []}
-        activeAssetId={activeAssetId}
-        onSelectAsset={setSelectedAssetId}
-        activeAssetToId={activeAssetToId}
-        onSelectAssetTo={setSelectedAssetToId}
-        transactionType={transactionType}
-      />
-
-      <TransactionMoreDetails
-        isMoreDetailsOpen={isMoreDetailsOpen}
-        setIsMoreDetailsOpen={setIsMoreDetailsOpen}
-        displayDate={displayDate}
-        tempDate={tempDate}
-        setTempDate={setTempDate}
-        displayMonth={displayMonth}
-        setDisplayMonth={setDisplayMonth}
-        onPresetClick={handlePresetClick}
-        onConfirmDate={handleConfirmDate}
-        isCalendarOpen={isCalendarOpen}
-        setIsCalendarOpen={setIsCalendarOpen}
-        isPhotoMenuOpen={isPhotoMenuOpen}
-        setIsPhotoMenuOpen={setIsPhotoMenuOpen}
-        file={file}
-        onRemoveFile={handleRemoveFile}
-        onTakeAPhoto={handleTakeAPhoto}
-        onSelectAPhoto={handleSelectAPhoto}
-        fileInputRef={fileInputRef}
-        cameraInputRef={cameraInputRef}
-        handleFileChange={handleFileChange}
-      />
-
-      {/* Save Transaction */}
-      <section className="fixed bottom-18 left-0 right-0 mx-4 bg-background pt-2">
-        <button
-          type="submit"
-          disabled={
-            createExpense.isPending ||
-            createIncome.isPending ||
-            createTransfer.isPending ||
-            createAdjustment.isPending
-          }
-          className="flex items-center justify-center gap-2 bg-primary w-full text-white py-3 rounded-xl text-base font-bold capitalize disabled:opacity-50"
+        <p
+          className={cn(
+            "text-center text-2xl font-bold truncate",
+            hasAssetId ? "absolute left-1/2 -translate-x-1/2" : "",
+          )}
         >
-          Save {transactionType.toLowerCase()}
-          <ArrowRight size={18} />
-        </button>
-      </section>
-      {/* Save Transaction */}
+          {editId ? t("editTransaction") : t("addTransaction")}
+        </p>
+        {editId && (
+          <Button
+            variant="unstyled"
+            type="button"
+            className="p-1 cursor-pointer hover:bg-surface-secondary transition-colors text-expense rounded-full"
+            onClick={openDeleteModal}
+          >
+            <Trash size={20} />
+          </Button>
+        )}
+      </header>
+
+      <div className="px-4">
+        {isTxLoading ? (
+          <Skeleton className="w-full h-10 rounded-lg" />
+        ) : (
+          <Tabs
+            value={transactionType}
+            onValueChange={(val) => {
+              setTransactionType(val as TransactionType);
+              clearErrors();
+            }}
+            className="gap-2"
+          >
+            <TabsList className="w-full">
+              {transactionTypeOptions.map((option) => (
+                <TabsTrigger key={option.value} value={option.value}>
+                  {option.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+
+            <TabsContents>
+              {transactionTypeOptions.map((option) => (
+                <TabsContent
+                  key={option.value}
+                  value={option.value}
+                  className="space-y-4"
+                >
+                  <section className="flex flex-col items-center gap-1 relative min-h-10 justify-center">
+                    {isTxLoading ? (
+                      <Skeleton className="w-60 h-10 rounded-lg" />
+                    ) : (
+                      <>
+                        <CurrencyInput
+                          id="balance"
+                          ref={amountInputRef}
+                          value={displayAmount}
+                          onChange={handleCurrencyInput}
+                        />
+                        <input
+                          type="hidden"
+                          name="amount"
+                          value={numericAmount}
+                        />
+                        {(isSubmitted || Boolean(touchedFields.amount)) &&
+                          errors.amount && (
+                            <p className="text-expense text-xs">
+                              {errors.amount.message}
+                            </p>
+                          )}
+                      </>
+                    )}
+                  </section>
+
+                  {showCategoryList && (
+                    <TransactionCategoryList
+                      categories={filteredCategories}
+                      activeCategoryId={watchCategoryId || null}
+                      onSelectCategory={(id) => setValue("categoryId", id)}
+                      onEditClick={handleEditCategoryClick}
+                      isLoadingCategoryList={isLoadingCategoryList}
+                    />
+                  )}
+
+                  <TransactionAssetList
+                    assets={safeAssets}
+                    activeAssetId={watchAssetId || null}
+                    onSelectAsset={(id) => setValue("assetId", id)}
+                    activeAssetToId={watchToAssetId || null}
+                    onSelectAssetTo={(id) => setValue("toAssetId", id)}
+                    transactionType={transactionType}
+                    isLoadingAssetList={isLoadingAssetList}
+                  />
+
+                  <TransactionMoreDetails
+                    isMoreDetailsOpen={isMoreDetailsOpen}
+                    setIsMoreDetailsOpen={setIsMoreDetailsOpen}
+                    displayDate={displayDate}
+                    isCalendarOpen={isCalendarOpen}
+                    setIsCalendarOpen={setIsCalendarOpen}
+                    isPhotoMenuOpen={isPhotoMenuOpen}
+                    setIsPhotoMenuOpen={setIsPhotoMenuOpen}
+                    file={file}
+                    attachmentUrl={attachmentUrl}
+                    onRemoveFile={handleRemoveFile}
+                    onTakeAPhoto={handleTakeAPhoto}
+                    onSelectAPhoto={handleSelectAPhoto}
+                    fileInputRef={fileInputRef}
+                    cameraInputRef={cameraInputRef}
+                    handleFileChange={handleFileChange}
+                    register={register}
+                    isLoadingTx={isTxLoading}
+                  />
+                </TabsContent>
+              ))}
+            </TabsContents>
+          </Tabs>
+        )}
+
+        <section className="fixed bottom-16 left-0 right-0 mx-4 pb-4 bg-background pt-2">
+          <Button
+            variant="unstyled"
+            type="submit"
+            disabled={isSubmitting}
+            className="flex items-center justify-center gap-2 bg-primary w-full text-white py-3 rounded-xl text-base font-bold capitalize disabled:opacity-50"
+          >
+            {t("saveTransactionStr").replace("{type}", transactionTypeStr)}
+            <ArrowRight size={18} />
+          </Button>
+        </section>
+      </div>
+
+      <ChooseADate
+        isOpen={isCalendarOpen}
+        selectedDate={tempDate}
+        onSelectDate={setTempDate}
+        displayMonth={displayMonth}
+        onMonthChange={setDisplayMonth}
+        onConfirm={handleConfirmDate}
+        onClose={() => setIsCalendarOpen(false)}
+        onPresetClick={handlePresetClick}
+        locale={calendarLocale}
+      />
+
+      <ConfirmModal
+        isOpen={isDeleteModalOpen}
+        onClose={closeDeleteModal}
+        onConfirm={handleConfirmDelete}
+        icon={Trash}
+        title={t("deleteTransaction")}
+        des={t("deleteTransactionDesc")}
+        confirmLabel={t("delete")}
+        withHardDeleteOption={true}
+        isHardDelete={isHardDelete}
+        onHardDeleteChange={setIsHardDelete}
+        hardDeleteCheckboxLabel={t("deletePermanently")}
+        inputValue={confirmInput}
+        onInputChange={setConfirmInput}
+      />
+
+      <LoadingModal
+        isOpen={loadingModalProps.isOpen}
+        status={loadingModalProps.status}
+        message={loadingModalProps.message}
+        onClose={handleModalClose}
+      />
     </form>
   );
 }
