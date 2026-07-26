@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import {
@@ -13,6 +14,8 @@ import { Button } from "@/shared/components/animate-ui/components/buttons/button
 import { Checkbox } from "@/shared/components/animate-ui/components/radix/checkbox";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { TranslationKey } from "@/shared/lib/configs/translations.config";
+import TermsOfServiceModal from "@/shared/components/customs/TermsOfServiceModal";
+import PrivacyPolicyModal from "@/shared/components/customs/PrivacyPolicyModal";
 
 interface RegisterFormProps {
   register: UseFormRegister<RegisterFormValues>;
@@ -40,6 +43,8 @@ export default function RegisterForm({
   onToggleShowConfirmPassword,
 }: Readonly<RegisterFormProps>) {
   const { t } = useTranslation();
+  const [isTermsOpen, setIsTermsOpen] = useState(false);
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
 
   return (
     <div className="min-h-screen flex flex-col justify-center bg-background py-8 px-4 sm:px-6 lg:px-8">
@@ -168,19 +173,33 @@ export default function RegisterForm({
                 className="text-sm text-secondary-text cursor-pointer select-none"
               >
                 {t("agreeTo")}{" "}
-                <Link
-                  href="#"
-                  className="text-primary font-medium hover:underline"
+                <Button
+                  type="button"
+                  variant="unstyled"
+                  tapScale={1}
+                  hoverScale={1}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setIsTermsOpen(true);
+                  }}
+                  className="text-primary font-medium hover:underline inline-block p-0 bg-transparent border-none cursor-pointer"
                 >
                   {t("termsOfService")}
-                </Link>{" "}
+                </Button>{" "}
                 {t("and")}{" "}
-                <Link
-                  href="#"
-                  className="text-primary font-medium hover:underline"
+                <Button
+                  type="button"
+                  variant="unstyled"
+                  tapScale={1}
+                  hoverScale={1}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setIsPrivacyOpen(true);
+                  }}
+                  className="text-primary font-medium hover:underline inline-block p-0 bg-transparent border-none cursor-pointer"
                 >
                   {t("privacyPolicy")}
-                </Link>
+                </Button>
                 .
               </label>
             </div>
@@ -221,9 +240,15 @@ export default function RegisterForm({
         </footer>
       </div>
 
-      {/* Decorative Elements */}
-      <div className="fixed bottom-0 right-0 w-64 h-64 opacity-10 pointer-events-none z-0 blur-3xl bg-primary-light rounded-full translate-x-1/2 translate-y-1/2"></div>
-      <div className="fixed top-0 left-0 w-64 h-64 opacity-5 pointer-events-none z-0 blur-3xl bg-accent-light rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+      {/* Legal Modals */}
+      <TermsOfServiceModal
+        isOpen={isTermsOpen}
+        onClose={() => setIsTermsOpen(false)}
+      />
+      <PrivacyPolicyModal
+        isOpen={isPrivacyOpen}
+        onClose={() => setIsPrivacyOpen(false)}
+      />
     </div>
   );
 }
