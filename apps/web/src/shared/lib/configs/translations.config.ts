@@ -1,5 +1,13 @@
 export const translations = {
   th: {
+    // App SEO & Meta
+    appTitle: "FindMyTang - ระบบจัดการสินทรัพย์และบันทึกการเงินส่วนบุคคล",
+    appDescription:
+      "แอปพลิเคชันบริหารจัดการการเงินและสินทรัพย์ส่วนบุคคลอย่างชาญฉลาด ปลอดภัย และใช้งานง่าย",
+    legalAgree: "รับทราบและเข้าใจ",
+    copyrightNotice: "© 2026 FindMyTang. All rights reserved.",
+    appVersionLabel: "เวอร์ชันระบบ",
+
     // Navigation / Layout
     navHome: "หน้าแรก",
     navJournal: "ประวัติ",
@@ -351,6 +359,14 @@ export const translations = {
     noNote: "ไม่มีบันทึก",
   },
   en: {
+    // App SEO & Meta
+    appTitle: "FindMyTang - Smart Personal Asset Tracker & Command Center",
+    appDescription:
+      "Graceful personal finance tracker designed with modern minimalism.",
+    legalAgree: "I Understand",
+    copyrightNotice: "© 2026 FindMyTang. All rights reserved.",
+    appVersionLabel: "System Version",
+
     // Navigation / Layout
     navHome: "Home",
     navJournal: "Journal",

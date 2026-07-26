@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useI18nStore } from "../storages/i18n.storage";
 import {
   translations,
@@ -16,6 +17,16 @@ export function useTranslation() {
   const setStoreLanguage = useI18nStore((state) => state.setLanguage);
   const updateProfile = useUpdateProfileMutation();
   const mounted = useMounted();
+
+  // Sync DB language preference to Zustand store when user profile loads
+  useEffect(() => {
+    if (!isGuest && user?.language) {
+      const userLang: Language = user.language === "en" ? "en" : "th";
+      if (userLang !== storeLanguage) {
+        setStoreLanguage(userLang);
+      }
+    }
+  }, [isGuest, user?.language, storeLanguage, setStoreLanguage]);
 
   // Determine current language: DB preference > LocalStorage persistence > default "en"
   let currentLanguage: Language = "en";

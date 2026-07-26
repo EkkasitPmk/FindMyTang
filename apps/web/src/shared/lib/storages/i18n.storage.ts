@@ -14,7 +14,7 @@ export const useI18nStore = create<I18nState>()(
       setLanguage: (language) => set({ language }),
     }),
     {
-      name: "pocketnote-i18n-storage",
+      name: "findmytang-i18n-storage",
       storage: createJSONStorage(() => localStorage),
     },
   ),
