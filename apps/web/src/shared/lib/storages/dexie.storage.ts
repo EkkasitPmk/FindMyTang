@@ -62,13 +62,13 @@ export interface LocalTransaction {
   syncStatus?: SyncStatus;
 }
 
-export class PocketNoteDexie extends Dexie {
+export class FindMyTangDexie extends Dexie {
   assets!: Table<LocalAsset, string>;
   categories!: Table<LocalCategory, string>;
   transactions!: Table<LocalTransaction, string>;
 
   constructor() {
-    super("PocketNoteDB");
+    super("FindMyTangDB");
     this.version(1).stores({
       // We only specify indexed fields here.
       assets: "id, type, isArchived, displayOrder, deletedAt, syncStatus",
@@ -79,4 +79,4 @@ export class PocketNoteDexie extends Dexie {
   }
 }
 
-export const db = new PocketNoteDexie();
+export const db = new FindMyTangDexie();

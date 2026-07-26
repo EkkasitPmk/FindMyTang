@@ -335,6 +335,7 @@ function Highlight<T extends React.ElementType = "div">(
           data-slot="motion-highlight-container"
           style={{ position: "relative", zIndex: 1 }}
           className={containerClassName}
+          suppressHydrationWarning
         >
           <AnimatePresence initial={false} mode="wait">
             {boundsState && (
@@ -665,6 +666,7 @@ function HighlightItem<T extends React.ElementType>({
       {React.cloneElement(element, {
         style: { position: "relative", zIndex: 1, ...element.props.style },
         className: element.props.className,
+        suppressHydrationWarning: true,
         ...getNonOverridingDataAttributes(element, {
           ...dataAttributes,
           "data-slot": "motion-highlight-item",
