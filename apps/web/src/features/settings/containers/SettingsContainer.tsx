@@ -161,9 +161,7 @@ export default function SettingsContainer({
         <div className="flex justify-between items-center text-xs">
           <div className="flex items-center gap-2 font-medium text-secondary-text">
             <HelpCircle className="w-4 h-4 text-primary" strokeWidth={1.75} />
-            <span className="font-semibold text-primary-text">
-              FindMyTang test
-            </span>
+            <span className="font-semibold text-primary-text">FindMyTang</span>
           </div>
           <span className="px-2.5 py-0.5 rounded-full bg-primary-light text-primary text-[11px] font-semibold">
             v1.0.0
