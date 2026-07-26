@@ -26,7 +26,7 @@
 
 ### Phase A: การตรวจสอบความพร้อมของโค้ด (Build Verification)
 
-- [ ] ทดสอบรัน Build ฝั่ง Frontend (`cd apps/web && npm run build`) เพื่อตรวจสอบ TypeScript และ Compile Errors
+- [x] ทดสอบรัน Build ฝั่ง Frontend (`cd apps/web && npm run build`) เพื่อตรวจสอบ TypeScript และ Compile Errors (แก้ไขปัญหา `tw-animate-css` เรียบร้อย)
 - [ ] ทดสอบรัน Build ฝั่ง Backend (`cd apps/api && npm run build`) เพื่อตรวจสอบ NestJS Compilation
 
 ### Phase B: การเตรียมฐานข้อมูล Cloud (Database Infrastructure)
