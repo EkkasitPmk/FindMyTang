@@ -14,7 +14,7 @@ async function main() {
 
   // 1. Create or get System User
   // We use a fixed email to identify the system user
-  const systemEmail = "system@pocketnote.io";
+  const systemEmail = "system@findmytang.com";
   const systemUser = await prisma.user.upsert({
     where: { email: systemEmail },
     update: {},

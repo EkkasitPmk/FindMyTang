@@ -320,7 +320,7 @@ export const useGuestStore = create<GuestState>()(
       },
     }),
     {
-      name: "pocketnote-guest-storage",
+      name: "findmytang-guest-storage",
       storage: createJSONStorage(() => localStorage),
     },
   ),

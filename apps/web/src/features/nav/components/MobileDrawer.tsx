@@ -69,7 +69,7 @@ export default function MobileDrawer({
                 <Wallet className="w-4 h-4 text-primary" />
               </div>
               <span className="text-base font-bold tracking-tight text-primary-text">
-                PocketNote
+                FindMyTang
               </span>
             </div>
             <Button

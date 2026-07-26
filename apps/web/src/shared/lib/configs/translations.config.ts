@@ -22,7 +22,7 @@ export const translations = {
       "เชื่อมต่อบัญชีเพื่อสำรองข้อมูลธุรกรรมและซิงค์ข้อมูลในหลายอุปกรณ์",
     connectBtn: "เชื่อมต่อ & ซิงค์บัญชี",
     guestUser: "โหมดผู้ใช้ชั่วคราว",
-    exportAlert: "กำลังส่งออกข้อมูลธุรกรรมไปยังไฟล์ pocketnote_backup.json...",
+    exportAlert: "กำลังส่งออกข้อมูลธุรกรรมไปยังไฟล์ findmytang_backup.json...",
     resetConfirm:
       "คุณแน่ใจหรือไม่ว่าต้องการล้างข้อมูลทั้งหมดในเครื่อง? การกระทำนี้ไม่สามารถย้อนคืนได้",
     resetAlert: "ล้างข้อมูลในเครื่องเรียบร้อยแล้ว",
@@ -374,7 +374,7 @@ export const translations = {
     connectBtn: "Connect & Sync Account",
     guestUser: "Guest Mode",
     exportAlert:
-      "Exporting your local financial records to pocketnote_backup.json...",
+      "Exporting your local financial records to findmytang_backup.json...",
     resetConfirm:
       "Are you sure you want to reset all local data? This action cannot be undone.",
     resetAlert: "Local data cleared.",

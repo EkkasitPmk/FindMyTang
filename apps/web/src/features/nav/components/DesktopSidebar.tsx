@@ -56,7 +56,7 @@ export default function DesktopSidebar({
             <Wallet className="w-4.5 h-4.5 text-white" strokeWidth={2} />
           </div>
           <span className="text-base font-bold tracking-tight text-primary-text truncate">
-            PocketNote
+            FindMyTang
           </span>
         </div>
         <SidebarTrigger className="size-8 text-secondary-text hover:text-primary-text hover:bg-surface-secondary cursor-pointer shrink-0" />

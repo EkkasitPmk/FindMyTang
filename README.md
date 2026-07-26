@@ -1,4 +1,4 @@
-# PocketNote
+# FindMyTang
 
 ## License
 
