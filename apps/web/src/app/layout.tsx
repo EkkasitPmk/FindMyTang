@@ -6,7 +6,7 @@ import Providers from "./providers";
 import { cn } from "@/shared/lib/utils/core.util";
 
 export const metadata: Metadata = {
-  title: "PocketNote - Kinetic Precision Command Center",
+  title: "FindMyTang - Smart Personal Asset Tracker & Command Center",
   description:
     "Graceful personal finance tracker designed with modern minimalism.",
 };

@@ -46,7 +46,7 @@ export default function LoginForm({
           </div>
           <div className="flex items-baseline gap-1 select-none">
             <span className="text-2xl font-bold tracking-tighter text-primary-text">
-              PocketNote
+              FindMyTang
             </span>
             <div className="w-1.5 h-1.5 bg-primary rounded-full" />
           </div>
