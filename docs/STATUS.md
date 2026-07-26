@@ -373,6 +373,10 @@
   - ติดตั้ง `@nestjs/cache-manager` และทำ In-Memory Caching สำหรับ API หมวดหมู่ [CategoryService](file:///Users/torikiton/Desktop/PocketNote/apps/api/src/modules/category/services/category.service.ts) และสรุปยอดเงิน [SummaryService](file:///Users/torikiton/Desktop/PocketNote/apps/api/src/modules/summary/services/summary.service.ts)
   - เพิ่มระบบ Cache Invalidation อัตโนมัติใน [TransactionService](file:///Users/torikiton/Desktop/PocketNote/apps/api/src/modules/transaction/services/transaction.service.ts) และ [CategoryService](file:///Users/torikiton/Desktop/PocketNote/apps/api/src/modules/category/services/category.service.ts) เมื่อเกิดการสร้าง/แก้ไข/ลบรายการ
 
+- **Project Rebranding (PocketNote -> FindMyTang)**:
+  - **Complete Rebranding**: ดำเนินการเปลี่ยนชื่อโปรเจกต์จาก PocketNote เป็น FindMyTang ครอบคลุมตั้งแต่ GitHub Repository Remote URL (`https://github.com/EkkasitPmk/FindMyTang.git`), Scoped Monorepo Packages (`findmytang-monorepo`, `@findmytang/web`, `@findmytang/api`), SonarQube config (`sonar.projectKey=findmytang`), เอกสารโปรเจกต์ (README.md, LICENSE, GEMINI.md), Backend Swagger Open API Title & Prisma Seed System Email (`system@findmytang.com`), และ Frontend Metadata, Storage Key (`findmytang-guest-storage`) รวมถึง UI Brand Names ทั้งหมด
+  - **Build Verification**: ผ่านการทดสอบ Build ทั้ง Web และ API สำเร็จ 100%
+
 ---
 
 ### 2. สิ่งที่จะต้องทำเป็นลำดับถัดไป (Next Actions)
