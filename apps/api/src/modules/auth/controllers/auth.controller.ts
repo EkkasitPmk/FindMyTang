@@ -99,8 +99,7 @@ export class AuthController {
     const { accessToken, refreshToken, user } =
       await this.authService.login(loginDto);
 
-    const domain =
-      this.configService.get<string>("cookie.domain") || "localhost";
+    const domain = this.configService.get<string | undefined>("cookie.domain");
     const secure = this.configService.get<boolean>("cookie.secure") ?? false;
     const sameSite =
       this.configService.get<CookieSameSite>("cookie.sameSite") || "lax";
@@ -206,8 +205,7 @@ export class AuthController {
       user,
     } = await this.authService.refresh(refreshToken);
 
-    const domain =
-      this.configService.get<string>("cookie.domain") || "localhost";
+    const domain = this.configService.get<string | undefined>("cookie.domain");
     const secure = this.configService.get<boolean>("cookie.secure") ?? false;
     const sameSite =
       this.configService.get<CookieSameSite>("cookie.sameSite") || "lax";
@@ -277,8 +275,7 @@ export class AuthController {
   ): Promise<AuthMessageResponseDto> {
     await this.authService.logout();
 
-    const domain =
-      this.configService.get<string>("cookie.domain") || "localhost";
+    const domain = this.configService.get<string | undefined>("cookie.domain");
     const secure = this.configService.get<boolean>("cookie.secure") ?? false;
     const sameSite =
       this.configService.get<CookieSameSite>("cookie.sameSite") || "lax";
