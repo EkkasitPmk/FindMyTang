@@ -8,8 +8,8 @@ import { EmptyAssetList } from "../../../shared/components/customs/EmptyAssetLis
 import { AssetIconWrapper } from "@/shared/components/customs/AssetIconWrapper";
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
-import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import { usePathname } from "next/navigation";
+import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { TranslationKey } from "@/shared/lib/configs/translations.config";
 
@@ -26,7 +26,6 @@ export default function ListAssetsContainer({
 }: Readonly<ListAssetsContainerProps>) {
   const pathname = usePathname();
   const { t, locale } = useTranslation();
-
   const mounted = useMounted();
 
   const { data: assets, isPending: isAssetsPending } = useAssets();

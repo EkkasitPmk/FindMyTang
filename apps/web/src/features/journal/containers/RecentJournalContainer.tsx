@@ -1,5 +1,4 @@
 import { ClipboardPenLine, ChevronRight } from "lucide-react";
-import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import { useTransactionsQuery } from "@/features/transactions/hooks/transaction.hook";
 import { TransactionListContainer } from "@/features/transactions/containers/TransactionListContainer";
 import { TransactionResponse } from "@/shared/lib/types/transaction.type";
@@ -10,7 +9,6 @@ import { cn } from "@/shared/lib/utils/core.util";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 export default function RecentJournalContainer() {
-  const mounted = useMounted();
   const { t, locale } = useTranslation();
 
   const { data: transactionsData, isPending: isTransactionsPending } =
@@ -19,7 +17,7 @@ export default function RecentJournalContainer() {
       sortType: "DATE_NEWEST",
     });
 
-  const isLoading = !mounted || isTransactionsPending;
+  const isLoading = isTransactionsPending;
 
   const groupedTransactions = useMemo(() => {
     if (!transactionsData?.items) return [];
