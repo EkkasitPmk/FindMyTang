@@ -9,6 +9,15 @@ export const metadata: Metadata = {
   title: "FindMyTang - Smart Personal Asset Tracker & Command Center",
   description:
     "Graceful personal finance tracker designed with modern minimalism.",
+  openGraph: {
+    title: "FindMyTang - Smart Personal Asset Tracker & Command Center",
+    description:
+      "Graceful personal finance tracker designed with modern minimalism.",
+    siteName: "FindMyTang",
+    locale: "th_TH",
+    alternateLocale: ["en_US"],
+    type: "website",
+  },
 };
 
 export const viewport: Viewport = {

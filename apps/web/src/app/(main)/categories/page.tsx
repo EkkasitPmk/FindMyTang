@@ -1,7 +1,7 @@
 import CategoryContainer from "@/features/category/containers/CategoryContainer";
 
 export const metadata = {
-  title: "Categories - PocketNote",
+  title: "Categories - FindMyTang",
   description: "Manage your custom financial transaction categories.",
 };
 
