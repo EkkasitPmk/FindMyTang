@@ -52,7 +52,7 @@
   - ระบบความปลอดภัยและการจัดการสิทธิ์ขั้นสูง (NestJS Helmet, Throttler Rate Limiting, Exception Filter & CORS Hardening)
   - การปรับปรุงประสิทธิภาพระบบในกรณีมีข้อมูลธุรกรรมปริมาณมาก (Prisma Composite Indexes & NestJS In-Memory Caching)
 
-### Sprint 6: การขัดเกลาและติดตั้งขึ้นระบบจริง (Polish & Deployment) - ⏳ รอดำเนินการ
+### Sprint 6: การขัดเกลาและติดตั้งขึ้นระบบจริง (Polish & Deployment) - 🔄 กำลังดำเนินการ (Phase 1: Build Verification & Code Polish ✅ สำเร็จ 100%)
 
 - **ฟีเจอร์หลัก**:
   - ปรับปรุงประสิทธิภาพและ UX/UI ละเอียดแบบทีละจุด
@@ -64,6 +64,14 @@
 ## 🛠️ สถานะปัจจุบัน (Current Status)
 
 ### 1. สิ่งที่พัฒนาเสร็จสิ้นแล้ว (Completed)
+
+- **Sprint 6 - Phase 1: Build Verification & Code Polish (Frontend Web & Backend API)**:
+  - **Production Build Verification**: ผ่านการทดสอบ Build Bundle (`npm run build`) ของทั้ง `apps/web` (Next.js 16) และ `apps/api` (NestJS) สำเร็จ 100% ไร้ข้อผิดพลาด TypeScript และ Hydration Warnings
+  - **Settings UI Design Polish**: ปรับปรุง `SettingsContainer.tsx` ให้ตรงตามคัมภีร์ระบบสีและแนวทางการออกแบบใน `docs/DESIGN.md` อย่างเคร่งครัด 100% โดยใช้ Semantic Color Tokens (`bg-surface`, `bg-surface-secondary`, `border-border`, `text-primary-text`, `text-secondary-text`, `bg-primary`, `bg-primary-light`), ปรับการ์ดคอนเทนเนอร์เป็น `rounded-xl` พร้อมเงา `shadow-xs`, และปรับแต่งปุ่มเลือกภาษาพร้อมแก้ปัญหา Hydration Flicker ด้วย `useSyncExternalStore` ใน `useMounted.hook.ts` ตามมาตรฐาน React 19
+  - **Dynamic Multi-Language SEO**: เพิ่ม OpenGraph Metadata (`locale: th_TH`, `alternateLocale: ['en_US']`) ใน `layout.tsx` และสร้างระบบ Client-side Dynamic Document Title & Meta Description ที่อัปเดตตามภาษา TH ↔ EN อัตโนมัติ
+  - **Version Badge & UI Polish**: อัปเดตเวอร์ชันแอปพลิเคชันเป็น `v1.0.0` ใน `apps/web/package.json` และปรับปรุงส่วน Footer ในหน้า Settings พร้อมใส่ข้อความ `© 2026 FindMyTang. All rights reserved.`
+  - **Auth Page Customization**: ซ่อนลิงก์ "Forgot password?" และปุ่ม "Continue with Google" ชั่วคราวในหน้า Login/Register
+  - **Legal Pages Modals**: สร้าง Modal Dialog แสดงเนื้อหา Terms of Service (เงื่อนไขและข้อตกลงการใช้งาน) และ Privacy Policy (นโยบายความเป็นส่วนตัว) รองรับทั้งภาษาไทยและอังกฤษในแอปแบบไม่ต้องเปลี่ยนหน้า
 
 - **Analytics & Summary Modules Swagger Documentation & ApiProperty Completion (Backend API)**:
   - เพิ่มและปรับปรุง `@ApiProperty` และ Swagger Decorators ในระบบ Analytics และ Summary Module ฝั่ง Backend (`apps/api`) อย่างสมบูรณ์ครบถ้วน 100%:
