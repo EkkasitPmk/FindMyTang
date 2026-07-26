@@ -23,10 +23,11 @@ export default function Providers({ children }: Readonly<ProvidersProps>) {
     if (!localStorage.getItem("findmytang-guest-storage")) {
       useGuestStore.setState({ isGuest: true });
     }
-    // Seed default guest data
-    useGuestStore.getState().seedDefaultGuestData().catch(console.error);
-    // Run guest auto delete tasks on startup
-    useGuestStore.getState().runAutoDeleteTasks().catch(console.error);
+
+    setTimeout(() => {
+      useGuestStore.getState().seedDefaultGuestData().catch(console.error);
+      useGuestStore.getState().runAutoDeleteTasks().catch(console.error);
+    }, 0);
   }, []);
 
   return (

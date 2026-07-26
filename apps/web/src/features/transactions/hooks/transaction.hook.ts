@@ -24,8 +24,8 @@ import {
   CreateTransactionPayload,
 } from "@/shared/lib/types/transaction.type";
 import { AxiosError } from "axios";
-
 import { ApiErrorResponse } from "@/shared/lib/types/api.type";
+import { useGuestStore } from "@/shared/lib/storages/guest.storage";
 
 const invalidateQueries = (queryClient: QueryClient) => {
   queryClient.invalidateQueries({ queryKey: ["assets"] }).catch(() => {});
@@ -83,13 +83,15 @@ export const useUpdateTransactionMutation = (options?: {
 };
 
 export const useTransactionsQuery = (params?: TransactionQuery) => {
+  const isGuest = useGuestStore((state) => state.isGuest);
   return useQuery<PaginatedTransactionResponse, AxiosError<ApiErrorResponse>>({
-    queryKey: ["transactions", params],
+    queryKey: ["transactions", { isGuest, ...params }],
     queryFn: () => getTransactionsApi(params),
   });
 };
 
 export const useInfiniteTransactionsQuery = (params?: TransactionQuery) => {
+  const isGuest = useGuestStore((state) => state.isGuest);
   return useInfiniteQuery<
     PaginatedTransactionResponse,
     AxiosError<ApiErrorResponse>,
@@ -97,7 +99,7 @@ export const useInfiniteTransactionsQuery = (params?: TransactionQuery) => {
     readonly unknown[],
     number
   >({
-    queryKey: ["transactions", "infinite", params],
+    queryKey: ["transactions", "infinite", { isGuest, ...params }],
     queryFn: async ({ pageParam = 1 }) => {
       const page = pageParam as number;
       return getTransactionsApi({ ...params, page });

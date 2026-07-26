@@ -288,33 +288,30 @@ export const useGuestStore = create<GuestState>()(
       runAutoDeleteTasks: async () => {
         if (!get().isGuest) return;
 
-        const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
-        const now = Date.now();
+        const cutoff = new Date(
+          Date.now() - 30 * 24 * 60 * 60 * 1000,
+        ).toISOString();
 
         await db.transaction(
           "rw",
           [db.assets, db.categories, db.transactions],
           async () => {
-            const checkAndDelete = async (
+            const deleteOld = async (
               table:
                 | typeof db.assets
                 | typeof db.categories
                 | typeof db.transactions,
             ) => {
-              const items = await table.toArray();
-              for (const item of items) {
-                if (item.deletedAt) {
-                  const deletedDate = new Date(item.deletedAt).getTime();
-                  if (now - deletedDate >= THIRTY_DAYS_MS) {
-                    await table.delete(item.id);
-                  }
-                }
-              }
+              const ids = await table
+                .where("deletedAt")
+                .belowOrEqual(cutoff)
+                .primaryKeys();
+              if (ids.length > 0) await table.bulkDelete(ids as string[]);
             };
 
-            await checkAndDelete(db.assets);
-            await checkAndDelete(db.categories);
-            await checkAndDelete(db.transactions);
+            await deleteOld(db.assets);
+            await deleteOld(db.categories);
+            await deleteOld(db.transactions);
           },
         );
       },
