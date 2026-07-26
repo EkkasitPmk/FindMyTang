@@ -5,6 +5,7 @@ import { UserProfile } from "@/shared/lib/types/user.type";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { cn } from "@/shared/lib/utils/core.util";
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
+import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 
 interface NavUserProfileProps {
   user?: UserProfile | null;
@@ -21,10 +22,11 @@ export default function NavUserProfile({
   onActionClick,
   className,
 }: Readonly<NavUserProfileProps>) {
+  const mounted = useMounted();
   const { t } = useTranslation();
 
   const userProfileContent = (() => {
-    if (isLoading) {
+    if (!mounted || isLoading) {
       return (
         <div className="space-y-1.5 animate-pulse">
           <div className="h-3 w-20 bg-surface-secondary rounded" />
@@ -47,7 +49,7 @@ export default function NavUserProfile({
     }
 
     return (
-      <p className="text-xs font-semibold leading-tight text-primary-text truncate">
+      <p className="text-xs font-semibold text-primary-text truncate leading-tight">
         Guest User
       </p>
     );
@@ -65,7 +67,8 @@ export default function NavUserProfile({
             {userProfileContent}
           </div>
         </div>
-        {!isLoading &&
+        {mounted &&
+          !isLoading &&
           (user ? (
             <Button
               variant="unstyled"
@@ -98,7 +101,8 @@ export default function NavUserProfile({
         <div className="w-8 h-8 rounded-full bg-surface-secondary border border-border flex items-center justify-center overflow-hidden shrink-0">
           <Avatar url={user?.avatarUrl} size={32} iconSize={16} />
         </div>
-        {!isLoading &&
+        {mounted &&
+          !isLoading &&
           (user ? (
             <Button
               variant="unstyled"

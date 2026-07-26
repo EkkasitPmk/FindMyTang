@@ -1,17 +1,18 @@
 "use client";
+import { useState } from "react";
 import Link from "next/link";
 import {
   User,
-  Shield,
   Globe,
   ChevronRight,
-  Lock,
   Tag,
   Wallet,
+  HelpCircle,
 } from "lucide-react";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
-import { useIsGuest } from "@/shared/lib/storages/guest.storage";
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
+import TermsOfServiceModal from "@/shared/components/customs/TermsOfServiceModal";
+import PrivacyPolicyModal from "@/shared/components/customs/PrivacyPolicyModal";
 
 interface SettingsContainerProps {
   onClose?: () => void;
@@ -21,97 +22,69 @@ export default function SettingsContainer({
   onClose,
 }: Readonly<SettingsContainerProps>) {
   const { t, currentLanguage, changeLanguage } = useTranslation();
-  const isGuest = useIsGuest();
 
-  // const handleExportData = () => {
-  //   alert(t("exportAlert"));
-  // };
-
-  // const handleResetData = () => {
-  //   if (confirm(t("resetConfirm"))) {
-  //     alert(t("resetAlert"));
-  //   }
-  // };
+  const [isTermsOpen, setIsTermsOpen] = useState(false);
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
 
   return (
-    <div className="space-y-6 px-4 py-2 animate-in fade-in duration-300">
+    <div className="space-y-6 px-4 py-3 animate-in fade-in duration-300">
       {/* Profile Header */}
       <div className="space-y-2">
-        <h5 className="text-[11px] font-semibold text-secondary-text/85 uppercase tracking-wider px-1">
+        <h5 className="text-[11px] font-semibold text-secondary-text uppercase tracking-wider px-1">
           {t("personalInfo")}
         </h5>
         <Link
           href="/settings/account"
           onClick={onClose}
-          className="block bg-surface border border-border/60 rounded-md hover:bg-surface-secondary/50 transition-colors cursor-pointer"
+          className="block bg-surface border border-border rounded-xl hover:bg-surface-secondary transition-colors cursor-pointer shadow-xs"
         >
-          <div className="flex justify-between items-center p-3">
-            <div className="flex items-center gap-2.5">
-              <User className="w-4 h-4 text-secondary-text" strokeWidth={1.5} />
+          <div className="flex justify-between items-center py-2 p-3.5">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-surface-secondary text-primary-text">
+                <User
+                  className="w-4 h-4 text-secondary-text"
+                  strokeWidth={1.5}
+                />
+              </div>
               <span className="text-xs font-semibold text-primary-text">
                 {t("account")}
               </span>
             </div>
             <ChevronRight
-              className="w-3.5 h-3.5 text-secondary-text/70"
+              className="w-4 h-4 text-secondary-text/70"
               strokeWidth={1.5}
             />
           </div>
         </Link>
       </div>
 
-      {/* Sync & Backup Main CTA */}
-      {isGuest && (
-        <div className="bg-surface border border-border/60 rounded-md p-4 space-y-3">
-          <div className="flex gap-3">
-            <div className="p-2 rounded-md bg-primary-light/50 text-primary self-start">
-              <Shield className="w-4 h-4" strokeWidth={1.5} />
-            </div>
-            <div>
-              <h5 className="text-xs font-bold text-primary-text">
-                {t("syncTitle")}
-              </h5>
-              <p className="text-[10px] text-secondary-text/85 mt-0.5">
-                {t("syncDesc")}
-              </p>
-            </div>
-          </div>
-          <Link
-            href="/login"
-            onClick={onClose}
-            className="w-full py-2 px-3 rounded-md bg-primary hover:bg-primary-hover text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors shadow-sm"
-          >
-            <Lock className="w-3.5 h-3.5" strokeWidth={2} />
-            {t("connectBtn")}
-          </Link>
-        </div>
-      )}
-
       {/* Preferences Section */}
       <div className="space-y-2">
-        <h5 className="text-[11px] font-semibold text-secondary-text/85 uppercase tracking-wider px-1">
+        <h5 className="text-[11px] font-semibold text-secondary-text uppercase tracking-wider px-1">
           {t("preferences")}
         </h5>
-        <div className="bg-surface border border-border/60 rounded-md divide-y divide-border">
+        <div className="bg-surface border border-border rounded-xl divide-y divide-border shadow-xs">
           {/* Language Selection */}
-          <div className="flex justify-between items-center p-3">
-            <div className="flex items-center gap-2.5">
-              <Globe
-                className="w-4 h-4 text-secondary-text"
-                strokeWidth={1.5}
-              />
+          <div className="flex justify-between items-center py-2 p-3.5">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-surface-secondary text-primary-text">
+                <Globe
+                  className="w-4 h-4 text-secondary-text"
+                  strokeWidth={1.5}
+                />
+              </div>
               <span className="text-xs font-semibold text-primary-text">
                 {t("language")}
               </span>
             </div>
-            <div className="flex gap-1">
+            <div className="flex gap-1 bg-surface-secondary p-1 rounded-lg border border-border/50">
               <Button
                 variant="unstyled"
                 onClick={() => changeLanguage("en")}
-                className={`py-1 px-2.5 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
+                className={`py-1 px-3 rounded-md text-[11px] font-semibold transition-all cursor-pointer ${
                   currentLanguage === "en"
-                    ? "bg-primary-text text-surface"
-                    : "bg-surface-secondary text-secondary-text hover:text-primary-text"
+                    ? "bg-primary text-white shadow-xs"
+                    : "text-secondary-text hover:text-primary-text"
                 }`}
               >
                 English
@@ -119,10 +92,10 @@ export default function SettingsContainer({
               <Button
                 variant="unstyled"
                 onClick={() => changeLanguage("th")}
-                className={`py-1 px-2.5 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
+                className={`py-1 px-3 rounded-md text-[11px] font-semibold transition-all cursor-pointer ${
                   currentLanguage === "th"
-                    ? "bg-primary-text text-surface"
-                    : "bg-surface-secondary text-secondary-text hover:text-primary-text"
+                    ? "bg-primary text-white shadow-xs"
+                    : "text-secondary-text hover:text-primary-text"
                 }`}
               >
                 ไทย
@@ -134,103 +107,99 @@ export default function SettingsContainer({
 
       {/* Management Section */}
       <div className="space-y-2">
-        <h5 className="text-[11px] font-semibold text-secondary-text/85 uppercase tracking-wider px-1">
+        <h5 className="text-[11px] font-semibold text-secondary-text uppercase tracking-wider px-1">
           {t("management")}
         </h5>
-        <div className="bg-surface border border-border/60 rounded-md divide-y divide-border">
+        <div className="bg-surface border border-border rounded-xl divide-y divide-border shadow-xs">
           <Link
             href="/categories"
             onClick={onClose}
-            className="w-full flex justify-between items-center p-3 hover:bg-surface-secondary/50 transition-colors text-left outline-none cursor-pointer"
+            className="w-full flex justify-between items-center py-2 p-3.5 hover:bg-surface-secondary hover:rounded-tl-xl hover:rounded-tr-xl transition-colors text-left outline-none cursor-pointer"
           >
-            <div className="flex items-center gap-2.5">
-              <Tag className="w-4 h-4 text-secondary-text" strokeWidth={1.5} />
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-surface-secondary text-primary-text">
+                <Tag
+                  className="w-4 h-4 text-secondary-text"
+                  strokeWidth={1.5}
+                />
+              </div>
               <span className="text-xs font-semibold text-primary-text">
                 {t("manageCategories")}
               </span>
             </div>
             <ChevronRight
-              className="w-3.5 h-3.5 text-secondary-text/70"
+              className="w-4 h-4 text-secondary-text/70"
               strokeWidth={1.5}
             />
           </Link>
           <Link
             href="/assets"
             onClick={onClose}
-            className="w-full flex justify-between items-center p-3 hover:bg-surface-secondary/50 transition-colors text-left outline-none cursor-pointer"
+            className="w-full flex justify-between items-center py-2 p-3.5 hover:bg-surface-secondary hover:rounded-bl-xl hover:rounded-br-xl transition-colors text-left outline-none cursor-pointer"
           >
-            <div className="flex items-center gap-2.5">
-              <Wallet
-                className="w-4 h-4 text-secondary-text"
-                strokeWidth={1.5}
-              />
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-surface-secondary text-primary-text">
+                <Wallet
+                  className="w-4 h-4 text-secondary-text"
+                  strokeWidth={1.5}
+                />
+              </div>
               <span className="text-xs font-semibold text-primary-text">
                 {t("manageAssets")}
               </span>
             </div>
             <ChevronRight
-              className="w-3.5 h-3.5 text-secondary-text/70"
+              className="w-4 h-4 text-secondary-text/70"
               strokeWidth={1.5}
             />
           </Link>
         </div>
       </div>
 
-      {/* Data Management Section */}
-      {/* <div className="space-y-2">
-        <h5 className="text-[11px] font-semibold text-secondary-text/85 uppercase tracking-wider px-1">
-          {t("dataManagement")}
-        </h5>
-        <div className="bg-surface border border-border/60 rounded-md divide-y divide-border">
+      {/* App Version & Legal Footer */}
+      <div className="bg-surface border border-border rounded-xl p-4 space-y-3 shadow-xs">
+        <div className="flex justify-between items-center text-xs">
+          <div className="flex items-center gap-2 font-medium text-secondary-text">
+            <HelpCircle className="w-4 h-4 text-primary" strokeWidth={1.75} />
+            <span className="font-semibold text-primary-text">FindMyTang</span>
+          </div>
+          <span className="px-2.5 py-0.5 rounded-full bg-primary-light text-primary text-[11px] font-semibold">
+            v1.0.0
+          </span>
+        </div>
+
+        <div className="flex items-center gap-3 pt-2 mb-2 border-t border-border text-xs">
           <Button
             variant="unstyled"
-            onClick={handleExportData}
-            className="w-full flex justify-between items-center p-3 hover:bg-surface-secondary/50 transition-colors text-left outline-none cursor-pointer"
+            onClick={() => setIsTermsOpen(true)}
+            className="text-secondary-text hover:text-primary transition-colors cursor-pointer text-xs p-0 font-medium hover:underline"
           >
-            <div className="flex items-center gap-2.5">
-              <Download
-                className="w-4 h-4 text-secondary-text"
-                strokeWidth={1.5}
-              />
-              <span className="text-xs font-semibold text-primary-text">
-                {t("exportData")}
-              </span>
-            </div>
-            <ChevronRight
-              className="w-3.5 h-3.5 text-secondary-text/70"
-              strokeWidth={1.5}
-            />
+            {t("termsOfService")}
           </Button>
-
+          <span className="text-secondary-text/40">•</span>
           <Button
             variant="unstyled"
-            onClick={handleResetData}
-            className="w-full flex justify-between items-center p-3 hover:bg-expense-light/50 transition-colors text-left outline-none cursor-pointer group"
+            onClick={() => setIsPrivacyOpen(true)}
+            className="text-secondary-text hover:text-primary transition-colors cursor-pointer text-xs p-0 font-medium hover:underline"
           >
-            <div className="flex items-center gap-2.5 text-secondary-text group-hover:text-expense">
-              <Trash2 className="w-4 h-4" strokeWidth={1.5} />
-              <span className="text-xs font-semibold text-primary-text group-hover:text-expense">
-                {t("resetData")}
-              </span>
-            </div>
-            <ChevronRight
-              className="w-3.5 h-3.5 text-secondary-text/70 group-hover:text-expense"
-              strokeWidth={1.5}
-            />
+            {t("privacyPolicy")}
           </Button>
         </div>
-      </div> */}
 
-      {/* App details & Help */}
-      {/* <div className="bg-surface-secondary border border-border/60 rounded-md p-3 flex justify-between items-center text-[10px] text-secondary-text/85">
-        <div className="flex items-center gap-1.5">
-          <HelpCircle className="w-3.5 h-3.5" strokeWidth={1.5} />
-          <span>Version 1.0.0 (Geist Edition)</span>
-        </div>
-        <a href="#" className="hover:underline font-semibold text-primary">
-          TOS & Privacy
-        </a>
-      </div> */}
+        <p className="text-[10px] text-secondary-text/70">
+          {t("copyrightNotice")}
+        </p>
+      </div>
+
+      {/* Modals */}
+      <TermsOfServiceModal
+        isOpen={isTermsOpen}
+        onClose={() => setIsTermsOpen(false)}
+      />
+      <PrivacyPolicyModal
+        isOpen={isPrivacyOpen}
+        onClose={() => setIsPrivacyOpen(false)}
+      />
     </div>
   );
 }

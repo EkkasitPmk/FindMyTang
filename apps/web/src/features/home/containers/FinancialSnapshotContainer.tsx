@@ -9,7 +9,7 @@ export default function FinancialSnapshotContainer() {
   const mounted = useMounted();
   const [isPrivate, setIsPrivate] = useState<boolean>(() => {
     if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("pocketnote_privacy_mode");
+      const saved = localStorage.getItem("findmytang_privacy_mode");
       return saved === "true";
     }
     return false;
@@ -19,7 +19,7 @@ export default function FinancialSnapshotContainer() {
     setIsPrivate((prev) => {
       const next = !prev;
       if (typeof window !== "undefined") {
-        localStorage.setItem("pocketnote_privacy_mode", String(next));
+        localStorage.setItem("findmytang_privacy_mode", String(next));
       }
       return next;
     });

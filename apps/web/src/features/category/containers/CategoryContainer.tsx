@@ -365,14 +365,14 @@ export default function CategoryContainer() {
         className="w-full gap-1"
       >
         <div className="relative z-10 w-full">
-          <TabsList className="w-full grid grid-cols-3">
-            <TabsTrigger value="EXPENSE" className="text-sm py-2 truncate">
+          <TabsList className="w-full grid grid-cols-3 h-fit">
+            <TabsTrigger value="EXPENSE" className="text-sm truncate">
               {t("expenses")}
             </TabsTrigger>
-            <TabsTrigger value="INCOME" className="text-sm py-2 truncate">
+            <TabsTrigger value="INCOME" className="text-sm truncate">
               {t("income")}
             </TabsTrigger>
-            <TabsTrigger value="DELETED" className="text-sm py-2 truncate">
+            <TabsTrigger value="DELETED" className="text-sm truncate">
               {t("deletedCategories")}
             </TabsTrigger>
           </TabsList>

@@ -76,7 +76,7 @@ export default function AssetForm({
     >
       <SheetContent
         side="bottom"
-        className="h-auto max-h-[80vh] rounded-t-2xl sm:max-w-lg sm:mx-auto border-border bg-surface p-4 shadow-2xl overflow-y-auto custom-scrollbar flex flex-col gap-2"
+        className="h-auto max-h-[90vh] rounded-t-2xl sm:max-w-lg sm:mx-auto border-border bg-surface p-4 shadow-2xl overflow-y-auto custom-scrollbar flex flex-col gap-2"
       >
         <SheetHeader className="text-left pb-1 px-0">
           <SheetTitle className="text-xl font-bold text-foreground">

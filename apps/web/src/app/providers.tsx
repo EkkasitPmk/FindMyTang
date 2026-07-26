@@ -7,6 +7,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ThemeProvider } from "next-themes";
 import FeatureLockModal from "@/shared/components/customs/FeatureLockModal";
+import DynamicSeoHead from "@/shared/components/customs/DynamicSeoHead";
 import { useGuestStore } from "@/shared/lib/storages/guest.storage";
 import { useFeatureLockLogic } from "@/shared/lib/hooks/useFeatureLockLogic.hook";
 
@@ -19,7 +20,7 @@ export default function Providers({ children }: Readonly<ProvidersProps>) {
 
   useEffect(() => {
     // Force write to localStorage on very first visit so it exists
-    if (!localStorage.getItem("pocketnote-guest-storage")) {
+    if (!localStorage.getItem("findmytang-guest-storage")) {
       useGuestStore.setState({ isGuest: true });
     }
     // Seed default guest data
@@ -30,6 +31,7 @@ export default function Providers({ children }: Readonly<ProvidersProps>) {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <DynamicSeoHead />
       <ThemeProvider
         attribute="class"
         defaultTheme="system"
