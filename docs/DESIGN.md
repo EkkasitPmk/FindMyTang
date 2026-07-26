@@ -1,6 +1,6 @@
-# PocketNote Design System: Semantic Color System
+# FindMyTang Design System: Semantic Color System
 
-สรุปแนวทางการออกแบบระบบสีสำหรับ PocketNote (ปรับปรุงจาก Material Design 3 มาเป็น Semantic Color System เพื่อความเรียบ สะอาด และให้ความสำคัญกับข้อมูลการเงินเป็นหลัก)
+สรุปแนวทางการออกแบบระบบสีสำหรับ FindMyTang (ปรับปรุงจาก Material Design 3 มาเป็น Semantic Color System เพื่อความเรียบ สะอาด และให้ความสำคัญกับข้อมูลการเงินเป็นหลัก)
 
 ---
 

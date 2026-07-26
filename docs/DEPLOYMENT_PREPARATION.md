@@ -1,4 +1,4 @@
-# PocketNote - Deployment Preparation & Readiness Checklist
+# FindMyTang - Deployment Preparation & Readiness Checklist
 
 (สรุปความพร้อมของระบบและขั้นตอนการเตรียมตัวสำหรับ Deployment)
 

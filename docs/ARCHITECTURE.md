@@ -1,4 +1,4 @@
-# PocketNote - Technical Architecture (สถาปัตยกรรม ฐานข้อมูล และ API)
+# FindMyTang - Technical Architecture (สถาปัตยกรรม ฐานข้อมูล และ API)
 
 เอกสารนี้รวบรวมรายละเอียดด้านโครงสร้างระบบสถาปัตยกรรม โครงสร้างฐานข้อมูล (Database Schema) รายละเอียดของ API Endpoints และมาตรฐานการเขียนโค้ด (Coding Standard) ไว้ในที่เดียว
 
@@ -6,7 +6,7 @@
 
 ## 🏛️ สถาปัตยกรรมระบบ (System Architecture)
 
-PocketNote ใช้สถาปัตยกรรมแบบ **Client-Server Web Application** ที่ออกแบบภายใต้หลักคิด **Online-First with Guest Mode** (รองรับการใช้งานแบบออฟไลน์ผ่าน LocalStorage ก่อนแล้วจึงซิงค์ขึ้นระบบคลาวด์เมื่อล็อกอิน)
+FindMyTang ใช้สถาปัตยกรรมแบบ **Client-Server Web Application** ที่ออกแบบภายใต้หลักคิด **Online-First with Guest Mode** (รองรับการใช้งานแบบออฟไลน์ผ่าน LocalStorage ก่อนแล้วจึงซิงค์ขึ้นระบบคลาวด์เมื่อล็อกอิน)
 
 ```mermaid
 graph TD
@@ -222,7 +222,7 @@ graph TD
 1.  **Type Safety (TypeScript)**: ห้ามการใช้ชนิดข้อมูลแบบ `any` ในโค้ดโดยเด็ดขาด หากไม่ทราบชนิดข้อมูลที่แน่นอนให้ใช้ `unknown` แทน
 2.  **Frontend Architecture (Feature-Based)**:
     - จัดหมวดหมู่โค้ดแยกตามโมดูลหลักของฟีเจอร์ใน `apps/web/src/features/<feature_name>/`
-    - แยกสัดส่วนระหว่าง **Presentation Component** (ส่วนการแสดงผล UI ที่ไม่มี Side-effects และพึ่งพา Props เท่านั้น) และ **Container Component** (ส่วนควบคุมสถานะ เรียกใช้ Hooks และ Logic การเชื่อมต่อข้อมูล) ตามข้อกำหนดใน [AGENTS.md ของฝั่ง Web](file:///Users/torikiton/Desktop/PocketNote/apps/web/AGENTS.md)
+    - แยกสัดส่วนระหว่าง **Presentation Component** (ส่วนการแสดงผล UI ที่ไม่มี Side-effects และพึ่งพา Props เท่านั้น) และ **Container Component** (ส่วนควบคุมสถานะ เรียกใช้ Hooks และ Logic การเชื่อมต่อข้อมูล) ตามข้อกำหนดใน [AGENTS.md ของฝั่ง Web](file:///Users/torikiton/Desktop/FindMyTang/apps/web/AGENTS.md)
 3.  **Backend Standards (NestJS Modular)**:
     - จำแนกโค้ดออกเป็น Module, Controller และ Service
     - ใช้ Class-Validator และ DTOs ในการคัดกรองความถูกต้องของข้อมูล (Request Validation)
