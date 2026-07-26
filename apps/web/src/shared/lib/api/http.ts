@@ -1,10 +1,10 @@
 import axios from "axios";
 
-// ponytail: relative baseURL routes through Next.js rewrites → avoids cross-domain cookie block
 const http = axios.create({
-  baseURL: typeof window === "undefined"
-    ? process.env.NEXT_PUBLIC_URL_BACKEND        // SSR: call backend directly
-    : "/api/v1",                                  // Browser: go through Vercel proxy
+  baseURL:
+    typeof window === "undefined"
+      ? process.env.NEXT_PUBLIC_URL_BACKEND
+      : "/api/v1",
   timeout: 15000,
   withCredentials: true,
 });
@@ -55,11 +55,7 @@ http.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        await axios.post(
-          `/api/v1/auth/refresh`,
-          {},
-          { withCredentials: true },
-        );
+        await axios.post(`/api/v1/auth/refresh`, {}, { withCredentials: true });
         processQueue(null);
         return http(originalRequest);
       } catch (refreshError) {
