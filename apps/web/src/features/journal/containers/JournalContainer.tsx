@@ -1,5 +1,6 @@
 "use client";
 import { useState, useMemo } from "react";
+import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import { TransactionListContainer } from "@/features/transactions/containers/TransactionListContainer";
 import {
   Tabs,
@@ -35,6 +36,7 @@ type ViewMode = "timeline" | "calendar";
 
 export default function JournalContainer() {
   const { t, locale } = useTranslation();
+  const mounted = useMounted();
   const [viewMode, setViewMode] = useState<ViewMode>("timeline");
   const [searchKeyword, setSearchKeyword] = useState("");
   const [selectedType, setSelectedType] =
@@ -59,7 +61,10 @@ export default function JournalContainer() {
   });
 
   const groupedTransactions = useMemo(() => {
-    if (!transactionsData?.pages) return [];
+    // ponytail: guard against SSR/client locale mismatch — Intl.DateTimeFormat(locale) produces
+    // different dateStr keys on SSR (locale="en") vs client (locale="th-TH"), causing React
+    // hydration mismatch which regenerates the whole tree and shows "No transactions found".
+    if (!mounted || !transactionsData?.pages) return [];
 
     // Flatten all pages, deduplicate by id in case page boundaries overlap
     const seen = new Set<string>();
@@ -104,7 +109,7 @@ export default function JournalContainer() {
       dateStr,
       items,
     }));
-  }, [transactionsData, searchKeyword, locale]);
+  }, [mounted, transactionsData, searchKeyword, locale]);
 
   return (
     <div className="flex flex-col h-[calc(100vh-80px)] bg-background space-y-2">
@@ -258,7 +263,7 @@ export default function JournalContainer() {
                 <div className="flex-1 min-h-0">
                   <TransactionListContainer
                     groupedTransactions={groupedTransactions}
-                    isLoadingTransactions={isLoadingTransactions}
+                    isLoadingTransactions={!mounted || isLoadingTransactions}
                     isFetchingNextPage={isFetchingNextPage}
                     hasNextPage={hasNextPage}
                     fetchNextPage={fetchNextPage}

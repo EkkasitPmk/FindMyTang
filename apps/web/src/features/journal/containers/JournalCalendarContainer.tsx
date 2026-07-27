@@ -1,5 +1,6 @@
 "use client";
 import { useMemo, useRef, useCallback } from "react";
+import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import {
   startOfMonth,
   endOfMonth,
@@ -30,6 +31,7 @@ import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 export default function JournalCalendarContainer() {
   const { locale } = useTranslation();
+  const mounted = useMounted();
   const { currentMonth, selectedDate, navigatorProps, handleSelectDate } =
     useJournalCalendar(locale);
 
@@ -101,6 +103,7 @@ export default function JournalCalendarContainer() {
 
   // Group for TransactionListContainer (date label grouped)
   const groupedTransactions: GroupedTransaction[] = useMemo(() => {
+    if (!mounted) return [];
     const groups: GroupedTransaction[] = [];
     // Sort dates newest first
     const sortedKeys = Array.from(transactionsByDate.keys()).sort(
@@ -119,7 +122,7 @@ export default function JournalCalendarContainer() {
       }
     });
     return groups;
-  }, [transactionsByDate, currentMonth, locale]);
+  }, [mounted, transactionsByDate, currentMonth, locale]);
 
   // Click on a date in the calendar -> scroll to that date's group
   const handleDateClick = useCallback(
@@ -175,10 +178,10 @@ export default function JournalCalendarContainer() {
           />
         </div>
 
-        {/* Section 4: Transaction List — Scrollable only here */}
+        {/* Section 4: Transaction List — Scrollable only here ฝ*/}
         <TransactionListContainer
           groupedTransactions={groupedTransactions}
-          isLoadingTransactions={isLoadingTransactions}
+          isLoadingTransactions={!mounted || isLoadingTransactions}
           page="journal"
         />
       </div>

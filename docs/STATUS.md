@@ -243,7 +243,6 @@
   - อัปเดต [journal-calendar.hook.ts](file:///Users/torikiton/Desktop/FindMyTang/apps/web/src/features/journal/hooks/journal-calendar.hook.ts) ให้ฟังก์ชัน `handleMonthToggle` และ `handleYearToggle` รองรับพารามิเตอร์ `open?: boolean` เพื่อทำงานร่วมกับ Radix UI & Motion transition entry animations ได้อย่างราบรื่นและเสถียร 100%
   - **Journal Calendar Dropdown Fast-Close Fix**: แก้ไขปัญหากดเปิด Dropdown เดือน/ปีแล้วเมนูปิดลงทันที โดยยกเลิกการใช้ `useClickOutside` และ `monthRef`/`yearRef` ใน [journal-calendar.hook.ts](file:///Users/torikiton/Desktop/FindMyTang/apps/web/src/features/journal/hooks/journal-calendar.hook.ts) และ [MonthYearNavigator.tsx](file:///Users/torikiton/Desktop/FindMyTang/apps/web/src/features/journal/components/MonthYearNavigator.tsx) เนื่องจาก Radix UI DropdownMenu มีระบบจัดการ Dismiss/Outside Click ในตัวแบบ Portal อยู่แล้ว การใส่ custom `useClickOutside` ไปครอบเฉพาะปุ่ม Trigger ทำให้เมื่อเปิดเมนู เมนูดรอปดาวน์ที่ถูก Portal ไปอยู่ด้านนอก DOM Node ถูก `useClickOutside` ตรวจจับว่าเป็น "นอกพื้นที่" และสั่งปิดทันที การนำ Custom Hook ออกช่วยให้ Radix UI ควบคุม Open/Close State ได้อย่างสมบูรณ์และเสถียร 100%
 
-
 - **Sidebar Collapse Animation Refactoring**:
   - ปรับปรุงอนิเมชันการย่อ-ขยาย (Expand/Collapse) ของ Desktop Sidebar ให้มีความนุ่มนวล (Smooth Transition) แบบ 100% ตามมาตรฐาน [test.md](file:///Users/torikiton/Desktop/FindMyTang/test.md)
   - เปลี่ยนจากการใช้ JavaScript Unmount Elements (`{!isCollapsed && ...}`) ไปใช้ Tailwind CSS `group-data-[collapsible=icon]` ร่วมกับ CSS Transitions
@@ -408,4 +407,3 @@
 5. **[ ] ระบบคำนวณยอดเงินพร้อมใช้ (Spendable / Available Balance):** คำนวณยอดเงินคงเหลือที่สามารถนำไปใช้จ่ายได้จริง (สุทธิจากเงินออม เงินลงทุน หรือเงินสำรอง) แยกต่างหากจากยอดสินทรัพย์รวม (Total Assets)
 6. **[ ] ระบบวิเคราะห์ภาษีและการลดหย่อน (Tax Calculation & Deduction Tracker):** ระบบรวบรวมรายได้สะสม สรุปหมวดหมู่ค่าใช้จ่าย/สิทธิลดหย่อน และคำนวณภาษีเงินได้บุคคลธรรมดาประเมินปลายปี
 7. **[ ] ระบบจัดสรรรายได้อัตโนมัติ (Income Allocation / Rule-based Splitting):** ตั้งค่ากฎการแบ่งเก็บแบ่งจ่ายอัตโนมัติเมื่อมีรายรับเข้ามา (เช่น 50% ค่าใช้จ่าย, 30% เงินออม, 20% ลงทุน)
-

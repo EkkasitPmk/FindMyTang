@@ -15,12 +15,15 @@ let failedQueue: {
   reject: (reason?: unknown) => void;
 }[] = [];
 
+const MAX_QUEUE_SIZE = 10;
+
 const processQueue = (error: unknown) => {
-  failedQueue.forEach((prom) => {
+  failedQueue.forEach((prom, i) => {
     if (error) {
       prom.reject(error);
     } else {
-      prom.resolve();
+      // stagger re-fires by 30ms each to avoid simultaneous burst on mobile networks
+      setTimeout(() => prom.resolve(), i * 30);
     }
   });
   failedQueue = [];
@@ -46,6 +49,10 @@ http.interceptors.response.use(
       !originalRequest.url?.includes("/auth/login")
     ) {
       if (isRefreshing) {
+        if (failedQueue.length >= MAX_QUEUE_SIZE) {
+          // Queue full — reject immediately to avoid building up indefinitely
+          throw error;
+        }
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         }).then(() => http(originalRequest));

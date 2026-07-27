@@ -24,10 +24,16 @@ export default function Providers({ children }: Readonly<ProvidersProps>) {
       useGuestStore.setState({ isGuest: true });
     }
 
-    setTimeout(() => {
+    const runDexieTasks = () => {
       useGuestStore.getState().seedDefaultGuestData().catch(console.error);
       useGuestStore.getState().runAutoDeleteTasks().catch(console.error);
-    }, 0);
+    };
+
+    if (typeof requestIdleCallback !== "undefined") {
+      requestIdleCallback(runDexieTasks, { timeout: 3000 });
+    } else {
+      setTimeout(runDexieTasks, 200);
+    }
   }, []);
 
   return (

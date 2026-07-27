@@ -104,7 +104,7 @@ export function TransactionList({
             </div>
           </section>
         )}
-        <div className="space-y-4">
+        <section className="space-y-4">
           {SKELETON_GROUPS.map((i) => (
             <div
               key={`skeleton-group-tx-${i}`}
@@ -114,7 +114,7 @@ export function TransactionList({
               <Skeleton className="h-13 w-full rounded-none" />
             </div>
           ))}
-        </div>
+        </section>
       </>
     );
   }
@@ -149,13 +149,18 @@ export function TransactionList({
     );
   }
 
+  if (!groupedTransactions?.length) {
+    return (
+      <div className="text-secondary-text h-50 flex items-center justify-center">
+        {isSearchMode
+          ? "No matching transactions found"
+          : "No transactions found"}
+      </div>
+    );
+  }
+
   return (
-    <section
-      className={cn(
-        "bg-surface space-y-2",
-        !groupedTransactions?.length && "bg-transparent",
-      )}
-    >
+    <section className="bg-surface space-y-2">
       {groupedTransactions.map((group) => (
         <div
           key={group.dateStr}
@@ -186,13 +191,6 @@ export function TransactionList({
           )}
         </div>
       ))}
-      {!groupedTransactions?.length && (
-        <div className="text-secondary-text h-50 flex items-center justify-center">
-          {isSearchMode
-            ? "No matching transactions found"
-            : "No transactions found"}
-        </div>
-      )}
     </section>
   );
 }
