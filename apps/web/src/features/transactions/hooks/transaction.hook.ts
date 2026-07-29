@@ -82,16 +82,23 @@ export const useUpdateTransactionMutation = (options?: {
   });
 };
 
-export const useTransactionsQuery = (params?: TransactionQuery) => {
+export const useTransactionsQuery = (
+  params?: TransactionQuery,
+  options?: { enabled?: boolean },
+) => {
   const isGuest = useGuestStore((state) => state.isGuest);
   return useQuery<PaginatedTransactionResponse, AxiosError<ApiErrorResponse>>({
     queryKey: ["transactions", { isGuest, ...params }],
     queryFn: () => getTransactionsApi(params),
+    ...options,
   });
 };
 
 export const useInfiniteTransactionsQuery = (params?: TransactionQuery) => {
   const isGuest = useGuestStore((state) => state.isGuest);
+
+  const queryParams = isGuest ? { limit: 20, ...params } : params;
+
   return useInfiniteQuery<
     PaginatedTransactionResponse,
     AxiosError<ApiErrorResponse>,
@@ -102,7 +109,7 @@ export const useInfiniteTransactionsQuery = (params?: TransactionQuery) => {
     queryKey: ["transactions", "infinite", { isGuest, ...params }],
     queryFn: async ({ pageParam = 1 }) => {
       const page = pageParam as number;
-      return getTransactionsApi({ ...params, page });
+      return getTransactionsApi({ ...queryParams, page });
     },
     getNextPageParam: (lastPage: PaginatedTransactionResponse) => {
       if (lastPage.meta.page < lastPage.meta.totalPages) {
@@ -136,8 +143,9 @@ export const useDeleteTransactionMutation = (options?: {
 };
 
 export const useTransactionYearsQuery = () => {
+  const isGuest = useGuestStore((state) => state.isGuest);
   return useQuery<number[], AxiosError<ApiErrorResponse>>({
-    queryKey: ["transactions", "years"],
+    queryKey: ["transactions", "years", isGuest],
     queryFn: getTransactionYearsApi,
   });
 };
@@ -146,15 +154,17 @@ export const useAvailableDatesQuery = (
   assetId?: string,
   isDeleted?: boolean,
 ) => {
+  const isGuest = useGuestStore((state) => state.isGuest);
   return useQuery<Record<string, string[]>, AxiosError<ApiErrorResponse>>({
-    queryKey: ["transactions", "availableDates", assetId, isDeleted],
+    queryKey: ["transactions", "availableDates", assetId, isDeleted, isGuest],
     queryFn: () => getAvailableDatesApi(assetId, isDeleted),
   });
 };
 
 export const useTransactionQuery = (id?: string) => {
+  const isGuest = useGuestStore((state) => state.isGuest);
   return useQuery<TransactionResponse, AxiosError<ApiErrorResponse>>({
-    queryKey: ["transaction", id],
+    queryKey: ["transaction", id, isGuest],
     queryFn: () => getTransactionApi(id!),
     enabled: !!id,
   });

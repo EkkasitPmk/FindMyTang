@@ -5,11 +5,12 @@ import { TransactionResponse } from "@/shared/lib/types/transaction.type";
 import { useMemo } from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
-import { cn } from "@/shared/lib/utils/core.util";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 
 export default function RecentJournalContainer() {
   const { t, locale } = useTranslation();
+  const mounted = useMounted();
 
   const { data: transactionsData, isPending: isTransactionsPending } =
     useTransactionsQuery({
@@ -42,23 +43,17 @@ export default function RecentJournalContainer() {
       dateStr,
       items,
     }));
+    // ponytail: locale จาก useTranslation มาจาก client-side store เท่านั้น
+    // ถ้า locale เปลี่ยนบน server ต้อง pass ผ่าน RSC props
   }, [transactionsData, locale]);
 
+  const isEmpty = !mounted || (groupedTransactions.length === 0 && !isLoading);
+
   return (
-    <section
-      className={cn(
-        groupedTransactions.length === 0 && !isLoading && "px-4 mb-2",
-      )}
-    >
-      <div
-        className={cn(
-          "flex items-center justify-between mb-2",
-          groupedTransactions.length > 0 && "px-4",
-          isLoading && "px-4",
-        )}
-      >
+    <section>
+      <div className="flex items-center justify-between mb-2 px-4">
         <span className="text-lg font-medium">{t("recentJournal")}</span>
-        {groupedTransactions.length > 0 && (
+        {!isEmpty && (
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Link
               href="/journal"
@@ -71,7 +66,7 @@ export default function RecentJournalContainer() {
         )}
       </div>
 
-      {groupedTransactions.length === 0 && !isLoading ? (
+      {isEmpty ? (
         <div className="bg-surface flex flex-col items-center gap-3 py-8 rounded-md border-2 border-border border-dashed">
           <div className="flex items-center">
             <span className="bg-surface-secondary p-4 rounded-full">

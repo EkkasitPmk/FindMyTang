@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { logoutApi, syncUserApi } from "../services/auth.service";
 import { NavLogoutResponse } from "../schemas/nav.response.schema";
-import { QUERY_CACHE_STORAGE_KEY } from "@/shared/lib/api/queryClient";
 
 export const useLogoutMutation = (options?: {
   onSuccess?: () => void;
@@ -12,7 +11,6 @@ export const useLogoutMutation = (options?: {
     mutationFn: logoutApi,
     onSuccess: () => {
       queryClient.clear();
-      localStorage.removeItem(QUERY_CACHE_STORAGE_KEY);
       options?.onSuccess?.();
     },
     onError: options?.onError,

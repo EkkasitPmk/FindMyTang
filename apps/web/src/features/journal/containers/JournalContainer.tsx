@@ -1,5 +1,6 @@
 "use client";
 import { useState, useMemo } from "react";
+import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import { TransactionListContainer } from "@/features/transactions/containers/TransactionListContainer";
 import {
   Tabs,
@@ -35,6 +36,7 @@ type ViewMode = "timeline" | "calendar";
 
 export default function JournalContainer() {
   const { t, locale } = useTranslation();
+  const mounted = useMounted();
   const [viewMode, setViewMode] = useState<ViewMode>("timeline");
   const [searchKeyword, setSearchKeyword] = useState("");
   const [selectedType, setSelectedType] =
@@ -61,7 +63,6 @@ export default function JournalContainer() {
   const groupedTransactions = useMemo(() => {
     if (!transactionsData?.pages) return [];
 
-    // Flatten all pages, deduplicate by id in case page boundaries overlap
     const seen = new Set<string>();
     let filteredItems = transactionsData.pages
       .flatMap((page) => page.items)
@@ -85,14 +86,15 @@ export default function JournalContainer() {
     }
 
     const groupsMap = new Map<string, TransactionResponse[]>();
+    const dateFormatter = new Intl.DateTimeFormat(locale, {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
 
     filteredItems.forEach((tx) => {
       const date = new Date(tx.transactionDate);
-      const dateStr = Intl.DateTimeFormat(locale, {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      }).format(date);
+      const dateStr = dateFormatter.format(date);
 
       if (!groupsMap.has(dateStr)) {
         groupsMap.set(dateStr, []);
@@ -258,7 +260,9 @@ export default function JournalContainer() {
                 <div className="flex-1 min-h-0">
                   <TransactionListContainer
                     groupedTransactions={groupedTransactions}
-                    isLoadingTransactions={isLoadingTransactions}
+                    isLoadingTransactions={
+                      !transactionsData && (!mounted || isLoadingTransactions)
+                    }
                     isFetchingNextPage={isFetchingNextPage}
                     hasNextPage={hasNextPage}
                     fetchNextPage={fetchNextPage}
@@ -271,7 +275,7 @@ export default function JournalContainer() {
               </div>
             </TabsContent>
             <TabsContent value="calendar" className="h-full flex flex-col">
-              <JournalCalendarContainer />
+              <JournalCalendarContainer isActive={viewMode === "calendar"} />
             </TabsContent>
           </TabsContents>
         </div>

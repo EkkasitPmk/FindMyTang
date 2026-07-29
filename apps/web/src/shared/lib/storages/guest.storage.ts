@@ -1,4 +1,4 @@
-import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
+import { queryClient } from "@/shared/lib/api/queryClient";
 import { create } from "zustand";
 import { v4 as uuidv4 } from "uuid";
 import { persist, createJSONStorage } from "zustand/middleware";
@@ -15,13 +15,36 @@ interface GuestState {
   seedDefaultGuestData: () => Promise<void>;
 }
 
+let guestDataInitialization: Promise<void> | null = null;
+
+const getInitialIsGuest = (): boolean => {
+  if (typeof window !== "undefined") {
+    try {
+      const stored = localStorage.getItem("findmytang-guest-storage");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (typeof parsed?.state?.isGuest === "boolean") {
+          return parsed.state.isGuest;
+        }
+      }
+    } catch {
+      // ignore JSON parse error
+    }
+  }
+  return true;
+};
+
 export const useGuestStore = create<GuestState>()(
   persist(
     (set, get) => ({
-      isGuest: true,
+      isGuest: getInitialIsGuest(),
       setGuestMode: (isGuest) => set({ isGuest }),
 
       clearGuestData: async () => {
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("findmytang-guest-seeded");
+          localStorage.removeItem("findmytang-guest-last-autodelete");
+        }
         await Promise.all([
           db.assets.clear(),
           db.categories.clear(),
@@ -31,6 +54,12 @@ export const useGuestStore = create<GuestState>()(
 
       seedDefaultGuestData: async () => {
         if (!get().isGuest) return;
+        if (
+          typeof window !== "undefined" &&
+          localStorage.getItem("findmytang-guest-seeded") === "true"
+        ) {
+          return;
+        }
 
         const categoryCount = await db.categories.count();
         if (categoryCount === 0) {
@@ -282,38 +311,61 @@ export const useGuestStore = create<GuestState>()(
             },
           ];
           await db.categories.bulkAdd(defaultCategories);
+          void queryClient.invalidateQueries({ queryKey: ["categories"] });
+        }
+        if (typeof window !== "undefined") {
+          localStorage.setItem("findmytang-guest-seeded", "true");
         }
       },
 
       runAutoDeleteTasks: async () => {
         if (!get().isGuest) return;
 
+        const todayStr = new Date().toISOString().split("T")[0];
+        if (
+          typeof window !== "undefined" &&
+          localStorage.getItem("findmytang-guest-last-autodelete") === todayStr
+        ) {
+          return;
+        }
+
         const cutoff = new Date(
           Date.now() - 30 * 24 * 60 * 60 * 1000,
         ).toISOString();
+
+        const [oldAssets, oldCategories, oldTransactions] = await Promise.all([
+          db.assets.where("deletedAt").belowOrEqual(cutoff).primaryKeys(),
+          db.categories.where("deletedAt").belowOrEqual(cutoff).primaryKeys(),
+          db.transactions.where("deletedAt").belowOrEqual(cutoff).primaryKeys(),
+        ]);
+
+        if (
+          oldAssets.length === 0 &&
+          oldCategories.length === 0 &&
+          oldTransactions.length === 0
+        ) {
+          if (typeof window !== "undefined") {
+            localStorage.setItem("findmytang-guest-last-autodelete", todayStr);
+          }
+          return;
+        }
 
         await db.transaction(
           "rw",
           [db.assets, db.categories, db.transactions],
           async () => {
-            const deleteOld = async (
-              table:
-                | typeof db.assets
-                | typeof db.categories
-                | typeof db.transactions,
-            ) => {
-              const ids = await table
-                .where("deletedAt")
-                .belowOrEqual(cutoff)
-                .primaryKeys();
-              if (ids.length > 0) await table.bulkDelete(ids as string[]);
-            };
-
-            await deleteOld(db.assets);
-            await deleteOld(db.categories);
-            await deleteOld(db.transactions);
+            if (oldAssets.length > 0)
+              await db.assets.bulkDelete(oldAssets as string[]);
+            if (oldCategories.length > 0)
+              await db.categories.bulkDelete(oldCategories as string[]);
+            if (oldTransactions.length > 0)
+              await db.transactions.bulkDelete(oldTransactions as string[]);
           },
         );
+
+        if (typeof window !== "undefined") {
+          localStorage.setItem("findmytang-guest-last-autodelete", todayStr);
+        }
       },
     }),
     {
@@ -323,11 +375,32 @@ export const useGuestStore = create<GuestState>()(
   ),
 );
 
-export function useIsGuest() {
-  const mounted = useMounted();
-  const isGuest = useGuestStore((state) => state.isGuest);
+/** Run guest seed once without blocking the layout or navigation. */
+export function initializeGuestData(): Promise<void> {
+  if (typeof window === "undefined" || !useGuestStore.getState().isGuest) {
+    return Promise.resolve();
+  }
 
-  return mounted ? isGuest : true;
+  guestDataInitialization ??= useGuestStore
+    .getState()
+    .seedDefaultGuestData()
+    .then(() => {
+      const runCleanup = () => {
+        useGuestStore.getState().runAutoDeleteTasks().catch(console.error);
+      };
+
+      if ("requestIdleCallback" in window) {
+        window.requestIdleCallback(runCleanup, { timeout: 5000 });
+      } else {
+        globalThis.setTimeout(runCleanup, 1000);
+      }
+    });
+
+  return guestDataInitialization;
+}
+
+export function useIsGuest() {
+  return useGuestStore((state) => state.isGuest);
 }
 
 export async function getGuestDataCount() {

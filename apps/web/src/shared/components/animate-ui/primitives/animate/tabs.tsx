@@ -246,7 +246,11 @@ function TabsContents({
     return total;
   }, []);
 
+  const isHFull = className?.includes("h-full");
+
   React.useLayoutEffect(() => {
+    if (isHFull) return;
+
     if (roRef.current) {
       roRef.current.disconnect();
       roRef.current = null;
@@ -274,9 +278,7 @@ function TabsContents({
       ro.disconnect();
       roRef.current = null;
     };
-  }, [activeIndex, childrenArray.length, measure]);
-
-  const isHFull = className?.includes("h-full");
+  }, [activeIndex, childrenArray.length, measure, isHFull]);
 
   return (
     <motion.div

@@ -197,17 +197,19 @@ export default function NavContainer() {
   return (
     <>
       {/* Desktop Sidebar */}
-      <DesktopSidebar
-        pathname={pathname}
-        user={user}
-        isLoading={isLoading}
-        onLogout={openLogoutConfirm}
-        isGuest={isGuest}
-        isSyncing={isSyncing}
-        syncStatus={syncStatus}
-        onSyncClick={handleSyncClick}
-        onNavigate={handleNavigate}
-      />
+      {isClientMounted && (
+        <DesktopSidebar
+          pathname={pathname}
+          user={user}
+          isLoading={isLoading}
+          onLogout={openLogoutConfirm}
+          isGuest={isGuest}
+          isSyncing={isSyncing}
+          syncStatus={syncStatus}
+          onSyncClick={handleSyncClick}
+          onNavigate={handleNavigate}
+        />
+      )}
 
       {/* Mobile Drawer Navigation overlay */}
       <MobileDrawer
