@@ -15,15 +15,15 @@ let failedQueue: {
   reject: (reason?: unknown) => void;
 }[] = [];
 
-const MAX_QUEUE_SIZE = 10;
+const MAX_QUEUE_SIZE = 50;
 
 const processQueue = (error: unknown) => {
   failedQueue.forEach((prom, i) => {
     if (error) {
       prom.reject(error);
     } else {
-      // stagger re-fires by 30ms each to avoid simultaneous burst on mobile networks
-      setTimeout(() => prom.resolve(), i * 30);
+      // stagger re-fires by 10ms each to avoid simultaneous burst while keeping delay low
+      setTimeout(() => prom.resolve(), i * 10);
     }
   });
   failedQueue = [];

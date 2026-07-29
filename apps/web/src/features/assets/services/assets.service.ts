@@ -42,11 +42,10 @@ export const getAssetsApi = async (
   includeDeleted = false,
 ): Promise<AssetListResponse> => {
   if (useGuestStore.getState().isGuest) {
-    let collection = db.assets.toCollection();
+    let assets = await db.assets.orderBy("displayOrder").toArray();
     if (!includeDeleted) {
-      collection = db.assets.filter((a) => !a.deletedAt);
+      assets = assets.filter((a) => !a.deletedAt);
     }
-    const assets = await collection.sortBy("displayOrder");
     return assetListResponseSchema.parse(assets);
   }
   const query = includeDeleted ? "?includeDeleted=true" : "";

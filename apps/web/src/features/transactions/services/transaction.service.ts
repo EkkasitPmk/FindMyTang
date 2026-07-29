@@ -228,14 +228,20 @@ export const getTransactionsApi = async (query?: TransactionQuery) => {
     }
 
     // Sort
-    const sortOrder = query?.sortType || "desc";
+    const sortType = query?.sortType || "DATE_NEWEST";
 
     all.sort((a, b) => {
-      const valA = a.date || "";
-      const valB = b.date || "";
-      if (valA < valB) return sortOrder === "asc" ? -1 : 1;
-      if (valA > valB) return sortOrder === "asc" ? 1 : -1;
-      return 0;
+      if (sortType === "DATE_OLDEST") {
+        return (a.date || "").localeCompare(b.date || "");
+      }
+      if (sortType === "AMOUNT_HIGHEST") {
+        return Number(b.amount) - Number(a.amount);
+      }
+      if (sortType === "AMOUNT_LOWEST") {
+        return Number(a.amount) - Number(b.amount);
+      }
+      if (sortType === "asc") return (a.date || "").localeCompare(b.date || "");
+      return (b.date || "").localeCompare(a.date || "");
     });
 
     const page = query?.page || 1;
@@ -244,9 +250,59 @@ export const getTransactionsApi = async (query?: TransactionQuery) => {
     const totalPages = Math.ceil(total / limit);
     const paginatedData = all.slice((page - 1) * limit, page * limit);
 
-    const mappedItems = await Promise.all(
-      paginatedData.map((t) => mapLocalToTransactionResponse(t)),
-    );
+    const [categories, assets] = await Promise.all([
+      db.categories.toArray(),
+      db.assets.toArray(),
+    ]);
+    const categoryMap = new Map(categories.map((c) => [c.id, c]));
+    const assetMap = new Map(assets.map((a) => [a.id, a]));
+
+    const mappedItems = paginatedData.map((t) => {
+      const mapped = {
+        ...t,
+        transactionDate: t.date,
+        type: t.type as unknown as TransactionType,
+      } as unknown as TransactionResponse;
+
+      if (t.categoryId) {
+        const category = categoryMap.get(t.categoryId);
+        if (category) {
+          mapped.category = {
+            id: category.id,
+            name: category.name,
+            type: category.type as string,
+            color: category.color ?? undefined,
+            icon: category.icon ?? undefined,
+          };
+        }
+      }
+
+      if (t.assetId) {
+        const asset = assetMap.get(t.assetId);
+        if (asset) {
+          mapped.asset = {
+            id: asset.id,
+            name: asset.name,
+            type: asset.type as string,
+            balance: asset.balance,
+          };
+        }
+      }
+
+      if (t.toAssetId) {
+        const toAsset = assetMap.get(t.toAssetId);
+        if (toAsset) {
+          mapped.toAsset = {
+            id: toAsset.id,
+            name: toAsset.name,
+            type: toAsset.type as string,
+            balance: toAsset.balance,
+          };
+        }
+      }
+
+      return mapped;
+    });
 
     return paginatedTransactionResponseSchema.parse({
       items: mappedItems,
