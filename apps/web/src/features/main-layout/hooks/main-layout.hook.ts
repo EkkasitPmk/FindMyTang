@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCategories } from "@/shared/lib/hooks/useCategories.hook";
 import { useCategoryUIStore } from "@/features/category/hooks/category.hook";
@@ -6,7 +6,6 @@ import { Category } from "@/shared/lib/types/category.type";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { useAssetUIStore } from "@/features/assets/hooks/assets.hook";
 import { useAssets } from "@/shared/lib/hooks/useAssets.hook";
-import { useGuestStore } from "@/shared/lib/storages/guest.storage";
 import {
   isMainTabRoute,
   extractCategoryId,
@@ -22,21 +21,6 @@ export function useMainLayout() {
   const assetId = searchParams.get("id");
   const assetNameParam = searchParams.get("name");
   const { t } = useTranslation();
-
-  // Guest Store Initializer Side-Effect
-  useEffect(() => {
-    if (!localStorage.getItem("findmytang-guest-storage")) {
-      useGuestStore.setState({ isGuest: true });
-    }
-
-    const runDexieTasks = () => {
-      useGuestStore.getState().seedDefaultGuestData().catch(console.error);
-      useGuestStore.getState().runAutoDeleteTasks().catch(console.error);
-    };
-
-    const timer = setTimeout(runDexieTasks, 3000);
-    return () => clearTimeout(timer);
-  }, []);
 
   // Asset Fetching & Resolution
   const shouldFetchAssets =

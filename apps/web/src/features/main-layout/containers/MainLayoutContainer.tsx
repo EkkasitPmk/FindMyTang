@@ -75,7 +75,9 @@ export default function MainLayoutContainer({
                       isEditingList={isEditingList}
                       onToggleEditingList={toggleEditingList}
                       onBack={() => router.back()}
-                      isAssetTitleMatch={pathname === "/assets" && assetName !== undefined}
+                      isAssetTitleMatch={
+                        pathname === "/assets" && assetName !== undefined
+                      }
                       hasAssets={hasAssets}
                       isEditingAssets={isEditingAssets}
                       onToggleEditingAssets={toggleEditingAssets}
