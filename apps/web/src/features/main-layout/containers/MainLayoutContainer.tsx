@@ -8,6 +8,7 @@ import { cn } from "@/shared/lib/utils/core.util";
 import { useMainLayout } from "../hooks/main-layout.hook";
 import MainLayoutSearchBar from "../components/MainLayoutSearchBar";
 import MainLayoutRightAction from "../components/MainLayoutRightAction";
+import MainLayoutTitle from "../components/MainLayoutTitle";
 
 export default function MainLayoutContainer({
   children,
@@ -18,7 +19,7 @@ export default function MainLayoutContainer({
     t,
     isMainTab,
     shouldShowTopAppBar,
-    mobileTitle,
+    currentCategory,
     assetName,
     isEditingList,
     toggleEditingList,
@@ -58,7 +59,14 @@ export default function MainLayoutContainer({
             {shouldShowTopAppBar && !isSearchMode && (
               <div className="fixed w-full top-0 z-40 bg-background/80 backdrop-blur-md">
                 <TopAppBarMobile
-                  title={mobileTitle}
+                  title={
+                    <MainLayoutTitle
+                      pathname={pathname}
+                      assetName={assetName}
+                      currentCategory={currentCategory}
+                      t={t}
+                    />
+                  }
                   showBackButton={pathname !== "/settings"}
                   onBack={handleBack}
                   rightAction={
@@ -67,7 +75,7 @@ export default function MainLayoutContainer({
                       isEditingList={isEditingList}
                       onToggleEditingList={toggleEditingList}
                       onBack={() => router.back()}
-                      isAssetTitleMatch={mobileTitle === assetName}
+                      isAssetTitleMatch={pathname === "/assets" && assetName !== undefined}
                       hasAssets={hasAssets}
                       isEditingAssets={isEditingAssets}
                       onToggleEditingAssets={toggleEditingAssets}

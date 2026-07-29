@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCategories } from "@/shared/lib/hooks/useCategories.hook";
 import { useCategoryUIStore } from "@/features/category/hooks/category.hook";
@@ -14,7 +14,6 @@ import {
   getSyntheticCategory,
   getMainContentClassNames,
 } from "../helpers/main-layout.helper";
-import CategoryHeaderTitle from "../components/CategoryHeaderTitle";
 
 export function useMainLayout() {
   const pathname = usePathname();
@@ -83,19 +82,6 @@ export function useMainLayout() {
   const isMainTab = isMainTabRoute(pathname);
   const shouldShowTopAppBar = !isMainTab;
 
-  // Mobile Title Resolution
-  const mobileTitle = useMemo((): React.ReactNode => {
-    if (pathname === "/categories") return t("manageCategories");
-    if (pathname === "/assets/new") return t("newAssets");
-    if (pathname === "/settings/account") return t("account");
-    if (pathname === "/settings") return t("navSettings");
-    if (pathname === "/assets") return assetName || t("manageAssets");
-    if (pathname.startsWith("/analytics/category/")) {
-      return <CategoryHeaderTitle category={currentCategory} />;
-    }
-    return "";
-  }, [pathname, assetName, currentCategory, t]);
-
   const { mainContentClassName, mainOverflowClassName } = useMemo(
     () =>
       getMainContentClassNames({
@@ -126,7 +112,7 @@ export function useMainLayout() {
     t,
     isMainTab,
     shouldShowTopAppBar,
-    mobileTitle,
+    currentCategory,
     assetName,
     isEditingList,
     toggleEditingList,

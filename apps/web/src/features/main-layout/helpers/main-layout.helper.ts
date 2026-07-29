@@ -1,13 +1,8 @@
-import { TransactionType } from "@/shared/lib/types/transaction.type";
 import { TranslationKey } from "@/shared/lib/configs/translations.config";
-
-export interface SyntheticCategory {
-  id: string;
-  name: string;
-  color: string;
-  icon?: string;
-  type?: TransactionType;
-}
+import {
+  SyntheticCategory,
+  MainContentClassNamesParams,
+} from "../types/main-layout.type";
 
 export function isMainTabRoute(pathname: string): boolean {
   return ["/home", "/journal", "/analytics", "/transaction"].includes(pathname);
@@ -64,12 +59,10 @@ export function getMainContentClassNames({
   shouldShowTopAppBar,
   isSearchMode,
   pathname,
-}: {
-  isMainTab: boolean;
-  shouldShowTopAppBar: boolean;
-  isSearchMode: boolean;
-  pathname: string;
-}): { mainContentClassName: string; mainOverflowClassName: string } {
+}: MainContentClassNamesParams): {
+  mainContentClassName: string;
+  mainOverflowClassName: string;
+} {
   let mainContentClassName = "px-0 py-3";
   let mainOverflowClassName = "overflow-y-auto max-h-screen";
 

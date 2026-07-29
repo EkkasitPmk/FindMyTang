@@ -1,13 +1,7 @@
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { Input } from "@/shared/components/customs/Input";
 import { X } from "lucide-react";
-
-interface MainLayoutSearchBarProps {
-  searchKeyword: string;
-  onSearchKeywordChange: (value: string) => void;
-  onCloseSearch: () => void;
-  placeholder: string;
-}
+import { MainLayoutSearchBarProps } from "../types/main-layout.type";
 
 export default function MainLayoutSearchBar({
   searchKeyword,

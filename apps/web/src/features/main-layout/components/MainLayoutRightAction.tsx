@@ -1,20 +1,7 @@
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import AssetsMenuContainer from "@/features/assets/containers/AssetsMenuContainer";
-import { TranslationKey } from "@/shared/lib/configs/translations.config";
 import { X, Plus } from "lucide-react";
-
-interface MainLayoutRightActionProps {
-  pathname: string;
-  isEditingList: boolean;
-  onToggleEditingList: () => void;
-  onBack: () => void;
-  isAssetTitleMatch: boolean;
-  hasAssets: boolean;
-  isEditingAssets: boolean;
-  onToggleEditingAssets: () => void;
-  onOpenCreateAssetModal: () => void;
-  t: (key: TranslationKey) => string;
-}
+import { MainLayoutRightActionProps } from "../types/main-layout.type";
 
 export default function MainLayoutRightAction({
   pathname,

@@ -4,18 +4,7 @@ import {
   TransactionResponse,
   TransactionType,
 } from "@/shared/lib/types/transaction.type";
-
-export interface HeaderCategoryItem {
-  id: string;
-  name: string;
-  color?: string;
-  icon?: string;
-  type?: TransactionType | string;
-}
-
-interface CategoryHeaderTitleProps {
-  category: HeaderCategoryItem | null;
-}
+import { CategoryHeaderTitleProps } from "../types/main-layout.type";
 
 export default function CategoryHeaderTitle({
   category,
