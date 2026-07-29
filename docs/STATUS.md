@@ -65,6 +65,15 @@
 
 ### 1. สิ่งที่พัฒนาเสร็จสิ้นแล้ว (Completed)
 
+- **Journal Page Reload UI Freezing Fix (Frontend Web)**:
+  - **Main-Thread Blocking Query Cache Sync Removed**: แก้ไข `queryClient.ts` โดยการนำระบบดักฟังและสั่ง `localStorage.setItem` สำหรับ `queryCache` ทั้งหมดแบบ Synchronous ออก ซึ่งเป็นตัวการหลักที่บล็อก Main Thread ใน JS Engine ส่งผลให้ UI Freeze และไม่ตอบสนองเมื่อกด reload หรือมี Interaction ในหน้า Journal
+  - **Dexie Batch Lookup & Sorting Optimization (Guest Mode)**: ปรับปรุง `getTransactionsApi` ใน `transaction.service.ts` ให้ทำ Batch Query โหลด `categories` และ `assets` จาก Dexie IndexedDB ด้วย JS Map เพียง 2 Query แทน Async Read 20-60 รอบต่อหน้า พร้อมรองรับการเรียงลำดับ (`DATE_NEWEST`, `DATE_OLDEST`, `AMOUNT_HIGHEST`, `AMOUNT_LOWEST`) ครบทุกรูปแบบ
+
+- **Journal Page Loading & Interaction Freeze Fix (Frontend Web)**:
+  - **TabsContents ResizeObserver Loop Fix**: ปรับแก้ `shared/components/animate-ui/primitives/animate/tabs.tsx` โดยการเพิ่ม Guard Clause ไม่ให้สร้างและสั่งรัน `ResizeObserver` หรือเรียก `setHeight()` เมื่อคอนเทนเนอร์แท็บถูกตั้งค่าเป็น `isHFull` (`h-full`) ช่วยป้องกัน Render Loop ที่กระตุ้นให้ React Re-render ซ้ำซ้อนขณะเกิดการ scroll หรือ interaction ภายใน `GroupedVirtuoso`
+  - **Lazy Data Query for Inactive Calendar Tab**: ปรับแก้ `JournalCalendarContainer.tsx` และ `transaction.hook.ts` ให้รองรับพารามิเตอร์ `enabled: isActive` เพื่อให้ `useTransactionsQuery` สั่งโหลดข้อมูลประวัติ 1000 รายการสำหรับปฏิทิน เฉพาะเวลาที่ผู้ใช้สลับมาดูแท็บ "ปฏิทิน" (`viewMode === "calendar"`) เท่านั้น ไม่โหลดและประมวลผลในช่วงที่โหลด/รีโหลดหน้า Journal ในมุมมอง Timeline
+  - **Date Formatting Optimization**: ปรับแต่งการสร้าง `Intl.DateTimeFormat` ให้อยู่ภายนอก Loop ใน `JournalContainer.tsx` เพื่อลดภาระการประมวลผล GC และ Date Parsing
+
 - **Guest Home Tab LCP Performance Optimization (Frontend Web)**:
   - **Synchronous Query Cache Restoration**: ปรับเปลี่ยน `queryClient.ts` ให้ทำการ Restore Cache จาก LocalStorage แบบ Synchronous ทันทีที่ Client Module โหลด เพื่อให้ TanStack Query มีข้อมูล Cache ตั้งแต่แรก Render Hydration บนหน้าจอ ไม่ต้องรอ Async/Skeleton และไม่ต้องชะลอการแสดงผล
   - **Framer Motion Initial Animation Delay Fix**: กำหนด `initial={false}` ให้กับ `<motion.div>` ของตัวเลข Net Worth ใน `FinancialSnapshotCard.tsx` เพื่อขจัดปัญหาการเรนเดอร์ opacity: 0 ในช่วงเริ่มต้น ทำให้ Browser ตรวจวัด LCP Paint ได้ทันทีในเฟรมแรกโดยไม่มี animation delay

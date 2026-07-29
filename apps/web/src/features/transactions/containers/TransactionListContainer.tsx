@@ -193,7 +193,7 @@ export function TransactionListContainer({
           onAttachmentClick={setPreviewImageUrl}
           useVirtualization={useVirtualization}
           onEndReached={() => {
-            if (hasNextPage && fetchNextPage) {
+            if (hasNextPage && !isFetchingNextPage && fetchNextPage) {
               fetchNextPage();
             }
           }}

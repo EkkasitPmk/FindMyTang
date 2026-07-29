@@ -29,7 +29,13 @@ import {
 import { useJournalCalendar } from "../hooks/journal-calendar.hook";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
-export default function JournalCalendarContainer() {
+interface JournalCalendarContainerProps {
+  isActive?: boolean;
+}
+
+export default function JournalCalendarContainer({
+  isActive = true,
+}: Readonly<JournalCalendarContainerProps>) {
   const { locale } = useTranslation();
   const mounted = useMounted();
   const { currentMonth, selectedDate, navigatorProps, handleSelectDate } =
@@ -44,12 +50,15 @@ export default function JournalCalendarContainer() {
   const calEnd = endOfWeek(monthEnd, { weekStartsOn: 1 });
 
   const { data: transactionsData, isLoading: isLoadingTransactions } =
-    useTransactionsQuery({
-      from: calStart.toISOString(),
-      to: calEnd.toISOString(),
-      limit: 1000,
-      sortType: "DATE_NEWEST",
-    });
+    useTransactionsQuery(
+      {
+        from: calStart.toISOString(),
+        to: calEnd.toISOString(),
+        limit: 1000,
+        sortType: "DATE_NEWEST",
+      },
+      { enabled: isActive },
+    );
 
   const allTransactions = useMemo(
     () => transactionsData?.items ?? [],

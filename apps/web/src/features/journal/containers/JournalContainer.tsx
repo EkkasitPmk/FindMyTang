@@ -61,12 +61,8 @@ export default function JournalContainer() {
   });
 
   const groupedTransactions = useMemo(() => {
-    // ponytail: guard against SSR/client locale mismatch — Intl.DateTimeFormat(locale) produces
-    // different dateStr keys on SSR (locale="en") vs client (locale="th-TH"), causing React
-    // hydration mismatch which regenerates the whole tree and shows "No transactions found".
     if (!mounted || !transactionsData?.pages) return [];
 
-    // Flatten all pages, deduplicate by id in case page boundaries overlap
     const seen = new Set<string>();
     let filteredItems = transactionsData.pages
       .flatMap((page) => page.items)
@@ -90,14 +86,15 @@ export default function JournalContainer() {
     }
 
     const groupsMap = new Map<string, TransactionResponse[]>();
+    const dateFormatter = new Intl.DateTimeFormat(locale, {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
 
     filteredItems.forEach((tx) => {
       const date = new Date(tx.transactionDate);
-      const dateStr = Intl.DateTimeFormat(locale, {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      }).format(date);
+      const dateStr = dateFormatter.format(date);
 
       if (!groupsMap.has(dateStr)) {
         groupsMap.set(dateStr, []);
@@ -276,7 +273,7 @@ export default function JournalContainer() {
               </div>
             </TabsContent>
             <TabsContent value="calendar" className="h-full flex flex-col">
-              <JournalCalendarContainer />
+              <JournalCalendarContainer isActive={viewMode === "calendar"} />
             </TabsContent>
           </TabsContents>
         </div>

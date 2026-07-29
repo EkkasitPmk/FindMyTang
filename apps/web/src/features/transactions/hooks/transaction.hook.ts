@@ -82,16 +82,25 @@ export const useUpdateTransactionMutation = (options?: {
   });
 };
 
-export const useTransactionsQuery = (params?: TransactionQuery) => {
+export const useTransactionsQuery = (
+  params?: TransactionQuery,
+  options?: { enabled?: boolean },
+) => {
   const isGuest = useGuestStore((state) => state.isGuest);
   return useQuery<PaginatedTransactionResponse, AxiosError<ApiErrorResponse>>({
     queryKey: ["transactions", { isGuest, ...params }],
     queryFn: () => getTransactionsApi(params),
+    ...options,
   });
 };
 
 export const useInfiniteTransactionsQuery = (params?: TransactionQuery) => {
   const isGuest = useGuestStore((state) => state.isGuest);
+
+  const queryParams = isGuest
+    ? { ...params, limit: Number.MAX_SAFE_INTEGER }
+    : params;
+
   return useInfiniteQuery<
     PaginatedTransactionResponse,
     AxiosError<ApiErrorResponse>,
@@ -102,7 +111,7 @@ export const useInfiniteTransactionsQuery = (params?: TransactionQuery) => {
     queryKey: ["transactions", "infinite", { isGuest, ...params }],
     queryFn: async ({ pageParam = 1 }) => {
       const page = pageParam as number;
-      return getTransactionsApi({ ...params, page });
+      return getTransactionsApi({ ...queryParams, page });
     },
     getNextPageParam: (lastPage: PaginatedTransactionResponse) => {
       if (lastPage.meta.page < lastPage.meta.totalPages) {
