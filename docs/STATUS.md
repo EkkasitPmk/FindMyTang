@@ -65,6 +65,12 @@
 
 ### 1. สิ่งที่พัฒนาเสร็จสิ้นแล้ว (Completed)
 
+- **Reload Freeze & Delayed Navigation Performance Fix (Frontend Web)**:
+  - **Zustand Initial Hydration Lag Fix**: ปรับแก้ `guest.storage.ts` ให้ฟังก์ชัน `getInitialIsGuest` ทำการอ่านค่า `isGuest` จาก `localStorage` แบบ Synchronous ทันทีบน Client Pass แรก เพื่อขจัดปัญหา State Toggle (`isGuest: true` ➔ `false`) ในมิลลิวินาทีแรกขณะกด Reload (F5) ซึ่งเคยเป็นสาเหตุให้เกิด API Request Burst ซ้ำซ้อน 2 รอบ
+  - **Lazy Mount Tab Contents**: ปรับแก้ `TabsContent` ใน `shared/components/animate-ui/primitives/animate/tabs.tsx` ให้มีระบบ Lazy Mounting (`hasBeenActive` state) ซึ่งจะเรนเดอร์ Children และยิง Query เฉพาะแท็บที่ถูก Active/คลิกดูแล้วเท่านั้น ขจัดปัญหาการยิง API 3 แท็บพร้อมกันบนหน้า Analytics และ Journal
+  - **Axios Refresh Queue Expansion**: ปรับปรุง `http.ts` ให้ขยายขนาด `MAX_QUEUE_SIZE` เป็น 50 และปรับลด Stagger Interval เป็น 10ms เพื่อรองรับปริมาณ HTTP Request ในช่วง Refresh Session โดยไม่ตัดสายหลุดหรือเกิดการติดค้าง (Stall/Freeze)
+  - **Query Keys Guest Context Hardening**: เพิ่ม `isGuest` ลงใน Query Keys ของ `useTransactionYearsQuery`, `useAvailableDatesQuery`, และ `useTransactionQuery` ใน `transaction.hook.ts` ให้ตรงตามมาตรฐาน Caching ของระบบ
+
 - **Journal Page Reload UI Freezing Fix (Frontend Web)**:
   - **Main-Thread Blocking Query Cache Sync Removed**: แก้ไข `queryClient.ts` โดยการนำระบบดักฟังและสั่ง `localStorage.setItem` สำหรับ `queryCache` ทั้งหมดแบบ Synchronous ออก ซึ่งเป็นตัวการหลักที่บล็อก Main Thread ใน JS Engine ส่งผลให้ UI Freeze และไม่ตอบสนองเมื่อกด reload หรือมี Interaction ในหน้า Journal
   - **Dexie Batch Lookup & Sorting Optimization (Guest Mode)**: ปรับปรุง `getTransactionsApi` ใน `transaction.service.ts` ให้ทำ Batch Query โหลด `categories` และ `assets` จาก Dexie IndexedDB ด้วย JS Map เพียง 2 Query แทน Async Read 20-60 รอบต่อหน้า พร้อมรองรับการเรียงลำดับ (`DATE_NEWEST`, `DATE_OLDEST`, `AMOUNT_HIGHEST`, `AMOUNT_LOWEST`) ครบทุกรูปแบบ
@@ -413,6 +419,15 @@
     - แยก UI Components ย่อยเป็น Pure UI Presentational Components: [`MainLayoutSearchBar.tsx`](file:///Users/torikiton/Desktop/FindMyTang/apps/web/src/features/main-layout/components/MainLayoutSearchBar.tsx), [`MainLayoutRightAction.tsx`](file:///Users/torikiton/Desktop/FindMyTang/apps/web/src/features/main-layout/components/MainLayoutRightAction.tsx), และ [`CategoryHeaderTitle.tsx`](file:///Users/torikiton/Desktop/FindMyTang/apps/web/src/features/main-layout/components/CategoryHeaderTitle.tsx)
     - เพิ่ม Unit Test สำหรับ Helper [`main-layout.helper.test.ts`](file:///Users/torikiton/Desktop/FindMyTang/apps/web/src/features/main-layout/helpers/main-layout.helper.test.ts) (ผ่านการทดสอบ 8/8 test files, 59/59 tests 100%)
   - **Build & Test Verification**: ผ่านการทดสอบ TypeScript (`npx tsc --noEmit`) และ Unit Tests ทั้งหมด 59/59 รายการ 100%
+  - **Guest Mode Journal Hydration & Dexie Lock Optimization**:
+    - **Non-blocking Auto Delete Check ([guest.storage.ts](file:///Users/torikiton/Desktop/FindMyTang/apps/web/src/shared/lib/storages/guest.storage.ts))**: ปรับแก้ `runAutoDeleteTasks` ให้ตรวจเช็ก `primaryKeys()` ของรายการที่หมดอายุก่อนเปิด Dexie Read-Write Transaction Lock (`db.transaction('rw', ...)`) ป้องกันไม่ให้ IndexedDB ล็อกตาราง `assets`, `categories`, `transactions` ไว้เปล่าๆ เมื่อไม่มีรายการลบ
+    - **Idle Task Scheduling ([main-layout.hook.ts](file:///Users/torikiton/Desktop/FindMyTang/apps/web/src/features/main-layout/hooks/main-layout.hook.ts))**: ปรับ `useMainLayout` ให้เลื่อนเวลาการทำ Background Seeding & Cleanup ใน Guest Mode ด้วย `requestIdleCallback` เพื่อทำงานในจังหวะ CPU Idle พ้นช่วง Initial Render / Page Navigation
+    - **Pagination Optimization ([transaction.hook.ts](file:///Users/torikiton/Desktop/FindMyTang/apps/web/src/features/transactions/hooks/transaction.hook.ts))**: ปรับ `limit` ของ `useInfiniteTransactionsQuery` สำหรับ Guest Mode จาก `Number.MAX_SAFE_INTEGER` มาใช้ `20` รายการตามมาตรฐาน pagination เพื่อไม่ให้ดึงข้อมูลทั้งหมดเข้า RAM และบล็อก Main Thread
+    - **Non-blocking Hydration Skeleton ([JournalContainer.tsx](file:///Users/torikiton/Desktop/FindMyTang/apps/web/src/features/journal/containers/JournalContainer.tsx))**: ปรับเงื่อนไข `isLoadingTransactions` และ `groupedTransactions` ไม่ให้บังคับกระพริบ Skeleton หากมีข้อมูล `transactionsData` ปรากฏอยู่แล้ว
+    - **Instant LocalStorage Caching Flag for Guest Tasks ([guest.storage.ts](file:///Users/torikiton/Desktop/FindMyTang/apps/web/src/shared/lib/storages/guest.storage.ts) & [main-layout.hook.ts](file:///Users/torikiton/Desktop/FindMyTang/apps/web/src/features/main-layout/hooks/main-layout.hook.ts))**:
+      - เพิ่ม `findmytang-guest-seeded` และ `findmytang-guest-last-autodelete` ใน `localStorage` เพื่อให้การตรวจเช็ก `seedDefaultGuestData` และ `runAutoDeleteTasks` ในรอบถัดไปคืนค่าทันทีใน 0ms โดยไม่ต้องแตะ I/O ของ IndexedDB
+      - ยกเลิกการรอ `requestIdleCallback` หน่วงเวลา 5,000ms ใน `main-layout.hook.ts` เปลี่ยนเป็น `setTimeout(..., 100)` เพื่อให้ทำงานเร็วและเบาที่สุดโดยไม่บล็อก Main Thread
+    - **Build Verification**: ผ่านการรัน `npm run build --workspace=apps/web` (Next.js 16.2.12 Turbopack) สำเร็จเรียบร้อย (code 0)
 
 ---
 
