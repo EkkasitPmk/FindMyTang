@@ -502,7 +502,7 @@ export default function TransactionsContainer() {
                     ) : (
                       <>
                         <CurrencyInput
-                          id="balance"
+                          id="transaction-amount"
                           ref={amountInputRef}
                           value={displayAmount}
                           onChange={handleCurrencyInput}

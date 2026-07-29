@@ -97,9 +97,7 @@ export const useTransactionsQuery = (
 export const useInfiniteTransactionsQuery = (params?: TransactionQuery) => {
   const isGuest = useGuestStore((state) => state.isGuest);
 
-  const queryParams = isGuest
-    ? { ...params, limit: Number.MAX_SAFE_INTEGER }
-    : params;
+  const queryParams = isGuest ? { limit: 20, ...params } : params;
 
   return useInfiniteQuery<
     PaginatedTransactionResponse,
@@ -145,8 +143,9 @@ export const useDeleteTransactionMutation = (options?: {
 };
 
 export const useTransactionYearsQuery = () => {
+  const isGuest = useGuestStore((state) => state.isGuest);
   return useQuery<number[], AxiosError<ApiErrorResponse>>({
-    queryKey: ["transactions", "years"],
+    queryKey: ["transactions", "years", isGuest],
     queryFn: getTransactionYearsApi,
   });
 };
@@ -155,15 +154,17 @@ export const useAvailableDatesQuery = (
   assetId?: string,
   isDeleted?: boolean,
 ) => {
+  const isGuest = useGuestStore((state) => state.isGuest);
   return useQuery<Record<string, string[]>, AxiosError<ApiErrorResponse>>({
-    queryKey: ["transactions", "availableDates", assetId, isDeleted],
+    queryKey: ["transactions", "availableDates", assetId, isDeleted, isGuest],
     queryFn: () => getAvailableDatesApi(assetId, isDeleted),
   });
 };
 
 export const useTransactionQuery = (id?: string) => {
+  const isGuest = useGuestStore((state) => state.isGuest);
   return useQuery<TransactionResponse, AxiosError<ApiErrorResponse>>({
-    queryKey: ["transaction", id],
+    queryKey: ["transaction", id, isGuest],
     queryFn: () => getTransactionApi(id!),
     enabled: !!id,
   });
