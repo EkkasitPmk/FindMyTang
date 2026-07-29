@@ -1,4 +1,4 @@
-import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
+import { queryClient } from "@/shared/lib/api/queryClient";
 import { create } from "zustand";
 import { v4 as uuidv4 } from "uuid";
 import { persist, createJSONStorage } from "zustand/middleware";
@@ -282,6 +282,7 @@ export const useGuestStore = create<GuestState>()(
             },
           ];
           await db.categories.bulkAdd(defaultCategories);
+          void queryClient.invalidateQueries({ queryKey: ["categories"] });
         }
       },
 
@@ -324,10 +325,7 @@ export const useGuestStore = create<GuestState>()(
 );
 
 export function useIsGuest() {
-  const mounted = useMounted();
-  const isGuest = useGuestStore((state) => state.isGuest);
-
-  return mounted ? isGuest : true;
+  return useGuestStore((state) => state.isGuest);
 }
 
 export async function getGuestDataCount() {

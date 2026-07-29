@@ -11,7 +11,9 @@ export const getTodaySummaryApi = async (): Promise<TodaySummaryResponse> => {
     const today = new Date();
     const todayStr = today.toISOString().split("T")[0];
     const transactions = await db.transactions
-      .filter((t) => !t.deletedAt && t.date.startsWith(todayStr))
+      .where("date")
+      .between(todayStr, todayStr + "\uffff", true, true)
+      .filter((t) => !t.deletedAt)
       .toArray();
 
     let income = 0;
@@ -46,7 +48,9 @@ export const getThisMonthSummaryApi =
         today.getMonth() + 1,
       ).padStart(2, "0")}`;
       const transactions = await db.transactions
-        .filter((t) => !t.deletedAt && t.date.startsWith(currentMonthStr))
+        .where("date")
+        .between(currentMonthStr, currentMonthStr + "\uffff", true, true)
+        .filter((t) => !t.deletedAt)
         .toArray();
 
       let income = 0;

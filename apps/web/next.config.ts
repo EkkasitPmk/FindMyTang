@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
     root: path.resolve(__dirname, "../../"),
   },
   reactCompiler: true,
-  allowedDevOrigins: ["192.168.1.141"],
+  allowedDevOrigins: ["192.168.1.106"],
   images: {
     remotePatterns: [
       {

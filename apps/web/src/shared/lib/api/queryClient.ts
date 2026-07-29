@@ -29,12 +29,7 @@ if (typeof window !== "undefined") {
     } catch {}
   };
 
-  if (typeof requestIdleCallback !== "undefined") {
-    requestIdleCallback(restoreCache, { timeout: 2000 });
-  } else {
-    // Safari fallback
-    setTimeout(restoreCache, 0);
-  }
+  restoreCache();
 
   // Save on successful query updates (debounced to avoid hammering localStorage)
   let saveTimer: ReturnType<typeof setTimeout> | null = null;

@@ -65,7 +65,11 @@
 
 ### 1. สิ่งที่พัฒนาเสร็จสิ้นแล้ว (Completed)
 
-- **Sprint 6 - Phase 1: Build Verification & Code Polish (Frontend Web & Backend API)**:
+- **Guest Home Tab LCP Performance Optimization (Frontend Web)**:
+  - **Synchronous Query Cache Restoration**: ปรับเปลี่ยน `queryClient.ts` ให้ทำการ Restore Cache จาก LocalStorage แบบ Synchronous ทันทีที่ Client Module โหลด เพื่อให้ TanStack Query มีข้อมูล Cache ตั้งแต่แรก Render Hydration บนหน้าจอ ไม่ต้องรอ Async/Skeleton และไม่ต้องชะลอการแสดงผล
+  - **Framer Motion Initial Animation Delay Fix**: กำหนด `initial={false}` ให้กับ `<motion.div>` ของตัวเลข Net Worth ใน `FinancialSnapshotCard.tsx` เพื่อขจัดปัญหาการเรนเดอร์ opacity: 0 ในช่วงเริ่มต้น ทำให้ Browser ตรวจวัด LCP Paint ได้ทันทีในเฟรมแรกโดยไม่มี animation delay
+  - **Background Task Lock Contention Deferral**: ปรับปรุง `main-layout.hook.tsx` โดยการเลื่อนการทำงานของ Dexie `runAutoDeleteTasks()` ออกไป 3 วินาที เพื่อไม่ให้เกิด ReadWrite Transaction Lock บน IndexedDB ในช่วงเวลาเดียวกับที่หน้าจอเริ่มต้นเรียกอ่านข้อมูล (Read Queries)
+  - **Dexie Index Query Optimizations**: ปรับปรุงการสืบค้นข้อมูล Dexie IndexedDB ใน `summary.service.ts` (ใช้ `where("date").between(...)` เพื่อใช้ Date Index) และ `assets.service.ts` (ใช้ `orderBy("displayOrder")`) เพื่อหลีกเลี่ยงการสแกนตารางแบบ Full Memory Scan
   - **Production Build Verification**: ผ่านการทดสอบ Build Bundle (`npm run build`) ของทั้ง `apps/web` (Next.js 16) และ `apps/api` (NestJS) สำเร็จ 100% ไร้ข้อผิดพลาด TypeScript และ Hydration Warnings
   - **Settings UI Design Polish**: ปรับปรุง `SettingsContainer.tsx` ให้ตรงตามคัมภีร์ระบบสีและแนวทางการออกแบบใน `docs/DESIGN.md` อย่างเคร่งครัด 100% โดยใช้ Semantic Color Tokens (`bg-surface`, `bg-surface-secondary`, `border-border`, `text-primary-text`, `text-secondary-text`, `bg-primary`, `bg-primary-light`), ปรับการ์ดคอนเทนเนอร์เป็น `rounded-xl` พร้อมเงา `shadow-xs`, และปรับแต่งปุ่มเลือกภาษาพร้อมแก้ปัญหา Hydration Flicker ด้วย `useSyncExternalStore` ใน `useMounted.hook.ts` ตามมาตรฐาน React 19
   - **Dynamic Multi-Language SEO**: เพิ่ม OpenGraph Metadata (`locale: th_TH`, `alternateLocale: ['en_US']`) ใน `layout.tsx` และสร้างระบบ Client-side Dynamic Document Title & Meta Description ที่อัปเดตตามภาษา TH ↔ EN อัตโนมัติ
@@ -383,6 +387,23 @@
 - **Project Rebranding (PocketNote -> FindMyTang)**:
   - **Complete Rebranding**: ดำเนินการเปลี่ยนชื่อโปรเจกต์จาก PocketNote เป็น FindMyTang ครอบคลุมตั้งแต่ GitHub Repository Remote URL (`https://github.com/EkkasitPmk/FindMyTang.git`), Scoped Monorepo Packages (`findmytang-monorepo`, `@findmytang/web`, `@findmytang/api`), SonarQube config (`sonar.projectKey=findmytang`), เอกสารโปรเจกต์ (README.md, LICENSE, GEMINI.md), Backend Swagger Open API Title & Prisma Seed System Email (`system@findmytang.com`), และ Frontend Metadata, Storage Key (`findmytang-guest-storage`) รวมถึง UI Brand Names ทั้งหมด
   - **Build Verification**: ผ่านการทดสอบ Build ทั้ง Web และ API สำเร็จ 100%
+
+- **Guest Mode & Main Layout Performance Refactoring**:
+  - **สร้าง Git Branch ใหม่**: แยกกิ่งพัฒนา `perf/guest-performance-refactor` ออกจาก `developer` เพื่อดำเนินการปรับปรุง Performance
+  - **Conditional Data Fetching ใน MainLayoutContainer ([MainLayoutContainer.tsx](file:///Users/torikiton/Desktop/FindMyTang/apps/web/src/features/main-layout/containers/MainLayoutContainer.tsx))**: ปรับแก้การดึงข้อมูล `useAssets()` และ `useCategories()` ที่เดิมเคยเรียกซ้ำซ้อนทุกหน้า layout ให้เป็นแบบ Conditional (`enabled: boolean`) โดยเรียกเฉพาะเมื่อผู้ใช้อยู่ในเส้นทาง URL ที่จำเป็นต้องใช้ข้อมูลนั้นจริงเท่านั้น (ลดการ Query Dexie/Backend เปล่าประโยชน์บนหน้า `/home`, `/journal`, `/analytics`, `/settings` ฯลฯ)
+  - **ย้าย useEffect Initialization ไปไว้ใน MainLayoutContainer ([MainLayoutContainer.tsx](file:///Users/torikiton/Desktop/FindMyTang/apps/web/src/features/main-layout/containers/MainLayoutContainer.tsx))**: ย้าย `useEffect` สำหรับตั้งค่า `findmytang-guest-storage` และสั่งรัน `seedDefaultGuestData()` / `runAutoDeleteTasks()` จาก [Providers.tsx](file:///Users/torikiton/Desktop/FindMyTang/apps/web/src/app/providers.tsx) มาไว้ที่ `MainLayoutContainer` เพื่อให้ `Providers` ทำหน้าที่เป็น Pure Context Provider และให้ main app initialization ทำงานตอนโหลดหน้าหลักร่วมกับ UI Shell
+  - **ปรับปรุง useIsGuest & Local Seeding Performance ([guest.storage.ts](file:///Users/torikiton/Desktop/FindMyTang/apps/web/src/shared/lib/storages/guest.storage.ts))**:
+    - ลบ `useMounted()` ออกจาก `useIsGuest()` เพื่อขจัดปัญหาการเกิด Forced Re-render ซ้ำซ้อน 2 รอบบนคอมโพเนนต์ทั้งหมดที่เรียกใช้
+    - เพิ่ม `queryClient.invalidateQueries({ queryKey: ["categories"] })` หลังทำการ Seeding หมวดหมู่เริ่มต้นของ Guest Mode เพื่อให้ TanStack Query อัปเดตข้อมูล UI โดยทันทีโดยไม่ต้อง Refresh หน้าเว็บ
+  - **Lightweight useTranslation Hook ([useTranslation.hook.ts](file:///Users/torikiton/Desktop/FindMyTang/apps/web/src/shared/lib/hooks/useTranslation.hook.ts))**: ปรับโครงสร้าง `useTranslation` ไม่ให้สร้าง `useMeQuery` และ `useUpdateProfileMutation` ซ้ำซ้อนในคอมโพเนนต์ย่อยกว่า 100+ จุดเมื่อใช้งาน Guest Mode ทำให้การแปลภาษาทำงานได้เร็วในระดับ Synchronous และลดจำนวน React Query Subscriptions ใน Tree ลงอย่างมหาศาล
+  - **Isolate Global Feature Lock Modal ([GlobalFeatureLockModal.tsx](file:///Users/torikiton/Desktop/FindMyTang/apps/web/src/shared/components/customs/GlobalFeatureLockModal.tsx))**: แยกการจัดการ `useFeatureLockLogic()` ออกไปที่คอมโพเนนต์ย่อย เพื่อให้ `Providers` ไม่ต้อง Re-render ทุกครั้งที่มีการเปลี่ยนสถานะ Modal
+  - **MainLayoutContainer Refactoring ([MainLayoutContainer.tsx](file:///Users/torikiton/Desktop/FindMyTang/apps/web/src/features/main-layout/containers/MainLayoutContainer.tsx))**:
+    - ดำเนินการ Refactor ตามมาตรฐานสถาปัตยกรรม Feature-Based Architecture (`FRONTEND_IMPLEMENTATION.md`) 100%
+    - แยก logic, side effects (`useEffect`), route calculation, category/asset resolution, และ state ทอดไปยัง Custom Hook [`useMainLayout`](file:///Users/torikiton/Desktop/FindMyTang/apps/web/src/features/main-layout/hooks/main-layout.hook.tsx)
+    - แยก Helper Functions (การตรวจเช็ก Main Tab, การดึง Synthetic Category, การคำนวณ Content ClassNames) ออกไปยัง [`main-layout.helper.ts`](file:///Users/torikiton/Desktop/FindMyTang/apps/web/src/features/main-layout/helpers/main-layout.helper.ts)
+    - แยก UI Components ย่อยเป็น Pure UI Presentational Components: [`MainLayoutSearchBar.tsx`](file:///Users/torikiton/Desktop/FindMyTang/apps/web/src/features/main-layout/components/MainLayoutSearchBar.tsx), [`MainLayoutRightAction.tsx`](file:///Users/torikiton/Desktop/FindMyTang/apps/web/src/features/main-layout/components/MainLayoutRightAction.tsx), และ [`CategoryHeaderTitle.tsx`](file:///Users/torikiton/Desktop/FindMyTang/apps/web/src/features/main-layout/components/CategoryHeaderTitle.tsx)
+    - เพิ่ม Unit Test สำหรับ Helper [`main-layout.helper.test.ts`](file:///Users/torikiton/Desktop/FindMyTang/apps/web/src/features/main-layout/helpers/main-layout.helper.test.ts) (ผ่านการทดสอบ 8/8 test files, 59/59 tests 100%)
+  - **Build & Test Verification**: ผ่านการทดสอบ TypeScript (`npx tsc --noEmit`) และ Unit Tests ทั้งหมด 59/59 รายการ 100%
 
 ---
 
