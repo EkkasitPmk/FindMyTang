@@ -61,7 +61,7 @@ export default function JournalContainer() {
   });
 
   const groupedTransactions = useMemo(() => {
-    if (!mounted || !transactionsData?.pages) return [];
+    if (!transactionsData?.pages) return [];
 
     const seen = new Set<string>();
     let filteredItems = transactionsData.pages
@@ -106,7 +106,7 @@ export default function JournalContainer() {
       dateStr,
       items,
     }));
-  }, [mounted, transactionsData, searchKeyword, locale]);
+  }, [transactionsData, searchKeyword, locale]);
 
   return (
     <div className="flex flex-col h-[calc(100vh-80px)] bg-background space-y-2">
@@ -260,7 +260,9 @@ export default function JournalContainer() {
                 <div className="flex-1 min-h-0">
                   <TransactionListContainer
                     groupedTransactions={groupedTransactions}
-                    isLoadingTransactions={!mounted || isLoadingTransactions}
+                    isLoadingTransactions={
+                      !transactionsData && (!mounted || isLoadingTransactions)
+                    }
                     isFetchingNextPage={isFetchingNextPage}
                     hasNextPage={hasNextPage}
                     fetchNextPage={fetchNextPage}
