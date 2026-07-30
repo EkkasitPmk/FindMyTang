@@ -22,6 +22,9 @@ export function TransactionGroupHeader({
   className,
 }: Readonly<TransactionGroupHeaderProps>) {
   const netTotal = calculateNetTotal(group.items);
+  const isTransferOnly = group.items.every(
+    (transaction) => transaction.type === "TRANSFER",
+  );
   const txDate = new Date(group.items[0].transactionDate);
   const diffDays = getDiffDays(txDate);
   const topRow = getTopRowText(diffDays, (key) => t(key as TranslationKey));
@@ -51,12 +54,18 @@ export function TransactionGroupHeader({
           {bottomRow}
         </span>
       </div>
-      <span className={cn("text-base", netTotalColorClass)}>
-        {netTotalPrefix}฿
-        {Math.abs(netTotal).toLocaleString(locale, {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })}
+      <span
+        className={cn(
+          "text-base",
+          isTransferOnly ? "text-secondary-text" : netTotalColorClass,
+        )}
+      >
+        {isTransferOnly
+          ? "—"
+          : `${netTotalPrefix}฿${Math.abs(netTotal).toLocaleString(locale, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}`}
       </span>
     </div>
   );

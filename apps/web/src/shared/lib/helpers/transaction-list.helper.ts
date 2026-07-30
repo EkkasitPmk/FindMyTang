@@ -5,7 +5,6 @@ export const calculateNetTotal = (items: TransactionResponse[]) => {
     if (transaction.type === "INCOME") return acc + transaction.amount;
     if (transaction.type === "EXPENSE") return acc - transaction.amount;
     if (transaction.type === "ADJUSTMENT") return acc + transaction.amount;
-    if (transaction.type === "TRANSFER") return acc - transaction.amount;
     return acc;
   }, 0);
 };

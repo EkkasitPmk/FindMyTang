@@ -28,7 +28,6 @@ export function getAmountDisplayConfig(
   const isIncome = type === "INCOME";
   const isExpense = type === "EXPENSE";
   const isAdjustment = type === "ADJUSTMENT";
-  const isTransfer = type === "TRANSFER";
 
   let amountColorClass = "text-primary-text";
   let amountPrefix = "";
@@ -36,12 +35,7 @@ export function getAmountDisplayConfig(
   if (isIncome || isTransferIn || (isAdjustment && amount >= 0)) {
     amountColorClass = "text-income";
     amountPrefix = "+";
-  } else if (
-    isExpense ||
-    isTransferOut ||
-    (isAdjustment && amount < 0) ||
-    (isTransfer && !isTransferIn && !isTransferOut)
-  ) {
+  } else if (isExpense || isTransferOut || (isAdjustment && amount < 0)) {
     amountColorClass = "text-expense";
     amountPrefix = "-";
   }
