@@ -1,127 +1,170 @@
-# Sprint 6: Production Readiness & Cloud Deployment Plan (แผนการนำระบบขึ้นบรรจุใช้งานจริง)
+# Sprint 6: Production Blockers Plan
 
-> **เป้าหมายหลัก:** ขัดเกลาคุณภาพแอปพลิเคชัน (Polish & QA) และดำเนินการนำระบบขึ้นสู่เซิร์ฟเวอร์จริง (Production Cloud Deployment)
+> เป้าหมายระยะนี้: ทำให้ FindMyTang พร้อมสำหรับการ deploy แบบ staging โดยลดความเสี่ยงด้านความปลอดภัย การเชื่อมต่อฐานข้อมูล และการตรวจสอบระบบให้เหลือน้อยที่สุด
 
----
+สถานะฟีเจอร์หลักของ MVP ถือว่าครบแล้ว และระบบอยู่ในช่วง **Public Beta** งานชุดนี้จึงยังไม่เพิ่มฟีเจอร์ใหม่ แต่ปิดจุดที่อาจทำให้ระบบ production ใช้งานไม่ได้หรือทำให้ข้อมูลการเงินเสียหาย พร้อมเก็บรายละเอียดจากผู้ใช้จริง
 
-## 📌 1. ภาพรวมเป้าหมาย (Sprint Goal)
+## เป้าหมายที่ต้องผ่าน
 
-หลังจากที่ระบบ FindMyTang ได้ผ่านการพัฒนาโครงสร้างพื้นฐาน (Sprint 0), โมดูลสินทรัพย์และหมวดหมู่ (Sprint 1), ระบบบันทึกและธุรกรรมขั้นสูง (Sprint 2), หน้าจอแดชบอร์ดหลัก (Sprint 3), ระบบวิเคราะห์ข้อมูล Analytics (Sprint 4) และการเพิ่มความเข้มงวดด้านความปลอดภัย Security Hardening & Performance Optimization (Sprint 5) สำเร็จ 100% แล้ว
+- API และ Web สร้าง production build ได้ซ้ำได้
+- API มี health check ที่ตรวจได้ทั้ง process และฐานข้อมูล
+- Production environment variables มีชื่อเดียวกันระหว่างโค้ด เอกสาร และ hosting
+- ไม่มี default secret หรือ CORS ที่เปิดกว้างใน production
+- Migration และ seed ทำงานกับฐานข้อมูล cloud ได้
+- มี automated checks ขั้นต่ำก่อน deploy
 
-**Sprint 6** มีเป้าหมายเพื่อนำแอปพลิเคชันส่งมอบขึ้นสู่ Production Environment อย่างเต็มรูปแบบ โดยเน้นที่:
+## Phase 1: Code and build verification
 
-1. การตรวจสอบความสมบูรณ์ของโค้ดและการสร้าง Production Build (Build Integrity & Zero-Error Check)
-2. การจัดเตรียมโครงสร้างพื้นฐาน Cloud (Cloud PostgreSQL Database & Production Hosting Setup)
-3. การติดตั้งและเชื่อมต่อระบบจริง (Frontend Web & Backend API Deployment with CI/CD)
-4. การทดสอบแบบครบวงจรหลังการติดตั้ง (Post-Deployment E2E Testing & User Experience Validation)
+- [x] รัน Web lint, test และ production build ด้วย Webpack (`11 files / 69 tests`, build ผ่าน)
+- [x] รัน API lint, build, unit test และ e2e test (`21 unit tests`, `10 e2e tests` ผ่าน)
+- [x] รัน TypeScript typecheck ของ API และ Web (`npx tsc --noEmit` ผ่านทั้งคู่)
+- [x] ตรวจ Prisma client และ migration บนฐานข้อมูล local (`npm run db:migrate`, `npm run db:status`, `8 migrations`, schema up to date; staging ยังรอ provider จริง)
+- [x] บันทึกคำสั่งตรวจสอบและผลลัพธ์ไว้ใน Decision Log/สถานะงาน
+- [ ] ตรวจ API health และ Web root บน staging domain จริง
 
----
+**เกณฑ์ผ่าน:** คำสั่งตรวจสอบทั้งหมดผ่าน หรือมีข้อยกเว้นที่บันทึกเหตุผลและผลกระทบไว้อย่างชัดเจน
 
-## 📐 2. รายละเอียดขั้นตอนการดำเนินงาน (Task Breakdown)
+## Phase 2: Production safety hardening
 
-แผนงานใน Sprint 6 แบ่งออกเป็น **4 เฟสหลัก** ดังนี้:
+- [x] เพิ่ม `GET /api/v1/health` สำหรับ liveness/readiness
+  - process ยังทำงานอยู่
+  - เชื่อมต่อ Prisma/PostgreSQL ได้
+  - ตอบสถานะที่เหมาะสมเมื่อ database ใช้งานไม่ได้
+- [x] ทำให้ API fail fast เมื่อ production ไม่มี `DATABASE_URL`
+- [x] ทำให้ API fail fast เมื่อ production ต่อฐานข้อมูลไม่ได้
+- [x] ทำให้ API fail fast เมื่อ production ใช้ JWT หรือ cookie secret ค่า default
+- [x] ตรวจและจำกัด CORS ด้วย allowlist จาก `ALLOWED_ORIGINS`
+- [x] ตรวจ cookie settings สำหรับ HTTPS production (`secure`, `sameSite`, `domain`) และระบุ `SameSite=None` สำหรับ Vercel/Render คนละ site
+- [x] บังคับ production ให้ใช้ `COOKIE_SECURE=true`, ตรวจค่า `COOKIE_SAME_SITE` และให้ `ALLOWED_ORIGINS` เป็น HTTPS เท่านั้น
+- [x] ตรวจว่า Swagger และข้อมูล error ไม่เปิดเผย secret หรือข้อมูลส่วนตัวเกินจำเป็น (500 error ถูก mask ใน production และ response ไม่ส่ง stack trace)
+- [x] ตรวจ rate limit และ request body limit ให้เหมาะกับ production (100 requests/minute, JSON/urlencoded 10MB, multipart file 10MB)
 
-```mermaid
-graph LR
-    P1[Phase 1: Code & Build Verification] --> P2[Phase 2: Cloud Infra Setup]
-    P2 --> P3[Phase 3: Deployment & CI/CD]
-    P3 --> P4[Phase 4: Post-Deployment QA]
-```
+**เกณฑ์ผ่าน:** ยิง request ที่ไม่มี/ผิด environment สำคัญแล้วระบบปฏิเสธการ start หรือคืน error ที่ตรวจสอบได้ และ request จาก origin ที่ไม่ได้รับอนุญาตถูกปฏิเสธ
 
-### Phase 1: การตรวจสอบและขัดเกลาความพร้อมของโค้ด (Build Verification & Code Polish)
+## Phase 3: Environment contract
 
-- [x] **1.1 Frontend Web Verification (`apps/web`):**
-  - [x] ดำเนินการทดสอบ build Production Bundle (`cd apps/web && npm run build`)
-  - [x] ตรวจสอบและแก้ไข TypeScript errors, unused variables และ hydration warnings
-  - [x] ตรวจสอบ responsive design และ micro-interactions บน Mobile / Desktop
-- [x] **1.2 Backend API Verification (`apps/api`):**
-  - [x] ดำเนินการทดสอบ build Production App (`cd apps/api && npm run build`)
-  - [x] ตรวจสอบการทำงานของ Prisma Client Generation (`npx prisma generate`)
-  - [x] ตรวจสอบ Security Headers (Helmet), Rate Limiting (Throttler), และ Exception Filters
-- [x] **1.3 WebApp Rebranding, UI Polish & Legal Preparation (`apps/web`):**
-  - [x] **เปลี่ยนชื่อ WebApp ใหม่ (Rebranding):** อัปเดตชื่อแอปพลิเคชันเป็น FindMyTang ทั่วทั้งซอร์สโค้ดและเอกสารกำกับระบบ (`docs/`) เรียบร้อยแล้ว
-  - [x] **ทำ SEO WebApp (Dynamic Multi-Language SEO):**
-    - [x] กำหนด OpenGraph Metadata (`og:title`, `og:description`, `og:siteName`, `locale: th_TH`, `alternateLocale: ['en_US']`) ใน `layout.tsx` สำหรับ Search Engine Crawlers
-    - [x] ทำระบบ Dynamic Document Title & Meta Description ในฝั่ง Client ให้เปลี่ยนภาษา TH ↔ EN อัตโนมัติตาม `useTranslation()` เมื่อผู้ใช้สลับภาษาในแอป
-  - [x] **กำหนด Version WebApp:** ระบุหมายเลขเวอร์ชันระบบ `v1.0.0` ใน `apps/web/package.json` และแสดงผลบน UI
-  - [x] **ปรับปรุงหน้า Settings & UI Polish:**
-    - [x] ใส่ข้อความ `© 2026 FindMyTang. All rights reserved.` คู่กับ Version `v1.0.0` ที่ล่างสุดของหน้า Settings
-    - [x] เพิ่มปุ่มสำหรับกดเปิดอ่าน Terms of Service และ Privacy Policy ในส่วน Footer ของหน้า Settings
-    - [x] ปรับแต่งโทนสีและดีไซน์ UI ให้มีความสวยงาม ลงตัว และพรีเมียมยิ่งขึ้น
-  - [x] **ปรับแต่งหน้า Auth (Login/Register):**
-    - [x] ซ่อนลิงก์ "Forgot password?" ชั่วคราว
-    - [x] ซ่อนปุ่ม "Continue with Google" ชั่วคราว
-  - [x] **สร้างหน้าข้อตกลงและนโยบาย (Legal Pages):**
-    - [x] สร้าง Modal Dialog แสดงเนื้อหา Terms of Service (เงื่อนไขและข้อตกลงการใช้งาน) ในแอปแบบไม่ต้องเปลี่ยนหน้า
-    - [x] สร้าง Modal Dialog แสดงเนื้อหา Privacy Policy (นโยบายความเป็นส่วนตัว) ในแอปแบบไม่ต้องเปลี่ยนหน้า
+จัดทำรายการ environment variables กลางหนึ่งชุด และใช้ชื่อให้ตรงกันทุกที่
 
----
+### Backend
 
-### Phase 2: การจัดเตรียมฐานข้อมูลและสภาพแวดล้อม Cloud (Cloud Infrastructure & Environment Setup)
+- [x] `DATABASE_URL`
+- [x] `PORT`
+- [x] `NODE_ENV=production`
+- [x] `JWT_ACCESS_SECRET`
+- [x] `JWT_REFRESH_SECRET`
+- [x] `JWT_ACCESS_EXPIRES_IN`
+- [x] `JWT_REFRESH_EXPIRES_IN`
+- [x] `COOKIE_SECRET`
+- [x] `COOKIE_DOMAIN` (ถ้าจำเป็น)
+- [x] `COOKIE_SECURE=true`
+- [x] `COOKIE_SAME_SITE`
+- [x] `ALLOWED_ORIGINS`
+- [x] `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_BUCKET` (ถ้าใช้ storage)
 
-- [x] **2.1 Cloud PostgreSQL Database Setup:**
-  - [x] จัดตั้ง Cloud PostgreSQL Database บน Supabase
-  - [x] ทดสอบการเชื่อมต่อ `DATABASE_URL` จากเครื่อง Local ไปยัง Cloud Database
-  - [x] ดำเนินการ Prisma Database Migration บน Cloud (`npx prisma migrate deploy`) — 7 migrations applied
-  - [x] ดำเนินการ Seed Initial Category Data สำหรับผู้ใช้งานใหม่ — 20 categories created
-- [x] **2.2 Production Environment Variables Preparation:**
-  - [x] จัดทำและตรวจสอบความถูกต้องของ Production Environment Variables:
-    - **Backend (`apps/api`):**
-      - `DATABASE_URL` ✅
-      - `JWT_SECRET` & `JWT_ACCESS_SECRET` ✅ (generated secure 64-char)
-      - `ALLOWED_ORIGINS` ✅ (https://findmytang.vercel.app)
-      - `THROTTLE_TTL` & `THROTTLE_LIMIT` ✅
-      - `SUPABASE_URL`, `SUPABASE_BUCKET`, `SUPABASE_SERVICE_ROLE_KEY` ✅
-    - **Frontend (`apps/web`):**
-      - `NEXT_PUBLIC_API_URL` (รอ Render URL จาก Phase 3)
+### Frontend
 
----
+- [x] `NEXT_PUBLIC_URL_BACKEND` ให้ตรงกับชื่อที่โค้ดใช้จริง
+- [x] ตรวจ rewrite `/api/:path*` ให้ชี้ไป backend staging/production ถูกตัว
+- [x] ตรวจว่าไม่มี secret ฝั่ง backend ถูกใส่ใน `NEXT_PUBLIC_*`
 
-### Phase 3: การติดตั้งระบบขึ้น Cloud Hosting (Deployment & Integration)
+**หมายเหตุ:** ใช้ชื่อที่โค้ดปัจจุบันอ่านจริงแล้ว: `ALLOWED_ORIGINS` และ `NEXT_PUBLIC_URL_BACKEND` เอกสารเดิมที่ใช้ชื่ออื่นต้องถือว่า obsolete
 
-- [ ] **3.1 Backend Deployment (`apps/api`):**
-  - [ ] เลือกและตั้งค่าบริการ Host (เช่น Render, Railway, Fly.io)
-  - [ ] กำหนดค่า Build Command (`npm run build`) และ Start Command (`npm run start:prod`)
-  - [ ] ตั้งค่า Health Check Endpoint (`GET /api/v1/health` หรือ `GET /api`)
-  - [ ] ทดสอบ API Key, CORS Policies และ Rate Limiting บน Production
-- [ ] **3.2 Frontend Deployment (`apps/web`):**
-  - [ ] เลือกและตั้งค่า Vercel Project สำหรับ Next.js App
-  - [ ] กำหนด Environment Variable `NEXT_PUBLIC_API_URL`
-  - [ ] เชื่อมต่อ Git Repository สำหรับ Auto-Deployment (CI/CD)
-  - [ ] ตั้งค่า Custom Domain และ HTTPS / SSL Certificate (ถ้ามี)
+## Phase 4: Staging database verification
 
----
+- [ ] สร้าง PostgreSQL staging แยกจากข้อมูลจริง
+- [x] เพิ่มและตรวจคำสั่ง `npm run db:migrate`
+- [ ] รัน seed สำหรับ category เริ่มต้น
+- [ ] ตรวจ foreign key, soft delete, transfer และ adjustment ด้วยข้อมูลทดสอบ
+- [x] เขียน backup/restore runbook ที่ [OPERATIONS.md](../OPERATIONS.md)
+- [ ] เปิด Automatic Backup และทดสอบ Restore อย่างน้อยหนึ่งรอบบน provider จริง
+- [ ] ห้ามใช้ `prisma db push` กับฐานข้อมูล production
 
-### Phase 4: การทดสอบหลังติดตั้งและการส่งมอบ (Post-Deployment E2E QA)
+**เกณฑ์ผ่าน:** สร้างฐานข้อมูล staging ใหม่จากศูนย์ได้ และ flow สำคัญทำงานครบโดยไม่แก้ schema ด้วยมือ
 
-- [ ] **4.1 End-to-End User Flow Validation:**
-  - [ ] ทดสอบการลงทะเบียนสมัครสมาชิก (Register) และเข้าสู่ระบบ (Login) บน Production Web
-  - [ ] ทดสอบการเพิ่ม/แก้ไข/ลบ สินทรัพย์ (Assets) และ หมวดหมู่ (Categories)
-  - [ ] ทดสอบการบันทึกธุรกรรม (Income, Expense, Transfer, Adjustment)
-  - [ ] ทดสอบการแสดงผล Home Dashboard และ Analytics Graphs
-  - [ ] ทดสอบพฤติกรรม Rate Limiting (429 Toast Notification) ในสภาวะใช้งานจริง
-- [ ] **4.2 Final Sign-Off & Documentation Update:**
-  - [ ] อัปเดตสถานะใน [STATUS.md](file:///Users/torikiton/Desktop/FindMyTang/docs/STATUS.md) และ [DEPLOYMENT_PREPARATION.md](file:///Users/torikiton/Desktop/FindMyTang/docs/DEPLOYMENT_PREPARATION.md) เป็น Completed 100%
+## Phase 5: Automated pre-deploy gate
 
----
-
-## 🛠️ 3. แผนการตรวจสอบและวัดผล (Verification Plan)
-
-### คำสั่งตรวจสอบอัตโนมัติ (Automated Build & Check Commands)
+เพิ่มคำสั่งหรือ CI check ขั้นต่ำให้รันทุกครั้งก่อน deploy:
 
 ```bash
-# 1. ทดสอบ Build ฝั่ง Frontend Web
-cd apps/web && npm run build
+# Web
+cd apps/web
+npm run lint
+npm run test -- --run
+npm run build
 
-# 2. ทดสอบ Build ฝั่ง Backend API
-cd apps/api && npm run build
-
-# 3. ตรวจสอบสถานะ API Health Check บน Production
-curl -I https://<your-api-domain>/api
+# API
+cd ../api
+npm run build
+npm test -- --runInBand
+npm run test:e2e -- --runInBand
 ```
 
----
+- [x] เพิ่ม GitHub Actions workflow ที่ `/.github/workflows/ci.yml` พร้อมตรวจ `db:status` หลัง migration และรองรับ manual `workflow_dispatch`
+- [ ] ยืนยัน workflow ผ่านบน GitHub จาก clean checkout
+- [x] CI รัน migration, seed และ schema status ก่อน build/test; ไม่ผ่านแล้วหยุด workflow
 
-## 📝 4. บันทึกและหมายเหตุ (Notes & Next Actions)
+## Definition of Done
 
-เมื่อดำเนินการตามแผนงาน Sprint 6 นี้เสร็จสมบูรณ์ โครงการ FindMyTang จะพร้อมสำหรับผู้ใช้จริงในรูปแบบ Production Web Application อย่างเต็มประสิทธิภาพ
+Sprint นี้ถือว่าผ่านเมื่อ:
+
+1. Web และ API build จาก clean checkout สำเร็จ
+2. API มี health check ที่ตรวจ database ได้
+3. ไม่มี default secret ใน production configuration
+4. Environment variable names ในโค้ดและเอกสารตรงกัน
+5. Staging database migrate และ seed ได้จากศูนย์
+6. Automated pre-deploy checks ผ่าน
+7. มีบันทึกผลตรวจสอบและ blocker ที่เหลืออยู่
+
+## ลำดับการลงมือทำถัดไป
+
+1. รัน API/Web smoke test บน staging domain
+2. ยืนยัน GitHub Actions pre-deploy gate บน repository จริง
+3. ตั้ง backup และทดสอบ restore บน Supabase
+4. Deploy/ตรวจ staging บน Vercel + Render
+5. ทำ Critical User Flow QA บน Public Beta และเก็บ feedback ผ่านช่องทางที่กำหนด
+
+## Decision Log
+
+บันทึกจากการทบทวนแผนร่วมกัน:
+
+- [x] รัน Web lint/test/build และ API build/unit/e2e เพื่อสร้าง baseline ก่อนแก้ไข
+- [x] Health check ตรวจทั้ง API process และ Database connection
+- [x] Fail fast เฉพาะ Production เมื่อขาด `DATABASE_URL` หรือใช้ default secret
+- [x] ยึดชื่อ environment variables ตามโค้ดปัจจุบัน แล้วแก้เอกสารให้ตรง
+- [x] จำกัด CORS เฉพาะ Web domain ที่อนุญาต และใช้ Secure Cookie บน HTTPS
+- [x] ใช้ Supabase PostgreSQL เป็น Staging Database
+- [x] ใช้ Vercel สำหรับ Web และ Render สำหรับ API
+- [x] เลือกแนวทางเปิด Automatic Backup และทดสอบ Restore อย่างน้อย 1 ครั้งก่อน Production
+- [x] ใช้ GitHub Actions เป็น Pre-deploy Gate
+- [x] ทดสอบ Critical User Flows ครบชุดบน Staging/Production
+- [x] สถานะปัจจุบันเป็น Public Beta แล้ว ไม่ต้องมี Private Beta เพิ่ม
+- [x] เพิ่มช่องทาง Report Bug/Feedback และเก็บ error log ฝั่งระบบ
+- [x] ใช้ Sentry สำหรับ Error Monitoring ของ Web และ API
+- [x] Redact PII และ Secret ก่อนส่งข้อมูลไป Error Monitoring
+- [x] เก็บ Error Logs 30 วัน และลบอัตโนมัติ
+- [x] อัปเดตเอกสารนี้ด้วย Decision Log และสถานะงาน
+
+## Public Beta Release Policy
+
+- การ deploy ถัดไปเป็น **incremental release** ไม่ใช่การเปิดตัวครั้งแรก
+- ทุก release ต้องผ่าน pre-deploy gate และ Critical User Flow smoke test
+- ปัญหาที่กระทบความถูกต้องของยอดเงิน ความปลอดภัย หรือการสูญหายของข้อมูลให้จัดเป็น P0 และหยุด release จนกว่าจะแก้เสร็จ
+- Feedback จากผู้ใช้ให้จัดกลุ่มเป็น bug, usability และ feature request ก่อนนำไปจัดลำดับงานรอบถัดไป
+
+## Verification Log
+
+ผลตรวจสอบล่าสุดหลังลงมือทำ:
+
+- Web: `npm run lint` ผ่านโดยไม่มี warning, `npm run test -- --run` ผ่าน `11 files / 69 tests`, `npx tsc --noEmit` ผ่าน และ `npm run build` ผ่านด้วย Webpack
+- API: `npm run lint` ผ่าน, `npm run build` ผ่าน, `npm test -- --runInBand` ผ่าน `21 tests`, `npm run test:e2e -- --runInBand --detectOpenHandles` ผ่าน `10 tests` รอบล่าสุดกับ PostgreSQL local
+- TypeScript: `npx tsc --noEmit` ผ่านทั้ง API และ Web; API production build ยัง emit จาก `src` เดิมผ่าน `tsconfig.build.json`
+- Database: local `npm run db:migrate` ผ่านและไม่มี pending migration, `npm run db:status` รายงานว่า schema up to date; `npm run db:seed` สร้าง 20 categories รอบแรกและรอบซ้ำเป็น `Created: 0, Skipped: 20`
+- Workflow: `.github/workflows/ci.yml` parse ผ่าน และตั้งค่า PostgreSQL service สำหรับ API migration/seed/status/e2e
+- Workflow trigger: รองรับ branch `main`, `master` และ `developer` ซึ่งเป็น branch ที่กำลังทำงานอยู่
+- Operations: เพิ่ม runbook backup/restore แล้ว แต่ยังไม่มีหลักฐานว่า Automatic Backup/Restore drill ผ่านบน provider จริง
+- Production guard: start ด้วย development default secret ถูกปฏิเสธก่อนเปิด server
+- Database guard: production start ด้วย `DATABASE_URL` ที่เชื่อมต่อไม่ได้ถูกหยุดก่อนเปิด server; build ที่ไม่มี `DATABASE_URL` ยังผ่านเพราะ migration config ไม่ถูกใช้ใน generate
+- Production policy guard: production start ถูกปฏิเสธเมื่อ `COOKIE_SECURE` ไม่เป็น `true` หรือ `ALLOWED_ORIGINS` มี HTTP origin
+- Cookie policy guard: production start ถูกปฏิเสธเมื่อ `COOKIE_SAME_SITE` ไม่ใช่ `lax`, `strict` หรือ `none`
+- API lint ตรวจ test files ด้วย override เฉพาะ test และไม่ใช้ `--fix`; local gate ผ่านแล้ว รอยืนยันผลบน GitHub Actions จริง
+- ยังไม่ถือว่า deploy staging/production เสร็จ จนกว่าจะตั้งค่า hosting, backup/restore และ smoke test บน domain จริง

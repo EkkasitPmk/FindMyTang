@@ -193,7 +193,9 @@ export class TransactionController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(FileInterceptor("file"))
+  @UseInterceptors(
+    FileInterceptor("file", { limits: { fileSize: 10 * 1024 * 1024 } }),
+  )
   @ApiOperation({
     summary: "Create a new transaction",
     description:
@@ -262,7 +264,9 @@ export class TransactionController {
 
   @Patch(":id")
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(FileInterceptor("file"))
+  @UseInterceptors(
+    FileInterceptor("file", { limits: { fileSize: 10 * 1024 * 1024 } }),
+  )
   @ApiOperation({
     summary: "Update a transaction",
     description:

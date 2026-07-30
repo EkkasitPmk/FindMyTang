@@ -26,3 +26,9 @@
 - **แผนการพัฒนาในแต่ละขั้นตอน (Project Roadmap Sprints)**
 - **ประวัติงานที่ทำเสร็จแล้ว (Completed Items)**
 - **สิ่งที่ต้องดำเนินงานเป็นลำดับถัดไป (Next Actions / Pending Tasks)**
+
+### 4. 🛠️ [OPERATIONS.md](./OPERATIONS.md) - การดูแลระบบและกู้คืนข้อมูล
+
+- **Backup และ Restore Drill**
+- **Production Incident Recovery**
+- **หลักฐานที่ต้องบันทึกก่อนเปิดใช้งานจริง**

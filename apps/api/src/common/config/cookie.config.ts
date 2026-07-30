@@ -6,5 +6,6 @@ export default registerAs("cookie", () => ({
   domain: process.env.COOKIE_DOMAIN || undefined,
   secure: process.env.COOKIE_SECURE === "true",
   sameSite:
-    (process.env.COOKIE_SAME_SITE as "lax" | "strict" | "none") || "lax",
+    (process.env.COOKIE_SAME_SITE?.toLowerCase() as
+      "lax" | "strict" | "none") || "lax",
 }));

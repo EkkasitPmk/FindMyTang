@@ -7,12 +7,65 @@ import { json, urlencoded } from "express";
 import helmet from "helmet";
 import { HttpExceptionFilter } from "./common/filters/http-exception.filter";
 
+function validateProductionEnvironment() {
+  if (process.env.NODE_ENV !== "production") return;
+
+  const required = [
+    "DATABASE_URL",
+    "JWT_ACCESS_SECRET",
+    "JWT_REFRESH_SECRET",
+    "COOKIE_SECRET",
+    "ALLOWED_ORIGINS",
+  ];
+  const missing = required.filter((name) => !process.env[name]);
+
+  if (missing.length > 0) {
+    throw new Error(
+      "Missing required production environment variables: " +
+        missing.join(", "),
+    );
+  }
+
+  const insecureDefaults = [
+    "your-super-secret",
+    "your-refresh-secret",
+    "super-secret-cookie-key-for-development",
+  ];
+  const hasInsecureSecret = [
+    process.env.JWT_ACCESS_SECRET,
+    process.env.JWT_REFRESH_SECRET,
+    process.env.COOKIE_SECRET,
+  ].some((secret) => insecureDefaults.includes(secret ?? ""));
+
+  if (hasInsecureSecret) {
+    throw new Error("Production secrets must not use development defaults");
+  }
+
+  if (process.env.COOKIE_SECURE !== "true") {
+    throw new Error("Production cookies must use Secure=true");
+  }
+
+  const sameSite = process.env.COOKIE_SAME_SITE?.toLowerCase();
+  if (sameSite && !["lax", "strict", "none"].includes(sameSite)) {
+    throw new Error("COOKIE_SAME_SITE must be lax, strict, or none");
+  }
+
+  const origins = (process.env.ALLOWED_ORIGINS ?? "")
+    .split(",")
+    .map((origin) => origin.trim());
+  if (origins.some((origin) => !origin.startsWith("https://"))) {
+    throw new Error("Production allowed origins must use HTTPS");
+  }
+}
+
 async function bootstrap() {
+  validateProductionEnvironment();
   const app = await NestFactory.create(AppModule);
 
   app.use(helmet());
-  app.use(json({ limit: "50mb" }));
-  app.use(urlencoded({ extended: true, limit: "50mb" }));
+  // ponytail: Keep request bodies bounded; receipts use the multipart limit below.
+  app.use(json({ limit: "10mb" }));
+  app.use(urlencoded({ extended: true, limit: "10mb" }));
 
   app.use(cookieParser(process.env.COOKIE_SECRET));
 
@@ -30,13 +83,14 @@ async function bootstrap() {
         return;
       }
       const isLocal =
-        /^http:\/\/localhost(:\d+)?$/.test(origin) ||
-        /^http:\/\/127\.0\.0\.1(:\d+)?$/.test(origin) ||
-        /^http:\/\/192\.168\.\d{1,3}\.\d{1,3}(:\d+)?$/.test(origin) ||
-        /^http:\/\/10\.\d{1,3}\.\d{1,3}\.\d{1,3}(:\d+)?$/.test(origin) ||
-        /^http:\/\/172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}(:\d+)?$/.test(
-          origin,
-        );
+        process.env.NODE_ENV !== "production" &&
+        (/^http:\/\/localhost(:\d+)?$/.test(origin) ||
+          /^http:\/\/127\.0\.0\.1(:\d+)?$/.test(origin) ||
+          /^http:\/\/192\.168\.\d{1,3}\.\d{1,3}(:\d+)?$/.test(origin) ||
+          /^http:\/\/10\.\d{1,3}\.\d{1,3}\.\d{1,3}(:\d+)?$/.test(origin) ||
+          /^http:\/\/172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}(:\d+)?$/.test(
+            origin,
+          ));
       const isAllowedDomain = allowedOriginsEnv.includes(origin);
 
       if (isLocal || isAllowedDomain) {
