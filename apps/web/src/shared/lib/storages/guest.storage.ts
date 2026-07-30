@@ -1,37 +1,105 @@
 import { queryClient } from "@/shared/lib/api/queryClient";
 import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
 import { v4 as uuidv4 } from "uuid";
-import { persist, createJSONStorage } from "zustand/middleware";
-import { db, CategoryType, LocalCategory } from "./dexie.storage";
+import {
+  DEFAULT_GUEST_CATEGORIES,
+  GUEST_AUTO_DELETE_AFTER_DAYS,
+  GUEST_STORAGE_KEYS,
+} from "../configs/guest.config";
+import { db, type LocalCategory } from "./dexie.storage";
+
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 interface GuestState {
   isGuest: boolean;
   setGuestMode: (isGuest: boolean) => void;
-  // This will clear Dexie DB and set Guest mode to false
   clearGuestData: () => Promise<void>;
-  // This runs auto-deletion of items > 30 days old
   runAutoDeleteTasks: () => Promise<void>;
-  // This seeds default categories and assets for fresh guest users
   seedDefaultGuestData: () => Promise<void>;
 }
 
 let guestDataInitialization: Promise<void> | null = null;
+let guestDataSeeding: Promise<void> | null = null;
+let autoDeleteTask: Promise<void> | null = null;
+
+const browserStorage = () =>
+  typeof window === "undefined" ? null : window.localStorage;
 
 const getInitialIsGuest = (): boolean => {
-  if (typeof window !== "undefined") {
-    try {
-      const stored = localStorage.getItem("findmytang-guest-storage");
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (typeof parsed?.state?.isGuest === "boolean") {
-          return parsed.state.isGuest;
-        }
-      }
-    } catch {
-      // ignore JSON parse error
-    }
+  try {
+    const stored = browserStorage()?.getItem(GUEST_STORAGE_KEYS.state);
+    const parsed: unknown = stored ? JSON.parse(stored) : null;
+    return typeof (parsed as { state?: { isGuest?: unknown } })?.state
+      ?.isGuest === "boolean"
+      ? (parsed as { state: { isGuest: boolean } }).state.isGuest
+      : true;
+  } catch {
+    return true;
   }
-  return true;
+};
+
+const createDefaultCategories = (now: string): LocalCategory[] =>
+  DEFAULT_GUEST_CATEGORIES.map((category) => ({
+    ...category,
+    isSystem: true,
+    syncStatus: "pending" as const,
+    id: uuidv4(),
+    createdAt: now,
+    updatedAt: now,
+  }));
+
+const seedDefaultGuestData = async (): Promise<void> => {
+  const storage = browserStorage();
+  if (storage?.getItem(GUEST_STORAGE_KEYS.seeded) === "true") return;
+
+  if ((await db.categories.count()) > 0) {
+    storage?.setItem(GUEST_STORAGE_KEYS.seeded, "true");
+    return;
+  }
+
+  const now = new Date().toISOString();
+  await db.transaction("rw", db.categories, async () => {
+    // The count check and insert share one transaction to avoid duplicate seeds.
+    if ((await db.categories.count()) === 0) {
+      await db.categories.bulkAdd(createDefaultCategories(now));
+    }
+  });
+  storage?.setItem(GUEST_STORAGE_KEYS.seeded, "true");
+  void queryClient.invalidateQueries({ queryKey: ["categories"] });
+};
+
+const runAutoDeleteTasks = async (): Promise<void> => {
+  const storage = browserStorage();
+  const today = new Date().toISOString().slice(0, 10);
+  if (storage?.getItem(GUEST_STORAGE_KEYS.lastAutodelete) === today) return;
+
+  const cutoff = new Date(
+    Date.now() - GUEST_AUTO_DELETE_AFTER_DAYS * MS_PER_DAY,
+  ).toISOString();
+  const [assetIds, categoryIds, transactionIds] = await Promise.all([
+    db.assets.where("deletedAt").belowOrEqual(cutoff).primaryKeys(),
+    db.categories.where("deletedAt").belowOrEqual(cutoff).primaryKeys(),
+    db.transactions.where("deletedAt").belowOrEqual(cutoff).primaryKeys(),
+  ]);
+
+  if (!assetIds.length && !categoryIds.length && !transactionIds.length) {
+    storage?.setItem(GUEST_STORAGE_KEYS.lastAutodelete, today);
+    return;
+  }
+
+  await db.transaction(
+    "rw",
+    [db.assets, db.categories, db.transactions],
+    async () => {
+      await Promise.all([
+        db.assets.bulkDelete(assetIds),
+        db.categories.bulkDelete(categoryIds),
+        db.transactions.bulkDelete(transactionIds),
+      ]);
+    },
+  );
+  storage?.setItem(GUEST_STORAGE_KEYS.lastAutodelete, today);
 };
 
 export const useGuestStore = create<GuestState>()(
@@ -41,341 +109,44 @@ export const useGuestStore = create<GuestState>()(
       setGuestMode: (isGuest) => set({ isGuest }),
 
       clearGuestData: async () => {
-        if (typeof window !== "undefined") {
-          localStorage.removeItem("findmytang-guest-seeded");
-          localStorage.removeItem("findmytang-guest-last-autodelete");
-        }
-        await Promise.all([
-          db.assets.clear(),
-          db.categories.clear(),
-          db.transactions.clear(),
-        ]);
+        browserStorage()?.removeItem(GUEST_STORAGE_KEYS.seeded);
+        browserStorage()?.removeItem(GUEST_STORAGE_KEYS.lastAutodelete);
+        await db.transaction(
+          "rw",
+          [db.assets, db.categories, db.transactions],
+          () =>
+            Promise.all([
+              db.assets.clear(),
+              db.categories.clear(),
+              db.transactions.clear(),
+            ]).then(() => undefined),
+        );
       },
 
       seedDefaultGuestData: async () => {
         if (!get().isGuest) return;
-        if (
-          typeof window !== "undefined" &&
-          localStorage.getItem("findmytang-guest-seeded") === "true"
-        ) {
-          return;
-        }
-
-        const categoryCount = await db.categories.count();
-        if (categoryCount === 0) {
-          const now = new Date().toISOString();
-
-          const defaultCategories: LocalCategory[] = [
-            // Expense
-            {
-              id: uuidv4(),
-              name: "Food",
-              type: CategoryType.EXPENSE,
-              icon: "food",
-              color: "#FF8700",
-              displayOrder: 1,
-              isSystem: true,
-              createdAt: now,
-              updatedAt: now,
-              syncStatus: "pending",
-            },
-            {
-              id: uuidv4(),
-              name: "Snack",
-              type: CategoryType.EXPENSE,
-              icon: "snack",
-              color: "#ED54B4",
-              displayOrder: 2,
-              isSystem: true,
-              createdAt: now,
-              updatedAt: now,
-              syncStatus: "pending",
-            },
-            {
-              id: uuidv4(),
-              name: "Drink",
-              type: CategoryType.EXPENSE,
-              icon: "drink",
-              color: "#FFE666",
-              displayOrder: 3,
-              isSystem: true,
-              createdAt: now,
-              updatedAt: now,
-              syncStatus: "pending",
-            },
-            {
-              id: uuidv4(),
-              name: "Phone",
-              type: CategoryType.EXPENSE,
-              icon: "phone",
-              color: "#696969",
-              displayOrder: 4,
-              isSystem: true,
-              createdAt: now,
-              updatedAt: now,
-              syncStatus: "pending",
-            },
-            {
-              id: uuidv4(),
-              name: "Transport",
-              type: CategoryType.EXPENSE,
-              icon: "transport",
-              color: "#A9673C",
-              displayOrder: 5,
-              isSystem: true,
-              createdAt: now,
-              updatedAt: now,
-              syncStatus: "pending",
-            },
-            {
-              id: uuidv4(),
-              name: "Personal",
-              type: CategoryType.EXPENSE,
-              icon: "personal",
-              color: "#42D2C1",
-              displayOrder: 6,
-              isSystem: true,
-              createdAt: now,
-              updatedAt: now,
-              syncStatus: "pending",
-            },
-            {
-              id: uuidv4(),
-              name: "Home",
-              type: CategoryType.EXPENSE,
-              icon: "home",
-              color: "#A7BE00",
-              displayOrder: 7,
-              isSystem: true,
-              createdAt: now,
-              updatedAt: now,
-              syncStatus: "pending",
-            },
-            {
-              id: uuidv4(),
-              name: "Laundry",
-              type: CategoryType.EXPENSE,
-              icon: "laundry",
-              color: "#1638A7",
-              displayOrder: 8,
-              isSystem: true,
-              createdAt: now,
-              updatedAt: now,
-              syncStatus: "pending",
-            },
-            {
-              id: uuidv4(),
-              name: "Household",
-              type: CategoryType.EXPENSE,
-              icon: "household",
-              color: "#09CEFF",
-              displayOrder: 9,
-              isSystem: true,
-              createdAt: now,
-              updatedAt: now,
-              syncStatus: "pending",
-            },
-            {
-              id: uuidv4(),
-              name: "Cosmetic",
-              type: CategoryType.EXPENSE,
-              icon: "cosmetic",
-              color: "#990BA6",
-              displayOrder: 10,
-              isSystem: true,
-              createdAt: now,
-              updatedAt: now,
-              syncStatus: "pending",
-            },
-            {
-              id: uuidv4(),
-              name: "Medical",
-              type: CategoryType.EXPENSE,
-              icon: "medical",
-              color: "#61E396",
-              displayOrder: 11,
-              isSystem: true,
-              createdAt: now,
-              updatedAt: now,
-              syncStatus: "pending",
-            },
-            {
-              id: uuidv4(),
-              name: "Education",
-              type: CategoryType.EXPENSE,
-              icon: "education",
-              color: "#FF4950",
-              displayOrder: 12,
-              isSystem: true,
-              createdAt: now,
-              updatedAt: now,
-              syncStatus: "pending",
-            },
-            {
-              id: uuidv4(),
-              name: "Other",
-              type: CategoryType.EXPENSE,
-              icon: "other",
-              color: "#FF0000",
-              displayOrder: 13,
-              isSystem: true,
-              createdAt: now,
-              updatedAt: now,
-              syncStatus: "pending",
-            },
-
-            // Income
-            {
-              id: uuidv4(),
-              name: "Salary",
-              type: CategoryType.INCOME,
-              icon: "salary",
-              color: "#4EB46A",
-              displayOrder: 1,
-              isSystem: true,
-              createdAt: now,
-              updatedAt: now,
-              syncStatus: "pending",
-            },
-            {
-              id: uuidv4(),
-              name: "Wallet",
-              type: CategoryType.INCOME,
-              icon: "wallet",
-              color: "#FFB27F",
-              displayOrder: 2,
-              isSystem: true,
-              createdAt: now,
-              updatedAt: now,
-              syncStatus: "pending",
-            },
-            {
-              id: uuidv4(),
-              name: "Bonus",
-              type: CategoryType.INCOME,
-              icon: "bonus",
-              color: "#FF2E00",
-              displayOrder: 3,
-              isSystem: true,
-              createdAt: now,
-              updatedAt: now,
-              syncStatus: "pending",
-            },
-            {
-              id: uuidv4(),
-              name: "Freelance",
-              type: CategoryType.INCOME,
-              icon: "freelance",
-              color: "#00C7FF",
-              displayOrder: 4,
-              isSystem: true,
-              createdAt: now,
-              updatedAt: now,
-              syncStatus: "pending",
-            },
-            {
-              id: uuidv4(),
-              name: "Investment",
-              type: CategoryType.INCOME,
-              icon: "investment",
-              color: "#42D2C1",
-              displayOrder: 5,
-              isSystem: true,
-              createdAt: now,
-              updatedAt: now,
-              syncStatus: "pending",
-            },
-            {
-              id: uuidv4(),
-              name: "Other",
-              type: CategoryType.INCOME,
-              icon: "other",
-              color: "#F98BBE",
-              displayOrder: 6,
-              isSystem: true,
-              createdAt: now,
-              updatedAt: now,
-              syncStatus: "pending",
-            },
-            {
-              id: uuidv4(),
-              name: "Personal",
-              type: CategoryType.INCOME,
-              icon: "personal",
-              color: "#42D2C1",
-              displayOrder: 7,
-              isSystem: true,
-              createdAt: now,
-              updatedAt: now,
-              syncStatus: "pending",
-            },
-          ];
-          await db.categories.bulkAdd(defaultCategories);
-          void queryClient.invalidateQueries({ queryKey: ["categories"] });
-        }
-        if (typeof window !== "undefined") {
-          localStorage.setItem("findmytang-guest-seeded", "true");
-        }
+        guestDataSeeding ??= seedDefaultGuestData().finally(() => {
+          guestDataSeeding = null;
+        });
+        await guestDataSeeding;
       },
 
       runAutoDeleteTasks: async () => {
         if (!get().isGuest) return;
-
-        const todayStr = new Date().toISOString().split("T")[0];
-        if (
-          typeof window !== "undefined" &&
-          localStorage.getItem("findmytang-guest-last-autodelete") === todayStr
-        ) {
-          return;
-        }
-
-        const cutoff = new Date(
-          Date.now() - 30 * 24 * 60 * 60 * 1000,
-        ).toISOString();
-
-        const [oldAssets, oldCategories, oldTransactions] = await Promise.all([
-          db.assets.where("deletedAt").belowOrEqual(cutoff).primaryKeys(),
-          db.categories.where("deletedAt").belowOrEqual(cutoff).primaryKeys(),
-          db.transactions.where("deletedAt").belowOrEqual(cutoff).primaryKeys(),
-        ]);
-
-        if (
-          oldAssets.length === 0 &&
-          oldCategories.length === 0 &&
-          oldTransactions.length === 0
-        ) {
-          if (typeof window !== "undefined") {
-            localStorage.setItem("findmytang-guest-last-autodelete", todayStr);
-          }
-          return;
-        }
-
-        await db.transaction(
-          "rw",
-          [db.assets, db.categories, db.transactions],
-          async () => {
-            if (oldAssets.length > 0)
-              await db.assets.bulkDelete(oldAssets as string[]);
-            if (oldCategories.length > 0)
-              await db.categories.bulkDelete(oldCategories as string[]);
-            if (oldTransactions.length > 0)
-              await db.transactions.bulkDelete(oldTransactions as string[]);
-          },
-        );
-
-        if (typeof window !== "undefined") {
-          localStorage.setItem("findmytang-guest-last-autodelete", todayStr);
-        }
+        autoDeleteTask ??= runAutoDeleteTasks().finally(() => {
+          autoDeleteTask = null;
+        });
+        await autoDeleteTask;
       },
     }),
     {
-      name: "findmytang-guest-storage",
+      name: GUEST_STORAGE_KEYS.state,
       storage: createJSONStorage(() => localStorage),
     },
   ),
 );
 
-/** Run guest seed once without blocking the layout or navigation. */
+/** Run guest seed once without blocking layout or navigation. */
 export function initializeGuestData(): Promise<void> {
   if (typeof window === "undefined" || !useGuestStore.getState().isGuest) {
     return Promise.resolve();
@@ -386,7 +157,7 @@ export function initializeGuestData(): Promise<void> {
     .seedDefaultGuestData()
     .then(() => {
       const runCleanup = () => {
-        useGuestStore.getState().runAutoDeleteTasks().catch(console.error);
+        void useGuestStore.getState().runAutoDeleteTasks().catch(console.error);
       };
 
       if ("requestIdleCallback" in window) {
@@ -394,9 +165,12 @@ export function initializeGuestData(): Promise<void> {
       } else {
         globalThis.setTimeout(runCleanup, 1000);
       }
+    })
+    .finally(() => {
+      guestDataInitialization = null;
     });
 
-  return guestDataInitialization;
+  return guestDataInitialization ?? Promise.resolve();
 }
 
 export function useIsGuest() {
