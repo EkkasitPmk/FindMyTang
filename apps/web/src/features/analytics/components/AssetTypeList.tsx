@@ -36,7 +36,7 @@ export const AssetTypeList = ({
             key={group.assetType}
             open={isExpanded}
             onOpenChange={() => onToggleExpand(group.assetType)}
-            className="group/collapsible bg-surface rounded-xl border overflow-hidden"
+            className="group/collapsible bg-surface rounded-xl border border-border overflow-hidden"
           >
             <CollapsibleTrigger asChild>
               <Button

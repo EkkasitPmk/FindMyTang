@@ -52,7 +52,7 @@ export const DrilldownTransactionList = ({
           <div className="text-sm font-medium text-secondary-text mb-2 ml-2">
             {format(new Date(date), "MMM d, yyyy", { locale: dateLocale })}
           </div>
-          <div className="bg-surface rounded-xl border overflow-hidden divide-y divide-border">
+          <div className="bg-surface rounded-xl border border-border overflow-hidden divide-y divide-border">
             {txs.map((tx) => {
               const asset = assets?.find((a) => a.id === tx.asset.id);
               const assetColor = asset?.color || "var(--chart-2)";

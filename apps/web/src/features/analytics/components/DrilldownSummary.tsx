@@ -12,7 +12,7 @@ export const DrilldownSummary = ({ summary, color }: DrilldownSummaryProps) => {
   const isUp = summary.percentageChange > 0;
 
   return (
-    <div className="bg-surface rounded-xl border px-4 py-3">
+    <div className="bg-surface rounded-xl border border-border px-4 py-3">
       <div className="text-sm text-secondary-text font-medium">
         {t("totalThisMonth")}
       </div>
