@@ -38,7 +38,9 @@ export default function MobileDrawer({
     <div
       className={cn(
         "fixed inset-0 z-50 md:hidden overflow-hidden transition-all duration-200",
-        isOpen ? "pointer-events-auto" : "pointer-events-none delay-200",
+        isOpen
+          ? "visible pointer-events-auto"
+          : "invisible pointer-events-none",
       )}
     >
       {/* Backdrop */}
