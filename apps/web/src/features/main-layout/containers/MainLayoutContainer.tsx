@@ -3,86 +3,71 @@ import ShowProfileContainer from "@/features/account/containers/ShowProfileConta
 import NavContainer from "@/features/nav/containers/NavContainer";
 import TopAppBarMobile from "@/shared/components/customs/TopAppBarMobile";
 import CreateAssetsContainer from "@/features/assets/containers/CreateAssetsContainer";
+import AssetsMenuContainer from "@/features/assets/containers/AssetsMenuContainer";
 import { SidebarProvider } from "@/shared/components/animate-ui/components/radix/sidebar";
 import { useMainLayout } from "../hooks/main-layout.hook";
 import MainLayoutSearchBar from "../components/MainLayoutSearchBar";
 import MainLayoutRightAction from "../components/MainLayoutRightAction";
 import MainLayoutTitle from "../components/MainLayoutTitle";
+import { shouldShowProfile } from "../helpers/main-layout.helper";
 
 export default function MainLayoutContainer({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const {
-    pathname,
-    router,
-    t,
-    isMainTab,
-    shouldShowTopAppBar,
-    currentCategory,
-    assetName,
-    isEditingList,
-    toggleEditingList,
-    isEditingAssets,
-    toggleEditingAssets,
-    hasAssets,
-    isSearchMode,
-    searchKeyword,
-    setSearchKeyword,
-    isCreateAssetModalOpen,
-    setIsCreateAssetModalOpen,
-    mainContentClassName,
-    mainOverflowClassName,
-    handleBack,
-    handleCloseSearch,
+    route,
+    translation: t,
+    navigation,
+    header,
+    actions,
+    search,
+    dialog,
+    content,
   } = useMainLayout();
 
+  const assetMenu =
+    route.name === "assets" && header.assetName !== undefined ? (
+      <AssetsMenuContainer />
+    ) : null;
+
   return (
-    <SidebarProvider defaultOpen={true}>
+    <SidebarProvider defaultOpen>
       <div className="text-primary-text flex flex-col relative flex-1 min-w-0">
-        {/* Subtle brand color glow - very light opacity, surgical accent */}
         <div className="absolute top-0 right-0 w-[40vw] h-[40vw] rounded-full bg-primary-light/20 blur-[120px] pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-[40vw] h-[40vw] rounded-full bg-accent-light/10 blur-[120px] pointer-events-none" />
 
-        {/* Main Shell Container */}
         <div className="flex flex-1 relative z-10 min-w-0">
-          {/* Navigation components (Sidebar, Drawer, Bottom Nav, Modals) */}
           <NavContainer />
 
-          {/* Right Content Area */}
           <div className="flex-1 flex flex-col min-w-0">
-            {isMainTab &&
-              pathname !== "/transaction" &&
-              pathname !== "/journal" &&
-              pathname !== "/analytics" && <ShowProfileContainer />}
+            {route.isMainTab && shouldShowProfile(route.name) && (
+              <ShowProfileContainer />
+            )}
 
-            {shouldShowTopAppBar && !isSearchMode && (
+            {route.shouldShowTopAppBar && !search.isSearchMode && (
               <div className="fixed w-full top-0 z-40 bg-background/80 backdrop-blur-md">
                 <TopAppBarMobile
                   title={
                     <MainLayoutTitle
-                      pathname={pathname}
-                      assetName={assetName}
-                      currentCategory={currentCategory}
+                      route={route.name}
+                      assetName={header.assetName}
+                      currentCategory={header.currentCategory}
                       t={t}
                     />
                   }
-                  showBackButton={pathname !== "/settings"}
-                  onBack={handleBack}
+                  showBackButton={route.name !== "settings"}
+                  onBack={navigation.handleBack}
                   rightAction={
                     <MainLayoutRightAction
-                      pathname={pathname}
-                      isEditingList={isEditingList}
-                      onToggleEditingList={toggleEditingList}
-                      onBack={() => router.back()}
-                      isAssetTitleMatch={
-                        pathname === "/assets" && assetName !== undefined
-                      }
-                      hasAssets={hasAssets}
-                      isEditingAssets={isEditingAssets}
-                      onToggleEditingAssets={toggleEditingAssets}
-                      onOpenCreateAssetModal={() =>
-                        setIsCreateAssetModalOpen(true)
-                      }
+                      route={route.name}
+                      isEditingList={actions.isEditingList}
+                      onToggleEditingList={actions.toggleEditingList}
+                      onBack={navigation.handleClosePage}
+                      hasAssets={actions.hasAssets}
+                      isEditingAssets={actions.isEditingAssets}
+                      onToggleEditingAssets={actions.toggleEditingAssets}
+                      onOpenCreateAssetModal={dialog.openCreateAssetModal}
+                      assetMenu={assetMenu}
                       t={t}
                     />
                   }
@@ -90,25 +75,22 @@ export default function MainLayoutContainer({
               </div>
             )}
 
-            {shouldShowTopAppBar && isSearchMode && (
+            {route.shouldShowTopAppBar && search.isSearchMode && (
               <MainLayoutSearchBar
-                searchKeyword={searchKeyword}
-                onSearchKeywordChange={setSearchKeyword}
-                onCloseSearch={handleCloseSearch}
+                searchKeyword={search.searchKeyword}
+                onSearchKeywordChange={search.setSearchKeyword}
+                onCloseSearch={search.handleCloseSearch}
                 placeholder={t("searchByNoteOrCategory")}
               />
             )}
 
-            {/* Child Content */}
             <main
-              className={`flex-1 ${mainOverflowClassName} ${mainContentClassName}`}
+              className={`flex-1 ${content.mainOverflowClassName} ${content.mainContentClassName}`}
             >
               {children}
 
-              {isCreateAssetModalOpen && (
-                <CreateAssetsContainer
-                  onClose={() => setIsCreateAssetModalOpen(false)}
-                />
+              {dialog.isCreateAssetModalOpen && (
+                <CreateAssetsContainer onClose={dialog.closeCreateAssetModal} />
               )}
             </main>
           </div>

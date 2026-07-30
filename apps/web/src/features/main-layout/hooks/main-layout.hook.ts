@@ -12,6 +12,7 @@ import {
   isSyntheticCategoryId,
   getSyntheticCategory,
   getMainContentClassNames,
+  getMainLayoutRoute,
 } from "../helpers/main-layout.helper";
 
 export function useMainLayout() {
@@ -21,10 +22,11 @@ export function useMainLayout() {
   const assetId = searchParams.get("id");
   const assetNameParam = searchParams.get("name");
   const { t } = useTranslation();
+  const routeName = getMainLayoutRoute(pathname);
 
   // Asset Fetching & Resolution
   const shouldFetchAssets =
-    pathname === "/assets" && !assetNameParam && Boolean(assetId);
+    routeName === "assets" && !assetNameParam && Boolean(assetId);
   const { data: assets } = useAssets({ enabled: shouldFetchAssets });
   const currentAsset = assets?.find((a) => a.id === assetId);
   const assetName = assetNameParam || currentAsset?.name;
@@ -78,7 +80,7 @@ export function useMainLayout() {
   );
 
   const handleBack = () => {
-    if (pathname === "/assets" && assetName) {
+    if (routeName === "assets" && assetName) {
       setSearchMode(false);
       setSearchKeyword("");
     }
@@ -91,26 +93,42 @@ export function useMainLayout() {
   };
 
   return {
-    pathname,
-    router,
-    t,
-    isMainTab,
-    shouldShowTopAppBar,
-    currentCategory,
-    assetName,
-    isEditingList,
-    toggleEditingList,
-    isEditingAssets,
-    toggleEditingAssets,
-    hasAssets,
-    isSearchMode,
-    searchKeyword,
-    setSearchKeyword,
-    isCreateAssetModalOpen,
-    setIsCreateAssetModalOpen,
-    mainContentClassName,
-    mainOverflowClassName,
-    handleBack,
-    handleCloseSearch,
+    route: {
+      pathname,
+      name: routeName,
+      isMainTab,
+      shouldShowTopAppBar,
+    },
+    translation: t,
+    navigation: {
+      handleBack,
+      handleClosePage: () => router.back(),
+    },
+    header: {
+      currentCategory,
+      assetName,
+    },
+    actions: {
+      isEditingList,
+      toggleEditingList,
+      isEditingAssets,
+      toggleEditingAssets,
+      hasAssets,
+    },
+    search: {
+      isSearchMode,
+      searchKeyword,
+      setSearchKeyword,
+      handleCloseSearch,
+    },
+    dialog: {
+      isCreateAssetModalOpen,
+      openCreateAssetModal: () => setIsCreateAssetModalOpen(true),
+      closeCreateAssetModal: () => setIsCreateAssetModalOpen(false),
+    },
+    content: {
+      mainContentClassName,
+      mainOverflowClassName,
+    },
   };
 }

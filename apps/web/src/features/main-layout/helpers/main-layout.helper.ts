@@ -1,15 +1,46 @@
 import { TranslationKey } from "@/shared/lib/configs/translations.config";
 import {
+  MainLayoutRoute,
   SyntheticCategory,
   MainContentClassNamesParams,
 } from "../types/main-layout.type";
 
+const MAIN_TAB_ROUTES = new Set<MainLayoutRoute>([
+  "home",
+  "journal",
+  "analytics",
+  "transaction",
+]);
+const ANALYTICS_CATEGORY_ROUTE = /^\/analytics\/category\/([^/]+)$/;
+
+export function getMainLayoutRoute(pathname: string): MainLayoutRoute {
+  if (pathname === "/home") return "home";
+  if (pathname === "/journal") return "journal";
+  if (pathname === "/analytics") return "analytics";
+  if (pathname === "/transaction") return "transaction";
+  if (pathname === "/categories") return "categories";
+  if (pathname === "/assets") return "assets";
+  if (pathname === "/assets/new") return "assetsNew";
+  if (pathname === "/settings") return "settings";
+  if (pathname === "/settings/account") return "settingsAccount";
+  if (ANALYTICS_CATEGORY_ROUTE.test(pathname)) return "analyticsCategory";
+  return "other";
+}
+
 export function isMainTabRoute(pathname: string): boolean {
-  return ["/home", "/journal", "/analytics", "/transaction"].includes(pathname);
+  return MAIN_TAB_ROUTES.has(getMainLayoutRoute(pathname));
+}
+
+export function shouldShowProfile(route: MainLayoutRoute): boolean {
+  return route === "home";
+}
+
+export function shouldLockContentScroll(route: MainLayoutRoute): boolean {
+  return ["transaction", "journal", "analytics"].includes(route);
 }
 
 export function extractCategoryId(pathname: string): string | null {
-  const match = new RegExp(/\/analytics\/category\/(.+)/).exec(pathname);
+  const match = ANALYTICS_CATEGORY_ROUTE.exec(pathname);
   return match ? match[1] : null;
 }
 
@@ -66,19 +97,17 @@ export function getMainContentClassNames({
   let mainContentClassName = "px-0 py-3";
   let mainOverflowClassName = "overflow-y-auto max-h-screen";
 
+  const route = getMainLayoutRoute(pathname);
+
   if (isMainTab) {
-    if (
-      pathname === "/transaction" ||
-      pathname === "/journal" ||
-      pathname === "/analytics"
-    ) {
+    if (shouldLockContentScroll(route)) {
       mainContentClassName = "py-3";
       mainOverflowClassName = "overflow-hidden h-full";
     } else {
       mainContentClassName = "pt-15";
     }
   } else if (shouldShowTopAppBar) {
-    if (pathname === "/assets" && isSearchMode) {
+    if (route === "assets" && isSearchMode) {
       mainContentClassName = "";
     } else {
       mainContentClassName = "pt-12";

@@ -1,13 +1,42 @@
 import { describe, it, expect } from "vitest";
+import { TranslationKey } from "@/shared/lib/configs/translations.config";
 import {
   isMainTabRoute,
   extractCategoryId,
   isSyntheticCategoryId,
   getSyntheticCategory,
   getMainContentClassNames,
+  getMainLayoutRoute,
+  shouldShowProfile,
+  shouldLockContentScroll,
 } from "./main-layout.helper";
 
 describe("main-layout.helper", () => {
+  it("maps supported paths to one route policy", () => {
+    expect(getMainLayoutRoute("/home")).toBe("home");
+    expect(getMainLayoutRoute("/assets/new")).toBe("assetsNew");
+    expect(getMainLayoutRoute("/settings/account")).toBe("settingsAccount");
+    expect(getMainLayoutRoute("/analytics/category/cat-123")).toBe(
+      "analyticsCategory",
+    );
+    expect(getMainLayoutRoute("/analytics/category/cat-123/extra")).toBe(
+      "other",
+    );
+  });
+
+  it("shows the profile only on the home route", () => {
+    expect(shouldShowProfile("home")).toBe(true);
+    expect(shouldShowProfile("journal")).toBe(false);
+    expect(shouldShowProfile("analytics")).toBe(false);
+  });
+
+  it("locks content scrolling only for full-height main tabs", () => {
+    expect(shouldLockContentScroll("journal")).toBe(true);
+    expect(shouldLockContentScroll("analytics")).toBe(true);
+    expect(shouldLockContentScroll("transaction")).toBe(true);
+    expect(shouldLockContentScroll("home")).toBe(false);
+  });
+
   it("correctly identifies main tab routes", () => {
     expect(isMainTabRoute("/home")).toBe(true);
     expect(isMainTabRoute("/journal")).toBe(true);
@@ -31,8 +60,8 @@ describe("main-layout.helper", () => {
   });
 
   it("returns correct synthetic category object", () => {
-    const mockT = (key: string) => key.toUpperCase();
-    const synth = getSyntheticCategory("uncategorized_transfer", mockT as any);
+    const mockT = (key: TranslationKey) => key.toUpperCase();
+    const synth = getSyntheticCategory("uncategorized_transfer", mockT);
     expect(synth).toEqual({
       id: "uncategorized_transfer",
       name: "TRANSFER",
@@ -40,7 +69,7 @@ describe("main-layout.helper", () => {
       type: "TRANSFER",
     });
 
-    expect(getSyntheticCategory(null, mockT as any)).toBeNull();
+    expect(getSyntheticCategory(null, mockT)).toBeNull();
   });
 
   it("calculates content class names based on route and header conditions", () => {
