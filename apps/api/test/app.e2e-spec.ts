@@ -45,6 +45,13 @@ describe("App & Auth (e2e)", () => {
       .expect("Hello World!");
   });
 
+  it("/api/v1/health (GET) reports database readiness", () => {
+    return request(app.getHttpServer())
+      .get("/api/v1/health")
+      .expect(200)
+      .expect({ status: "ok", database: "ok" });
+  });
+
   describe("Authentication Flow", () => {
     const email = `test-${Date.now()}@example.com`;
     const password = "password123";
@@ -106,7 +113,9 @@ describe("App & Auth (e2e)", () => {
       expect(refreshRes.body.user).toBeDefined();
       expect(refreshRes.body.user.email).toBe(email);
 
-      const newCookies = refreshRes.headers["set-cookie"] as unknown as string[];
+      const newCookies = refreshRes.headers[
+        "set-cookie"
+      ] as unknown as string[];
       expect(newCookies).toBeDefined();
       expect(
         newCookies.some((cookie: string) => cookie.includes("access_token")),
@@ -131,7 +140,9 @@ describe("App & Auth (e2e)", () => {
       const logoutBody = logoutRes.body as Record<string, unknown>;
       expect(logoutBody.message).toBe("Logged out successfully");
 
-      const clearedCookies = logoutRes.headers["set-cookie"] as unknown as string[];
+      const clearedCookies = logoutRes.headers[
+        "set-cookie"
+      ] as unknown as string[];
       expect(clearedCookies).toBeDefined();
       expect(
         clearedCookies.some((cookie: string) =>

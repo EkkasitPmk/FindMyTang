@@ -94,12 +94,6 @@ export default function LoginContainer() {
     });
   };
 
-  const handleGoogleLogin = () => {
-    setIsRedirecting(true);
-    setGuestMode(false);
-    window.location.href = "/home";
-  };
-
   const handleGuestLogin = () => {
     setIsRedirecting(true);
     setGuestMode(true);
@@ -114,7 +108,6 @@ export default function LoginContainer() {
         onSubmit={onSubmit}
         errors={errors}
         isPending={isPending || isRedirecting}
-        onGoogleLogin={handleGoogleLogin}
         onGuestLogin={handleGuestLogin}
         showPassword={showPassword}
         onToggleShowPassword={() => setShowPassword(!showPassword)}

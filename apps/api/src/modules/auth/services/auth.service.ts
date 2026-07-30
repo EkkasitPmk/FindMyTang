@@ -54,13 +54,22 @@ export class AuthService {
     const refreshExpiresIn =
       this.configService.get<string>("jwt.refreshExpiresIn") || "7d";
 
+    const refreshJti = crypto.randomUUID();
     const refreshToken = await this.jwtService.signAsync(
-      { ...payload, jti: crypto.randomUUID() },
+      { ...payload, jti: refreshJti },
       {
         secret: refreshSecret,
         expiresIn: refreshExpiresIn as unknown as number,
       },
     );
+
+    await this.prisma.refreshSession.create({
+      data: {
+        userId: user.id,
+        jti: refreshJti,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      },
+    });
 
     return {
       accessToken,
@@ -283,6 +292,22 @@ export class AuthService {
 
     const userId = payload.sub;
 
+    if (!payload.jti) {
+      throw new UnauthorizedException("Invalid refresh token");
+    }
+
+    const session = await this.prisma.refreshSession.findFirst({
+      where: {
+        userId,
+        jti: payload.jti,
+        revokedAt: null,
+        expiresAt: { gt: new Date() },
+      },
+    });
+    if (!session) {
+      throw new UnauthorizedException("Refresh session is invalid or revoked");
+    }
+
     // 2. Generate new Access Token and Refresh Token (rotation)
     const newPayload: JwtPayload = {
       sub: userId,
@@ -292,8 +317,9 @@ export class AuthService {
     const newAccessToken = await this.jwtService.signAsync(newPayload);
     const refreshExpiresIn =
       this.configService.get<string>("jwt.refreshExpiresIn") || "7d";
+    const newRefreshJti = crypto.randomUUID();
     const newRefreshToken = await this.jwtService.signAsync(
-      { ...newPayload, jti: crypto.randomUUID() },
+      { ...newPayload, jti: newRefreshJti },
       {
         secret: refreshSecret,
         expiresIn: refreshExpiresIn as unknown as number,
@@ -306,6 +332,20 @@ export class AuthService {
       throw new UnauthorizedException("User not found");
     }
 
+    await this.prisma.$transaction([
+      this.prisma.refreshSession.update({
+        where: { id: session.id },
+        data: { revokedAt: new Date() },
+      }),
+      this.prisma.refreshSession.create({
+        data: {
+          userId,
+          jti: newRefreshJti,
+          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        },
+      }),
+    ]);
+
     return {
       accessToken: newAccessToken,
       refreshToken: newRefreshToken,
@@ -317,9 +357,25 @@ export class AuthService {
     };
   }
 
-  logout(): Promise<void> {
-    // ponytail: stateless session invalidation is handled by client clearing cookies.
-    return Promise.resolve();
+  async logout(refreshToken?: string): Promise<void> {
+    if (!refreshToken) return;
+
+    try {
+      const payload = await this.jwtService.verifyAsync<JwtPayload>(
+        refreshToken,
+        {
+          secret: this.configService.get<string>("jwt.refreshSecret"),
+        },
+      );
+      if (payload.jti) {
+        await this.prisma.refreshSession.updateMany({
+          where: { jti: payload.jti, revokedAt: null },
+          data: { revokedAt: new Date() },
+        });
+      }
+    } catch {
+      // Clearing cookies is still safe when the refresh token is expired.
+    }
   }
 
   async syncUser(

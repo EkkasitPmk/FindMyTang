@@ -26,6 +26,16 @@ export default defineConfig([
     },
   },
   {
+    files: ["src/**/*.spec.ts", "test/**/*.e2e-spec.ts"],
+    rules: {
+      // Test doubles commonly use Jest's dynamic mock types; keep production code strict.
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-call": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off",
+      "@typescript-eslint/unbound-method": "off",
+    },
+  },
+  {
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-floating-promises": "error",

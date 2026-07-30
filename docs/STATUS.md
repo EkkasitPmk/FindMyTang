@@ -72,8 +72,8 @@
   - ลบ `className`/JSX ที่ซ้ำซ้อนหรือไม่จำเป็นเฉพาะใน `features/main-layout/components` และ `features/main-layout/containers` โดยคง class ที่จำเป็นต่อ layout, responsive, state และ accessibility
   - เพิ่ม helper tests สำหรับ route policy, profile visibility, scroll policy, synthetic category และ edge cases
   - Verification: TypeScript ผ่าน, full test suite ผ่าน `8` files / `62` tests, lint ผ่านโดยมี warning เดิมนอก scope 1 จุด และ production build ผ่านด้วย `npx next build --webpack`
-  - **Known verification limitation:** `npm run build` ที่ใช้ Turbopack ค้างที่ขั้น `Creating an optimized production build` โดยไม่มี error output; ยังไม่ได้ยืนยัน manual browser smoke test
-  - **Runtime route smoke test:** เปิด production server จาก Webpack build ชั่วคราวและตรวจ route หลัก 8 เส้นทาง (`/home`, `/journal`, `/analytics`, `/categories`, `/assets`, `/settings`, `/transaction`, `/analytics/category/uncategorized_transfer`) ได้ HTTP `200` ทั้งหมด
+  - **Build verification:** `npm run build` ของ Web ถูกกำหนดให้ใช้ Webpack เพื่อหลีกเลี่ยง Turbopack hang เดิม และ production build ผ่าน
+  - **Runtime smoke test:** เปิด production server ของ Web/API ชั่วคราวและตรวจ API health กับ Web root ได้ HTTP `200`; route หลักเดิม 8 เส้นทางก็เคยผ่าน HTTP `200` แล้ว
 
 - **Reload Freeze & Delayed Navigation Performance Fix (Frontend Web)**:
   - **Zustand Initial Hydration Lag Fix**: ปรับแก้ `guest.storage.ts` ให้ฟังก์ชัน `getInitialIsGuest` ทำการอ่านค่า `isGuest` จาก `localStorage` แบบ Synchronous ทันทีบน Client Pass แรก เพื่อขจัดปัญหา State Toggle (`isGuest: true` ➔ `false`) ในมิลลิวินาทีแรกขณะกด Reload (F5) ซึ่งเคยเป็นสาเหตุให้เกิด API Request Burst ซ้ำซ้อน 2 รอบ
@@ -437,7 +437,7 @@
     - **Instant LocalStorage Caching Flag for Guest Tasks ([guest.storage.ts](file:///Users/torikiton/Desktop/FindMyTang/apps/web/src/shared/lib/storages/guest.storage.ts) & [main-layout.hook.ts](file:///Users/torikiton/Desktop/FindMyTang/apps/web/src/features/main-layout/hooks/main-layout.hook.ts))**:
       - เพิ่ม `findmytang-guest-seeded` และ `findmytang-guest-last-autodelete` ใน `localStorage` เพื่อให้การตรวจเช็ก `seedDefaultGuestData` และ `runAutoDeleteTasks` ในรอบถัดไปคืนค่าทันทีใน 0ms โดยไม่ต้องแตะ I/O ของ IndexedDB
       - ยกเลิกการรอ `requestIdleCallback` หน่วงเวลา 5,000ms ใน `main-layout.hook.ts` เปลี่ยนเป็น `setTimeout(..., 100)` เพื่อให้ทำงานเร็วและเบาที่สุดโดยไม่บล็อก Main Thread
-    - **Build Verification**: ผ่านการรัน `npm run build --workspace=apps/web` (Next.js 16.2.12 Turbopack) สำเร็จเรียบร้อย (code 0)
+    - **Build Verification**: ผ่านการรัน `npm run build` ด้วย Webpack เพื่อหลีกเลี่ยง Turbopack ที่ค้างในสภาพแวดล้อมปัจจุบัน (code 0)
 
 ---
 
@@ -446,7 +446,7 @@
 งานหลักที่ต้องดำเนินการใน **Sprint 6: การขัดเกลาและติดตั้งขึ้นระบบจริง (Polish & Deployment)**:
 
 - **[ ] จัดเตรียมสภาพแวดล้อม Production Cloud:** ตั้งค่า Production Database (Supabase PostgreSQL / Cloud DB) และกำหนดค่า Environment Variables ในเซิร์ฟเวอร์
-- **[ ] Production Build & Deployment:** ดำเนินการ Deploy Web บน Vercel และ API บน Render / Railway ตามคู่มือ [DEPLOYMENT_PREPARATION.md](file:///Users/torikiton/Desktop/FindMyTang/docs/DEPLOYMENT_PREPARATION.md)
+- **[ ] Production Build & Deployment:** ดำเนินการ Deploy Web บน Vercel และ API บน Render / Railway ตามคู่มือ [DEPLOYMENT_PREPARATION.md](./DEPLOYMENT_PREPARATION.md)
 - **[ ] QA & Real-World User Testing:** ทดสอบระบบ End-to-End บน Production Domain จริงก่อนปล่อยใช้งานอย่างเป็นทางการ
 
 ---

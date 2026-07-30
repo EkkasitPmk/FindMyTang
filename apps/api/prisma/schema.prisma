@@ -21,6 +21,20 @@ model User {
   assets         Asset[]
   categories     Category[]
   transactions   Transaction[]
+  refreshSessions RefreshSession[]
+}
+
+model RefreshSession {
+  id        String    @id @default(uuid())
+  userId    String
+  jti       String    @unique
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, revokedAt])
+  @@index([expiresAt])
 }
 
 model Asset {

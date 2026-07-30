@@ -273,7 +273,12 @@ export class AuthController {
     @Req() req: express.Request,
     @Response({ passthrough: true }) res: express.Response,
   ): Promise<AuthMessageResponseDto> {
-    await this.authService.logout();
+    const cookies = req.cookies as Record<string, unknown> | undefined;
+    await this.authService.logout(
+      typeof cookies?.refresh_token === "string"
+        ? cookies.refresh_token
+        : undefined,
+    );
 
     const domain = this.configService.get<string | undefined>("cookie.domain");
     const secure = this.configService.get<boolean>("cookie.secure") ?? false;

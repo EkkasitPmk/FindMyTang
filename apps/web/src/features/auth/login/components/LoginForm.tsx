@@ -17,7 +17,6 @@ interface LoginFormProps {
   onSubmit: (values: LoginFormValues) => void;
   errors: FieldErrors<LoginFormValues>;
   isPending: boolean;
-  onGoogleLogin: () => void;
   onGuestLogin: () => void;
   showPassword: boolean;
   onToggleShowPassword: () => void;
@@ -29,7 +28,6 @@ export default function LoginForm({
   onSubmit,
   errors,
   isPending,
-  onGoogleLogin,
   onGuestLogin,
   showPassword,
   onToggleShowPassword,
