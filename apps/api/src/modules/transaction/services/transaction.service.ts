@@ -5,6 +5,7 @@ import {
   ForbiddenException,
   BadRequestException,
   OnModuleInit,
+  OnModuleDestroy,
 } from "@nestjs/common";
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import type { Cache } from "cache-manager";
@@ -20,7 +21,9 @@ import { TransactionQueryDto } from "../dto/transaction-query.dto";
 import { StorageService } from "../../../common/storage/storage.service";
 
 @Injectable()
-export class TransactionService implements OnModuleInit {
+export class TransactionService implements OnModuleInit, OnModuleDestroy {
+  private cleanupTimer?: NodeJS.Timeout;
+
   constructor(
     private readonly transactionRepository: TransactionRepository,
     private readonly assetRepository: AssetRepository,
@@ -40,7 +43,7 @@ export class TransactionService implements OnModuleInit {
   onModuleInit() {
     // ponytail: using native setInterval instead of @nestjs/schedule to avoid unnecessary dependency.
     // Run every hour to check for 30-day old soft-deleted transactions and hard delete them.
-    setInterval(
+    this.cleanupTimer = setInterval(
       () => {
         void (async () => {
           try {
@@ -126,6 +129,10 @@ export class TransactionService implements OnModuleInit {
       },
       60 * 60 * 1000,
     ); // Check every hour
+  }
+
+  onModuleDestroy() {
+    if (this.cleanupTimer) clearInterval(this.cleanupTimer);
   }
 
   private async handleTransfer(
