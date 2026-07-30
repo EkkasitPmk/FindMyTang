@@ -212,19 +212,21 @@ export default function NavContainer() {
       )}
 
       {/* Mobile Drawer Navigation overlay */}
-      <MobileDrawer
-        isOpen={isClientMounted && mobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
-        pathname={pathname}
-        user={user}
-        isLoading={isLoading}
-        onLogout={openLogoutConfirm}
-        isGuest={isGuest}
-        isSyncing={isSyncing}
-        syncStatus={syncStatus}
-        onSyncClick={handleSyncClick}
-        onNavigate={handleNavigate}
-      />
+      {isClientMounted && (
+        <MobileDrawer
+          isOpen={mobileMenuOpen}
+          onClose={() => setMobileMenuOpen(false)}
+          pathname={pathname}
+          user={user}
+          isLoading={isLoading}
+          onLogout={openLogoutConfirm}
+          isGuest={isGuest}
+          isSyncing={isSyncing}
+          syncStatus={syncStatus}
+          onSyncClick={handleSyncClick}
+          onNavigate={handleNavigate}
+        />
+      )}
 
       {/* Mobile Bottom Navigation Bar */}
       {(pathname === "/home" ||
