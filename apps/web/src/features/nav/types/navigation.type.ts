@@ -6,5 +6,6 @@ export interface NavItem {
   label: string;
   icon: LucideIcon;
   translationKey?: TranslationKey;
+  mobilePlacement: "primary" | "more";
+  guestLocked?: boolean;
 }
-

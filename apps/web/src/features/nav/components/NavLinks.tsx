@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { navItems } from "../configs/navigation.config";
+import { isNavItemActive } from "../helpers/navigation.helper";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { cn } from "@/shared/lib/utils/core.util";
 
@@ -25,7 +26,7 @@ export default function NavLinks({
     <nav className={cn("space-y-1", className)}>
       {navItems.map((item) => {
         const Icon = item.icon;
-        const isActive = pathname.startsWith(item.href);
+        const isActive = isNavItemActive(pathname, item);
         const displayLabel = item.translationKey
           ? t(item.translationKey)
           : item.label;
