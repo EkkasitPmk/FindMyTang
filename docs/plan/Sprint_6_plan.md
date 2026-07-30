@@ -20,7 +20,7 @@
 - [x] รัน TypeScript typecheck ของ API และ Web (`npx tsc --noEmit` ผ่านทั้งคู่)
 - [x] ตรวจ Prisma client และ migration บนฐานข้อมูล local (`npm run db:migrate`, `npm run db:status`, `8 migrations`, schema up to date; staging ยังรอ provider จริง)
 - [x] บันทึกคำสั่งตรวจสอบและผลลัพธ์ไว้ใน Decision Log/สถานะงาน
-- [ ] ตรวจ API health และ Web root บน staging domain จริง
+- [x] ตรวจ API health และ Web root บน production domain จริง
 
 **เกณฑ์ผ่าน:** คำสั่งตรวจสอบทั้งหมดผ่าน หรือมีข้อยกเว้นที่บันทึกเหตุผลและผลกระทบไว้อย่างชัดเจน
 
@@ -71,9 +71,9 @@
 
 ## Phase 4: Staging database verification
 
-- [ ] สร้าง PostgreSQL staging แยกจากข้อมูลจริง
+- [ ] สร้าง PostgreSQL staging แยกจากข้อมูลจริง (production API health ตรวจผ่านแล้ว แต่ยังไม่มีหลักฐาน staging แยก)
 - [x] เพิ่มและตรวจคำสั่ง `npm run db:migrate`
-- [ ] รัน seed สำหรับ category เริ่มต้น
+- [ ] รัน seed สำหรับ category เริ่มต้นบน staging provider จริง
 - [ ] ตรวจ foreign key, soft delete, transfer และ adjustment ด้วยข้อมูลทดสอบ
 - [x] เขียน backup/restore runbook ที่ [OPERATIONS.md](../OPERATIONS.md)
 - [ ] เปิด Automatic Backup และทดสอบ Restore อย่างน้อยหนึ่งรอบบน provider จริง
@@ -100,7 +100,7 @@ npm run test:e2e -- --runInBand
 ```
 
 - [x] เพิ่ม GitHub Actions workflow ที่ `/.github/workflows/ci.yml` พร้อมตรวจ `db:status` หลัง migration และรองรับ manual `workflow_dispatch`
-- [ ] ยืนยัน workflow ผ่านบน GitHub จาก clean checkout
+- [x] ยืนยัน workflow ผ่านบน GitHub จาก clean checkout
 - [x] CI รัน migration, seed และ schema status ก่อน build/test; ไม่ผ่านแล้วหยุด workflow
 
 ## Definition of Done
@@ -167,4 +167,5 @@ Sprint นี้ถือว่าผ่านเมื่อ:
 - Production policy guard: production start ถูกปฏิเสธเมื่อ `COOKIE_SECURE` ไม่เป็น `true` หรือ `ALLOWED_ORIGINS` มี HTTP origin
 - Cookie policy guard: production start ถูกปฏิเสธเมื่อ `COOKIE_SAME_SITE` ไม่ใช่ `lax`, `strict` หรือ `none`
 - API lint ตรวจ test files ด้วย override เฉพาะ test และไม่ใช้ `--fix`; local gate ผ่านแล้ว รอยืนยันผลบน GitHub Actions จริง
-- ยังไม่ถือว่า deploy staging/production เสร็จ จนกว่าจะตั้งค่า hosting, backup/restore และ smoke test บน domain จริง
+- Production smoke test ล่าสุด: Render `GET /api/v1/health` ตอบ `200` และ `{"status":"ok","database":"ok"}`; Vercel `/api/v1/health` proxy ตอบ `200` เช่นกัน และ CORS จาก `https://findmytang.vercel.app` ผ่าน
+- ยังเหลืองานที่ต้องทำบน provider/โดยผู้ใช้: เปิด Automatic Backup, ทดสอบ Restore drill และทำ Critical User Flow QA บน Public Beta
