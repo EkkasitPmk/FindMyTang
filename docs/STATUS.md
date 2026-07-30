@@ -65,6 +65,16 @@
 
 ### 1. สิ่งที่พัฒนาเสร็จสิ้นแล้ว (Completed)
 
+- **Main Layout Feature Refactor (2026-07-30):**
+  - รวม route policy ของ `main-layout` ไว้ใน `main-layout.helper.ts` และเพิ่มการตรวจ route แบบปลอดภัยสำหรับ Analytics category
+  - ปรับ `useMainLayout` ให้คืนค่าเป็น view model กลุ่ม `route`, `navigation`, `header`, `actions`, `search`, `dialog` และ `content`
+  - ย้ายการประกอบ `AssetsMenuContainer` ไปไว้ที่ `MainLayoutContainer` ทำให้ `MainLayoutRightAction` เป็น pure presentation component และลด cross-feature coupling
+  - ลบ `className`/JSX ที่ซ้ำซ้อนหรือไม่จำเป็นเฉพาะใน `features/main-layout/components` และ `features/main-layout/containers` โดยคง class ที่จำเป็นต่อ layout, responsive, state และ accessibility
+  - เพิ่ม helper tests สำหรับ route policy, profile visibility, scroll policy, synthetic category และ edge cases
+  - Verification: TypeScript ผ่าน, full test suite ผ่าน `8` files / `62` tests, lint ผ่านโดยมี warning เดิมนอก scope 1 จุด และ production build ผ่านด้วย `npx next build --webpack`
+  - **Known verification limitation:** `npm run build` ที่ใช้ Turbopack ค้างที่ขั้น `Creating an optimized production build` โดยไม่มี error output; ยังไม่ได้ยืนยัน manual browser smoke test
+  - **Runtime route smoke test:** เปิด production server จาก Webpack build ชั่วคราวและตรวจ route หลัก 8 เส้นทาง (`/home`, `/journal`, `/analytics`, `/categories`, `/assets`, `/settings`, `/transaction`, `/analytics/category/uncategorized_transfer`) ได้ HTTP `200` ทั้งหมด
+
 - **Reload Freeze & Delayed Navigation Performance Fix (Frontend Web)**:
   - **Zustand Initial Hydration Lag Fix**: ปรับแก้ `guest.storage.ts` ให้ฟังก์ชัน `getInitialIsGuest` ทำการอ่านค่า `isGuest` จาก `localStorage` แบบ Synchronous ทันทีบน Client Pass แรก เพื่อขจัดปัญหา State Toggle (`isGuest: true` ➔ `false`) ในมิลลิวินาทีแรกขณะกด Reload (F5) ซึ่งเคยเป็นสาเหตุให้เกิด API Request Burst ซ้ำซ้อน 2 รอบ
   - **Lazy Mount Tab Contents**: ปรับแก้ `TabsContent` ใน `shared/components/animate-ui/primitives/animate/tabs.tsx` ให้มีระบบ Lazy Mounting (`hasBeenActive` state) ซึ่งจะเรนเดอร์ Children และยิง Query เฉพาะแท็บที่ถูก Active/คลิกดูแล้วเท่านั้น ขจัดปัญหาการยิง API 3 แท็บพร้อมกันบนหน้า Analytics และ Journal
