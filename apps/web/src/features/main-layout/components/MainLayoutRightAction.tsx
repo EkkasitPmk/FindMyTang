@@ -1,21 +1,20 @@
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
-import AssetsMenuContainer from "@/features/assets/containers/AssetsMenuContainer";
 import { X, Plus } from "lucide-react";
 import { MainLayoutRightActionProps } from "../types/main-layout.type";
 
 export default function MainLayoutRightAction({
-  pathname,
+  route,
   isEditingList,
   onToggleEditingList,
   onBack,
-  isAssetTitleMatch,
   hasAssets,
   isEditingAssets,
   onToggleEditingAssets,
   onOpenCreateAssetModal,
+  assetMenu,
   t,
 }: Readonly<MainLayoutRightActionProps>) {
-  if (pathname === "/categories") {
+  if (route === "categories") {
     return (
       <Button
         variant="unstyled"
@@ -28,7 +27,7 @@ export default function MainLayoutRightAction({
     );
   }
 
-  if (pathname === "/settings") {
+  if (route === "settings") {
     return (
       <Button
         variant="unstyled"
@@ -41,10 +40,8 @@ export default function MainLayoutRightAction({
     );
   }
 
-  if (pathname === "/assets") {
-    if (isAssetTitleMatch) {
-      return <AssetsMenuContainer />;
-    }
+  if (route === "assets") {
+    if (assetMenu) return assetMenu;
 
     if (!hasAssets) {
       return (

@@ -17,6 +17,10 @@ import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { useMeQuery } from "@/shared/lib/hooks/useMeQuery.hook";
 import { useModalState } from "@/shared/lib/hooks/useModalState.hook";
 import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
+import {
+  isGuestNavBlocked,
+  shouldShowMobileBottomNav,
+} from "../helpers/navigation.helper";
 
 export default function NavContainer() {
   const pathname = usePathname();
@@ -130,7 +134,7 @@ export default function NavContainer() {
     e?: React.MouseEvent<HTMLAnchorElement>,
     href?: string,
   ) => {
-    if (isGuest && href?.includes("/settings")) {
+    if (href && isGuestNavBlocked(href, isGuest)) {
       e?.preventDefault();
       openLockModal(t("accountSettingsBackup"));
     }
@@ -212,25 +216,24 @@ export default function NavContainer() {
       )}
 
       {/* Mobile Drawer Navigation overlay */}
-      <MobileDrawer
-        isOpen={isClientMounted && mobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
-        pathname={pathname}
-        user={user}
-        isLoading={isLoading}
-        onLogout={openLogoutConfirm}
-        isGuest={isGuest}
-        isSyncing={isSyncing}
-        syncStatus={syncStatus}
-        onSyncClick={handleSyncClick}
-        onNavigate={handleNavigate}
-      />
+      {isClientMounted && (
+        <MobileDrawer
+          isOpen={mobileMenuOpen}
+          onClose={() => setMobileMenuOpen(false)}
+          pathname={pathname}
+          user={user}
+          isLoading={isLoading}
+          onLogout={openLogoutConfirm}
+          isGuest={isGuest}
+          isSyncing={isSyncing}
+          syncStatus={syncStatus}
+          onSyncClick={handleSyncClick}
+          onNavigate={handleNavigate}
+        />
+      )}
 
       {/* Mobile Bottom Navigation Bar */}
-      {(pathname === "/home" ||
-        pathname === "/journal" ||
-        pathname === "/analytics" ||
-        pathname === "/transaction") && (
+      {shouldShowMobileBottomNav(pathname) && (
         <MobileBottomNav
           pathname={pathname}
           mobileMenuOpen={mobileMenuOpen}

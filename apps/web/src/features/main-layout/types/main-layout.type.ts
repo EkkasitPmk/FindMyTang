@@ -14,7 +14,7 @@ export interface HeaderCategoryItem {
   name: string;
   color?: string;
   icon?: string;
-  type?: TransactionType | string;
+  type?: TransactionType;
 }
 
 export interface CategoryHeaderTitleProps {
@@ -22,22 +22,22 @@ export interface CategoryHeaderTitleProps {
 }
 
 export interface MainLayoutTitleProps {
-  pathname: string;
+  route: MainLayoutRoute;
   assetName?: string;
   currentCategory: HeaderCategoryItem | null;
   t: (key: TranslationKey) => string;
 }
 
 export interface MainLayoutRightActionProps {
-  pathname: string;
+  route: MainLayoutRoute;
   isEditingList: boolean;
   onToggleEditingList: () => void;
   onBack: () => void;
-  isAssetTitleMatch: boolean;
   hasAssets: boolean;
   isEditingAssets: boolean;
   onToggleEditingAssets: () => void;
   onOpenCreateAssetModal: () => void;
+  assetMenu?: React.ReactNode;
   t: (key: TranslationKey) => string;
 }
 
@@ -54,3 +54,16 @@ export interface MainContentClassNamesParams {
   isSearchMode: boolean;
   pathname: string;
 }
+
+export type MainLayoutRoute =
+  | "home"
+  | "journal"
+  | "analytics"
+  | "transaction"
+  | "categories"
+  | "assets"
+  | "assetsNew"
+  | "settings"
+  | "settingsAccount"
+  | "analyticsCategory"
+  | "other";

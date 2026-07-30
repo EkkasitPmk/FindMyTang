@@ -64,15 +64,17 @@ export default function AnalyticsContainer() {
             value="category"
             className="h-full flex flex-col min-h-0"
           >
-            <CategoryBreakdownContainer />
+            {activeTab === "category" && <CategoryBreakdownContainer />}
           </TabsContent>
           <TabsContent value="trends" className="h-full flex flex-col min-h-0">
-            <MonthlyTrendsContainer />
+            {activeTab === "trends" && <MonthlyTrendsContainer />}
           </TabsContent>
           <TabsContent value="assets" className="h-full flex flex-col min-h-0">
-            <AssetDistributionContainer
-              onAddAsset={() => setIsCreateAssetOpen(true)}
-            />
+            {activeTab === "assets" && (
+              <AssetDistributionContainer
+                onAddAsset={() => setIsCreateAssetOpen(true)}
+              />
+            )}
           </TabsContent>
         </TabsContents>
       </Tabs>

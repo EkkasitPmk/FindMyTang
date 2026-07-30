@@ -39,7 +39,7 @@ export default function JournalCalendarContainer({
   const { locale } = useTranslation();
   const mounted = useMounted();
   const { currentMonth, selectedDate, navigatorProps, handleSelectDate } =
-    useJournalCalendar(locale);
+    useJournalCalendar(locale, new Date(), { enabled: isActive });
 
   const transactionListRef = useRef<HTMLDivElement>(null);
 

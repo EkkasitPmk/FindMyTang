@@ -5,6 +5,7 @@ import SyncStatusButton from "@/shared/components/customs/SyncStatusButton";
 import NavUserProfile from "./NavUserProfile";
 import { UserProfile } from "@/shared/lib/types/user.type";
 import { navItems } from "../configs/navigation.config";
+import { isNavItemActive } from "../helpers/navigation.helper";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import {
   Sidebar,
@@ -46,11 +47,8 @@ export default function DesktopSidebar({
   const { t } = useTranslation();
 
   return (
-    <Sidebar
-      collapsible="icon"
-      className="border-r border-border bg-surface shadow-xs"
-    >
-      <SidebarHeader className="border-b border-border/50 p-3 flex flex-row items-center justify-between group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-2 transition-all duration-300">
+    <Sidebar collapsible="icon" className="border-border bg-surface shadow-xs">
+      <SidebarHeader className="border-b border-border/50 p-3 flex-row items-center justify-between group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-2 transition-all duration-300">
         <div className="flex items-center gap-2.5 overflow-hidden transition-all duration-300 group-data-[collapsible=icon]:w-0 group-data-[collapsible=icon]:opacity-0 group-data-[collapsible=icon]:hidden">
           <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center shadow-xs shrink-0">
             <Wallet className="w-4.5 h-4.5 text-white" strokeWidth={2} />
@@ -59,16 +57,16 @@ export default function DesktopSidebar({
             FindMyTang
           </span>
         </div>
-        <SidebarTrigger className="size-8 text-secondary-text hover:text-primary-text hover:bg-surface-secondary cursor-pointer shrink-0" />
+        <SidebarTrigger className="text-secondary-text hover:text-primary-text hover:bg-surface-secondary shrink-0" />
       </SidebarHeader>
 
-      <SidebarContent className="px-2 py-4 group-data-[collapsible=icon]:px-0 flex items-center justify-between">
+      <SidebarContent className="px-2 py-4 group-data-[collapsible=icon]:px-0 items-center justify-between">
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
               {navItems.map((item) => {
                 const Icon = item.icon;
-                const isActive = pathname.startsWith(item.href);
+                const isActive = isNavItemActive(pathname, item);
                 const displayLabel = item.translationKey
                   ? t(item.translationKey)
                   : item.label;
@@ -90,7 +88,7 @@ export default function DesktopSidebar({
                       <Link
                         href={item.href}
                         onClick={(e) => onNavigate?.(e, item.href)}
-                        className="flex items-center gap-3 w-full group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0"
+                        className="flex items-center gap-3 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0"
                       >
                         <Icon
                           className={cn(

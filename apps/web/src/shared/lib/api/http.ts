@@ -1,40 +1,51 @@
-import axios from "axios";
+import axios, { type InternalAxiosRequestConfig } from "axios";
+
+const API_BASE_PATH = "/api/v1";
+const isBrowser = typeof window !== "undefined";
+const backendUrl = process.env.NEXT_PUBLIC_URL_BACKEND;
+
+type RetryableRequestConfig = InternalAxiosRequestConfig & {
+  _retry?: boolean;
+  skipAuthRefresh?: boolean;
+};
 
 const http = axios.create({
-  baseURL:
-    typeof window === "undefined"
-      ? process.env.NEXT_PUBLIC_URL_BACKEND
-      : "/api/v1",
+  baseURL: isBrowser ? API_BASE_PATH : backendUrl,
   timeout: 15000,
   withCredentials: true,
 });
 
-let isRefreshing = false;
-let failedQueue: {
-  resolve: (value?: unknown) => void;
-  reject: (reason?: unknown) => void;
-}[] = [];
+const refreshClient = axios.create({
+  baseURL: isBrowser ? API_BASE_PATH : backendUrl,
+  timeout: 15000,
+  withCredentials: true,
+});
 
-const MAX_QUEUE_SIZE = 50;
+let refreshPromise: Promise<void> | null = null;
 
-const processQueue = (error: unknown) => {
-  failedQueue.forEach((prom, i) => {
-    if (error) {
-      prom.reject(error);
-    } else {
-      // stagger re-fires by 10ms each to avoid simultaneous burst while keeping delay low
-      setTimeout(() => prom.resolve(), i * 10);
-    }
-  });
-  failedQueue = [];
+const refreshAccessToken = () => {
+  refreshPromise ??= refreshClient
+    .post("/auth/refresh")
+    .then(() => undefined)
+    .finally(() => {
+      refreshPromise = null;
+    });
+
+  return refreshPromise;
 };
+
+const shouldSkipAuthRefresh = (config: RetryableRequestConfig) =>
+  config.skipAuthRefresh ||
+  ["/auth/login", "/auth/register", "/auth/refresh", "/auth/logout"].some(
+    (path) => config.url?.includes(path),
+  );
 
 http.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const originalRequest = error.config;
+    const originalRequest = error.config as RetryableRequestConfig | undefined;
 
-    if (error.response?.status === 429) {
+    if (error.response?.status === 429 && isBrowser) {
       const { toast } = await import("react-toastify");
       toast.error(
         error.response?.data?.message ||
@@ -45,32 +56,13 @@ http.interceptors.response.use(
 
     if (
       error.response?.status === 401 &&
+      originalRequest &&
       !originalRequest._retry &&
-      !originalRequest.url?.includes("/auth/login")
+      !shouldSkipAuthRefresh(originalRequest)
     ) {
-      if (isRefreshing) {
-        if (failedQueue.length >= MAX_QUEUE_SIZE) {
-          // Queue full — reject immediately to avoid building up indefinitely
-          throw error;
-        }
-        return new Promise((resolve, reject) => {
-          failedQueue.push({ resolve, reject });
-        }).then(() => http(originalRequest));
-      }
-
       originalRequest._retry = true;
-      isRefreshing = true;
-
-      try {
-        await axios.post(`/api/v1/auth/refresh`, {}, { withCredentials: true });
-        processQueue(null);
-        return http(originalRequest);
-      } catch (refreshError) {
-        processQueue(refreshError);
-        throw refreshError;
-      } finally {
-        isRefreshing = false;
-      }
+      await refreshAccessToken();
+      return http(originalRequest);
     }
 
     throw error;

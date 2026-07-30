@@ -38,7 +38,9 @@ export default function MobileDrawer({
     <div
       className={cn(
         "fixed inset-0 z-50 md:hidden overflow-hidden transition-all duration-200",
-        isOpen ? "pointer-events-auto" : "pointer-events-none delay-200",
+        isOpen
+          ? "visible pointer-events-auto"
+          : "invisible pointer-events-none",
       )}
     >
       {/* Backdrop */}
@@ -49,7 +51,7 @@ export default function MobileDrawer({
         tabIndex={-1}
         onClick={onClose}
         className={cn(
-          "fixed inset-0 bg-primary-text/30 w-full h-full border-none p-0 outline-none transition-opacity duration-200 ease-out",
+          "fixed inset-0 bg-primary-text/30 border-none p-0 outline-none transition-opacity duration-200 ease-out",
           isOpen ? "opacity-100" : "opacity-0",
         )}
       />
@@ -110,7 +112,7 @@ export default function MobileDrawer({
             isLoading={isLoading}
             onLogout={onLogout}
             onActionClick={onClose}
-            className="pt-4 border-t border-border"
+            className="pt-4"
           />
         </div>
       </div>

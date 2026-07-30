@@ -1,9 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { GeistSans } from "geist/font/sans";
-import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import Providers from "./providers";
-import { cn } from "@/shared/lib/utils/core.util";
 
 export const metadata: Metadata = {
   title: "FindMyTang - Smart Personal Asset Tracker & Command Center",
@@ -34,12 +31,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      className={cn("antialiased", GeistSans.variable, GeistMono.variable)}
-    >
-      <body className="bg-background min-h-screen flex flex-col">
+    <html lang="en" suppressHydrationWarning className="antialiased">
+      <body className="min-h-screen flex flex-col">
         <Providers>{children}</Providers>
       </body>
     </html>
