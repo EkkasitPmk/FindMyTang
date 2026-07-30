@@ -14,7 +14,7 @@ export const AssetDistributionBar = ({
   const { t } = useTranslation();
 
   return (
-    <div className="bg-surface rounded-xl border p-5">
+    <div className="bg-surface rounded-xl border border-border p-5">
       <div className="mb-4">
         <p className="text-sm font-medium text-secondary-text mb-1">
           {t("totalAssets")}

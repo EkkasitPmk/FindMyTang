@@ -37,11 +37,11 @@ export const MonthlyTrendsTable = ({ data, year }: MonthlyTrendsTableProps) => {
         {validData.map((item) => (
           <div
             key={item.month}
-            className="bg-surface border rounded-xl sm:border-0 sm:rounded-none sm:bg-transparent"
+            className="bg-surface border border-border rounded-xl sm:border-0 sm:rounded-none sm:bg-transparent"
           >
             {/* Mobile View */}
             <div className="sm:hidden p-3.5 flex flex-col gap-3 h-fit">
-              <div className="flex justify-between items-center pb-3 border-b">
+              <div className="flex justify-between items-center pb-3 border-b border-border">
                 <span className="font-semibold text-sm">
                   {format(new Date(year, item.month - 1), "MMMM", {
                     locale: dateLocale,
