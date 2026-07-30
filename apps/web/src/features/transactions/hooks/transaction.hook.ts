@@ -142,11 +142,12 @@ export const useDeleteTransactionMutation = (options?: {
   });
 };
 
-export const useTransactionYearsQuery = () => {
+export const useTransactionYearsQuery = (options?: { enabled?: boolean }) => {
   const isGuest = useGuestStore((state) => state.isGuest);
   return useQuery<number[], AxiosError<ApiErrorResponse>>({
     queryKey: ["transactions", "years", isGuest],
     queryFn: getTransactionYearsApi,
+    ...options,
   });
 };
 

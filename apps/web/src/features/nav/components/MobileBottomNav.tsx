@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { navItems } from "../configs/navigation.config";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { MoreHorizontal } from "lucide-react";
@@ -15,6 +16,7 @@ export default function MobileBottomNav({
   mobileMenuOpen,
   onMenuOpen,
 }: Readonly<MobileBottomNavProps>) {
+  const router = useRouter();
   const { t } = useTranslation();
 
   return (
@@ -57,6 +59,7 @@ export default function MobileBottomNav({
           <Link
             key={item.href}
             href={item.href}
+            onTouchStart={() => router.prefetch(item.href)}
             className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-md text-[10px] font-semibold transition-colors duration-150 ${
               isActive
                 ? "text-primary"

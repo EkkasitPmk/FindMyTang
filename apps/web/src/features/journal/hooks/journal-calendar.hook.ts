@@ -5,6 +5,7 @@ import { useTransactionYearsQuery } from "@/features/transactions/hooks/transact
 export function useJournalCalendar(
   locale: string = "en-US",
   initialDate: Date = new Date(),
+  options?: { enabled?: boolean },
 ) {
   const [currentMonth, setCurrentMonth] = useState(initialDate);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -50,7 +51,7 @@ export function useJournalCalendar(
     setSelectedDate(date);
   }, []);
 
-  const { data: availableYears } = useTransactionYearsQuery();
+  const { data: availableYears } = useTransactionYearsQuery(options);
 
   const years = useMemo(() => {
     if (availableYears && availableYears.length > 0) {

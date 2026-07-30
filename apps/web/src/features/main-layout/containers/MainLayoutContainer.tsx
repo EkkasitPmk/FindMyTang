@@ -4,7 +4,6 @@ import NavContainer from "@/features/nav/containers/NavContainer";
 import TopAppBarMobile from "@/shared/components/customs/TopAppBarMobile";
 import CreateAssetsContainer from "@/features/assets/containers/CreateAssetsContainer";
 import { SidebarProvider } from "@/shared/components/animate-ui/components/radix/sidebar";
-import { cn } from "@/shared/lib/utils/core.util";
 import { useMainLayout } from "../hooks/main-layout.hook";
 import MainLayoutSearchBar from "../components/MainLayoutSearchBar";
 import MainLayoutRightAction from "../components/MainLayoutRightAction";
@@ -39,7 +38,7 @@ export default function MainLayoutContainer({
 
   return (
     <SidebarProvider defaultOpen={true}>
-      <div className="text-primary-text flex flex-col font-sans relative flex-1 min-w-0">
+      <div className="text-primary-text flex flex-col relative flex-1 min-w-0">
         {/* Subtle brand color glow - very light opacity, surgical accent */}
         <div className="absolute top-0 right-0 w-[40vw] h-[40vw] rounded-full bg-primary-light/20 blur-[120px] pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-[40vw] h-[40vw] rounded-full bg-accent-light/10 blur-[120px] pointer-events-none" />
@@ -102,11 +101,7 @@ export default function MainLayoutContainer({
 
             {/* Child Content */}
             <main
-              className={cn(
-                "flex-1 w-full mx-auto",
-                mainOverflowClassName,
-                mainContentClassName,
-              )}
+              className={`flex-1 ${mainOverflowClassName} ${mainContentClassName}`}
             >
               {children}
 
