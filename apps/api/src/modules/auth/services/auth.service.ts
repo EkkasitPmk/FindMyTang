@@ -3,6 +3,9 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  Logger,
+  OnModuleDestroy,
+  OnModuleInit,
   UnauthorizedException,
 } from "@nestjs/common";
 import { UserRepository } from "../../user/repositories/user.repository";
@@ -18,8 +21,14 @@ import { PrismaService } from "../../../prisma/prisma.service";
 import { SyncGuestDto } from "../dto/sync-guest.dto";
 import { StorageService } from "../../../common/storage/storage.service";
 
+const REFRESH_SESSION_RETENTION_MS = 30 * 24 * 60 * 60 * 1000;
+const REFRESH_SESSION_CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
+
 @Injectable()
-export class AuthService {
+export class AuthService implements OnModuleInit, OnModuleDestroy {
+  private readonly logger = new Logger(AuthService.name);
+  private refreshSessionCleanupTimer?: NodeJS.Timeout;
+
   constructor(
     private readonly userRepository: UserRepository,
     private readonly jwtService: JwtService,
@@ -27,6 +36,42 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly storageService: StorageService,
   ) {}
+
+  onModuleInit() {
+    // Run after startup on the next daily interval; Prisma has completed its
+    // own module initialization by then.
+    this.refreshSessionCleanupTimer = setInterval(
+      () => void this.cleanupRefreshSessions(),
+      REFRESH_SESSION_CLEANUP_INTERVAL_MS,
+    );
+  }
+
+  onModuleDestroy() {
+    if (this.refreshSessionCleanupTimer) {
+      clearInterval(this.refreshSessionCleanupTimer);
+    }
+  }
+
+  private async cleanupRefreshSessions() {
+    const cutoff = new Date(Date.now() - REFRESH_SESSION_RETENTION_MS);
+
+    try {
+      const result = await this.prisma.refreshSession.deleteMany({
+        where: {
+          OR: [{ revokedAt: { lt: cutoff } }, { expiresAt: { lt: cutoff } }],
+        },
+      });
+
+      if (result.count > 0) {
+        this.logger.log(`Removed ${result.count} expired refresh sessions`);
+      }
+    } catch (error) {
+      this.logger.error(
+        "Failed to clean up refresh sessions",
+        error instanceof Error ? error.stack : String(error),
+      );
+    }
+  }
 
   async login(loginDto: LoginDto) {
     const { email, password } = loginDto;

@@ -68,11 +68,12 @@ function SheetContent({
       <SheetOverlay />
       <SheetContentPrimitive
         className={cn(
-          "bg-background fixed z-50 flex flex-col gap-4 shadow-lg",
+          "fixed z-50 flex min-h-0 flex-col gap-0 overflow-hidden bg-surface p-0 shadow-lg",
           side === "right" && "h-full w-87.5 border-l",
           side === "left" && "h-full w-87.5 border-r",
           side === "top" && "w-full h-87.5 border-b",
-          side === "bottom" && "w-full h-87.5 border-t",
+          side === "bottom" &&
+            "h-auto max-h-[calc(100dvh-3rem)] w-full rounded-t-2xl border-t border-border pb-[env(safe-area-inset-bottom)]",
           className,
         )}
         side={side}
@@ -95,7 +96,10 @@ type SheetHeaderProps = SheetHeaderPrimitiveProps;
 function SheetHeader({ className, ...props }: SheetHeaderProps) {
   return (
     <SheetHeaderPrimitive
-      className={cn("flex flex-col gap-1.5 p-4", className)}
+      className={cn(
+        "flex shrink-0 flex-col gap-1.5 border-b border-border px-4 py-4 text-left",
+        className,
+      )}
       {...props}
     />
   );
@@ -106,7 +110,10 @@ type SheetFooterProps = SheetFooterPrimitiveProps;
 function SheetFooter({ className, ...props }: SheetFooterProps) {
   return (
     <SheetFooterPrimitive
-      className={cn("mt-auto flex flex-col gap-2 p-4", className)}
+      className={cn(
+        "mt-auto flex shrink-0 flex-row gap-3 border-t border-border bg-surface px-4 py-3 [&>button]:h-10! [&>button]:min-h-10! [&>button]:min-w-0! [&>button]:flex-1! [&>button]:py-0! [&>button]:text-sm!",
+        className,
+      )}
       {...props}
     />
   );
@@ -117,7 +124,7 @@ type SheetTitleProps = SheetTitlePrimitiveProps;
 function SheetTitle({ className, ...props }: SheetTitleProps) {
   return (
     <SheetTitlePrimitive
-      className={cn("text-foreground font-semibold", className)}
+      className={cn("text-base font-semibold text-primary-text", className)}
       {...props}
     />
   );
@@ -128,7 +135,7 @@ type SheetDescriptionProps = SheetDescriptionPrimitiveProps;
 function SheetDescription({ className, ...props }: SheetDescriptionProps) {
   return (
     <SheetDescriptionPrimitive
-      className={cn("text-muted-foreground text-sm", className)}
+      className={cn("text-sm text-secondary-text", className)}
       {...props}
     />
   );

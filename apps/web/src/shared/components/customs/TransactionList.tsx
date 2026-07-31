@@ -124,8 +124,8 @@ export function TransactionList({
       return (
         <div className="text-secondary-text h-100 flex items-center justify-center">
           {isSearchMode
-            ? "No matching transactions found"
-            : "No transactions found"}
+            ? t("noMatchingTransactionsFound")
+            : t("noTransactionsFound")}
         </div>
       );
     }
@@ -153,8 +153,8 @@ export function TransactionList({
     return (
       <div className="text-secondary-text h-50 flex items-center justify-center">
         {isSearchMode
-          ? "No matching transactions found"
-          : "No transactions found"}
+          ? t("noMatchingTransactionsFound")
+          : t("noTransactionsFound")}
       </div>
     );
   }

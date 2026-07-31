@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Eye, EyeOff, User, Wallet } from "lucide-react";
 import {
   UseFormRegister,
@@ -18,6 +17,7 @@ interface LoginFormProps {
   errors: FieldErrors<LoginFormValues>;
   isPending: boolean;
   onGuestLogin: () => void;
+  onSignUpClick: () => void;
   showPassword: boolean;
   onToggleShowPassword: () => void;
 }
@@ -29,6 +29,7 @@ export default function LoginForm({
   errors,
   isPending,
   onGuestLogin,
+  onSignUpClick,
   showPassword,
   onToggleShowPassword,
 }: Readonly<LoginFormProps>) {
@@ -165,12 +166,13 @@ export default function LoginForm({
         <div className="text-center select-none">
           <p className="text-sm text-secondary-text">
             {t("noAccount")}{" "}
-            <Link
-              className="text-primary font-semibold hover:underline"
-              href="/register"
+            <button
+              type="button"
+              className="text-primary font-semibold hover:underline cursor-pointer"
+              onClick={onSignUpClick}
             >
               {t("signUpHere")}
-            </Link>
+            </button>
           </p>
         </div>
       </div>

@@ -17,6 +17,7 @@ interface DropdownSelectProps {
   onToggle: (open?: boolean) => void;
   className?: string;
   themeColor?: string | null;
+  optionLabels?: Record<string, string>;
   ref?: React.Ref<HTMLDivElement>;
 }
 
@@ -28,6 +29,7 @@ export function DropdownSelect({
   onToggle,
   className,
   themeColor,
+  optionLabels,
   ref,
 }: Readonly<DropdownSelectProps>) {
   const effectiveThemeColor =
@@ -85,12 +87,13 @@ export function DropdownSelect({
             className={cn(
               "flex items-center justify-between gap-2 px-3 py-2 rounded-md text-sm font-semibold tracking-wide border transition-all duration-200 cursor-pointer outline-none w-full shadow-2xs select-none",
               isOpen
-                ? !effectiveThemeColor &&
-                    "text-primary bg-primary-light/70 border-primary/30 ring-2 ring-primary/15"
+                ? !effectiveThemeColor && "text-primary"
                 : "text-primary-text bg-surface-secondary/40 border-border/70 hover:bg-surface-secondary hover:border-border hover:shadow-xs",
             )}
           >
-            <span className="truncate">{selected}</span>
+            <span className="truncate">
+              {optionLabels?.[selected] ?? selected}
+            </span>
             <ChevronDown
               size={16}
               style={
@@ -129,7 +132,9 @@ export function DropdownSelect({
                     getItemClassName(isSelected),
                   )}
                 >
-                  <span className="truncate">{option}</span>
+                  <span className="truncate">
+                    {optionLabels?.[option] ?? option}
+                  </span>
                 </DropdownMenuItem>
               );
             })}

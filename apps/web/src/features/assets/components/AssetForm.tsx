@@ -74,15 +74,12 @@ export default function AssetForm({
         if (!open) onClose?.();
       }}
     >
-      <SheetContent
-        side="bottom"
-        className="h-auto max-h-[90vh] rounded-t-2xl sm:max-w-lg sm:mx-auto border-border bg-surface p-4 shadow-2xl overflow-y-auto custom-scrollbar flex flex-col gap-2"
-      >
-        <SheetHeader className="text-left pb-1 px-0">
-          <SheetTitle className="text-xl font-bold text-foreground">
+      <SheetContent side="bottom" className="sm:mx-auto sm:max-w-lg">
+        <SheetHeader>
+          <SheetTitle>
             {isEdit ? t("editAsset") : t("createNewAsset")}
           </SheetTitle>
-          <SheetDescription className="text-sm text-secondary-text">
+          <SheetDescription>
             {isEdit ? t("updateAssetDesc") : t("createAssetDesc")}
           </SheetDescription>
         </SheetHeader>
@@ -91,7 +88,7 @@ export default function AssetForm({
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-4 flex-1 flex flex-col min-h-0"
         >
-          <div className="space-y-4 overflow-y-auto custom-scrollbar px-1">
+          <div className="space-y-4 overflow-y-auto custom-scrollbar px-4">
             {/* Type */}
             <div className="flex flex-col gap-1.5 relative">
               <label
@@ -135,7 +132,7 @@ export default function AssetForm({
                 </Button>
               </div>
               {isOpen && (
-                <ul className="absolute top-19 w-full bg-surface border border-border rounded-lg shadow-xl py-1.5 z-20 max-h-52 overflow-y-auto animate-in fade-in zoom-in-95">
+                <ul className="absolute top-19 w-full bg-surface border border-border rounded-lg shadow-xl py-1.5 z-20 overflow-y-auto animate-in fade-in zoom-in-95">
                   {assetTypeList.map((type) => (
                     <li key={type}>
                       <Button
@@ -267,7 +264,7 @@ export default function AssetForm({
             </div>
           </div>
 
-          <SheetFooter className="px-4 py-2 flex-row gap-3">
+          <SheetFooter>
             <SheetClose asChild>
               <Button
                 variant="unstyled"

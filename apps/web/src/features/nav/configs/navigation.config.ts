@@ -1,4 +1,4 @@
-import { Home, BookOpen, BarChart3, Settings, Plus } from "lucide-react";
+import { Home, BookOpen, BarChart3, Plus } from "lucide-react";
 import { NavItem } from "../types/navigation.type";
 
 export const navItems: NavItem[] = [
@@ -29,13 +29,5 @@ export const navItems: NavItem[] = [
     translationKey: "navAnalytics",
     icon: BarChart3,
     mobilePlacement: "primary",
-  },
-  {
-    href: "/settings",
-    label: "Settings",
-    translationKey: "navSettings",
-    icon: Settings,
-    mobilePlacement: "more",
-    guestLocked: true,
   },
 ];

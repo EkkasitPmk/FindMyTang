@@ -43,8 +43,6 @@ export default function RecentJournalContainer() {
       dateStr,
       items,
     }));
-    // ponytail: locale จาก useTranslation มาจาก client-side store เท่านั้น
-    // ถ้า locale เปลี่ยนบน server ต้อง pass ผ่าน RSC props
   }, [transactionsData, locale]);
 
   const isEmpty = !mounted || (groupedTransactions.length === 0 && !isLoading);
@@ -67,7 +65,7 @@ export default function RecentJournalContainer() {
       </div>
 
       {isEmpty ? (
-        <div className="bg-surface flex flex-col items-center gap-3 py-8 rounded-md border-2 border-border border-dashed">
+        <div className="bg-surface mx-4 flex flex-col items-center gap-3 py-8 rounded-md border-2 border-border border-dashed">
           <div className="flex items-center">
             <span className="bg-surface-secondary p-4 rounded-full">
               <ClipboardPenLine className="text-secondary-text" size={24} />

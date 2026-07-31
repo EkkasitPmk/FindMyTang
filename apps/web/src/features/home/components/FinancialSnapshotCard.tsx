@@ -3,6 +3,7 @@ import {
   EyeOff,
   ArrowUpRight,
   ArrowDownRight,
+  Minus,
   Wallet,
   TrendingUp,
   TrendingDown,
@@ -175,11 +176,23 @@ export default function FinancialSnapshotCard({
   };
 
   const renderNetChangeBadge = () => {
-    const isPositive = netChange >= 0;
-    const Icon = isPositive ? TrendingUp : TrendingDown;
-    const colorClass = isPositive ? "text-income" : "text-expense";
-    const prefix = isPositive ? "+฿ " : "-฿ ";
-    const displayAmount = isPositive ? netChange : Math.abs(netChange);
+    const isPositive = netChange > 0;
+    const isNegative = netChange < 0;
+    let Icon = Minus;
+    let colorClass = "text-secondary-text";
+    let prefix = "฿ ";
+
+    if (isPositive) {
+      Icon = TrendingUp;
+      colorClass = "text-income";
+      prefix = "+฿ ";
+    } else if (isNegative) {
+      Icon = TrendingDown;
+      colorClass = "text-expense";
+      prefix = "-฿ ";
+    }
+
+    const displayAmount = Math.abs(netChange);
 
     return (
       <span

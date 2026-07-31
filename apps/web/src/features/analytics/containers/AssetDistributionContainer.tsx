@@ -35,7 +35,7 @@ export const AssetDistributionContainer = ({
       return (
         <div className="px-4 space-y-2">
           {/* Asset Distribution Bar Skeleton */}
-          <div className="bg-surface rounded-xl border p-5">
+          <div className="bg-surface rounded-xl border border-border p-5">
             <div className="mb-4 flex flex-col gap-2">
               <Skeleton className="h-4 w-24" />
               <Skeleton className="h-9 w-40" />
@@ -53,7 +53,7 @@ export const AssetDistributionContainer = ({
             {[1, 2, 3, 4].map((item) => (
               <div
                 key={item}
-                className="bg-surface border rounded-xl p-4 flex justify-between items-center"
+                className="bg-surface border border-border rounded-xl p-4 flex justify-between items-center"
               >
                 <div className="flex items-center gap-3">
                   <Skeleton className="w-10 h-10 rounded-full shrink-0" />

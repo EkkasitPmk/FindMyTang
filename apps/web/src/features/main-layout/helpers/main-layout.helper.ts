@@ -23,6 +23,8 @@ export function getMainLayoutRoute(pathname: string): MainLayoutRoute {
   if (pathname === "/assets/new") return "assetsNew";
   if (pathname === "/settings") return "settings";
   if (pathname === "/settings/account") return "settingsAccount";
+  if (pathname === "/support/contact") return "supportContact";
+  if (pathname === "/support/feedback") return "supportFeedback";
   if (ANALYTICS_CATEGORY_ROUTE.test(pathname)) return "analyticsCategory";
   return "other";
 }

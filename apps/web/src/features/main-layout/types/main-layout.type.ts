@@ -65,5 +65,7 @@ export type MainLayoutRoute =
   | "assetsNew"
   | "settings"
   | "settingsAccount"
+  | "supportContact"
+  | "supportFeedback"
   | "analyticsCategory"
   | "other";

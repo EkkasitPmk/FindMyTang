@@ -80,6 +80,15 @@ export function useMainLayout() {
   );
 
   const handleBack = () => {
+    if (routeName === "supportFeedback" || routeName === "supportContact") {
+      const event = new CustomEvent<{ handled: boolean }>(
+        "support:before-back",
+        { detail: { handled: false } },
+      );
+      window.dispatchEvent(event);
+      if (event.detail.handled) return;
+    }
+
     if (routeName === "assets" && assetName) {
       setSearchMode(false);
       setSearchKeyword("");

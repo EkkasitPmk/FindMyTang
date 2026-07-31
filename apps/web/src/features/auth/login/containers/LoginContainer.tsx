@@ -15,12 +15,16 @@ import { handleFormError } from "@/shared/lib/helpers/form.helper";
 import LoadingModal from "@/shared/components/customs/LoadingModal";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { useModalState } from "@/shared/lib/hooks/useModalState.hook";
+import { Clock3 } from "lucide-react";
+import ConfirmModal from "@/shared/components/customs/ConfirmModal";
 
 export default function LoginContainer() {
   const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [showMigration, setShowMigration] = useState(false);
+  const [showRegistrationUnavailable, setShowRegistrationUnavailable] =
+    useState(false);
   const { modalState, setModalState, resetModalState } = useModalState();
   const setGuestMode = useGuestStore((state) => state.setGuestMode);
   const clearGuestData = useGuestStore((state) => state.clearGuestData);
@@ -109,6 +113,7 @@ export default function LoginContainer() {
         errors={errors}
         isPending={isPending || isRedirecting}
         onGuestLogin={handleGuestLogin}
+        onSignUpClick={() => setShowRegistrationUnavailable(true)}
         showPassword={showPassword}
         onToggleShowPassword={() => setShowPassword(!showPassword)}
       />
@@ -125,6 +130,17 @@ export default function LoginContainer() {
         isPending={syncGuest.isPending}
         onMerge={() => void finishMigration(true)}
         onDiscard={() => void finishMigration(false)}
+      />
+      <ConfirmModal
+        isOpen={showRegistrationUnavailable}
+        onClose={() => setShowRegistrationUnavailable(false)}
+        onConfirm={() => setShowRegistrationUnavailable(false)}
+        icon={Clock3}
+        title={t("registrationUnavailableTitle")}
+        des={t("registrationUnavailableDesc")}
+        confirmLabel={t("close")}
+        showCancelButton={false}
+        variant="primary"
       />
     </>
   );

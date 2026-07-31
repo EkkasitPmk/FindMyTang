@@ -34,7 +34,6 @@ export default function SyncStatusButton({
 
   const getStatusText = () => {
     if (isSyncing) return t("syncing");
-    if (syncStatus === "synced") return t("upToDate");
   };
 
   return (

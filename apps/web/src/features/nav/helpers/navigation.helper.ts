@@ -12,7 +12,8 @@ export const getMobileMoreNavItems = (): NavItem[] =>
 
 export const isGuestNavBlocked = (href: string, isGuest: boolean): boolean =>
   isGuest &&
-  navItems.some((item) => item.guestLocked && isNavItemActive(href, item));
+  (href === "/settings/account" ||
+    navItems.some((item) => item.guestLocked && isNavItemActive(href, item)));
 
 export const shouldShowMobileBottomNav = (pathname: string): boolean =>
   getMobilePrimaryNavItems().some((item) => isNavItemActive(pathname, item));

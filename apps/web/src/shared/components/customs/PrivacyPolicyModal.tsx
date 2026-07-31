@@ -1,4 +1,5 @@
 import { Shield, Check } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import {
   Dialog,
@@ -98,8 +99,17 @@ export default function PrivacyPolicyModal({
                   5. ติดต่อเรา (Contact Us)
                 </h4>
                 <p>
-                  หากท่านมีข้อสงสัยเกี่ยวกับนโยบายความเป็นส่วนตัว
-                  สามารถติดต่อทีมงาน FindMyTang ได้ผ่านช่องทางสนับสนุนผู้ใช้งาน
+                  หากท่านมีคำถามเกี่ยวกับนโยบายความเป็นส่วนตัว การใช้ข้อมูล
+                  หรือคำขอเกี่ยวกับสิทธิของท่าน กรุณาติดต่อทีมงาน FindMyTang
+                  ผ่าน
+                  <Link
+                    href="/support/contact"
+                    onClick={onClose}
+                    className="font-medium text-primary underline underline-offset-2 hover:text-primary-hover"
+                  >
+                    หน้าติดต่อเรา
+                  </Link>
+                  ได้ทุกเมื่อ
                 </p>
               </section>
             </>
@@ -154,8 +164,17 @@ export default function PrivacyPolicyModal({
                   5. Contact Us
                 </h4>
                 <p>
-                  For any privacy inquiries or data requests, please reach out
-                  to the FindMyTang support team via official channels.
+                  If you have questions about this Privacy Policy, how we use
+                  your data, or a request related to your rights, please contact
+                  the FindMyTang team through our
+                  <Link
+                    href="/support/contact"
+                    onClick={onClose}
+                    className="font-medium text-primary underline underline-offset-2 hover:text-primary-hover"
+                  >
+                    Contact Us page
+                  </Link>
+                  .
                 </p>
               </section>
             </>
