@@ -16,6 +16,8 @@ describe("main-layout.helper", () => {
     expect(getMainLayoutRoute("/home")).toBe("home");
     expect(getMainLayoutRoute("/assets/new")).toBe("assetsNew");
     expect(getMainLayoutRoute("/settings/account")).toBe("settingsAccount");
+    expect(getMainLayoutRoute("/support/contact")).toBe("supportContact");
+    expect(getMainLayoutRoute("/support/feedback")).toBe("supportFeedback");
     expect(getMainLayoutRoute("/analytics/category/cat-123")).toBe(
       "analyticsCategory",
     );
