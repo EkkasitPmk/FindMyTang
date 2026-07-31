@@ -3,11 +3,9 @@ import * as z from "zod";
 export const createCategorySchema = z.object({
   name: z
     .string()
+    .trim()
     .min(1, { message: "Category name is required" })
-    .max(100, { message: "Category name must not exceed 100 characters" })
-    .refine((val) => val.trim().length > 0, {
-      message: "Category name must not be empty or whitespace only",
-    }),
+    .max(25, { message: "Category name must not exceed 25 characters" }),
   type: z.enum(["INCOME", "EXPENSE"] as const, {
     message: "Invalid category type",
   }),

@@ -34,11 +34,11 @@ export class CreateAdjustmentDto {
     description: "Optional note or memo explaining adjustment",
     example: "Adjust balance to match wallet cash count",
     required: false,
-    maxLength: 500,
+    maxLength: 255,
     type: String,
   })
   @IsString()
-  @MaxLength(500)
+  @MaxLength(255)
   @IsOptional()
   note?: string;
 

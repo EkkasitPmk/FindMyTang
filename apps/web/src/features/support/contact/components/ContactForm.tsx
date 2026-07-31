@@ -51,6 +51,7 @@ export default function ContactForm({
         </label>
         <Input
           type="text"
+          maxLength={50}
           placeholder={labels.namePlaceholder}
           {...register("name")}
         />
@@ -63,6 +64,7 @@ export default function ContactForm({
         </label>
         <Input
           type="email"
+          maxLength={254}
           placeholder={labels.emailPlaceholder}
           {...register("email")}
         />
@@ -75,6 +77,7 @@ export default function ContactForm({
         </label>
         <Input
           type="tel"
+          maxLength={20}
           placeholder={labels.phonePlaceholder}
           {...register("phone")}
         />
@@ -87,6 +90,7 @@ export default function ContactForm({
         </label>
         <textarea
           rows={5}
+          maxLength={1000}
           placeholder={labels.messagePlaceholder}
           className="w-full resize-none rounded-lg border border-border/50 bg-background px-4 py-3 text-sm text-primary-text outline-none transition-all placeholder:text-secondary-text/60 focus:border-primary/50 focus:ring-2 focus:ring-primary/20"
           {...register("message")}

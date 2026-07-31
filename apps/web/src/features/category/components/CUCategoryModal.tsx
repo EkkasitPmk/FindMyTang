@@ -105,7 +105,7 @@ export default function CUCategoryModal({
         >
           <fieldset
             disabled={isDeletedCategory}
-            className="space-y-4 overflow-y-auto px-4 py-4 mb-0 group-disabled:opacity-80"
+            className="space-y-4 overflow-y-auto p-4 mb-0 group-disabled:opacity-80"
           >
             {/* Category Name */}
             <div className="space-y-1">
@@ -118,6 +118,7 @@ export default function CUCategoryModal({
               <Input
                 id="category-name"
                 type="text"
+                maxLength={25}
                 disabled={isDeletedCategory}
                 placeholder={t("egCoffee")}
                 error={!!errors.name}

@@ -64,6 +64,7 @@ export default function RegisterForm({
           <div className="flex flex-col gap-1.5">
             <Input
               type="text"
+              maxLength={25}
               placeholder={t("displayNamePlaceholder")}
               className="bg-surface-secondary"
               error={!!errors.displayName}

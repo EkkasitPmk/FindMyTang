@@ -5,15 +5,15 @@ import { CategoryType } from "@prisma/client";
 
 export class UpdateCategoryDto extends PartialType(CreateCategoryDto) {
   @ApiProperty({
-    description: "Updated name of the category (maximum 100 characters)",
+    description: "Updated name of the category (maximum 25 characters)",
     example: "Dining Out",
     required: false,
-    maxLength: 100,
+    maxLength: 25,
     type: String,
   })
   @IsString()
   @IsOptional()
-  @MaxLength(100, { message: "Category name must not exceed 100 characters" })
+  @MaxLength(25, { message: "Category name must not exceed 25 characters" })
   name?: string;
 
   @ApiProperty({

@@ -46,11 +46,11 @@ export class CreateExpenseDto {
     description: "Optional note or memo for the expense",
     example: "Lunch with team",
     required: false,
-    maxLength: 500,
+    maxLength: 255,
     type: String,
   })
   @IsString()
-  @MaxLength(500)
+  @MaxLength(255)
   @IsOptional()
   note?: string;
 

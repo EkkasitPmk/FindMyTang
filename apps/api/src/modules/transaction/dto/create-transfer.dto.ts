@@ -46,11 +46,11 @@ export class CreateTransferDto {
     description: "Optional note or memo for the transfer",
     example: "Transfer to Savings account",
     required: false,
-    maxLength: 500,
+    maxLength: 255,
     type: String,
   })
   @IsString()
-  @MaxLength(500)
+  @MaxLength(255)
   @IsOptional()
   note?: string;
 

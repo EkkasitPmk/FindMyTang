@@ -19,6 +19,11 @@ export class UserService {
     if (newPassword !== confirmNewPassword) {
       throw new BadRequestException("New passwords do not match");
     }
+    if (currentPassword === newPassword) {
+      throw new BadRequestException(
+        "New password must be different from current password",
+      );
+    }
 
     const user = await this.userRepository.findById(userId);
     if (!user) {

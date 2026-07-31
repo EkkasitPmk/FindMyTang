@@ -25,7 +25,6 @@ interface FeedbackFormProps {
     email?: string;
   };
   selectedType?: FeedbackFormValues["type"];
-  messageLength: number;
   onTypeSelect: (value: string) => void;
   onSubmit: SubmitEventHandler<HTMLFormElement>;
   typeMenuOpen: boolean;
@@ -38,7 +37,6 @@ export default function FeedbackForm({
   register,
   errors,
   selectedType,
-  messageLength,
   onTypeSelect,
   onSubmit,
   typeMenuOpen,
@@ -75,17 +73,12 @@ export default function FeedbackForm({
           </div>
 
           <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold text-primary-text">
-                {labels.messageLabel} <span className="text-expense">*</span>
-              </label>
-              <span className="text-[11px] text-secondary-text">
-                {messageLength}/1000
-              </span>
-            </div>
+            <label className="text-xs font-semibold text-primary-text">
+              {labels.messageLabel} <span className="text-expense">*</span>
+            </label>
             <textarea
-              maxLength={1000}
               rows={5}
+              maxLength={1000}
               placeholder={labels.messagePlaceholder}
               className="w-full resize-none rounded-lg border border-border/50 bg-background px-4 py-3 text-sm text-primary-text outline-none transition-all placeholder:text-secondary-text/60 focus:border-primary/50 focus:ring-2 focus:ring-primary/20"
               {...register("message")}
@@ -101,6 +94,7 @@ export default function FeedbackForm({
             </label>
             <Input
               type="email"
+              maxLength={254}
               placeholder={labels.emailPlaceholder}
               {...register("email")}
             />

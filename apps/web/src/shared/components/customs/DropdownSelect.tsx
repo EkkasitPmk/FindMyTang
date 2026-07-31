@@ -88,7 +88,7 @@ export function DropdownSelect({
               "flex items-center justify-between gap-2 px-3 py-2 rounded-md text-sm font-semibold tracking-wide border transition-all duration-200 cursor-pointer outline-none w-full shadow-2xs select-none",
               isOpen
                 ? !effectiveThemeColor && "text-primary"
-                : "text-primary-text bg-surface-secondary/40 border-border/70 hover:bg-surface-secondary hover:border-border hover:shadow-xs",
+                : "text-primary-text border-border/70 hover:bg-surface-secondary hover:border-border hover:shadow-xs",
             )}
           >
             <span className="truncate">

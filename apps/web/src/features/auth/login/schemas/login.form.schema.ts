@@ -1,7 +1,11 @@
 import * as z from "zod";
 
 export const loginSchema = z.object({
-  email: z.email("errInvalidEmail").min(1, "errEmailRequired"),
+  email: z
+    .email("errInvalidEmail")
+    .trim()
+    .min(1, "errEmailRequired")
+    .max(254, "Email must not exceed 254 characters"),
   password: z
     .string()
     .min(1, "errPasswordRequired")

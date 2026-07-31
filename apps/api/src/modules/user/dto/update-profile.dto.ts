@@ -3,15 +3,15 @@ import { IsOptional, IsString, MaxLength, IsIn } from "class-validator";
 
 export class UpdateProfileDto {
   @ApiProperty({
-    description: "Display name of the user (maximum 100 characters)",
+    description: "Display name of the user (maximum 25 characters)",
     example: "John Doe",
     required: false,
-    maxLength: 100,
+    maxLength: 25,
     type: String,
   })
   @IsString()
   @IsOptional()
-  @MaxLength(100, { message: "Display name must not exceed 100 characters" })
+  @MaxLength(25, { message: "Display name must not exceed 25 characters" })
   displayName?: string;
 
   @ApiProperty({

@@ -58,7 +58,9 @@ export function TransactionItemDetails({
             <p className="text-secondary-text capitalize">
               {t("description")}:
             </p>
-            <p className="font-medium text-right">{transaction.note || "-"}</p>
+            <p className="min-w-0 flex-1 wrap-break-word whitespace-pre-wrap text-right font-medium">
+              {transaction.note || "-"}
+            </p>
           </div>
           <div className="flex items-center justify-between">
             <p className="text-secondary-text capitalize">
@@ -91,7 +93,9 @@ export function TransactionItemDetails({
             <p className="text-secondary-text capitalize">
               {t("description")}:
             </p>
-            <p className="font-medium text-right">{transaction.note || "-"}</p>
+            <p className="min-w-0 flex-1 wrap-break-word whitespace-pre-wrap text-right font-medium">
+              {transaction.note || "-"}
+            </p>
           </div>
         </>
       )}
@@ -133,7 +137,9 @@ export function TransactionItemDetails({
             <p className="text-secondary-text capitalize">
               {t("description")}:
             </p>
-            <p className="font-medium text-right">{transaction.note || "-"}</p>
+            <p className="min-w-0 flex-1 wrap-break-word whitespace-pre-wrap text-right font-medium">
+              {transaction.note || "-"}
+            </p>
           </div>
         </>
       )}

@@ -2,7 +2,13 @@ import { z } from "zod";
 import { FEEDBACK_TYPES } from "../configs/feedback.config";
 
 const optionalEmail = z
-  .union([z.email("errInvalidEmail"), z.literal("")])
+  .string()
+  .trim()
+  .max(254, "errInvalidEmail")
+  .refine(
+    (value) => value === "" || z.email().safeParse(value).success,
+    "errInvalidEmail",
+  )
   .optional();
 
 export const feedbackFormSchema = z.object({

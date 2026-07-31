@@ -70,6 +70,7 @@ export default function LoginForm({
               className="bg-surface-secondary"
               placeholder={t("emailPlaceholder")}
               type="email"
+              maxLength={254}
               error={!!errors.email}
               {...register("email")}
             />

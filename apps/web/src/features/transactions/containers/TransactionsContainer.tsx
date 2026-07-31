@@ -256,24 +256,14 @@ export default function TransactionsContainer() {
     }
   };
 
-  const handleConfirmDelete = () => {
-    if (editId) {
-      deleteTransaction.mutate({
-        id: editId,
-        isHardDelete: Boolean(isHardDelete),
-      });
-      closeDeleteModal();
-    }
-  };
-
   const [tempDate, setTempDate] = useState<Date | undefined>(date);
-  const [prevDate, setPrevDate] = useState<Date>(date);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
-  if (date !== prevDate) {
-    setPrevDate(date);
+  const handleOpenCalendar = () => {
     setTempDate(date);
     setDisplayMonth(date);
-  }
+    setIsCalendarOpen(true);
+  };
 
   const handleConfirmDate = () => {
     if (tempDate) {
@@ -290,7 +280,16 @@ export default function TransactionsContainer() {
     setDisplayMonth(newDate);
   };
 
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const handleConfirmDelete = () => {
+    if (editId) {
+      deleteTransaction.mutate({
+        id: editId,
+        isHardDelete: Boolean(isHardDelete),
+      });
+      closeDeleteModal();
+    }
+  };
+
   const [isPhotoMenuOpen, setIsPhotoMenuOpen] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -427,11 +426,7 @@ export default function TransactionsContainer() {
   const attachmentUrl = removedAttachment ? null : existingTx?.attachmentUrl;
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      onReset={handleResetForm}
-      className={cn(isMoreDetailsOpen && "pb-32")}
-    >
+    <form onSubmit={handleSubmit(onSubmit)} onReset={handleResetForm}>
       <header
         className={cn(
           "flex items-center relative mb-2 px-4",
@@ -479,7 +474,7 @@ export default function TransactionsContainer() {
               setTransactionType(val as TransactionType);
               clearErrors();
             }}
-            className="gap-2"
+            className="gap-3"
           >
             <TabsList className="w-full">
               {transactionTypeOptions.map((option) => (
@@ -491,76 +486,73 @@ export default function TransactionsContainer() {
 
             <TabsContents>
               {transactionTypeOptions.map((option) => (
-                <TabsContent
-                  key={option.value}
-                  value={option.value}
-                  className="space-y-4"
-                >
-                  <section className="flex flex-col items-center gap-1 relative min-h-10 justify-center">
-                    {isTxLoading ? (
-                      <Skeleton className="w-60 h-10 rounded-lg" />
-                    ) : (
-                      <>
-                        <CurrencyInput
-                          id="transaction-amount"
-                          ref={amountInputRef}
-                          value={displayAmount}
-                          onChange={handleCurrencyInput}
-                        />
-                        <input
-                          type="hidden"
-                          name="amount"
-                          value={numericAmount}
-                        />
-                        {(isSubmitted || Boolean(touchedFields.amount)) &&
-                          errors.amount && (
-                            <p className="text-expense text-xs">
-                              {errors.amount.message}
-                            </p>
-                          )}
-                      </>
+                <TabsContent key={option.value} value={option.value}>
+                  <div className="h-full overflow-y-auto max-h-[65vh] space-y-4">
+                    <section className="flex flex-col items-center gap-1 relative min-h-10 justify-center">
+                      {isTxLoading ? (
+                        <Skeleton className="w-60 h-10 rounded-lg" />
+                      ) : (
+                        <>
+                          <CurrencyInput
+                            id="transaction-amount"
+                            ref={amountInputRef}
+                            value={displayAmount}
+                            onChange={handleCurrencyInput}
+                          />
+                          <input
+                            type="hidden"
+                            name="amount"
+                            value={numericAmount}
+                          />
+                          {(isSubmitted || Boolean(touchedFields.amount)) &&
+                            errors.amount && (
+                              <p className="text-expense text-xs">
+                                {errors.amount.message}
+                              </p>
+                            )}
+                        </>
+                      )}
+                    </section>
+
+                    {showCategoryList && (
+                      <TransactionCategoryList
+                        categories={filteredCategories}
+                        activeCategoryId={watchCategoryId || null}
+                        onSelectCategory={(id) => setValue("categoryId", id)}
+                        onEditClick={handleEditCategoryClick}
+                        isLoadingCategoryList={isLoadingCategoryList}
+                      />
                     )}
-                  </section>
 
-                  {showCategoryList && (
-                    <TransactionCategoryList
-                      categories={filteredCategories}
-                      activeCategoryId={watchCategoryId || null}
-                      onSelectCategory={(id) => setValue("categoryId", id)}
-                      onEditClick={handleEditCategoryClick}
-                      isLoadingCategoryList={isLoadingCategoryList}
+                    <TransactionAssetList
+                      assets={safeAssets}
+                      activeAssetId={watchAssetId || null}
+                      onSelectAsset={(id) => setValue("assetId", id)}
+                      activeAssetToId={watchToAssetId || null}
+                      onSelectAssetTo={(id) => setValue("toAssetId", id)}
+                      transactionType={transactionType}
+                      isLoadingAssetList={isLoadingAssetList}
                     />
-                  )}
 
-                  <TransactionAssetList
-                    assets={safeAssets}
-                    activeAssetId={watchAssetId || null}
-                    onSelectAsset={(id) => setValue("assetId", id)}
-                    activeAssetToId={watchToAssetId || null}
-                    onSelectAssetTo={(id) => setValue("toAssetId", id)}
-                    transactionType={transactionType}
-                    isLoadingAssetList={isLoadingAssetList}
-                  />
-
-                  <TransactionMoreDetails
-                    isMoreDetailsOpen={isMoreDetailsOpen}
-                    setIsMoreDetailsOpen={setIsMoreDetailsOpen}
-                    displayDate={displayDate}
-                    isCalendarOpen={isCalendarOpen}
-                    setIsCalendarOpen={setIsCalendarOpen}
-                    isPhotoMenuOpen={isPhotoMenuOpen}
-                    setIsPhotoMenuOpen={setIsPhotoMenuOpen}
-                    file={file}
-                    attachmentUrl={attachmentUrl}
-                    onRemoveFile={handleRemoveFile}
-                    onTakeAPhoto={handleTakeAPhoto}
-                    onSelectAPhoto={handleSelectAPhoto}
-                    fileInputRef={fileInputRef}
-                    cameraInputRef={cameraInputRef}
-                    handleFileChange={handleFileChange}
-                    register={register}
-                    isLoadingTx={isTxLoading}
-                  />
+                    <TransactionMoreDetails
+                      isMoreDetailsOpen={isMoreDetailsOpen}
+                      setIsMoreDetailsOpen={setIsMoreDetailsOpen}
+                      displayDate={displayDate}
+                      onOpenCalendar={handleOpenCalendar}
+                      isPhotoMenuOpen={isPhotoMenuOpen}
+                      setIsPhotoMenuOpen={setIsPhotoMenuOpen}
+                      file={file}
+                      attachmentUrl={attachmentUrl}
+                      onRemoveFile={handleRemoveFile}
+                      onTakeAPhoto={handleTakeAPhoto}
+                      onSelectAPhoto={handleSelectAPhoto}
+                      fileInputRef={fileInputRef}
+                      cameraInputRef={cameraInputRef}
+                      handleFileChange={handleFileChange}
+                      register={register}
+                      isLoadingTx={isTxLoading}
+                    />
+                  </div>
                 </TabsContent>
               ))}
             </TabsContents>
