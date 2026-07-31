@@ -24,7 +24,7 @@ import { cn } from "@/shared/lib/utils/core.util";
 
 type DialogProps = DialogPrimitiveProps;
 
-function Dialog(props: DialogProps) {
+function Dialog(props: Readonly<DialogProps>) {
   return <DialogPrimitive {...props} />;
 }
 
@@ -56,12 +56,14 @@ function DialogOverlay({ className, ...props }: DialogOverlayProps) {
 
 type DialogContentProps = DialogContentPrimitiveProps & {
   showCloseButton?: boolean;
+  closeButtonClassName?: string;
 };
 
 function DialogContent({
   className,
   children,
   showCloseButton = true,
+  closeButtonClassName,
   ...props
 }: DialogContentProps) {
   return (
@@ -76,7 +78,12 @@ function DialogContent({
       >
         {children}
         {showCloseButton && (
-          <DialogClosePrimitive className="absolute top-4 right-4 z-20 p-1.5 rounded-full text-secondary-text hover:text-primary-text hover:bg-surface-secondary opacity-80 hover:opacity-100 transition-all focus:outline-none cursor-pointer">
+          <DialogClosePrimitive
+            className={cn(
+              "absolute top-4 right-4 z-20 p-1.5 rounded-full text-secondary-text hover:text-primary-text hover:bg-surface-secondary opacity-80 hover:opacity-100 transition-all focus:outline-none cursor-pointer",
+              closeButtonClassName,
+            )}
+          >
             <XIcon size={18} />
             <span className="sr-only">Close</span>
           </DialogClosePrimitive>
