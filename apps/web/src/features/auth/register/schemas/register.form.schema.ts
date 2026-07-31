@@ -2,7 +2,11 @@ import * as z from "zod";
 
 export const registerSchema = z
   .object({
-    displayName: z.string().min(1, "errDisplayNameRequired"),
+    displayName: z
+      .string()
+      .trim()
+      .min(1, "errDisplayNameRequired")
+      .max(25, "Display name must be under 25 characters"),
     email: z.email("errInvalidEmail").min(1, "errEmailRequired"),
     password: z
       .string()
