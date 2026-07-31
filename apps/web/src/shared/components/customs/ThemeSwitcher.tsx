@@ -2,7 +2,6 @@ import { useTheme } from "next-themes";
 import { Sun, Moon, Monitor } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/shared/lib/utils/core.util";
-import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import {
   DropdownMenu,
@@ -12,7 +11,6 @@ import {
 } from "@/shared/components/animate-ui/components/radix/dropdown-menu";
 
 export default function ThemeSwitcher() {
-  const mounted = useMounted();
   const { theme, setTheme } = useTheme();
 
   const options = [
@@ -20,14 +18,6 @@ export default function ThemeSwitcher() {
     { value: "system", icon: Monitor, label: "System" },
     { value: "dark", icon: Moon, label: "Dark" },
   ];
-
-  if (!mounted) {
-    return (
-      <div className="flex items-center justify-center p-1 bg-surface-secondary/60 rounded-xl border border-border/60 h-9.5 w-fit mx-auto shrink-0">
-        <div className="w-4 h-4 rounded-full bg-surface-secondary/50 animate-pulse" />
-      </div>
-    );
-  }
 
   const activeOption = options.find((opt) => opt.value === theme) || options[1];
   const ActiveIcon = activeOption.icon;

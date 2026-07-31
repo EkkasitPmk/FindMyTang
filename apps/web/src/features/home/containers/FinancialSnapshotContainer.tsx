@@ -2,11 +2,9 @@
 import { useState } from "react";
 import { useAssets } from "@/shared/lib/hooks/useAssets.hook";
 import { useThisMonthSummary } from "../hooks/summary.hook";
-import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import FinancialSnapshotCard from "../components/FinancialSnapshotCard";
 
 export default function FinancialSnapshotContainer() {
-  const mounted = useMounted();
   const [isPrivate, setIsPrivate] = useState<boolean>(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("findmytang_privacy_mode");
@@ -33,7 +31,7 @@ export default function FinancialSnapshotContainer() {
   const expense = summary?.expense || 0;
   const netChange = summary?.net || 0;
 
-  const isLoading = !mounted || isAssetsPending || isSummaryPending;
+  const isLoading = isAssetsPending || isSummaryPending;
   const hasAssets = Boolean(assets && assets.length > 0);
 
   return (

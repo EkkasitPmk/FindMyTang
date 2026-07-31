@@ -12,7 +12,6 @@ import {
   useBulkRestoreAssetsMutation,
 } from "../hooks/assets.hook";
 import { Asset } from "@/shared/lib/types/asset.type";
-import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import { toast } from "react-toastify";
 import { useConfirmModal } from "@/shared/lib/hooks/useConfirmModal.hook";
 import ConfirmModal from "@/shared/components/customs/ConfirmModal";
@@ -32,10 +31,8 @@ const SKELETON_ITEMS = Array.from({ length: 4 }, (_, i) => i);
 
 export default function ManageAssetsContainer() {
   const { t } = useTranslation();
-  const mounted = useMounted();
-
   const { data: assets, isPending } = useAssets({ includeDeleted: true });
-  const isLoading = !mounted || isPending;
+  const isLoading = isPending;
 
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editingAsset, setEditingAsset] = useState<Asset | null>(null);

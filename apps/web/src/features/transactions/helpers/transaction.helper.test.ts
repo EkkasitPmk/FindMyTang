@@ -241,17 +241,17 @@ describe("transaction.helper", () => {
   });
 
   describe("loading and status helpers", () => {
-    it("checkIsLoading should check mounted, isPending, and isFetching", () => {
-      expect(checkIsLoading(false, false, false)).toBe(true);
-      expect(checkIsLoading(true, true, false)).toBe(true);
-      expect(checkIsLoading(true, false, true)).toBe(true);
-      expect(checkIsLoading(true, false, false)).toBe(false);
+    it("checkIsLoading should check isPending and isFetching", () => {
+      expect(checkIsLoading(false, false)).toBe(false);
+      expect(checkIsLoading(true, false)).toBe(true);
+      expect(checkIsLoading(false, true)).toBe(true);
+      expect(checkIsLoading(false, false)).toBe(false);
     });
 
     it("checkIsTxLoading should return true only if editId exists and loading", () => {
-      expect(checkIsTxLoading(true, null, true, true)).toBe(false);
-      expect(checkIsTxLoading(true, "tx-1", true, false)).toBe(true);
-      expect(checkIsTxLoading(true, "tx-1", false, false)).toBe(false);
+      expect(checkIsTxLoading(null, true, true)).toBe(false);
+      expect(checkIsTxLoading("tx-1", true, false)).toBe(true);
+      expect(checkIsTxLoading("tx-1", false, false)).toBe(false);
     });
 
     it("checkIsSubmitting should return true if any mutation pending", () => {

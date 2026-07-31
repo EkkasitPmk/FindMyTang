@@ -1,6 +1,5 @@
 "use client";
 import { useState, useMemo } from "react";
-import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import { TransactionListContainer } from "@/features/transactions/containers/TransactionListContainer";
 import {
   Tabs,
@@ -36,7 +35,6 @@ type ViewMode = "timeline" | "calendar";
 
 export default function JournalContainer() {
   const { t, locale } = useTranslation();
-  const mounted = useMounted();
   const [viewMode, setViewMode] = useState<ViewMode>("timeline");
   const [searchKeyword, setSearchKeyword] = useState("");
   const [selectedType, setSelectedType] =
@@ -261,7 +259,7 @@ export default function JournalContainer() {
                   <TransactionListContainer
                     groupedTransactions={groupedTransactions}
                     isLoadingTransactions={
-                      !transactionsData && (!mounted || isLoadingTransactions)
+                      !transactionsData && isLoadingTransactions
                     }
                     isFetchingNextPage={isFetchingNextPage}
                     hasNextPage={hasNextPage}

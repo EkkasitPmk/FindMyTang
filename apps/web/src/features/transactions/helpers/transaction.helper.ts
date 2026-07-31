@@ -39,20 +39,18 @@ export function parseErrorMessage(
 }
 
 export function checkIsLoading(
-  mounted: boolean,
   isPending: boolean,
   isFetching: boolean,
 ): boolean {
-  return !mounted || isPending || isFetching;
+  return isPending || isFetching;
 }
 
 export function checkIsTxLoading(
-  mounted: boolean,
   editId: string | null,
   isPending: boolean,
   isFetching: boolean,
 ): boolean {
-  return Boolean(editId) && (!mounted || isPending || isFetching);
+  return Boolean(editId) && (isPending || isFetching);
 }
 
 export function checkIsSubmitting(

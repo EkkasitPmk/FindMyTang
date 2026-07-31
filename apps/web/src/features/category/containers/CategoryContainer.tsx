@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import { toast } from "react-toastify";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -109,10 +108,8 @@ export default function CategoryContainer() {
     };
   }, [setEditingList]);
 
-  const mounted = useMounted();
-
   const { data: categories, isPending } = useCategories(true);
-  const isCategoriesLoading = !mounted || isPending;
+  const isCategoriesLoading = isPending;
 
   const [prevCategories, setPrevCategories] = useState(categories);
   const [localCategories, setLocalCategories] = useState<Category[]>(

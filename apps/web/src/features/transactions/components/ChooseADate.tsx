@@ -3,7 +3,6 @@ import { Button } from "@/shared/components/animate-ui/components/buttons/button
 import { getDiffDays } from "@/shared/lib/helpers/date.helper";
 import { cn } from "@/shared/lib/utils/core.util";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
-import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import { Clock, Calendar as CalendarIcon } from "lucide-react";
 import {
   Sheet,
@@ -37,14 +36,11 @@ export default function ChooseADate({
   onPresetClick,
   locale,
 }: Readonly<ChooseADateProps>) {
-  const mounted = useMounted();
   const { t } = useTranslation();
   const diffDays = getDiffDays(selectedDate);
 
   const hours = selectedDate ? selectedDate.getHours() : 0;
   const minutes = selectedDate ? selectedDate.getMinutes() : 0;
-
-  if (!mounted) return null;
 
   const applyTime = (h: number, m: number) => {
     if (!selectedDate) return;

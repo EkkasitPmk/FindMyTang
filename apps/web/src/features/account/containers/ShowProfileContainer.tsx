@@ -7,14 +7,12 @@ import { useMeQuery } from "@/shared/lib/hooks/useMeQuery.hook";
 import { useIsGuest } from "@/shared/lib/storages/guest.storage";
 import { format } from "date-fns";
 import { Skeleton } from "@/shared/components/ui/skeleton";
-import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import { useFeatureLockModal } from "@/shared/lib/hooks/useFeatureLockModal.hook";
 
 export default function ShowProfileContainer() {
   const pathname = usePathname();
   const { data: user, isLoading } = useMeQuery();
   const isGuest = useIsGuest();
-  const mounted = useMounted();
   const openLockModal = useFeatureLockModal((state) => state.openModal);
 
   const getGreeting = () => {
@@ -25,7 +23,7 @@ export default function ShowProfileContainer() {
   };
 
   const displayName = isGuest ? "Guest" : user?.displayName || "User";
-  const currentDate = mounted ? format(new Date(), "EEEE, d MMMM") : "";
+  const currentDate = format(new Date(), "EEEE, d MMMM");
   const greeting = getGreeting();
 
   return (
@@ -51,7 +49,7 @@ export default function ShowProfileContainer() {
           <Avatar url={user?.avatarUrl} size={40} />
         </Link>
         <div className="flex flex-col">
-          {!mounted || (isLoading && !isGuest) ? (
+          {isLoading && !isGuest ? (
             <Skeleton className="h-5 w-32 mb-1" />
           ) : (
             <h1 className="text-base font-medium leading-tight line-clamp-1">
@@ -59,7 +57,7 @@ export default function ShowProfileContainer() {
             </h1>
           )}
 
-          {!mounted || (isLoading && !isGuest) ? (
+          {isLoading && !isGuest ? (
             <Skeleton className="h-4 w-24" />
           ) : (
             <p className="text-sm text-secondary-text">{currentDate}</p>
