@@ -1,6 +1,11 @@
 "use client";
 import { useState } from "react";
-import { ChevronRight, RotateCcwKey, Trash2 } from "lucide-react";
+import {
+  AlertTriangle,
+  ChevronRight,
+  RotateCcwKey,
+  Trash2,
+} from "lucide-react";
 import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -257,15 +262,33 @@ export default function AccountContainer() {
           </Button>
         </div>
 
-        {/* Delete Account Block */}
-        <div className="space-y-1">
-          <Button
-            variant="unstyled"
-            onClick={openDeleteModal}
-            className="w-full bg-surface rounded-md border text-xs font-semibold text-expense uppercase border-expense/60 p-4 text-left hover:bg-expense-light/20 hover:border-expense transition-colors cursor-pointer"
-          >
-            {t("deleteAccountBtn")}
-          </Button>
+        {/* Danger Zone */}
+        <div className="space-y-2">
+          <p className="text-sm font-medium text-expense uppercase">
+            {t("dangerZone")}
+          </p>
+          <div className="space-y-3 rounded-xl border border-expense/40 bg-expense-light/10 p-4">
+            <div className="flex items-start gap-3">
+              <AlertTriangle
+                className="mt-0.5 shrink-0 text-expense"
+                size={18}
+                strokeWidth={1.75}
+              />
+              <p className="text-xs leading-relaxed text-secondary-text">
+                {t("dangerZoneDesc")}
+              </p>
+            </div>
+            <Button
+              variant="unstyled"
+              onClick={openDeleteModal}
+              className="w-full rounded-lg border border-expense/60 bg-surface p-3 text-left text-xs font-semibold uppercase text-expense hover:border-expense hover:bg-expense-light/20 transition-colors cursor-pointer"
+            >
+              <div className="flex items-center gap-2">
+                <Trash2 size={15} strokeWidth={1.75} />
+                {t("deleteAccountBtn")}
+              </div>
+            </Button>
+          </div>
         </div>
       </section>
 
