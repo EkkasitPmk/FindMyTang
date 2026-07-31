@@ -3,6 +3,7 @@ import {
   FieldErrors,
   UseFormHandleSubmit,
 } from "react-hook-form";
+import { useRef } from "react";
 import { CreateAssetFormValues } from "../schemas/assets.form.schema";
 import { Check, Tag } from "lucide-react";
 import { cn } from "@/shared/lib/utils/core.util";
@@ -59,6 +60,9 @@ export default function AssetForm({
   isEdit = false,
 }: Readonly<AssetFormProps>) {
   const { t } = useTranslation();
+  const nameField = register("name");
+  const balanceField = register("balance");
+  const previousBalanceRef = useRef("");
 
   let submitButtonText = t("createAsset");
   if (isPending) {
@@ -88,7 +92,7 @@ export default function AssetForm({
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-4 flex-1 flex flex-col min-h-0"
         >
-          <div className="space-y-4 overflow-y-auto custom-scrollbar px-4">
+          <div className="space-y-4 overflow-y-auto custom-scrollbar p-4 m-0">
             {/* Type */}
             <div className="flex flex-col gap-1.5 relative">
               <label
@@ -184,10 +188,15 @@ export default function AssetForm({
                 <Input
                   id="name"
                   type="text"
+                  maxLength={30}
                   placeholder={t("assetNamePlaceholder")}
                   className="pl-10"
                   error={!!errors.name}
-                  {...register("name")}
+                  {...nameField}
+                  onChange={(e) => {
+                    e.currentTarget.value = e.currentTarget.value.slice(0, 30);
+                    void nameField.onChange(e);
+                  }}
                 />
               </div>
               {errors.name && (
@@ -212,16 +221,43 @@ export default function AssetForm({
                   </div>
                   <Input
                     id="balance"
-                    type="number"
+                    type="text"
                     inputMode="decimal"
+                    min={1}
+                    max={99999999.99}
                     step="any"
                     placeholder="0.00"
                     className="pl-9 font-medium [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     error={!!errors.balance}
-                    {...register("balance")}
+                    {...balanceField}
+                    onFocus={(e) => {
+                      const value = e.currentTarget.value.replaceAll(",", "");
+                      e.currentTarget.value = value;
+                      previousBalanceRef.current = value;
+                    }}
+                    onChange={(e) => {
+                      const value = e.currentTarget.value.replaceAll(",", "");
+                      e.currentTarget.value = value;
+                      if (value && Number(value) > 99999999.99) {
+                        e.currentTarget.value = previousBalanceRef.current;
+                      } else {
+                        previousBalanceRef.current = value;
+                      }
+                      void balanceField.onChange(e);
+                    }}
                     onBlur={(e) => {
-                      void register("balance").onBlur(e);
+                      void balanceField.onBlur(e);
                       onBlurBalance?.();
+                      const value = e.currentTarget.value.replaceAll(",", "");
+                      if (value && !Number.isNaN(Number(value))) {
+                        e.currentTarget.value = Number(value).toLocaleString(
+                          "en-US",
+                          {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          },
+                        );
+                      }
                     }}
                   />
                 </div>

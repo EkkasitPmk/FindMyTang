@@ -28,9 +28,13 @@ export default function ListAssetsContainer({
   const { t, locale } = useTranslation();
   const mounted = useMounted();
 
-  const { data: assets, isPending: isAssetsPending } = useAssets();
+  const {
+    data: assets,
+    isPending: isAssetsPending,
+    isFetching: isAssetsFetching,
+  } = useAssets();
 
-  const isLoading = !mounted || isAssetsPending;
+  const isLoading = !mounted || isAssetsPending || isAssetsFetching;
 
   const renderAssetsList = () => {
     if (isLoading) {
@@ -76,12 +80,12 @@ export default function ListAssetsContainer({
                     borderLeftColor: asset.color || "transparent",
                   }}
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex min-w-0 flex-1 items-center gap-3 mr-4">
                     <AssetIconWrapper color={asset.color}>
                       {getAssetIcon(asset.type, asset.color)}
                     </AssetIconWrapper>
-                    <div className="flex flex-col text-primary-text">
-                      <span className="text-base font-semibold">
+                    <div className="flex min-w-0 flex-col text-primary-text">
+                      <span className="truncate text-base font-semibold">
                         {asset.name}
                       </span>
                       <span className="text-xs">
@@ -89,7 +93,7 @@ export default function ListAssetsContainer({
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1">
+                  <div className="flex shrink-0 items-center gap-1">
                     <span className="font-semibold text-base text-primary-text">
                       ฿
                       {asset.balance.toLocaleString(locale, {

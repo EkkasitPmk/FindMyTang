@@ -5,7 +5,7 @@ export const createAssetSchema = z.object({
   name: z
     .string()
     .min(1, { message: "Asset name is required" })
-    .max(100, { message: "Asset name must not exceed 100 characters" })
+    .max(30, { message: "Asset name must not exceed 30 characters" })
     .refine((val) => val.trim().length > 0, {
       message: "Asset name must not be empty or whitespace only",
     }),
@@ -27,6 +27,13 @@ export const createAssetSchema = z.object({
         return num >= 1;
       },
       { message: "Balance must be greater than or equal to 1" },
+    )
+    .refine(
+      (val) => {
+        if (val === "" || val === null || val === undefined) return true;
+        return Number(val) <= 99999999.99;
+      },
+      { message: "Balance must not exceed 99,999,999.99" },
     )
     .optional(),
   color: z.string().optional(),
