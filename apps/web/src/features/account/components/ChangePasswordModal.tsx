@@ -66,7 +66,7 @@ export default function ChangePasswordModal({
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-4 flex-1 flex flex-col min-h-0"
         >
-          <div className="space-y-4 overflow-y-auto custom-scrollbar px-4">
+          <div className="space-y-4 overflow-y-auto custom-scrollbar p-4 m-0">
             {/* Current Password */}
             <div className="space-y-1">
               <label
@@ -115,6 +115,7 @@ export default function ChangePasswordModal({
                 <Input
                   id="newPassword"
                   type={showNew ? "text" : "password"}
+                  maxLength={64}
                   placeholder={t("placeholderNewPassword")}
                   disabled={isPending}
                   className="pr-10"
@@ -151,6 +152,7 @@ export default function ChangePasswordModal({
                 <Input
                   id="confirmNewPassword"
                   type={showConfirm ? "text" : "password"}
+                  maxLength={64}
                   placeholder={t("placeholderConfirmNewPassword")}
                   disabled={isPending}
                   className="pr-10"

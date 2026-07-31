@@ -52,6 +52,7 @@ export default function PersonalInfoForm({
               <div className="relative flex items-center">
                 <Input
                   type="text"
+                  maxLength={25}
                   disabled={isUpdating}
                   placeholder={t("placeholderDisplayName")}
                   className="pr-10"
