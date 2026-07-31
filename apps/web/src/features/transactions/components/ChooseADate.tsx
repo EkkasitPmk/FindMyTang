@@ -88,7 +88,7 @@ export default function ChooseADate({
           </SheetTitle>
         </SheetHeader>
 
-        <div className="flex min-h-0 flex-1 flex-col items-center gap-4 overflow-y-auto px-4 pt-2 pb-4 w-full">
+        <div className="flex min-h-0 flex-1 flex-col items-center gap-3 overflow-y-auto p-4 w-full">
           <Calendar
             mode="single"
             weekStartsOn={1}
@@ -103,7 +103,7 @@ export default function ChooseADate({
             locale={locale}
             className="p-0 w-full max-w-sm rounded-md"
             classNames={{
-              month: "flex w-full flex-col gap-4 px-2 py-4",
+              month: "flex w-full flex-col gap-4 p-2",
               nav: "absolute top-4 px-4 flex w-full items-center justify-between",
               week: "flex w-full justify-between",
               day_button:

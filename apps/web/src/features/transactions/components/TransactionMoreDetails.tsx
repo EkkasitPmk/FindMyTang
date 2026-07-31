@@ -12,8 +12,7 @@ interface TransactionMoreDetailsProps {
   isMoreDetailsOpen: boolean;
   setIsMoreDetailsOpen: (open: boolean) => void;
   displayDate: string;
-  isCalendarOpen: boolean;
-  setIsCalendarOpen: (open: boolean) => void;
+  onOpenCalendar: () => void;
   isPhotoMenuOpen: boolean;
   setIsPhotoMenuOpen: (open: boolean) => void;
   file: File | null;
@@ -32,8 +31,7 @@ export default function TransactionMoreDetails({
   isMoreDetailsOpen,
   setIsMoreDetailsOpen,
   displayDate,
-  isCalendarOpen,
-  setIsCalendarOpen,
+  onOpenCalendar,
   isPhotoMenuOpen,
   setIsPhotoMenuOpen,
   file,
@@ -198,7 +196,7 @@ export default function TransactionMoreDetails({
                   type="button"
                   tapScale={1}
                   hoverScale={1}
-                  onClick={() => setIsCalendarOpen(!isCalendarOpen)}
+                  onClick={onOpenCalendar}
                   className="flex flex-col flex-1 text-left"
                 >
                   <span className="text-secondary-text text-xs font-medium uppercase">
@@ -237,6 +235,7 @@ export default function TransactionMoreDetails({
 
                 <textarea
                   id="note"
+                  maxLength={255}
                   placeholder={t("addANote")}
                   className="w-full min-h-15 max-h-30 placeholder:text-secondary-text outline-none transition-all bg-surface"
                   {...register("note")}
