@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertTriangle } from "lucide-react";
-import { useForm, useWatch } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
@@ -23,6 +23,8 @@ export default function FeedbackContainer() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [typeMenuOpen, setTypeMenuOpen] = useState(false);
+  const [selectedType, setSelectedType] =
+    useState<FeedbackFormValues["type"]>();
   const form = useForm<FeedbackFormValues>({
     resolver: zodResolver(feedbackFormSchema),
     mode: "onChange",
@@ -30,15 +32,11 @@ export default function FeedbackContainer() {
   });
   const {
     register,
-    control,
     setValue,
     reset,
     handleSubmit,
     formState: { errors, isDirty, isValid },
   } = form;
-  const type = useWatch({ control, name: "type" });
-  const message = useWatch({ control, name: "message" }) || "";
-
   const typeLabels = Object.fromEntries(
     FEEDBACK_TYPES.map((value) => [
       value,
@@ -88,6 +86,7 @@ export default function FeedbackContainer() {
       );
       toast.success(t("feedbackSuccess"));
       reset();
+      setSelectedType(undefined);
       resetModalState();
     } catch (error) {
       console.error("Feedback submission failed", error);
@@ -123,14 +122,15 @@ export default function FeedbackContainer() {
         labels={labels}
         typeLabels={typeLabels}
         errors={formErrors}
-        selectedType={type}
-        messageLength={message.length}
-        onTypeSelect={(value) =>
-          setValue("type", value as FeedbackFormValues["type"], {
+        selectedType={selectedType}
+        onTypeSelect={(value) => {
+          const nextType = value as FeedbackFormValues["type"];
+          setSelectedType(nextType);
+          setValue("type", nextType, {
             shouldValidate: true,
             shouldDirty: true,
-          })
-        }
+          });
+        }}
         onSubmit={handleSubmit(onSubmit)}
         typeMenuOpen={typeMenuOpen}
         onTypeMenuToggle={(value) => setTypeMenuOpen(value ?? !typeMenuOpen)}
