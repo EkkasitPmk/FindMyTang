@@ -1,4 +1,5 @@
 "use client";
+import { useSyncExternalStore } from "react";
 import { queryClient } from "@/shared/lib/api/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -13,6 +14,12 @@ type ProvidersProps = {
 };
 
 export default function Providers({ children }: Readonly<ProvidersProps>) {
+  const isMounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
+
   return (
     <QueryClientProvider client={queryClient}>
       <DynamicSeoHead />
@@ -22,7 +29,7 @@ export default function Providers({ children }: Readonly<ProvidersProps>) {
         enableSystem
         disableTransitionOnChange
       >
-        {children}
+        {isMounted ? children : <div className="min-h-screen bg-background" />}
       </ThemeProvider>
       <ToastContainer position="top-center" autoClose={2000} />
       <GlobalFeatureLockModal />
