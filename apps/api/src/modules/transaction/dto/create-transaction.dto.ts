@@ -38,14 +38,14 @@ export class CreateTransactionDto {
 
   @ApiProperty({
     description:
-      "Optional note or memo for the transaction (maximum 500 characters)",
+      "Optional note or memo for the transaction (maximum 255 characters)",
     example: "Lunch with colleagues",
     required: false,
-    maxLength: 500,
+    maxLength: 255,
     type: String,
   })
   @IsString()
-  @MaxLength(500)
+  @MaxLength(255)
   @IsOptional()
   note?: string;
 

@@ -1,6 +1,6 @@
 import { ApiProperty, PartialType } from "@nestjs/swagger";
 import { CreateTransactionDto } from "./create-transaction.dto";
-import { IsOptional, IsString, IsDateString } from "class-validator";
+import { IsOptional, IsString, IsDateString, MaxLength } from "class-validator";
 import { Transform } from "class-transformer";
 import { TransactionType } from "@prisma/client";
 
@@ -71,6 +71,7 @@ export class UpdateTransactionDto extends PartialType(CreateTransactionDto) {
   })
   @IsOptional()
   @IsString()
+  @MaxLength(255)
   note?: string;
 
   @ApiProperty({

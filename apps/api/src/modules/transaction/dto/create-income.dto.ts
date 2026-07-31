@@ -46,11 +46,11 @@ export class CreateIncomeDto {
     description: "Optional note or memo for the income",
     example: "Monthly Salary",
     required: false,
-    maxLength: 500,
+    maxLength: 255,
     type: String,
   })
   @IsString()
-  @MaxLength(500)
+  @MaxLength(255)
   @IsOptional()
   note?: string;
 

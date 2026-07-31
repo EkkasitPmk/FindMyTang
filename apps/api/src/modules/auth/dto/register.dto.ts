@@ -1,5 +1,11 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEmail, IsNotEmpty, IsString, MinLength } from "class-validator";
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  MaxLength,
+  MinLength,
+} from "class-validator";
 
 export class RegisterDto {
   @ApiProperty({
@@ -45,5 +51,6 @@ export class RegisterDto {
   })
   @IsString()
   @IsNotEmpty({ message: "Display name is required" })
+  @MaxLength(25, { message: "Display name must not exceed 25 characters" })
   displayName!: string;
 }
