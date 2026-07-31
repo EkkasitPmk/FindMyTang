@@ -28,13 +28,9 @@ export default function ListAssetsContainer({
   const { t, locale } = useTranslation();
   const mounted = useMounted();
 
-  const {
-    data: assets,
-    isPending: isAssetsPending,
-    isFetching: isAssetsFetching,
-  } = useAssets();
+  const { data: assets, isPending: isAssetsPending } = useAssets();
 
-  const isLoading = !mounted || isAssetsPending || isAssetsFetching;
+  const isLoading = !mounted || isAssetsPending;
 
   const renderAssetsList = () => {
     if (isLoading) {

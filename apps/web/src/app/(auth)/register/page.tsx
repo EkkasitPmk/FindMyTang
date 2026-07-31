@@ -1,5 +1,10 @@
 import LoginContainer from "@/features/auth/login/containers/LoginContainer";
+import AuthPageGuard from "@/shared/components/auth/AuthPageGuard";
 
 export default function RegisterPage() {
-  return <LoginContainer initialShowRegistrationUnavailable />;
+  return (
+    <AuthPageGuard>
+      <LoginContainer initialShowRegistrationUnavailable />
+    </AuthPageGuard>
+  );
 }
