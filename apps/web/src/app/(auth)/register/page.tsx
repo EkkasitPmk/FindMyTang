@@ -1,5 +1,5 @@
-import RegisterContainer from "@/features/auth/register/containers/RegisterContainer";
+import LoginContainer from "@/features/auth/login/containers/LoginContainer";
 
 export default function RegisterPage() {
-  return <RegisterContainer />;
+  return <LoginContainer initialShowRegistrationUnavailable />;
 }
