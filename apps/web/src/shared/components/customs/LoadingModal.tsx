@@ -8,7 +8,6 @@ import {
 } from "lucide-react";
 import { cn } from "@/shared/lib/utils/core.util";
 import { createPortal } from "react-dom";
-import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 
 export type ModalStatus = "loading" | "success" | "error" | "warning" | "info";
 
@@ -31,8 +30,6 @@ export default function LoadingModal({
   autoCloseDelay,
   onClose,
 }: Readonly<LoadingModalProps>) {
-  const mounted = useMounted();
-
   useEffect(() => {
     if (!isOpen || status === "loading" || !onClose) return;
 
@@ -44,7 +41,7 @@ export default function LoadingModal({
     return () => clearTimeout(timer);
   }, [isOpen, status, autoCloseDelay, onClose]);
 
-  if (!isOpen || !mounted) return null;
+  if (!isOpen) return null;
 
   const renderIcon = () => {
     if (icon) return icon;

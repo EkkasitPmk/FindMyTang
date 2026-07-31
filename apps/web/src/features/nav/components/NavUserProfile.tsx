@@ -4,7 +4,6 @@ import Avatar from "@/shared/components/customs/Avatar";
 import { UserProfile } from "@/shared/lib/types/user.type";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { cn } from "@/shared/lib/utils/core.util";
-import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import {
   DropdownMenu,
@@ -30,11 +29,10 @@ export default function NavUserProfile({
   className,
 }: Readonly<NavUserProfileProps>) {
   const router = useRouter();
-  const mounted = useMounted();
   const { t } = useTranslation();
 
   const userProfileContent = (() => {
-    if (!mounted || isLoading) {
+    if (isLoading) {
       return (
         <div className="space-y-1.5 animate-pulse">
           <div className="h-3 w-20 bg-surface-secondary rounded" />
@@ -88,7 +86,7 @@ export default function NavUserProfile({
           </Button>
         </DropdownMenuTrigger>
 
-        {mounted && !isLoading && (
+        {!isLoading && (
           <DropdownMenuContent
             side="top"
             align="start"

@@ -16,7 +16,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { useMeQuery } from "@/shared/lib/hooks/useMeQuery.hook";
 import { useModalState } from "@/shared/lib/hooks/useModalState.hook";
-import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import {
   isGuestNavBlocked,
   shouldShowMobileBottomNav,
@@ -24,8 +23,6 @@ import {
 
 export default function NavContainer() {
   const pathname = usePathname();
-  const isClientMounted = useMounted();
-
   const { data: user, isLoading } = useMeQuery();
   const queryClient = useQueryClient();
   const { isGuest, setGuestMode, clearGuestData } = useGuestStore();
@@ -201,36 +198,32 @@ export default function NavContainer() {
   return (
     <>
       {/* Desktop Sidebar */}
-      {isClientMounted && (
-        <DesktopSidebar
-          pathname={pathname}
-          user={user}
-          isLoading={isLoading}
-          onLogout={openLogoutConfirm}
-          isGuest={isGuest}
-          isSyncing={isSyncing}
-          syncStatus={syncStatus}
-          onSyncClick={handleSyncClick}
-          onNavigate={handleNavigate}
-        />
-      )}
+      <DesktopSidebar
+        pathname={pathname}
+        user={user}
+        isLoading={isLoading}
+        onLogout={openLogoutConfirm}
+        isGuest={isGuest}
+        isSyncing={isSyncing}
+        syncStatus={syncStatus}
+        onSyncClick={handleSyncClick}
+        onNavigate={handleNavigate}
+      />
 
       {/* Mobile Drawer Navigation overlay */}
-      {isClientMounted && (
-        <MobileDrawer
-          isOpen={mobileMenuOpen}
-          onClose={() => setMobileMenuOpen(false)}
-          pathname={pathname}
-          user={user}
-          isLoading={isLoading}
-          onLogout={openLogoutConfirm}
-          isGuest={isGuest}
-          isSyncing={isSyncing}
-          syncStatus={syncStatus}
-          onSyncClick={handleSyncClick}
-          onNavigate={handleNavigate}
-        />
-      )}
+      <MobileDrawer
+        isOpen={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+        pathname={pathname}
+        user={user}
+        isLoading={isLoading}
+        onLogout={openLogoutConfirm}
+        isGuest={isGuest}
+        isSyncing={isSyncing}
+        syncStatus={syncStatus}
+        onSyncClick={handleSyncClick}
+        onNavigate={handleNavigate}
+      />
 
       {/* Mobile Bottom Navigation Bar */}
       {shouldShowMobileBottomNav(pathname) && (

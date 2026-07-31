@@ -1,4 +1,3 @@
-import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import {
   Dialog,
   DialogContent,
@@ -17,9 +16,7 @@ export default function ImagePreviewModal({
   onClose,
   imageUrl,
 }: Readonly<ImagePreviewModalProps>) {
-  const mounted = useMounted();
-
-  if (!mounted || !imageUrl) return null;
+  if (!imageUrl) return null;
 
   return (
     <Dialog

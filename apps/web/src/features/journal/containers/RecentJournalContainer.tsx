@@ -6,12 +6,9 @@ import { useMemo } from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
-import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 
 export default function RecentJournalContainer() {
   const { t, locale } = useTranslation();
-  const mounted = useMounted();
-
   const { data: transactionsData, isPending: isTransactionsPending } =
     useTransactionsQuery({
       limit: 5,
@@ -45,7 +42,7 @@ export default function RecentJournalContainer() {
     }));
   }, [transactionsData, locale]);
 
-  const isEmpty = !mounted || (groupedTransactions.length === 0 && !isLoading);
+  const isEmpty = groupedTransactions.length === 0 && !isLoading;
 
   return (
     <section>

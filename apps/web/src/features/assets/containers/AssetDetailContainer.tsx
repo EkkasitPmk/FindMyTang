@@ -1,6 +1,5 @@
 "use client";
 import { useState, useMemo, useRef, useEffect, useCallback } from "react";
-import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAssets } from "@/shared/lib/hooks/useAssets.hook";
 import { useAssetUIStore } from "../hooks/assets.hook";
@@ -21,11 +20,10 @@ export default function AssetDetailContainer() {
   const router = useRouter();
   const id = searchParams.get("id");
 
-  const mounted = useMounted();
   const { t, locale } = useTranslation();
 
   const { data: assets, isPending: isAssetsPending } = useAssets();
-  const isLoading = !mounted || isAssetsPending;
+  const isLoading = isAssetsPending;
   const searchKeyword = useAssetUIStore((state) => state.searchKeyword);
   const isSearchMode = useAssetUIStore((state) => state.isSearchMode);
   const filterType = useAssetUIStore((state) => state.filterType);
@@ -143,7 +141,7 @@ export default function AssetDetailContainer() {
         }
       : undefined,
   );
-  const isLoadingTransactions = !mounted || isTransactionsPending;
+  const isLoadingTransactions = isTransactionsPending;
 
   const groupedTransactions = useMemo(() => {
     if (!transactionsData) return [];

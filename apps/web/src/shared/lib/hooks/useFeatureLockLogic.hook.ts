@@ -1,12 +1,10 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useFeatureLockModal } from "./useFeatureLockModal.hook";
-import { useMounted } from "./useMounted.hook";
 
 export function useFeatureLockLogic() {
   const { isOpen, featureName, closeModal } = useFeatureLockModal();
   const router = useRouter();
-  const mounted = useMounted();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -28,7 +26,7 @@ export function useFeatureLockLogic() {
   };
 
   return {
-    isReady: mounted && isOpen,
+    isReady: isOpen,
     isOpen,
     featureName,
     onClose: closeModal,

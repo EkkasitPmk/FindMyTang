@@ -1,6 +1,5 @@
 "use client";
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
-import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import { ArrowRight, ChevronLeft, Trash } from "lucide-react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -89,13 +88,7 @@ export default function TransactionsContainer() {
     isFetching: isTxFetching,
   } = useTransactionQuery(editId || undefined);
 
-  const mounted = useMounted();
-  const isTxLoading = checkIsTxLoading(
-    mounted,
-    editId,
-    isTxPending,
-    isTxFetching,
-  );
+  const isTxLoading = checkIsTxLoading(editId, isTxPending, isTxFetching);
 
   const defaultType = useMemo(
     () => resolveDefaultTransactionType(existingTx, typeParam),
@@ -328,7 +321,6 @@ export default function TransactionsContainer() {
     isFetching: isCategoryFetching,
   } = useCategories();
   const isLoadingCategoryList = checkIsLoading(
-    mounted,
     isCategoryPending,
     isCategoryFetching,
   );
@@ -347,11 +339,7 @@ export default function TransactionsContainer() {
     isPending: isAssetPending,
     isFetching: isAssetFetching,
   } = useAssets();
-  const isLoadingAssetList = checkIsLoading(
-    mounted,
-    isAssetPending,
-    isAssetFetching,
-  );
+  const isLoadingAssetList = checkIsLoading(isAssetPending, isAssetFetching);
   const safeAssets = useMemo(() => assets ?? [], [assets]);
 
   const activeCategoryId = getActiveItemId(watchCategoryId, filteredCategories);
