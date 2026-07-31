@@ -1,6 +1,7 @@
 {
   "name": "findmytang",
   "private": true,
+  "packageManager": "npm@11.18.0",
   "workspaces": [
     "apps/*"
   ],
