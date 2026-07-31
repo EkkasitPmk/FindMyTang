@@ -1,15 +1,10 @@
 import { APP_VERSION } from "@/shared/lib/configs/app.config";
-import { WEB3FORMS_SUBMIT_URL } from "../configs/feedback.config";
-import type { FeedbackFormValues } from "../types/feedback.type";
+import { WEB3FORMS_SUBMIT_URL } from "../configs/support.config";
+import type { SupportContext, SupportRequest } from "../types/support.type";
 
-interface FeedbackContext {
-  language: string;
-  isGuest: boolean;
-}
-
-export const submitFeedback = async (
-  values: FeedbackFormValues,
-  context: FeedbackContext,
+export const submitSupportRequest = async (
+  request: SupportRequest,
+  context: SupportContext,
   signal?: AbortSignal,
 ): Promise<void> => {
   const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY;
@@ -19,15 +14,14 @@ export const submitFeedback = async (
 
   const formData = new FormData();
   formData.append("access_key", accessKey);
-  formData.append("subject", `[FindMyTang Feedback][${values.type}]`);
-  formData.append("feedback_type", values.type);
-  formData.append("message", values.message);
+  formData.append("subject", request.subject);
+  Object.entries(request.fields).forEach(([key, value]) =>
+    formData.append(key, value),
+  );
   formData.append("app_version", APP_VERSION);
   formData.append("language", context.language);
   formData.append("mode", context.isGuest ? "Guest" : "Member");
   formData.append("botcheck", "");
-
-  if (values.email) formData.append("email", values.email);
 
   const response = await fetch(WEB3FORMS_SUBMIT_URL, {
     method: "POST",
@@ -40,6 +34,6 @@ export const submitFeedback = async (
   };
 
   if (!response.ok || !data.success) {
-    throw new Error(data.message || "Feedback submission failed");
+    throw new Error(data.message || "Support request failed");
   }
 };

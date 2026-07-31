@@ -51,7 +51,7 @@ export default function FeedbackForm({
       className="flex min-h-0 flex-1 flex-col"
     >
       <div className="relative min-h-0 flex-1">
-        <div className="h-full min-h-0 space-y-4 overflow-y-auto px-4 py-4">
+        <div className="h-full min-h-0 space-y-4 overflow-y-auto p-4">
           <p className="rounded-lg border border-investment/30 bg-investment/10 px-3 py-2 text-xs leading-relaxed text-primary-text">
             {labels.sensitiveDataWarning}
           </p>

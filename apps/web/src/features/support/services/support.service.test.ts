@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { submitFeedback } from "./feedback.service";
+import { submitSupportRequest } from "./support.service";
 
-describe("submitFeedback", () => {
+describe("submitSupportRequest", () => {
   beforeEach(() => {
     vi.stubEnv("NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY", "test-access-key");
     vi.stubGlobal(
@@ -13,24 +13,21 @@ describe("submitFeedback", () => {
     );
   });
 
-  it("submits fixed codes, metadata, subject, and optional email", async () => {
-    await submitFeedback(
+  it("submits the request payload and context", async () => {
+    await submitSupportRequest(
       {
-        type: "Bug",
-        message: "Broken button",
-        email: "",
+        subject: "[FindMyTang Contact] Jane",
+        fields: { name: "Jane", message: "Hello" },
       },
       { language: "th", isGuest: true },
     );
 
     const [, request] = vi.mocked(fetch).mock.calls[0];
-    expect(request?.method).toBe("POST");
     const body = request?.body as FormData;
-    expect(body.get("access_key")).toBe("test-access-key");
-    expect(body.get("subject")).toBe("[FindMyTang Feedback][Bug]");
-    expect(body.get("feedback_type")).toBe("Bug");
+    expect(body.get("subject")).toBe("[FindMyTang Contact] Jane");
+    expect(body.get("name")).toBe("Jane");
+    expect(body.get("message")).toBe("Hello");
     expect(body.get("mode")).toBe("Guest");
-    expect(body.get("language")).toBe("th");
   });
 
   it("throws when Web3Forms rejects the submission", async () => {
@@ -43,12 +40,8 @@ describe("submitFeedback", () => {
     );
 
     await expect(
-      submitFeedback(
-        {
-          type: "Other",
-          message: "Details",
-          email: "",
-        },
+      submitSupportRequest(
+        { subject: "Contact", fields: { message: "Hello" } },
         { language: "en", isGuest: false },
       ),
     ).rejects.toThrow("Rejected");
