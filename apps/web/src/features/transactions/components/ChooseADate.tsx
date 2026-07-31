@@ -8,6 +8,7 @@ import { Clock, Calendar as CalendarIcon } from "lucide-react";
 import {
   Sheet,
   SheetContent,
+  SheetFooter,
   SheetHeader,
   SheetTitle,
 } from "@/shared/components/animate-ui/components/radix/sheet";
@@ -79,18 +80,15 @@ export default function ChooseADate({
         if (!open) onClose();
       }}
     >
-      <SheetContent
-        side="bottom"
-        className="h-auto max-h-[90vh] rounded-t-2xl sm:max-w-lg sm:mx-auto border-border bg-surface p-4 sm:p-6 shadow-2xl overflow-y-auto custom-scrollbar flex flex-col gap-2"
-      >
-        <SheetHeader className="text-left pb-1 px-0">
-          <SheetTitle className="text-lg font-bold text-foreground flex items-center gap-2">
+      <SheetContent side="bottom" className="sm:mx-auto sm:max-w-lg">
+        <SheetHeader>
+          <SheetTitle className="flex items-center gap-2">
             <CalendarIcon size={20} className="text-primary" />
             {t("date")}
           </SheetTitle>
         </SheetHeader>
 
-        <div className="flex flex-col overflow-y-auto items-center gap-4 w-full">
+        <div className="flex min-h-0 flex-1 flex-col items-center gap-4 overflow-y-auto px-4 pt-2 pb-4 w-full">
           <Calendar
             mode="single"
             weekStartsOn={1}
@@ -171,14 +169,16 @@ export default function ChooseADate({
             ))}
           </div>
         </div>
-        <Button
-          type="button"
-          variant="default"
-          className="w-full py-5 bg-primary hover:bg-primary-hover text-white font-semibold rounded-lg transition-all shadow-md active:scale-[0.98] mt-1"
-          onClick={onConfirm}
-        >
-          {t("confirm")}
-        </Button>
+        <SheetFooter>
+          <Button
+            type="button"
+            variant="default"
+            className="w-full py-5 bg-primary hover:bg-primary-hover text-white font-semibold rounded-lg transition-all shadow-md active:scale-[0.98]"
+            onClick={onConfirm}
+          >
+            {t("confirm")}
+          </Button>
+        </SheetFooter>
       </SheetContent>
     </Sheet>
   );

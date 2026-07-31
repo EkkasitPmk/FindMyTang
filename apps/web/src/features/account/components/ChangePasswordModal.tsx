@@ -57,21 +57,16 @@ export default function ChangePasswordModal({
         if (!open) onClose();
       }}
     >
-      <SheetContent
-        side="bottom"
-        className="h-auto max-h-[80vh] rounded-t-2xl sm:max-w-lg sm:mx-auto border-border bg-surface p-4 shadow-2xl overflow-y-auto custom-scrollbar flex flex-col gap-2"
-      >
-        <SheetHeader className="text-left pb-1 px-0">
-          <SheetTitle className="text-xl font-bold text-foreground">
-            {t("changePassword")}
-          </SheetTitle>
+      <SheetContent side="bottom" className="sm:mx-auto sm:max-w-lg">
+        <SheetHeader>
+          <SheetTitle>{t("changePassword")}</SheetTitle>
         </SheetHeader>
 
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-4 flex-1 flex flex-col min-h-0"
         >
-          <div className="space-y-4 overflow-y-auto custom-scrollbar px-1">
+          <div className="space-y-4 overflow-y-auto custom-scrollbar px-4">
             {/* Current Password */}
             <div className="space-y-1">
               <label
@@ -181,7 +176,7 @@ export default function ChangePasswordModal({
             </div>
           </div>
 
-          <SheetFooter className="px-4 py-2 flex-row gap-3">
+          <SheetFooter>
             <SheetClose asChild>
               <Button
                 variant="unstyled"

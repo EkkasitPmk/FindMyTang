@@ -93,17 +93,10 @@ export default function CUCategoryModal({
         if (!open) onClose();
       }}
     >
-      <SheetContent
-        side="bottom"
-        className="h-auto max-h-[90vh] rounded-t-2xl sm:max-w-lg sm:mx-auto border-border bg-surface p-4 shadow-2xl overflow-y-auto custom-scrollbar flex flex-col gap-2"
-      >
-        <SheetHeader className="text-left pb-1 px-0">
-          <SheetTitle className="text-xl font-bold text-foreground">
-            {modalTitle}
-          </SheetTitle>
-          <SheetDescription className="text-sm text-secondary-text">
-            {t("categoryManagementDesc")}
-          </SheetDescription>
+      <SheetContent side="bottom" className="sm:mx-auto sm:max-w-lg">
+        <SheetHeader>
+          <SheetTitle>{modalTitle}</SheetTitle>
+          <SheetDescription>{t("categoryManagementDesc")}</SheetDescription>
         </SheetHeader>
 
         <form
@@ -112,7 +105,7 @@ export default function CUCategoryModal({
         >
           <fieldset
             disabled={isDeletedCategory}
-            className="space-y-4 overflow-y-auto custom-scrollbar px-1 group-disabled:opacity-80"
+            className="space-y-4 overflow-y-auto px-4 py-4 mb-0 group-disabled:opacity-80"
           >
             {/* Category Name */}
             <div className="space-y-1">
@@ -151,12 +144,12 @@ export default function CUCategoryModal({
                     !isDeletedCategory && setValue("type", "EXPENSE")
                   }
                   className={cn(
-                    "grow flex gap-2 items-center justify-center border rounded-md text-center px-2 py-3 text-sm font-medium transition-all",
+                    "grow flex gap-2 items-center justify-center border rounded-md text-center px-2 py-2.5 text-sm font-medium transition-all",
                     isDeletedCategory
                       ? "cursor-default opacity-80"
                       : "cursor-pointer",
                     transactionType === "EXPENSE"
-                      ? "border-primary bg-primary/5 text-primary"
+                      ? "border-expense bg-expense/5 text-expense"
                       : "border-border text-muted-foreground hover:bg-muted",
                   )}
                 >
@@ -171,12 +164,12 @@ export default function CUCategoryModal({
                     !isDeletedCategory && setValue("type", "INCOME")
                   }
                   className={cn(
-                    "grow flex gap-2 items-center justify-center border rounded-md text-center px-2 py-3 text-sm font-medium transition-all",
+                    "grow flex gap-2 items-center justify-center border rounded-md text-center px-2 py-2.5 text-sm font-medium transition-all",
                     isDeletedCategory
                       ? "cursor-default opacity-80"
                       : "cursor-pointer",
                     transactionType === "INCOME"
-                      ? "border-primary bg-primary/5 text-primary"
+                      ? "border-income bg-income/5 text-income"
                       : "border-border text-muted-foreground hover:bg-muted",
                   )}
                 >
@@ -196,7 +189,7 @@ export default function CUCategoryModal({
               <p className="text-xs text-muted-foreground font-semibold">
                 {t("icon")}
               </p>
-              <div className="grid grid-cols-6 place-items-center max-h-[16vh] overflow-auto border border-border rounded-md p-1 bg-background">
+              <div className="grid grid-cols-6 place-items-center max-h-[15vh] overflow-auto border border-border rounded-md p-1 bg-background">
                 {SELECTABLE_ICONS.map((iconName) => {
                   const Icon = getCategoryIcon(iconName);
                   const isSelected = selectedIconName === iconName;
@@ -255,7 +248,7 @@ export default function CUCategoryModal({
                   {t("accentColor")}
                 </p>
               </div>
-              <div className="grid grid-cols-7 gap-2 p-3 max-h-[16vh] overflow-auto bg-surface-secondary/50 rounded-lg border border-border">
+              <div className="grid grid-cols-7 gap-2 p-3 max-h-[15vh] overflow-auto bg-surface-secondary/50 rounded-lg border border-border">
                 {PREMIUM_COLORS.map((color) => {
                   const isSelected = selectedColor === color;
                   return (
@@ -335,7 +328,7 @@ export default function CUCategoryModal({
           </fieldset>
 
           {isDeletedCategory ? (
-            <SheetFooter className="px-4 py-2 flex-row gap-2">
+            <SheetFooter>
               <Button
                 variant="unstyled"
                 type="button"
@@ -356,7 +349,7 @@ export default function CUCategoryModal({
               </Button>
             </SheetFooter>
           ) : (
-            <SheetFooter className="px-4 py-2 flex-row gap-3">
+            <SheetFooter>
               <SheetClose asChild>
                 <Button
                   variant="unstyled"
