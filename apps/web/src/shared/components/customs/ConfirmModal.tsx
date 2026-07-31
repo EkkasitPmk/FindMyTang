@@ -18,6 +18,7 @@ interface ConfirmModalProps {
   title: string;
   des: string;
   confirmLabel?: string;
+  showCancelButton?: boolean;
   withHardDeleteOption?: boolean;
   hardDeleteCheckboxLabel?: string;
   expectedInputToConfirm?: string;
@@ -36,6 +37,7 @@ export default function ConfirmModal({
   title,
   des,
   confirmLabel = "Sign out",
+  showCancelButton = true,
   withHardDeleteOption,
   hardDeleteCheckboxLabel = "Delete permanently",
   expectedInputToConfirm,
@@ -158,14 +160,16 @@ export default function ConfirmModal({
         )}
 
         <AlertDialogFooter className="flex gap-3 w-full mt-2 sm:flex-row flex-row">
-          <Button
-            variant="unstyled"
-            type="button"
-            onClick={onClose}
-            className="flex-1 py-2.5 px-4 rounded-md border border-border hover:bg-surface-secondary text-secondary-text text-xs font-semibold transition-colors cursor-pointer"
-          >
-            Cancel
-          </Button>
+          {showCancelButton && (
+            <Button
+              variant="unstyled"
+              type="button"
+              onClick={onClose}
+              className="flex-1 py-2.5 px-4 rounded-md border border-border hover:bg-surface-secondary text-secondary-text text-xs font-semibold transition-colors cursor-pointer"
+            >
+              Cancel
+            </Button>
+          )}
           <Button
             variant="unstyled"
             type="button"
