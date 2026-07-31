@@ -24,6 +24,8 @@ import {
 } from "@/shared/components/animate-ui/components/radix/dialog";
 import { useIsGuest } from "@/shared/lib/storages/guest.storage";
 import { useFeatureLockModal } from "@/shared/lib/hooks/useFeatureLockModal.hook";
+import { APP_VERSION } from "@/shared/lib/configs/app.config";
+import FeedbackContainer from "../feedback/containers/FeedbackContainer";
 
 interface SettingsContainerProps {
   onClose?: () => void;
@@ -39,6 +41,7 @@ export default function SettingsContainer({
   const [isTermsOpen, setIsTermsOpen] = useState(false);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
 
   return (
     <div className="space-y-6 px-4 py-3 animate-in fade-in duration-300">
@@ -203,7 +206,7 @@ export default function SettingsContainer({
             <span className="font-semibold text-primary-text">FindMyTang</span>
           </div>
           <span className="px-2.5 py-0.5 rounded-full bg-primary-light text-primary text-[11px] font-semibold">
-            v1.0.0
+            v{APP_VERSION}
           </span>
         </div>
 
@@ -246,24 +249,37 @@ export default function SettingsContainer({
             <DialogDescription>{t("feedbackDesc")}</DialogDescription>
           </DialogHeader>
 
-          <a
-            // href="mailto:hello@findmytang.app?subject=FindMyTang%20Feedback"
+          <Button
+            variant="unstyled"
+            type="button"
+            onClick={(event) => {
+              event.preventDefault();
+              setIsHelpOpen(false);
+              setIsFeedbackOpen(true);
+            }}
             className="flex items-center gap-3 rounded-xl border border-border p-3.5 hover:bg-primary-light hover:border-primary/30 transition-colors"
           >
             <div className="rounded-lg bg-primary-light p-2 text-primary">
               <Lightbulb className="h-4 w-4" strokeWidth={1.75} />
             </div>
             <div>
-              <span className="block text-sm font-semibold text-primary-text">
+              <span className="block text-left text-sm font-semibold text-primary-text">
                 {t("sendFeedback")}
               </span>
               <span className="text-xs text-secondary-text">
                 {t("feedbackPlaceholder")}
               </span>
             </div>
-          </a>
+          </Button>
         </DialogContent>
       </Dialog>
+      <FeedbackContainer
+        open={isFeedbackOpen}
+        onClose={() => {
+          setIsFeedbackOpen(false);
+          setIsHelpOpen(false);
+        }}
+      />
     </div>
   );
 }
