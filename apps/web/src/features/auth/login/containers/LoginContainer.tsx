@@ -18,13 +18,19 @@ import { useModalState } from "@/shared/lib/hooks/useModalState.hook";
 import { Clock3 } from "lucide-react";
 import ConfirmModal from "@/shared/components/customs/ConfirmModal";
 
-export default function LoginContainer() {
+interface LoginContainerProps {
+  initialShowRegistrationUnavailable?: boolean;
+}
+
+export default function LoginContainer({
+  initialShowRegistrationUnavailable = false,
+}: Readonly<LoginContainerProps>) {
   const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [showMigration, setShowMigration] = useState(false);
   const [showRegistrationUnavailable, setShowRegistrationUnavailable] =
-    useState(false);
+    useState(initialShowRegistrationUnavailable);
   const { modalState, setModalState, resetModalState } = useModalState();
   const setGuestMode = useGuestStore((state) => state.setGuestMode);
   const clearGuestData = useGuestStore((state) => state.clearGuestData);
