@@ -33,6 +33,7 @@ import { Button } from "@/shared/components/animate-ui/components/buttons/button
 import { handleFormError } from "@/shared/lib/helpers/form.helper";
 import { useQueryClient } from "@tanstack/react-query";
 import { useGuestStore } from "@/shared/lib/storages/guest.storage";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 
 export default function AccountContainer() {
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
@@ -194,14 +195,41 @@ export default function AccountContainer() {
 
   if (isLoading) {
     return (
-      <div className="space-y-6 animate-pulse">
-        <div className="flex flex-col items-center justify-center my-6">
-          <div className="w-24 h-24 rounded-full bg-surface-secondary border border-border" />
+      <div>
+        <div className="flex flex-col items-center justify-center gap-4 my-6">
+          <Skeleton className="w-18 h-18 rounded-full border border-border" />
         </div>
-        <div className="space-y-4">
-          <div className="h-20 bg-surface border border-border rounded-md" />
-          <div className="h-16 bg-surface border border-border rounded-md" />
-        </div>
+
+        <section className="space-y-10 px-4">
+          <div className="space-y-1">
+            <Skeleton className="h-4 w-28" />
+            <div className="bg-surface rounded-b-none rounded-md border border-border p-4">
+              <div className="space-y-2">
+                <Skeleton className="h-3 w-24" />
+                <Skeleton className="h-10 w-full rounded-md" />
+              </div>
+            </div>
+            <div className="bg-surface rounded-t-none rounded-md border-t-0 border border-border p-4">
+              <div className="space-y-2">
+                <Skeleton className="h-3 w-28" />
+                <Skeleton className="h-10 w-full rounded-md" />
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-14 w-full rounded-md border border-border" />
+          </div>
+
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-24 bg-expense/20" />
+            <div className="space-y-3 rounded-xl border border-expense/20 bg-expense-light/10 p-4">
+              <Skeleton className="h-10 w-full rounded" />
+              <Skeleton className="h-10 w-full rounded-lg" />
+            </div>
+          </div>
+        </section>
       </div>
     );
   }
