@@ -1,6 +1,6 @@
 # FindMyTang - Development Status & Roadmap (แผนงานและสถานะการพัฒนา)
 
-เอกสารนี้ใช้สำหรับติดตามสถานะการพัฒนาของโครงการในแต่ละ Sprint และบันทึกสิ่งที่ดำเนินการเสร็จสิ้นแล้ว รวมถึงแผนงานขั้นตอนต่อไป (Next Actions)
+เอกสารนี้ใช้สำหรับติดตามสถานะการพัฒนาของโครงการในแต่ละ Sprint และบันทึกสิ่งที่ดำเนินการเสร็จสิ้นแล้ว รวมถึงฟีเจอร์ที่วางแผนไว้ในอนาคต
 
 ---
 
@@ -52,7 +52,7 @@
   - ระบบความปลอดภัยและการจัดการสิทธิ์ขั้นสูง (NestJS Helmet, Throttler Rate Limiting, Exception Filter & CORS Hardening)
   - การปรับปรุงประสิทธิภาพระบบในกรณีมีข้อมูลธุรกรรมปริมาณมาก (Prisma Composite Indexes & NestJS In-Memory Caching)
 
-### Sprint 6: การขัดเกลาและติดตั้งขึ้นระบบจริง (Polish & Deployment) - 🔄 กำลังดำเนินการ (Phase 1: Build Verification & Code Polish ✅ สำเร็จ 100%)
+### Sprint 6: การขัดเกลาและติดตั้งขึ้นระบบจริง (Polish & Deployment) - ✅ สำเร็จ 100%
 
 - **ฟีเจอร์หลัก**:
   - ปรับปรุงประสิทธิภาพและ UX/UI ละเอียดแบบทีละจุด
@@ -441,17 +441,7 @@
 
 ---
 
-### 2. สิ่งที่จะต้องทำเป็นลำดับถัดไป (Next Actions)
-
-งานหลักที่ต้องดำเนินการใน **Sprint 6: การขัดเกลาและติดตั้งขึ้นระบบจริง (Polish & Deployment)**:
-
-- **[ ] จัดเตรียมสภาพแวดล้อม Production Cloud:** ตั้งค่า Production Database (Supabase PostgreSQL / Cloud DB) และกำหนดค่า Environment Variables ในเซิร์ฟเวอร์
-- **[ ] Production Build & Deployment:** ดำเนินการ Deploy Web บน Vercel และ API บน Render / Railway ตามคู่มือ [DEPLOYMENT_PREPARATION.md](./DEPLOYMENT_PREPARATION.md)
-- **[ ] QA & Real-World User Testing:** ทดสอบระบบ End-to-End บน Production Domain จริงก่อนปล่อยใช้งานอย่างเป็นทางการ
-
----
-
-### 3. 💡 ฟีเจอร์เพิ่มเติมที่วางแผนไว้ในอนาคต (Future Feature Backlog)
+### 2. 💡 ฟีเจอร์เพิ่มเติมที่วางแผนไว้ในอนาคต (Future Feature Backlog)
 
 ฟีเจอร์เพิ่มเติมที่สรุปจากความต้องการของผู้ใช้ เพื่อเตรียมออกแบบและพัฒนาใน Sprint ถัด ๆ ไป:
 

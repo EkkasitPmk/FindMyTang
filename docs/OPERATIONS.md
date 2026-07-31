@@ -4,8 +4,8 @@
 
 ## Backup policy
 
-- ใช้ Automatic Backup ของ Supabase เป็น backup หลักของ PostgreSQL
-- ตั้ง retention ตามแผนบริการที่เลือก และบันทึกวันหมดอายุไว้ใน release/operations record
+- ปัจจุบันใช้ Supabase Free จึงไม่มี Automatic Daily Backup แบบแผน Pro/Team/Enterprise; ใช้ manual `pg_dump`/Supabase CLI เป็น backup หลักแทน
+- เก็บไฟล์ backup ไว้นอก repository และบันทึกวันเวลาที่ export ไว้ใน operations record
 - เก็บ backup สำรองแบบ export แยกจากฐานข้อมูลหลักก่อน migration สำคัญหรือการเปลี่ยน schema ใหญ่
 - ห้ามเก็บ `DATABASE_URL`, service-role key หรือไฟล์ backup ใน Git
 - Backup ถือว่ายังใช้ไม่ได้จนกว่าจะทดสอบ restore สำเร็จ
@@ -40,8 +40,8 @@
 
 ## Evidence checklist
 
-- [ ] Automatic backup เปิดใช้งานแล้ว
-- [ ] มี retention และผู้รับผิดชอบชัดเจน
+- [x] ยืนยันข้อจำกัดของ Supabase Free และเลือก manual export เป็น backup policy
+- [ ] มีรอบเวลา export และผู้รับผิดชอบชัดเจน
 - [ ] Restore drill ผ่านอย่างน้อย 1 ครั้ง
 - [ ] มีบันทึก RTO/RPO ที่วัดได้จากการซ้อมจริง
 - [ ] มีช่องทางแจ้ง incident และ rollback decision
