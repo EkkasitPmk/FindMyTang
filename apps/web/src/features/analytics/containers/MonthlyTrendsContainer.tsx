@@ -45,11 +45,11 @@ export const MonthlyTrendsContainer = () => {
               {[1, 2, 3].map((item) => (
                 <div
                   key={item}
-                  className="bg-surface border rounded-xl sm:border-0 sm:rounded-none sm:bg-transparent"
+                  className="bg-surface border border-border rounded-xl sm:border-0 sm:rounded-none sm:bg-transparent"
                 >
                   {/* Mobile View Skeleton */}
                   <div className="sm:hidden p-3.5 flex flex-col gap-4 h-fit">
-                    <div className="flex justify-between items-center pb-3 border-b">
+                    <div className="flex justify-between items-center pb-3 border-b border-border">
                       <Skeleton className="h-4 w-20" />
                       <Skeleton className="h-6 w-24" />
                     </div>
