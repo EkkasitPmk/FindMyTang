@@ -112,7 +112,7 @@ export default function MobileDrawer({
             isLoading={isLoading}
             onLogout={onLogout}
             onActionClick={onClose}
-            className="pt-4"
+            className="pt-3"
           />
         </div>
       </div>

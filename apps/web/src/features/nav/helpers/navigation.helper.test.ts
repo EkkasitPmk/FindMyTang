@@ -25,12 +25,11 @@ describe("navigation helper", () => {
       "/transaction",
       "/analytics",
     ]);
-    expect(getMobileMoreNavItems().map((item) => item.href)).toEqual([
-      "/settings",
-    ]);
+    expect(getMobileMoreNavItems().map((item) => item.href)).toEqual([]);
   });
 
   it("blocks only guest-locked routes", () => {
+    expect(isGuestNavBlocked("/settings", true)).toBe(false);
     expect(isGuestNavBlocked("/settings/account", true)).toBe(true);
     expect(isGuestNavBlocked("/home", true)).toBe(false);
     expect(isGuestNavBlocked("/settings/account", false)).toBe(false);

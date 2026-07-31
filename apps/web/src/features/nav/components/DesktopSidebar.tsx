@@ -122,12 +122,12 @@ export default function DesktopSidebar({
         </div>
       </SidebarContent>
 
-      <SidebarFooter className="p-3 gap-3 border-t border-border/50 group-data-[collapsible=icon]:p-2 group-data-[collapsible=icon]:gap-2">
+      <SidebarFooter className="px-2 p-3 gap-3 border-t border-border/50 group-data-[collapsible=icon]:p-2 group-data-[collapsible=icon]:gap-2">
         <NavUserProfile
           user={user}
           isLoading={isLoading}
           onLogout={onLogout}
-          className="pt-2 border-t-0"
+          className="border-t-0"
         />
       </SidebarFooter>
     </Sidebar>

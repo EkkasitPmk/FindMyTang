@@ -9,7 +9,7 @@ export default function MainLayoutTitle({
 }: Readonly<MainLayoutTitleProps>) {
   if (route === "categories") return <>{t("manageCategories")}</>;
   if (route === "assetsNew") return <>{t("newAssets")}</>;
-  if (route === "settingsAccount") return <>{t("account")}</>;
+  if (route === "settingsAccount") return <>{t("profileSettings")}</>;
   if (route === "settings") return <>{t("navSettings")}</>;
   if (route === "assets") return <>{assetName || t("manageAssets")}</>;
   if (route === "analyticsCategory") {
