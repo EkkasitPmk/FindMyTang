@@ -110,7 +110,7 @@ dist/
 Thumbs.db
 
 # Custom ignores
-docs/FRONTEND_IMPLEMENTATION.md
+docs/
 
 # Ignore specific paths
 apps/api/scripts
