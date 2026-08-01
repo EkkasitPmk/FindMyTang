@@ -8,10 +8,12 @@ import { SyncGuestRequest, SyncGuestResponse } from "../types/auth.type";
 import { useGuestStore } from "@/shared/lib/storages/guest.storage";
 import { db } from "@/shared/lib/storages/dexie.storage";
 import { toast } from "react-toastify";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 export const useSyncGuestMutation = () => {
   const queryClient = useQueryClient();
   const clearGuestData = useGuestStore((state) => state.clearGuestData);
+  const { t } = useTranslation();
 
   return useMutation<
     SyncGuestResponse,
@@ -68,10 +70,13 @@ export const useSyncGuestMutation = () => {
         const txCount = data.syncedTransactionsCount ?? 0;
 
         if (assetsCount === 0 && categoriesCount === 0 && txCount === 0) {
-          toast.info("การซิงค์เสร็จสิ้น (ไม่มีข้อมูล Guest ใหม่ที่ต้องซิงค์)");
+          toast.info(t("guestSyncEmpty"));
         } else {
           toast.success(
-            `ซิงค์ข้อมูล Guest สำเร็จ: สินทรัพย์ ${assetsCount} รายการ, หมวดหมู่ ${categoriesCount} รายการ, ธุรกรรม ${txCount} รายการ`,
+            t("guestSyncSuccess")
+              .replace("{assets}", String(assetsCount))
+              .replace("{categories}", String(categoriesCount))
+              .replace("{transactions}", String(txCount)),
           );
         }
 
@@ -84,7 +89,7 @@ export const useSyncGuestMutation = () => {
       const errorMessage = Array.isArray(responseMessage)
         ? responseMessage[0]
         : responseMessage || error.message;
-      toast.error(`เกิดข้อผิดพลาดในการซิงค์ข้อมูล: ${errorMessage}`);
+      toast.error(t("guestSyncError").replace("{error}", errorMessage));
     },
   });
 };

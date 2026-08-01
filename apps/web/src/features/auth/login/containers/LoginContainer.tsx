@@ -51,12 +51,12 @@ export default function LoginContainer({
 
   const { mutate: loginUser, isPending } = useLoginMutation({
     onSuccess: async () => {
-      setGuestMode(false);
       const hasLocalData = (await getGuestDataCount()) > 0;
       if (hasLocalData) {
         setShowMigration(true);
         return;
       }
+      setGuestMode(false);
       setModalState({
         isOpen: true,
         status: "success",
@@ -85,6 +85,7 @@ export default function LoginContainer({
     try {
       if (merge) await syncGuest.mutateAsync();
       else await clearGuestData();
+      setGuestMode(false);
       setShowMigration(false);
       setModalState({
         isOpen: true,
