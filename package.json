@@ -1,0 +1,14 @@
+{
+  "name": "findmytang",
+  "private": true,
+  "packageManager": "npm@11.18.0",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "turbo run build"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.0"
+  }
+}
