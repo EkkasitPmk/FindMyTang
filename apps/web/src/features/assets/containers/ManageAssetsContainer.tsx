@@ -73,16 +73,13 @@ export default function ManageAssetsContainer() {
 
   const activeAssets =
     assets?.filter((a) => !a.deletedAt && !a.isArchived) ?? [];
-  const deletedAssets =
-    assets?.filter((a) => a.deletedAt || a.isArchived) ?? [];
+  const archivedAssets =
+    assets?.filter((a) => !a.deletedAt && a.isArchived) ?? [];
+  const deletedAssets = assets?.filter((a) => Boolean(a.deletedAt)) ?? [];
 
   if (assets !== prevAssets) {
     setPrevAssets(assets);
-    if (assets) {
-      setLocalActiveAssets(activeAssets);
-    } else {
-      setLocalActiveAssets([]);
-    }
+    setLocalActiveAssets(activeAssets);
   }
 
   // Modals
@@ -326,6 +323,7 @@ export default function ManageAssetsContainer() {
         className={cn(
           "px-4 space-y-4",
           localActiveAssets.length === 0 &&
+            archivedAssets.length === 0 &&
             deletedAssets.length === 0 &&
             "my-2 pb-4",
           isEditingList ? "pb-18" : "pb-4",
@@ -370,17 +368,58 @@ export default function ManageAssetsContainer() {
           </motion.div>
         )}
 
+        {/* Archived Assets Section */}
+        {archivedAssets.length > 0 && (
+          <motion.div
+            layout
+            className={cn(
+              "space-y-1",
+              (localActiveAssets.length !== 0 || deletedAssets.length !== 0) &&
+                "pt-2 border-t border-border",
+            )}
+          >
+            <span className="text-xs font-medium text-disabled-text uppercase tracking-wider px-1">
+              {t("archived")}
+            </span>
+            {archivedAssets.map((asset) => (
+              <ManageAssetItem
+                key={asset.id}
+                asset={asset}
+                isExpanded={expandedId === asset.id}
+                onToggle={() => handleToggle(asset.id)}
+                onEdit={() => {}}
+                onArchive={() => {}}
+                onUnarchive={() => {
+                  updateAsset({ id: asset.id, data: { isArchived: false } });
+                }}
+                onRestore={() => {
+                  setAssetToRestore(asset);
+                }}
+                onDelete={() => {
+                  setAssetToDelete(asset);
+                  openDeleteModal();
+                }}
+                isEditingList={isEditingList}
+                isSelected={selectedIds.has(asset.id)}
+                onToggleSelect={() => toggleSelect(asset.id)}
+                draggable={false}
+              />
+            ))}
+          </motion.div>
+        )}
+
         {/* Deleted Assets Section */}
         {deletedAssets.length > 0 && (
           <motion.div
             layout
             className={cn(
               "space-y-1",
-              localActiveAssets.length !== 0 && "pt-2 border-t border-border",
+              (localActiveAssets.length !== 0 || archivedAssets.length !== 0) &&
+                "pt-2 border-t border-border",
             )}
           >
             <span className="text-xs font-medium text-disabled-text uppercase tracking-wider px-1">
-              {t("archivedDeleted")}
+              {t("deleted")}
             </span>
             <p className="px-1 text-xs text-secondary-text">
               {t("deletedItemsDesc")}
@@ -413,11 +452,13 @@ export default function ManageAssetsContainer() {
         )}
 
         {/* Empty state */}
-        {localActiveAssets.length === 0 && deletedAssets.length === 0 && (
-          <div className="flex flex-col items-center justify-center h-[70vh] text-secondary-text text-base">
-            {t("noAssetsFound")}
-          </div>
-        )}
+        {localActiveAssets.length === 0 &&
+          archivedAssets.length === 0 &&
+          deletedAssets.length === 0 && (
+            <div className="flex flex-col items-center justify-center h-[70vh] text-secondary-text text-base">
+              {t("noAssetsFound")}
+            </div>
+          )}
       </section>
 
       {/* Bulk Bottom Bar */}

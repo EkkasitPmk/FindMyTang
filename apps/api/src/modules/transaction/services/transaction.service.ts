@@ -374,14 +374,16 @@ export class TransactionService implements OnModuleInit, OnModuleDestroy {
 
     const updatedTx = await this.prisma.$transaction(async (prismaTx) => {
       // Revert old transaction balances
-      await this.updateBalances(
-        prismaTx,
-        tx.type,
-        tx.amount,
-        tx.assetId,
-        tx.toAssetId,
-        true,
-      );
+      if (!tx.deletedAt) {
+        await this.updateBalances(
+          prismaTx,
+          tx.type,
+          tx.amount,
+          tx.assetId,
+          tx.toAssetId,
+          true,
+        );
+      }
 
       const newType = dto.type ?? tx.type;
       const newAmount = dto.amount ?? tx.amount;
@@ -419,6 +421,7 @@ export class TransactionService implements OnModuleInit, OnModuleDestroy {
           categoryId: newCategoryId,
           attachmentUrl: newAttachmentUrl,
           date: dto.date ? new Date(dto.date) : undefined,
+          deletedAt: null,
         },
       });
     });

@@ -25,4 +25,31 @@ describe("AuthService refresh session cleanup", () => {
       },
     });
   });
+
+  it("returns the current cloud revision after recording a sync", async () => {
+    const update = jest.fn().mockResolvedValue({ syncRevision: 7 });
+    const service = Object.create(AuthService.prototype) as AuthService;
+    Object.assign(service, { prisma: { user: { update } } });
+
+    await expect(
+      (
+        service as unknown as {
+          syncUser: (userId: string) => Promise<unknown>;
+        }
+      ).syncUser("user-1"),
+    ).resolves.toEqual({
+      success: true,
+      lastSyncedAt: expect.any(Date),
+      lastSyncStatus: "SUCCESS",
+      syncRevision: 7,
+    });
+
+    expect(update).toHaveBeenCalledWith({
+      where: { id: "user-1" },
+      data: {
+        lastSyncedAt: expect.any(Date),
+        lastSyncStatus: "SUCCESS",
+      },
+    });
+  });
 });

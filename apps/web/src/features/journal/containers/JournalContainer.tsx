@@ -123,7 +123,7 @@ export default function JournalContainer() {
 
         <div className="flex-1 min-h-0">
           <TabsContents className="h-full">
-            <TabsContent value="timeline" className="h-full">
+            <TabsContent value="timeline" className="h-[80dvh]">
               <div className="flex flex-col h-full space-y-4">
                 {/* ส่วนแสดงผล timeline */}
                 <section className="px-4 space-y-4 shrink-0 bg-background z-10">
@@ -272,7 +272,7 @@ export default function JournalContainer() {
                 </div>
               </div>
             </TabsContent>
-            <TabsContent value="calendar" className="h-full flex flex-col">
+            <TabsContent value="calendar" className="h-[80dvh] flex flex-col">
               <JournalCalendarContainer />
             </TabsContent>
           </TabsContents>

@@ -93,7 +93,11 @@ export default function CUCategoryModal({
         if (!open) onClose();
       }}
     >
-      <SheetContent side="bottom" className="sm:mx-auto sm:max-w-lg">
+      <SheetContent
+        side="bottom"
+        className="sm:mx-auto sm:max-w-lg"
+        onOpenAutoFocus={(event) => event.preventDefault()}
+      >
         <SheetHeader>
           <SheetTitle>{modalTitle}</SheetTitle>
           <SheetDescription>{t("categoryManagementDesc")}</SheetDescription>

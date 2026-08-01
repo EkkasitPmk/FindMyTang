@@ -13,12 +13,14 @@ import {
   getLoadingModalProps,
 } from "./transaction.helper";
 import { TransactionResponse } from "@/shared/lib/types/transaction.type";
+import { TranslationKey } from "@/shared/lib/configs/translations.config";
 
 describe("transaction.helper", () => {
   describe("submitTransaction", () => {
     let mockCreateMutate: ReturnType<typeof vi.fn>;
     let mockUpdateMutate: ReturnType<typeof vi.fn>;
     let mockToastError: ReturnType<typeof vi.fn>;
+    let mockTranslate: Parameters<typeof submitTransaction>[0]["t"];
 
     let mockCreateTransaction: Parameters<
       typeof submitTransaction
@@ -34,6 +36,11 @@ describe("transaction.helper", () => {
       mockCreateMutate = vi.fn();
       mockUpdateMutate = vi.fn();
       mockToastError = vi.fn();
+      mockTranslate = vi.fn((key: TranslationKey) =>
+        key === "errSelectTargetAsset"
+          ? "Please select a target asset"
+          : "Please select a category",
+      );
 
       mockCreateTransaction = {
         mutate: mockCreateMutate,
@@ -56,6 +63,7 @@ describe("transaction.helper", () => {
         createTransaction: mockCreateTransaction,
         updateTransaction: mockUpdateTransaction,
         toast: mockToast,
+        t: mockTranslate,
       });
 
       expect(mockToastError).toHaveBeenCalledWith(
@@ -76,6 +84,7 @@ describe("transaction.helper", () => {
         createTransaction: mockCreateTransaction,
         updateTransaction: mockUpdateTransaction,
         toast: mockToast,
+        t: mockTranslate,
       });
 
       expect(mockToastError).toHaveBeenCalledWith("Please select a category");
@@ -97,6 +106,7 @@ describe("transaction.helper", () => {
         createTransaction: mockCreateTransaction,
         updateTransaction: mockUpdateTransaction,
         toast: mockToast,
+        t: mockTranslate,
       });
 
       expect(mockCreateMutate).toHaveBeenCalledWith({
@@ -121,6 +131,7 @@ describe("transaction.helper", () => {
         updateTransaction: mockUpdateTransaction,
         editId: "tx-1",
         toast: mockToast,
+        t: mockTranslate,
       });
 
       expect(mockUpdateMutate).toHaveBeenCalledWith({
@@ -249,9 +260,9 @@ describe("transaction.helper", () => {
     });
 
     it("checkIsTxLoading should return true only if editId exists and loading", () => {
-      expect(checkIsTxLoading(null, true, true)).toBe(false);
-      expect(checkIsTxLoading("tx-1", true, false)).toBe(true);
-      expect(checkIsTxLoading("tx-1", false, false)).toBe(false);
+      expect(checkIsTxLoading(null, true)).toBe(false);
+      expect(checkIsTxLoading("tx-1", true)).toBe(true);
+      expect(checkIsTxLoading("tx-1", false)).toBe(false);
     });
 
     it("checkIsSubmitting should return true if any mutation pending", () => {

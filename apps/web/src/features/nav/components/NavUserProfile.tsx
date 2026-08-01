@@ -161,7 +161,7 @@ export default function NavUserProfile({
             variant="unstyled"
             type="button"
             aria-label={t("account")}
-            className="w-full flex items-center justify-between gap-2 px-2 py-2 rounded-lg hover:bg-surface-secondary transition-colors text-left cursor-pointer outline-none focus:outline-none focus-visible:outline-none focus-visible:ring-0 group-data-[collapsible=icon]:justify-center"
+            className="w-full flex items-center justify-between gap-2 px-2 py-2 rounded-lg hover:bg-surface-secondary transition-colors text-left cursor-pointer outline-none focus:outline-none focus-visible:outline-none focus-visible:ring-0 group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:justify-center"
           >
             <div className="flex items-center gap-2 min-w-0">
               <div className="w-10 h-10 rounded-full bg-surface-secondary border border-border flex items-center justify-center overflow-hidden shrink-0 group-data-[collapsible=icon]:w-8 group-data-[collapsible=icon]:h-8">

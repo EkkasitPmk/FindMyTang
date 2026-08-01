@@ -18,6 +18,7 @@ model User {
   language       String        @default("en")
   lastSyncStatus String?
   lastSyncedAt   DateTime?
+  syncRevision   Int           @default(0)
   assets         Asset[]
   categories     Category[]
   transactions   Transaction[]

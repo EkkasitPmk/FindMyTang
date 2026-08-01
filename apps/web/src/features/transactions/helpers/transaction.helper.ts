@@ -48,9 +48,8 @@ export function checkIsLoading(
 export function checkIsTxLoading(
   editId: string | null,
   isPending: boolean,
-  isFetching: boolean,
 ): boolean {
-  return Boolean(editId) && (isPending || isFetching);
+  return Boolean(editId) && isPending;
 }
 
 export function checkIsSubmitting(
@@ -96,6 +95,7 @@ interface SubmitTransactionParams {
   editId?: string | null;
   removedAttachment?: boolean;
   toast: { error: (msg: string) => void };
+  t: (key: TranslationKey) => string;
 }
 
 export const submitTransaction = ({
@@ -107,11 +107,12 @@ export const submitTransaction = ({
   editId,
   removedAttachment,
   toast,
+  t,
 }: SubmitTransactionParams) => {
   const finalData = { ...data, file: file || undefined };
 
   if (transactionType === "TRANSFER" && !finalData.toAssetId) {
-    toast.error("Please select a target asset");
+    toast.error(t("errSelectTargetAsset"));
     return;
   }
 
@@ -119,7 +120,7 @@ export const submitTransaction = ({
     (transactionType === "EXPENSE" || transactionType === "INCOME") &&
     !finalData.categoryId
   ) {
-    toast.error("Please select a category");
+    toast.error(t("errSelectCategory"));
     return;
   }
 

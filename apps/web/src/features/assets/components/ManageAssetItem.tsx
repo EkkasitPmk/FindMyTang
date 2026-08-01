@@ -163,7 +163,7 @@ export default function ManageAssetItem({
       )}
 
       <CollapsibleContent>
-        <div className="flex items-center gap-2 px-3 py-2 border-t border-border">
+        <div className="flex flex-wrap items-center gap-2 px-3 py-2 border-t border-border">
           <ManageAssetActions
             isDeleted={isDeleted}
             isArchived={isArchived}

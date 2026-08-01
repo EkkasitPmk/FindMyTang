@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  UnauthorizedException,
   Post,
   Req,
   Response,
@@ -193,11 +194,14 @@ export class AuthController {
     @Req() req: express.Request,
     @Response({ passthrough: true }) res: express.Response,
   ): Promise<AuthUserResponseDto> {
-    const userPayload = req.user as {
-      user: User;
-      refreshToken: string;
-    };
-    const { refreshToken } = userPayload;
+    const userPayload = req.user;
+    const refreshToken =
+      userPayload && "refreshToken" in userPayload
+        ? userPayload.refreshToken
+        : undefined;
+    if (typeof refreshToken !== "string") {
+      throw new UnauthorizedException("Invalid refresh token");
+    }
 
     const {
       accessToken,
@@ -255,6 +259,7 @@ export class AuthController {
       language: user.language,
       lastSyncedAt: user.lastSyncedAt,
       lastSyncStatus: user.lastSyncStatus,
+      syncRevision: user.syncRevision,
     };
   }
 

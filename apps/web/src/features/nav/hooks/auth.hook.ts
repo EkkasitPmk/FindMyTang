@@ -22,7 +22,7 @@ export const useSyncUserMutation = () => {
   return useMutation({
     mutationFn: syncUserApi,
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["me"] });
+      void queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
     },
   });
 };

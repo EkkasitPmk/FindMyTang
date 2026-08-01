@@ -6,6 +6,9 @@ export const userSchema = z.object({
   displayName: z.string(),
   avatarUrl: z.string().nullable().optional(),
   language: z.string().optional(),
+  lastSyncedAt: z.string().nullable().optional(),
+  lastSyncStatus: z.string().nullable().optional(),
+  syncRevision: z.number().optional(),
 });
 
 export type User = z.infer<typeof userSchema>;

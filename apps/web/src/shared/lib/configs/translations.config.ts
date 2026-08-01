@@ -98,6 +98,8 @@ export const translations = {
     cloudSync: "ซิงค์คลาวด์",
     localStorageLabel: "พื้นที่จัดเก็บในเครื่อง",
     syncing: "กำลังซิงค์...",
+    checkingSync: "กำลังตรวจสอบ...",
+    lastSyncedAt: "ซิงค์ล่าสุด: {time}",
     upToDate: "อัปเดตแล้ว",
     unlockFeature: "ปลดล็อก {featureName}",
     unlockFeatureDesc:
@@ -157,7 +159,7 @@ export const translations = {
     newPasswordLabel: "รหัสผ่านใหม่",
     confirmNewPasswordLabel: "ยืนยันรหัสผ่านใหม่",
     placeholderCurrentPassword: "กรอกรหัสผ่านปัจจุบัน",
-    placeholderNewPassword: "กรอกรหัสผ่านใหม่ (อย่างน้อย 8 ตัวอักษร)",
+    placeholderNewPassword: "กรอกรหัสผ่านใหม่ (อย่างน้อย 12 ตัวอักษร)",
     placeholderConfirmNewPassword: "ยืนยันรหัสผ่านใหม่",
     profileUpdated: "อัปเดตโปรไฟล์สำเร็จแล้ว!",
     passwordChanged: "เปลี่ยนรหัสผ่านสำเร็จแล้ว!",
@@ -221,6 +223,16 @@ export const translations = {
     registerFailed: "การสมัครสมาชิกล้มเหลว โปรดลองอีกครั้ง",
     guestDataSynced: "ซิงค์ข้อมูลผู้เยี่ยมชมสำเร็จ",
     localDataDiscarded: "ยกเลิกข้อมูลในเครื่องแล้ว",
+    guestMigrationTitle: "ต้องการเก็บข้อมูลผู้เยี่ยมชมไว้หรือไม่?",
+    guestMigrationDesc:
+      "พบข้อมูลที่บันทึกไว้ในเครื่อง เลือกว่าจะรวมเข้าบัญชีหรือลบทิ้ง",
+    guestMigrationSyncing: "กำลังซิงค์...",
+    guestMigrationMerge: "รวมข้อมูล",
+    guestMigrationDiscard: "ลบข้อมูลในเครื่อง",
+    guestSyncEmpty: "ซิงค์เสร็จสิ้น (ไม่มีข้อมูลผู้เยี่ยมชมใหม่)",
+    guestSyncSuccess:
+      "ซิงค์ข้อมูลผู้เยี่ยมชมสำเร็จ: สินทรัพย์ {assets} รายการ, หมวดหมู่ {categories} รายการ, ธุรกรรม {transactions} รายการ",
+    guestSyncError: "เกิดข้อผิดพลาดในการซิงค์ข้อมูลผู้เยี่ยมชม: {error}",
 
     // Category Feature
     categoryManagement: "จัดการหมวดหมู่",
@@ -274,6 +286,7 @@ export const translations = {
     description: "คำอธิบาย",
     addANote: "เพิ่มบันทึก...",
     attachment: "ไฟล์แนบ",
+    errProcessAttachment: "ไม่สามารถเตรียมไฟล์แนบได้ กรุณาลองใหม่อีกครั้ง",
     takeAPhoto: "ถ่ายรูป",
     selectAPhoto: "เลือกรูปภาพ",
     addPhoto: "เพิ่มรูปภาพ",
@@ -281,6 +294,8 @@ export const translations = {
     assetFrom: "สินทรัพย์ (ต้นทาง)",
     assetTo: "สินทรัพย์ (ปลายทาง)",
     categoryUppercase: "หมวดหมู่",
+    errSelectTargetAsset: "กรุณาเลือกสินทรัพย์ปลายทาง",
+    errSelectCategory: "กรุณาเลือกหมวดหมู่",
     needTwoAssetsForTransfer:
       "คุณต้องมีสินทรัพย์อย่างน้อย 2 รายการเพื่อทำการโอน",
     time: "เวลา:",
@@ -368,7 +383,7 @@ export const translations = {
     archiveAsset: "จัดเก็บสินทรัพย์",
     deleteAsset: "ลบสินทรัพย์",
     archive: "จัดเก็บ",
-    deletePermanently: "ลบถาวร (Hard Delete)",
+    deletePermanently: "ลบถาวร",
     deleted: "ถูกลบ",
     archived: "ถูกจัดเก็บ",
     restore: "กู้คืน",
@@ -405,9 +420,11 @@ export const translations = {
     // Form Errors
     errInvalidEmail: "รูปแบบอีเมลไม่ถูกต้อง",
     errEmailRequired: "กรุณากรอกอีเมล",
+    errEmailLength: "อีเมลต้องไม่เกิน 254 ตัวอักษร",
     errPasswordRequired: "กรุณากรอกรหัสผ่าน",
     errPasswordLength: "รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร",
     errDisplayNameRequired: "กรุณากรอกชื่อที่แสดง",
+    errDisplayNameLength: "ชื่อที่แสดงต้องไม่เกิน 25 ตัวอักษร",
     errConfirmPasswordRequired: "กรุณายืนยันรหัสผ่าน",
     errAgreeTermsRequired: "คุณต้องยอมรับข้อตกลงและนโยบายความเป็นส่วนตัว",
     errPasswordsNotMatch: "รหัสผ่านไม่ตรงกัน",
@@ -529,6 +546,8 @@ export const translations = {
     cloudSync: "Cloud Sync",
     localStorageLabel: "Local Storage",
     syncing: "Syncing...",
+    checkingSync: "Checking...",
+    lastSyncedAt: "Last synced: {time}",
     upToDate: "Up to date",
     unlockFeature: "Unlock {featureName}",
     unlockFeatureDesc:
@@ -589,7 +608,7 @@ export const translations = {
     newPasswordLabel: "New Password",
     confirmNewPasswordLabel: "Confirm New Password",
     placeholderCurrentPassword: "Enter current password",
-    placeholderNewPassword: "Enter new password (min 8 chars)",
+    placeholderNewPassword: "Enter new password (min 12 chars)",
     placeholderConfirmNewPassword: "Confirm new password",
     profileUpdated: "Profile updated successfully!",
     passwordChanged: "Password changed successfully!",
@@ -654,6 +673,16 @@ export const translations = {
     registerFailed: "Registration failed. Please try again.",
     guestDataSynced: "Guest data synced successfully",
     localDataDiscarded: "Local data discarded",
+    guestMigrationTitle: "Keep your Guest data?",
+    guestMigrationDesc:
+      "We found data saved on this device. Choose whether to merge it into your account or discard it.",
+    guestMigrationSyncing: "Syncing...",
+    guestMigrationMerge: "Merge data",
+    guestMigrationDiscard: "Discard local data",
+    guestSyncEmpty: "Sync complete (no new Guest data to sync)",
+    guestSyncSuccess:
+      "Guest data synced: {assets} assets, {categories} categories, {transactions} transactions",
+    guestSyncError: "Guest sync failed: {error}",
 
     // Category Feature
     categoryManagement: "Category Management",
@@ -707,6 +736,7 @@ export const translations = {
     description: "DESCRIPTION",
     addANote: "Add a note...",
     attachment: "ATTACHMENT",
+    errProcessAttachment: "Unable to process the attachment. Please try again.",
     takeAPhoto: "Take a photo",
     selectAPhoto: "Select a photo",
     addPhoto: "Add Photo",
@@ -714,6 +744,8 @@ export const translations = {
     assetFrom: "ASSET (from)",
     assetTo: "ASSET (to)",
     categoryUppercase: "CATEGORY",
+    errSelectTargetAsset: "Please select a target asset",
+    errSelectCategory: "Please select a category",
     needTwoAssetsForTransfer:
       "You need at least two assets to make a transfer.",
     time: "Time:",
@@ -803,7 +835,7 @@ export const translations = {
     archiveAsset: "Archive Asset",
     deleteAsset: "Delete Asset",
     archive: "Archive",
-    deletePermanently: "Delete permanently (Hard Delete)",
+    deletePermanently: "Delete permanently",
     deleted: "Deleted",
     archived: "Archived",
     restore: "Restore",
@@ -840,9 +872,11 @@ export const translations = {
     // Form Errors
     errInvalidEmail: "Invalid email format",
     errEmailRequired: "Email is required",
+    errEmailLength: "Email must not exceed 254 characters",
     errPasswordRequired: "Password is required",
     errPasswordLength: "Password must be at least 8 characters long",
     errDisplayNameRequired: "Display name is required",
+    errDisplayNameLength: "Display name must be under 25 characters",
     errConfirmPasswordRequired: "Confirm password is required",
     errAgreeTermsRequired:
       "You must agree to the Terms of Service and Privacy Policy",

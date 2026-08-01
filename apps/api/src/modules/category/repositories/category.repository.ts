@@ -48,11 +48,11 @@ export class CategoryRepository {
   async update(
     id: string,
     userId: string,
-    data: Partial<CreateCategoryData>,
+    data: Partial<CreateCategoryData & { deletedAt: Date | null }>,
   ): Promise<Category> {
     // ponytail: Updates a category matching id and userId to prevent cross-user updates.
     const category = await this.prisma.category.findFirst({
-      where: { id, userId, deletedAt: null },
+      where: { id, userId },
     });
     if (!category) {
       throw new Error("Category not found or access denied");

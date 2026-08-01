@@ -7,6 +7,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/shared/components/animate-ui/components/radix/dialog";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 interface GuestMigrationModalProps {
   isOpen: boolean;
@@ -21,6 +22,8 @@ export default function GuestMigrationModal({
   onMerge,
   onDiscard,
 }: Readonly<GuestMigrationModalProps>) {
+  const { t } = useTranslation();
+
   return (
     <Dialog open={isOpen}>
       <DialogContent
@@ -30,11 +33,10 @@ export default function GuestMigrationModal({
         <DialogHeader className="flex flex-col items-center gap-2 text-center">
           <CloudUpload className="h-10 w-10 text-primary" />
           <DialogTitle className="text-lg font-bold text-primary-text">
-            Keep your Guest data?
+            {t("guestMigrationTitle")}
           </DialogTitle>
           <DialogDescription className="text-sm text-secondary-text text-center">
-            We found data saved on this device. Choose whether to merge it into
-            your account or discard it.
+            {t("guestMigrationDesc")}
           </DialogDescription>
         </DialogHeader>
         <div className="flex w-full flex-col gap-2 pt-2">
@@ -44,7 +46,7 @@ export default function GuestMigrationModal({
             disabled={isPending}
             className="w-full"
           >
-            {isPending ? "Syncing..." : "Merge data"}
+            {isPending ? t("guestMigrationSyncing") : t("guestMigrationMerge")}
           </Button>
           <Button
             variant="outline"
@@ -53,7 +55,7 @@ export default function GuestMigrationModal({
             className="w-full"
           >
             <Trash2 size={16} />
-            Discard local data
+            {t("guestMigrationDiscard")}
           </Button>
         </div>
       </DialogContent>
