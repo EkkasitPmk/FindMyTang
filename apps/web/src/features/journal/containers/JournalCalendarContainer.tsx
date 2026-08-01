@@ -1,5 +1,6 @@
 "use client";
 import { useMemo, useRef, useCallback } from "react";
+import { keepPreviousData } from "@tanstack/react-query";
 import {
   startOfMonth,
   endOfMonth,
@@ -28,16 +29,10 @@ import {
 import { useJournalCalendar } from "../hooks/journal-calendar.hook";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
-interface JournalCalendarContainerProps {
-  isActive?: boolean;
-}
-
-export default function JournalCalendarContainer({
-  isActive = true,
-}: Readonly<JournalCalendarContainerProps>) {
+export default function JournalCalendarContainer() {
   const { locale } = useTranslation();
   const { currentMonth, selectedDate, navigatorProps, handleSelectDate } =
-    useJournalCalendar(locale, new Date(), { enabled: isActive });
+    useJournalCalendar(locale);
 
   const transactionListRef = useRef<HTMLDivElement>(null);
 
@@ -55,7 +50,7 @@ export default function JournalCalendarContainer({
         limit: 1000,
         sortType: "DATE_NEWEST",
       },
-      { enabled: isActive },
+      { placeholderData: keepPreviousData },
     );
 
   const allTransactions = useMemo(

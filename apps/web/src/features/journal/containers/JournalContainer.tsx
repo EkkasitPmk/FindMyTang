@@ -273,7 +273,7 @@ export default function JournalContainer() {
               </div>
             </TabsContent>
             <TabsContent value="calendar" className="h-full flex flex-col">
-              <JournalCalendarContainer isActive={viewMode === "calendar"} />
+              <JournalCalendarContainer />
             </TabsContent>
           </TabsContents>
         </div>
