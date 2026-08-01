@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { cn } from "@/shared/lib/utils/core.util";
 import { ArrowDown, Calendar as CalendarLucide, Camera, X } from "lucide-react";
 import { UseFormRegister } from "react-hook-form";
@@ -7,6 +6,8 @@ import { useImagePreview } from "../hooks/useImagePreview.hook";
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { AttachmentOptionButton } from "./AttachmentOptionButton";
+import { TransactionAttachmentPreview } from "./TransactionAttachmentPreview";
 
 interface TransactionMoreDetailsProps {
   isMoreDetailsOpen: boolean;
@@ -51,107 +52,62 @@ export default function TransactionMoreDetails({
   const renderAttachment = () => {
     if (file && filePreview) {
       return (
-        <div className="w-full min-h-113 flex flex-col items-center justify-center rounded-md border-2 border-border relative overflow-hidden bg-surface-secondary/50">
-          <Image
-            src={filePreview}
-            alt="attachment preview"
-            width={0}
-            height={0}
-            sizes="100vw"
-            className="w-full h-auto object-contain"
-            unoptimized={
-              filePreview.startsWith("blob:") || filePreview.startsWith("data:")
-            }
-          />
-          <Button
-            variant="unstyled"
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onRemoveFile();
-            }}
-            className="absolute top-2 right-2 p-1.5 bg-expense/50 border border-expense text-white rounded-full hover:bg-black/70 transition-colors"
-          >
-            <X size={16} className="text-white" />
-          </Button>
-        </div>
+        <TransactionAttachmentPreview
+          src={filePreview}
+          alt="attachment preview"
+          onRemove={onRemoveFile}
+        />
       );
     }
 
     if (attachmentUrl) {
       return (
-        <div className="w-full min-h-113 flex flex-col items-center justify-center rounded-md border-2 border-border relative overflow-hidden bg-surface-secondary/50">
-          <Image
-            src={attachmentUrl}
-            alt="existing attachment"
-            width={0}
-            height={0}
-            sizes="100vw"
-            className="w-full h-auto object-contain"
-            unoptimized={
-              attachmentUrl.startsWith("blob:") ||
-              attachmentUrl.startsWith("data:")
-            }
-          />
-          <Button
-            variant="unstyled"
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onRemoveFile();
-            }}
-            className="absolute top-2 right-2 p-1.5 bg-expense/50 border border-expense text-white rounded-full hover:bg-black/70 transition-colors"
-          >
-            <X size={16} className="text-white" />
-          </Button>
-        </div>
+        <TransactionAttachmentPreview
+          src={attachmentUrl}
+          alt="existing attachment"
+          onRemove={onRemoveFile}
+        />
       );
     }
 
     return (
       <div className="relative w-full">
         {isPhotoMenuOpen ? (
-          <div className="relative w-full h-113 flex flex-col items-center justify-center gap-2 rounded-md border-2 border-primary/40 border-dashed bg-primary/5">
+          <div className="relative flex h-113 w-full flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-primary/40 bg-primary/5 px-5">
             <Button
               variant="unstyled"
               type="button"
               onClick={() => setIsPhotoMenuOpen(!isPhotoMenuOpen)}
-              className="absolute top-2 right-2"
+              className="absolute right-3 top-3 rounded-full p-1.5 hover:bg-primary/10"
             >
               <X className="text-destructive" />
             </Button>
-            <Button
-              variant="unstyled"
-              type="button"
-              className="text-sm font-medium text-center w-[80%] py-2.5 bg-surface border border-border rounded-lg hover:text-primary transition-colors cursor-pointer"
+            <AttachmentOptionButton
+              label={t("takeAPhoto")}
               onClick={(e) => {
                 e.stopPropagation();
                 onTakeAPhoto();
               }}
-            >
-              {t("takeAPhoto")}
-            </Button>
-            <Button
-              variant="unstyled"
-              type="button"
-              className="text-sm font-medium text-center w-[80%] py-2.5 bg-surface border border-border rounded-lg hover:text-primary transition-colors cursor-pointer"
+            />
+            <AttachmentOptionButton
+              label={t("selectAPhoto")}
               onClick={(e) => {
                 e.stopPropagation();
                 onSelectAPhoto();
               }}
-            >
-              {t("selectAPhoto")}
-            </Button>
+            />
           </div>
         ) : (
           <Button
             variant="unstyled"
             type="button"
             onClick={() => setIsPhotoMenuOpen(true)}
-            className="w-full h-113 flex flex-col items-center justify-center gap-1 rounded-md border-2 border-border border-dashed hover:bg-surface-secondary/50 transition-colors cursor-pointer"
+            className="group flex h-113 w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border transition-colors hover:border-primary hover:bg-surface-secondary/50"
           >
-            <Camera size={24} className="text-secondary-text" />
-            <p className="text-sm font-medium text-secondary-text">
+            <span className="flex size-11 items-center justify-center rounded-full bg-primary/10 transition-colors group-hover:bg-primary/15">
+              <Camera size={22} className="text-primary" />
+            </span>
+            <p className="text-sm font-medium text-secondary-text transition-colors group-hover:text-primary">
               {t("addPhoto")}
             </p>
           </Button>
@@ -248,7 +204,7 @@ export default function TransactionMoreDetails({
                 {t("attachment")}
               </p>
               {isLoadingTx ? (
-                <Skeleton className="w-full h-113 rounded-md" />
+                <Skeleton className="h-113 w-full rounded-xl" />
               ) : (
                 renderAttachment()
               )}

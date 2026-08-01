@@ -1,6 +1,6 @@
 "use client";
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
-import { ArrowRight, ChevronLeft, Trash } from "lucide-react";
+import { ArrowRight, ChevronLeft, Loader2, Trash } from "lucide-react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -82,13 +82,11 @@ export default function TransactionsContainer() {
   const typeParam = searchParams.get("type");
   const { t, locale, currentLanguage } = useTranslation();
 
-  const {
-    data: existingTx,
-    isPending: isTxPending,
-    isFetching: isTxFetching,
-  } = useTransactionQuery(editId || undefined);
+  const { data: existingTx, isPending: isTxPending } = useTransactionQuery(
+    editId || undefined,
+  );
 
-  const isTxLoading = checkIsTxLoading(editId, isTxPending, isTxFetching);
+  const isTxLoading = checkIsTxLoading(editId, isTxPending);
 
   const defaultType = useMemo(
     () => resolveDefaultTransactionType(existingTx, typeParam),
@@ -105,6 +103,7 @@ export default function TransactionsContainer() {
   const [removedAttachment, setRemovedAttachment] = useState(false);
   const [isMoreDetailsOpen, setIsMoreDetailsOpen] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [isPhotoMenuOpen, setIsPhotoMenuOpen] = useState(false);
   const { modalState, setModalState, resetModalState } = useModalState();
 
   const {
@@ -187,6 +186,8 @@ export default function TransactionsContainer() {
         reset(defaultValues);
         setAmountDigits("");
         setFile(null);
+        setRemovedAttachment(false);
+        setIsPhotoMenuOpen(false);
       }
     },
     [reset, defaultValues, setModalState],
@@ -285,16 +286,19 @@ export default function TransactionsContainer() {
     }
   };
 
-  const [isPhotoMenuOpen, setIsPhotoMenuOpen] = useState(false);
-
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const originalFile = e.target.files?.[0];
-    if (originalFile) {
+    if (!originalFile) return;
+
+    try {
       const newFile = await compressImageFile(originalFile);
       setFile(newFile);
+    } catch {
+      e.target.value = "";
+      toast.error(t("errProcessAttachment"));
     }
   };
 
@@ -368,6 +372,8 @@ export default function TransactionsContainer() {
     reset(defaultValues);
     setAmountDigits("");
     setFile(null);
+    setRemovedAttachment(false);
+    setIsPhotoMenuOpen(false);
   };
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -396,6 +402,7 @@ export default function TransactionsContainer() {
       editId,
       removedAttachment,
       toast,
+      t,
     });
   };
 
@@ -471,7 +478,7 @@ export default function TransactionsContainer() {
             <TabsContents>
               {transactionTypeOptions.map((option) => (
                 <TabsContent key={option.value} value={option.value}>
-                  <div className="h-full overflow-y-auto max-h-[65vh] space-y-4">
+                  <div className="h-full overflow-y-auto max-h-[64dvh] space-y-4">
                     <section className="flex flex-col items-center gap-1 relative min-h-10 justify-center">
                       {isTxLoading ? (
                         <Skeleton className="w-60 h-10 rounded-lg" />
@@ -543,15 +550,19 @@ export default function TransactionsContainer() {
           </Tabs>
         )}
 
-        <section className="fixed bottom-16 left-0 right-0 mx-4 pb-4 bg-background pt-2">
+        <section className="fixed inset-x-4 bottom-16 z-20 mb-4">
           <Button
             variant="unstyled"
             type="submit"
             disabled={isSubmitting}
-            className="flex items-center justify-center gap-2 bg-primary w-full text-white py-3 rounded-xl text-base font-bold capitalize disabled:opacity-50"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 text-base font-bold text-white shadow-lg transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
           >
+            {isSubmitting ? (
+              <Loader2 className="animate-spin" size={18} />
+            ) : (
+              <ArrowRight size={18} />
+            )}
             {t("saveTransactionStr").replace("{type}", transactionTypeStr)}
-            <ArrowRight size={18} />
           </Button>
         </section>
       </div>

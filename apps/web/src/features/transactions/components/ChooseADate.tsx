@@ -76,7 +76,11 @@ export default function ChooseADate({
         if (!open) onClose();
       }}
     >
-      <SheetContent side="bottom" className="sm:mx-auto sm:max-w-lg">
+      <SheetContent
+        side="bottom"
+        className="sm:mx-auto sm:max-w-lg"
+        onOpenAutoFocus={(event) => event.preventDefault()}
+      >
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             <CalendarIcon size={20} className="text-primary" />
