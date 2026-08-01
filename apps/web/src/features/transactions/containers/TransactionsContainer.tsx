@@ -412,7 +412,13 @@ export default function TransactionsContainer() {
   );
 
   const transactionTypeStr = getTypeLabel(transactionType, t);
-  const showCategoryList = isCategoryType(transactionType);
+  const showCategoryList = isTxLoading || isCategoryType(transactionType);
+  const showCategorySkeleton = isLoadingCategoryList || isTxLoading;
+  const showAssetSkeleton = isLoadingAssetList || isTxLoading;
+  const tabsValue = isTxLoading ? "LOADING" : transactionType;
+  const tabsContentOptions = isTxLoading
+    ? [{ label: "", value: "LOADING" }]
+    : transactionTypeOptions;
   const loadingModalProps = getLoadingModalProps(modalState, isSubmitting);
   const attachmentUrl = removedAttachment ? null : existingTx?.attachmentUrl;
 
@@ -456,105 +462,106 @@ export default function TransactionsContainer() {
       </header>
 
       <div className="px-4">
-        {isTxLoading ? (
-          <Skeleton className="w-full h-10 rounded-lg" />
-        ) : (
-          <Tabs
-            value={transactionType}
-            onValueChange={(val) => {
-              setTransactionType(val as TransactionType);
-              clearErrors();
-            }}
-            className="gap-3"
-          >
-            <TabsList className="w-full">
-              {transactionTypeOptions.map((option) => (
+        <Tabs
+          value={tabsValue}
+          onValueChange={(val) => {
+            if (isTxLoading) return;
+            setTransactionType(val as TransactionType);
+            clearErrors();
+          }}
+          className="gap-3"
+        >
+          <TabsList className="w-full">
+            {isTxLoading ? (
+              <Skeleton className="w-full h-10 rounded-lg" />
+            ) : (
+              transactionTypeOptions.map((option) => (
                 <TabsTrigger key={option.value} value={option.value}>
                   {option.label}
                 </TabsTrigger>
-              ))}
-            </TabsList>
+              ))
+            )}
+          </TabsList>
 
-            <TabsContents>
-              {transactionTypeOptions.map((option) => (
-                <TabsContent key={option.value} value={option.value}>
-                  <div className="h-full overflow-y-auto max-h-[64dvh] space-y-4">
-                    <section className="flex flex-col items-center gap-1 relative min-h-10 justify-center">
-                      {isTxLoading ? (
-                        <Skeleton className="w-60 h-10 rounded-lg" />
-                      ) : (
-                        <>
-                          <CurrencyInput
-                            id="transaction-amount"
-                            ref={amountInputRef}
-                            value={displayAmount}
-                            onChange={handleCurrencyInput}
-                          />
-                          <input
-                            type="hidden"
-                            name="amount"
-                            value={numericAmount}
-                          />
-                          {(isSubmitted || Boolean(touchedFields.amount)) &&
-                            errors.amount && (
-                              <p className="text-expense text-xs">
-                                {errors.amount.message}
-                              </p>
-                            )}
-                        </>
-                      )}
-                    </section>
-
-                    {showCategoryList && (
-                      <TransactionCategoryList
-                        categories={filteredCategories}
-                        activeCategoryId={watchCategoryId || null}
-                        onSelectCategory={(id) => setValue("categoryId", id)}
-                        onEditClick={handleEditCategoryClick}
-                        isLoadingCategoryList={isLoadingCategoryList}
-                      />
+          <TabsContents>
+            {tabsContentOptions.map((option) => (
+              <TabsContent key={option.value} value={option.value}>
+                <div className="h-full overflow-y-auto max-h-[64dvh] space-y-4">
+                  <section className="flex flex-col items-center gap-1 relative min-h-10 justify-center">
+                    {isTxLoading ? (
+                      <Skeleton className="w-60 h-10 rounded-lg" />
+                    ) : (
+                      <>
+                        <CurrencyInput
+                          id="transaction-amount"
+                          ref={amountInputRef}
+                          value={displayAmount}
+                          onChange={handleCurrencyInput}
+                        />
+                        <input
+                          type="hidden"
+                          name="amount"
+                          value={numericAmount}
+                        />
+                        {(isSubmitted || Boolean(touchedFields.amount)) &&
+                          errors.amount && (
+                            <p className="text-expense text-xs">
+                              {errors.amount.message}
+                            </p>
+                          )}
+                      </>
                     )}
+                  </section>
 
-                    <TransactionAssetList
-                      assets={safeAssets}
-                      activeAssetId={watchAssetId || null}
-                      onSelectAsset={(id) => setValue("assetId", id)}
-                      activeAssetToId={watchToAssetId || null}
-                      onSelectAssetTo={(id) => setValue("toAssetId", id)}
-                      transactionType={transactionType}
-                      isLoadingAssetList={isLoadingAssetList}
+                  {showCategoryList && (
+                    <TransactionCategoryList
+                      categories={filteredCategories}
+                      activeCategoryId={watchCategoryId || null}
+                      onSelectCategory={(id) => setValue("categoryId", id)}
+                      onEditClick={handleEditCategoryClick}
+                      isLoadingCategoryList={showCategorySkeleton}
                     />
+                  )}
 
-                    <TransactionMoreDetails
-                      isMoreDetailsOpen={isMoreDetailsOpen}
-                      setIsMoreDetailsOpen={setIsMoreDetailsOpen}
-                      displayDate={displayDate}
-                      onOpenCalendar={handleOpenCalendar}
-                      isPhotoMenuOpen={isPhotoMenuOpen}
-                      setIsPhotoMenuOpen={setIsPhotoMenuOpen}
-                      file={file}
-                      attachmentUrl={attachmentUrl}
-                      onRemoveFile={handleRemoveFile}
-                      onTakeAPhoto={handleTakeAPhoto}
-                      onSelectAPhoto={handleSelectAPhoto}
-                      fileInputRef={fileInputRef}
-                      cameraInputRef={cameraInputRef}
-                      handleFileChange={handleFileChange}
-                      register={register}
-                      isLoadingTx={isTxLoading}
-                    />
-                  </div>
-                </TabsContent>
-              ))}
-            </TabsContents>
-          </Tabs>
-        )}
+                  <TransactionAssetList
+                    assets={safeAssets}
+                    activeAssetId={watchAssetId || null}
+                    onSelectAsset={(id) => setValue("assetId", id)}
+                    activeAssetToId={watchToAssetId || null}
+                    onSelectAssetTo={(id) => setValue("toAssetId", id)}
+                    transactionType={transactionType}
+                    isLoadingAssetList={showAssetSkeleton}
+                  />
+
+                  <TransactionMoreDetails
+                    isMoreDetailsOpen={isMoreDetailsOpen}
+                    setIsMoreDetailsOpen={setIsMoreDetailsOpen}
+                    displayDate={displayDate}
+                    onOpenCalendar={handleOpenCalendar}
+                    isPhotoMenuOpen={isPhotoMenuOpen}
+                    setIsPhotoMenuOpen={setIsPhotoMenuOpen}
+                    file={file}
+                    attachmentUrl={attachmentUrl}
+                    onRemoveFile={handleRemoveFile}
+                    onTakeAPhoto={handleTakeAPhoto}
+                    onSelectAPhoto={handleSelectAPhoto}
+                    fileInputRef={fileInputRef}
+                    cameraInputRef={cameraInputRef}
+                    handleFileChange={handleFileChange}
+                    register={register}
+                    isLoadingTx={isTxLoading}
+                  />
+                </div>
+              </TabsContent>
+            ))}
+          </TabsContents>
+        </Tabs>
 
         <section className="fixed inset-x-4 bottom-16 z-20 mb-4">
           <Button
             variant="unstyled"
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || isTxLoading}
             className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 text-base font-bold text-white shadow-lg transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isSubmitting ? (
