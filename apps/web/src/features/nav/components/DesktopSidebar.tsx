@@ -79,9 +79,9 @@ export default function DesktopSidebar({
                       size="lg"
                       asChild
                       className={cn(
-                        "rounded-xl transition-all duration-200 cursor-pointer font-medium text-sm",
+                        "rounded-xl border border-transparent transition-colors duration-200 cursor-pointer font-medium text-sm",
                         isActive
-                          ? "bg-primary-light text-primary font-semibold border border-primary-light/80 shadow-xs"
+                          ? "bg-primary-light text-primary font-semibold border-primary-light/80 shadow-xs"
                           : "text-secondary-text hover:text-primary-text",
                       )}
                     >
