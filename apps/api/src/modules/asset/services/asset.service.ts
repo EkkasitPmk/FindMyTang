@@ -48,7 +48,7 @@ export class AssetService {
     dto: UpdateAssetDto,
   ): Promise<Asset> {
     // ponytail: Business logic to find, check ownership, validate, and update the asset.
-    const asset = await this.assetRepository.findById(id);
+    const asset = await this.assetRepository.findByIdAny(id);
     if (!asset) {
       throw new NotFoundException("Asset not found");
     }
@@ -73,6 +73,7 @@ export class AssetService {
       ...(dto.balance !== undefined && { balance: dto.balance }),
       ...(dto.color !== undefined && { color: dto.color }),
       ...(dto.isArchived !== undefined && { isArchived: dto.isArchived }),
+      deletedAt: null,
     };
 
     return this.assetRepository.update(id, userId, updateData);

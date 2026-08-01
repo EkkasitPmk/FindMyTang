@@ -68,7 +68,7 @@ export class CategoryService {
     dto: UpdateCategoryDto,
   ): Promise<Category> {
     // ponytail: Business logic to find, check ownership, validate, and update the category.
-    const category = await this.categoryRepository.findById(id);
+    const category = await this.categoryRepository.findById(id, true);
     if (!category) {
       throw new NotFoundException("Category not found");
     }
@@ -87,11 +87,10 @@ export class CategoryService {
       dto.name = trimmedName;
     }
 
-    const updatedCategory = await this.categoryRepository.update(
-      id,
-      userId,
-      dto,
-    );
+    const updatedCategory = await this.categoryRepository.update(id, userId, {
+      ...dto,
+      deletedAt: null,
+    });
     await this.invalidateCache(userId);
     return updatedCategory;
   }

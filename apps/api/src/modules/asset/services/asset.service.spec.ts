@@ -18,6 +18,7 @@ describe("AssetService", () => {
   const mockAssetRepository = {
     create: jest.fn(),
     findById: jest.fn(),
+    findByIdAny: jest.fn(),
     findAllActiveByUserId: jest.fn(),
     findAllIncludingDeletedByUserId: jest.fn(),
     update: jest.fn(),
@@ -171,21 +172,49 @@ describe("AssetService", () => {
         balance: 1500,
       };
 
-      mockAssetRepository.findById.mockResolvedValue(asset);
+      mockAssetRepository.findByIdAny.mockResolvedValue(asset);
       mockAssetRepository.update.mockResolvedValue(expectedUpdated);
 
       const result = await service.update("asset-123", "user-123", dto);
 
       expect(result).toEqual(expectedUpdated);
-      expect(repository.findById).toHaveBeenCalledWith("asset-123");
+      expect(repository.findByIdAny).toHaveBeenCalledWith("asset-123");
       expect(repository.update).toHaveBeenCalledWith("asset-123", "user-123", {
         name: "New Name",
         balance: 1500,
+        deletedAt: null,
       });
     });
 
+    it("should resurrect a soft-deleted asset when edited later", async () => {
+      const asset = {
+        id: "asset-deleted",
+        name: "Old Name",
+        type: AssetType.BANK,
+        userId: "user-123",
+        deletedAt: new Date(),
+      } as any;
+
+      mockAssetRepository.findByIdAny.mockResolvedValue(asset);
+      mockAssetRepository.update.mockResolvedValue({
+        ...asset,
+        name: "Restored Name",
+        deletedAt: null,
+      });
+
+      await service.update("asset-deleted", "user-123", {
+        name: "Restored Name",
+      });
+
+      expect(repository.update).toHaveBeenCalledWith(
+        "asset-deleted",
+        "user-123",
+        { name: "Restored Name", deletedAt: null },
+      );
+    });
+
     it("should throw NotFoundException if asset does not exist", async () => {
-      mockAssetRepository.findById.mockResolvedValue(null);
+      mockAssetRepository.findByIdAny.mockResolvedValue(null);
 
       await expect(
         service.update("invalid-id", "user-123", { name: "Test" }),
@@ -199,7 +228,7 @@ describe("AssetService", () => {
         userId: "user-999",
       } as any;
 
-      mockAssetRepository.findById.mockResolvedValue(asset);
+      mockAssetRepository.findByIdAny.mockResolvedValue(asset);
 
       await expect(
         service.update("asset-123", "user-123", { name: "Test" }),
@@ -213,7 +242,7 @@ describe("AssetService", () => {
         userId: "user-123",
       } as any;
 
-      mockAssetRepository.findById.mockResolvedValue(asset);
+      mockAssetRepository.findByIdAny.mockResolvedValue(asset);
 
       await expect(
         service.update("asset-123", "user-123", { name: "   " }),

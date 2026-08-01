@@ -94,11 +94,13 @@ export class AssetRepository {
   async update(
     id: string,
     userId: string,
-    data: Partial<CreateAssetData & { isArchived: boolean }>,
+    data: Partial<
+      CreateAssetData & { isArchived: boolean; deletedAt: Date | null }
+    >,
   ): Promise<Asset> {
     // ponytail: Updates an asset matching id and userId to prevent cross-user updates.
     const asset = await this.prisma.asset.findFirst({
-      where: { id, userId, deletedAt: null },
+      where: { id, userId },
     });
     if (!asset) {
       throw new Error("Asset not found or access denied");

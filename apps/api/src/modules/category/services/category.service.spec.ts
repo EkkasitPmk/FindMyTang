@@ -79,11 +79,42 @@ describe("CategoryService", () => {
       const result = await service.update("cat-123", "user-123", dto);
 
       expect(result).toEqual(expectedUpdated);
-      expect(repository.findById).toHaveBeenCalledWith("cat-123");
+      expect(repository.findById).toHaveBeenCalledWith("cat-123", true);
       expect(repository.update).toHaveBeenCalledWith("cat-123", "user-123", {
         name: "Food & Drinks",
         color: "#000",
+        deletedAt: null,
       });
+    });
+
+    it("should resurrect a soft-deleted category when edited later", async () => {
+      const category = {
+        id: "cat-deleted",
+        name: "Food",
+        type: CategoryType.EXPENSE,
+        userId: "user-123",
+        deletedAt: new Date(),
+      } as any;
+
+      mockCategoryRepository.findById.mockResolvedValue(category);
+      mockCategoryRepository.update.mockResolvedValue({
+        ...category,
+        name: "Restored Food",
+        deletedAt: null,
+      });
+
+      await service.update("cat-deleted", "user-123", {
+        name: "Restored Food",
+      });
+
+      expect(repository.update).toHaveBeenCalledWith(
+        "cat-deleted",
+        "user-123",
+        {
+          name: "Restored Food",
+          deletedAt: null,
+        },
+      );
     });
 
     it("should throw NotFoundException if category does not exist", async () => {
