@@ -84,6 +84,13 @@ export class SyncUserResponseDto {
     type: String,
   })
   lastSyncStatus!: string;
+
+  @ApiProperty({
+    description: "Monotonic server revision for user cloud data",
+    example: 42,
+    type: Number,
+  })
+  syncRevision!: number;
 }
 
 export class MeResponseDto {
@@ -139,6 +146,13 @@ export class MeResponseDto {
     type: String,
   })
   lastSyncStatus!: string | null;
+
+  @ApiProperty({
+    description: "Monotonic server revision for user cloud data",
+    example: 42,
+    type: Number,
+  })
+  syncRevision!: number;
 }
 
 export class AuthMessageResponseDto {

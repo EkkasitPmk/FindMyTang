@@ -423,11 +423,14 @@ export class AuthService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  async syncUser(
-    userId: string,
-  ): Promise<{ success: boolean; lastSyncedAt: Date; lastSyncStatus: string }> {
+  async syncUser(userId: string): Promise<{
+    success: boolean;
+    lastSyncedAt: Date;
+    lastSyncStatus: string;
+    syncRevision: number;
+  }> {
     const lastSyncedAt = new Date();
-    await this.prisma.user.update({
+    const user = await this.prisma.user.update({
       where: { id: userId },
       data: {
         lastSyncedAt,
@@ -438,6 +441,7 @@ export class AuthService implements OnModuleInit, OnModuleDestroy {
       success: true,
       lastSyncedAt,
       lastSyncStatus: "SUCCESS",
+      syncRevision: user.syncRevision,
     };
   }
 }
