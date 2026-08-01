@@ -28,7 +28,8 @@ interface DesktopSidebarProps {
   onLogout: () => void;
   isGuest: boolean;
   isSyncing: boolean;
-  syncStatus: "synced" | "syncing" | "offline";
+  syncStatus: "idle" | "synced" | "syncing" | "failed";
+  lastSyncedAt?: string | null;
   onSyncClick?: () => void;
   onNavigate?: (e?: React.MouseEvent<HTMLAnchorElement>, href?: string) => void;
 }
@@ -41,6 +42,7 @@ export default function DesktopSidebar({
   isGuest,
   isSyncing,
   syncStatus,
+  lastSyncedAt,
   onSyncClick,
   onNavigate,
 }: Readonly<DesktopSidebarProps>) {
@@ -116,6 +118,7 @@ export default function DesktopSidebar({
             isGuest={isGuest}
             isSyncing={isSyncing}
             syncStatus={syncStatus}
+            lastSyncedAt={lastSyncedAt}
             onSyncClick={onSyncClick}
           />
           <ThemeSwitcher />

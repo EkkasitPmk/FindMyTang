@@ -20,11 +20,13 @@ export const syncUserApi = async (): Promise<{
   success: boolean;
   lastSyncedAt: string;
   lastSyncStatus: string;
+  syncRevision: number;
 }> => {
   const response = await http.post<{
     success: boolean;
     lastSyncedAt: string;
     lastSyncStatus: string;
+    syncRevision: number;
   }>("/auth/sync");
   return response.data;
 };

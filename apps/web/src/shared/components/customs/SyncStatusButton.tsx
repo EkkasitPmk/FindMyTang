@@ -12,7 +12,8 @@ import { cn } from "@/shared/lib/utils/core.util";
 interface SyncStatusButtonProps {
   isGuest: boolean;
   isSyncing: boolean;
-  syncStatus: "synced" | "syncing" | "offline";
+  syncStatus: "idle" | "synced" | "syncing" | "failed";
+  lastSyncedAt?: string | null;
   onSyncClick?: () => void;
 }
 
@@ -20,15 +21,16 @@ export default function SyncStatusButton({
   isGuest,
   isSyncing,
   syncStatus,
+  lastSyncedAt,
   onSyncClick,
 }: Readonly<SyncStatusButtonProps>) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
 
   const getIcon = () => {
     if (isGuest) return <CloudOff size={14} className="text-disabled-text" />;
     if (isSyncing)
       return <RefreshCw size={14} className="text-primary animate-spin" />;
-    if (syncStatus === "offline")
+    if (syncStatus === "failed")
       return <AlertCircle size={14} className="text-expense" />;
     if (syncStatus === "synced")
       return <CheckCircle2 size={14} className="text-income" />;
@@ -43,8 +45,21 @@ export default function SyncStatusButton({
   const getStatusText = () => {
     if (isGuest) return t("localOnly");
     if (isSyncing) return t("syncing");
-    if (syncStatus == "synced") return t("upToDate");
+    if (syncStatus === "idle") return t("checkingSync");
+    if (syncStatus === "synced") return t("upToDate");
     return t("cloudSyncFailed");
+  };
+
+  const getTitle = () => {
+    if (isGuest || !lastSyncedAt) return getStatusText();
+
+    const syncedDate = new Date(lastSyncedAt);
+    if (Number.isNaN(syncedDate.getTime())) return getStatusText();
+
+    return `${getStatusText()} · ${t("lastSyncedAt").replace(
+      "{time}",
+      syncedDate.toLocaleString(locale),
+    )}`;
   };
 
   return (
@@ -52,7 +67,7 @@ export default function SyncStatusButton({
       variant="unstyled"
       onClick={onSyncClick}
       disabled={isSyncing}
-      title={getStatusText()}
+      title={getTitle()}
       className={cn(
         "flex items-center justify-center group-data-[collapsible=icon]:justify-center gap-2 p-2 rounded-lg shrink-0 cursor-pointer hover:bg-surface-secondary/80 transition-all text-sm group w-full",
       )}

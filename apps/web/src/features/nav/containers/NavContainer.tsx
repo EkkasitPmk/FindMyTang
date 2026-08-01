@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { toast } from "react-toastify";
 import { LogOut } from "lucide-react";
@@ -15,15 +15,23 @@ import { useFeatureLockModal } from "@/shared/lib/hooks/useFeatureLockModal.hook
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { useMeQuery } from "@/shared/lib/hooks/useMeQuery.hook";
-import { useModalState } from "@/shared/lib/hooks/useModalState.hook";
+import {
+  isCloudSyncQuery,
+  ensureSyncSucceeded,
+  performCloudSync,
+  shouldPullCloudData,
+} from "../helpers/sync.helper";
 import {
   isGuestNavBlocked,
   shouldShowMobileBottomNav,
 } from "../helpers/navigation.helper";
 
+const CLOUD_SYNC_INTERVAL_MS = 60_000;
+
 export default function NavContainer() {
   const pathname = usePathname();
   const { data: user, isLoading } = useMeQuery();
+  const isAuthenticated = Boolean(user);
   const queryClient = useQueryClient();
   const { isGuest, setGuestMode, clearGuestData } = useGuestStore();
   const openLockModal = useFeatureLockModal((state) => state.openModal);
@@ -53,10 +61,18 @@ export default function NavContainer() {
 
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncStatus, setSyncStatus] = useState<
-    "synced" | "syncing" | "offline"
-  >("synced");
+    "idle" | "synced" | "syncing" | "failed"
+  >("idle");
   const [isLoggingOutLocal, setIsLoggingOutLocal] = useState(false);
-  const { modalState, setModalState, resetModalState } = useModalState();
+  const syncInFlightRef = useRef<Promise<void> | null>(null);
+  const syncScheduleRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const cloudRevisionRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (user?.syncRevision !== undefined) {
+      cloudRevisionRef.current = user.syncRevision;
+    }
+  }, [user?.syncRevision]);
 
   const { t } = useTranslation();
 
@@ -76,45 +92,105 @@ export default function NavContainer() {
       },
     });
 
-  const syncUserMutation = useSyncUserMutation();
+  const { mutateAsync: syncUser } = useSyncUserMutation();
+
+  const runCloudSync = useCallback(async () => {
+    if (isGuest || !isAuthenticated) return;
+    if (syncInFlightRef.current) return syncInFlightRef.current;
+
+    setIsSyncing(true);
+    setSyncStatus("syncing");
+
+    const syncPromise = performCloudSync(async () => {
+      const result = await syncUser();
+      ensureSyncSucceeded(result);
+      if (shouldPullCloudData(cloudRevisionRef.current, result.syncRevision)) {
+        await queryClient.refetchQueries(
+          {
+            predicate: isCloudSyncQuery,
+            type: "all",
+          },
+          { throwOnError: true },
+        );
+      }
+      cloudRevisionRef.current = result.syncRevision;
+    })
+      .then(() => {
+        setIsSyncing(false);
+        setSyncStatus("synced");
+      })
+      .catch((error: unknown) => {
+        setIsSyncing(false);
+        setSyncStatus("failed");
+        throw error;
+      })
+      .finally(() => {
+        syncInFlightRef.current = null;
+      });
+
+    syncInFlightRef.current = syncPromise;
+    return syncPromise;
+  }, [isAuthenticated, isGuest, queryClient, syncUser]);
+
+  const executeScheduledCloudSync = useCallback(() => {
+    syncScheduleRef.current = null;
+    void runCloudSync().catch(() => {});
+  }, [runCloudSync]);
+
+  const scheduleCloudSync = useCallback(() => {
+    if (syncScheduleRef.current) clearTimeout(syncScheduleRef.current);
+    syncScheduleRef.current = setTimeout(executeScheduledCloudSync, 250);
+  }, [executeScheduledCloudSync]);
+
+  const runPeriodicCloudSync = useCallback(() => {
+    void runCloudSync().catch(() => {});
+  }, [runCloudSync]);
+
+  useEffect(() => {
+    if (isGuest || !isAuthenticated) return;
+
+    let syncInterval: ReturnType<typeof setInterval> | null = null;
+
+    const startPeriodicSync = () => {
+      if (syncInterval || document.visibilityState !== "visible") return;
+      syncInterval = setInterval(runPeriodicCloudSync, CLOUD_SYNC_INTERVAL_MS);
+    };
+
+    const stopPeriodicSync = () => {
+      if (!syncInterval) return;
+      clearInterval(syncInterval);
+      syncInterval = null;
+    };
+
+    scheduleCloudSync();
+    startPeriodicSync();
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        scheduleCloudSync();
+        startPeriodicSync();
+      } else {
+        stopPeriodicSync();
+      }
+    };
+
+    globalThis.addEventListener("online", scheduleCloudSync);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      globalThis.removeEventListener("online", scheduleCloudSync);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      if (syncScheduleRef.current) clearTimeout(syncScheduleRef.current);
+      stopPeriodicSync();
+    };
+  }, [isAuthenticated, isGuest, runPeriodicCloudSync, scheduleCloudSync]);
 
   const handleSyncClick = () => {
     if (isGuest) {
       openLockModal(t("cloudSyncBackup"));
       return;
     }
-
-    setIsSyncing(true);
-    setSyncStatus("syncing");
-
-    syncUserMutation.mutate(undefined, {
-      onSuccess: () => {
-        void queryClient
-          .refetchQueries()
-          .then(() => {
-            setIsSyncing(false);
-            setSyncStatus("synced");
-          })
-          .catch(() => {
-            setIsSyncing(false);
-            setSyncStatus("offline");
-            setModalState({
-              isOpen: true,
-              status: "error",
-              message: t("cloudSyncFailed"),
-            });
-          });
-      },
-      onError: () => {
-        setIsSyncing(false);
-        setSyncStatus("offline");
-        setModalState({
-          isOpen: true,
-          status: "error",
-          message: t("cloudSyncFailed"),
-        });
-      },
-    });
+    void runCloudSync().catch(() => {});
   };
 
   const handleNavigate = (
@@ -176,14 +252,7 @@ export default function NavContainer() {
 
   const isLoggingOut = isLogoutPending || isLoggingOutLocal;
 
-  let loadingModalMessage: string | undefined;
-  if (modalState.isOpen) {
-    loadingModalMessage = modalState.message;
-  } else if (isGuest) {
-    loadingModalMessage = t("clearingSession");
-  } else {
-    loadingModalMessage = t("signingOut");
-  }
+  const loadingModalMessage = isGuest ? t("clearingSession") : t("signingOut");
 
   return (
     <>
@@ -196,6 +265,7 @@ export default function NavContainer() {
         isGuest={isGuest}
         isSyncing={isSyncing}
         syncStatus={syncStatus}
+        lastSyncedAt={user?.lastSyncedAt}
         onSyncClick={handleSyncClick}
         onNavigate={handleNavigate}
       />
@@ -211,6 +281,7 @@ export default function NavContainer() {
         isGuest={isGuest}
         isSyncing={isSyncing}
         syncStatus={syncStatus}
+        lastSyncedAt={user?.lastSyncedAt}
         onSyncClick={handleSyncClick}
         onNavigate={handleNavigate}
       />
@@ -234,12 +305,11 @@ export default function NavContainer() {
         des={isGuest ? t("clearSessionDesc") : t("signOutConfirmDesc")}
       />
 
-      {/* Loading Modal for Logout and sync result feedback */}
+      {/* Loading Modal for logout only */}
       <LoadingModal
-        isOpen={modalState.isOpen || isLoggingOut}
-        status={modalState.isOpen ? modalState.status : "loading"}
+        isOpen={isLoggingOut}
+        status="loading"
         message={loadingModalMessage}
-        onClose={resetModalState}
       />
     </>
   );

@@ -15,7 +15,8 @@ interface MobileDrawerProps {
   onLogout: () => void;
   isGuest: boolean;
   isSyncing: boolean;
-  syncStatus: "synced" | "syncing" | "offline";
+  syncStatus: "idle" | "synced" | "syncing" | "failed";
+  lastSyncedAt?: string | null;
   onSyncClick?: () => void;
   onNavigate?: (e?: React.MouseEvent<HTMLAnchorElement>, href?: string) => void;
 }
@@ -30,6 +31,7 @@ export default function MobileDrawer({
   isGuest,
   isSyncing,
   syncStatus,
+  lastSyncedAt,
   onSyncClick,
   onNavigate,
 }: Readonly<MobileDrawerProps>) {
@@ -100,6 +102,7 @@ export default function MobileDrawer({
             isGuest={isGuest}
             isSyncing={isSyncing}
             syncStatus={syncStatus}
+            lastSyncedAt={lastSyncedAt}
             onSyncClick={onSyncClick}
           />
           {/* User profile & Action */}
