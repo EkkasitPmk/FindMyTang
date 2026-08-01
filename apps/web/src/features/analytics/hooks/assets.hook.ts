@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { getAssetDistributionApi } from "../services/assets.service";
 import { useGuestStore } from "@/shared/lib/storages/guest.storage";
 
@@ -8,5 +8,6 @@ export const useAssetDistribution = () => {
   return useQuery({
     queryKey: ["analytics", "asset-distribution", isGuest],
     queryFn: () => getAssetDistributionApi(),
+    placeholderData: keepPreviousData,
   });
 };

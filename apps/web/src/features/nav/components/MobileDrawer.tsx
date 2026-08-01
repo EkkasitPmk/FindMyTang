@@ -1,6 +1,5 @@
 import { Wallet, X } from "lucide-react";
 import NavLinks from "./NavLinks";
-import ThemeSwitcher from "@/shared/components/customs/ThemeSwitcher";
 import SyncStatusButton from "@/shared/components/customs/SyncStatusButton";
 import NavUserProfile from "./NavUserProfile";
 import { UserProfile } from "@/shared/lib/types/user.type";
@@ -46,6 +45,8 @@ export default function MobileDrawer({
       {/* Backdrop */}
       <Button
         variant="unstyled"
+        hoverScale={1}
+        tapScale={1}
         type="button"
         aria-hidden="true"
         tabIndex={-1}
@@ -59,7 +60,7 @@ export default function MobileDrawer({
       {/* Drawer */}
       <div
         className={cn(
-          "fixed top-0 bottom-0 left-0 z-50 w-64 max-w-[80vw] bg-surface border-r border-border p-4 flex flex-col justify-between transition-transform duration-200 ease-out shadow-xl transform-gpu will-change-transform",
+          "fixed top-0 bottom-0 left-0 z-50 w-[min(85vw,320px)] bg-surface border-r border-border p-4 flex flex-col justify-between transition-transform duration-200 ease-out shadow-xl transform-gpu will-change-transform",
           isOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
@@ -94,25 +95,21 @@ export default function MobileDrawer({
           />
         </div>
 
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <SyncStatusButton
-              isGuest={isGuest}
-              isSyncing={isSyncing}
-              syncStatus={syncStatus}
-              onSyncClick={onSyncClick}
-            />
-            <div className="px-4">
-              <ThemeSwitcher />
-            </div>
-          </div>
+        <div className="space-y-1">
+          <SyncStatusButton
+            isGuest={isGuest}
+            isSyncing={isSyncing}
+            syncStatus={syncStatus}
+            onSyncClick={onSyncClick}
+          />
           {/* User profile & Action */}
           <NavUserProfile
             user={user}
             isLoading={isLoading}
             onLogout={onLogout}
             onActionClick={onClose}
-            className="pt-3"
+            flatMenu
+            className="pt-2"
           />
         </div>
       </div>

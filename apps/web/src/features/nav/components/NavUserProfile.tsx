@@ -1,5 +1,12 @@
 import { useRouter } from "next/navigation";
-import { LogIn, LogOut, MoreVertical, Settings, UserRound } from "lucide-react";
+import {
+  ChevronRight,
+  LogIn,
+  LogOut,
+  MoreVertical,
+  Settings,
+  UserRound,
+} from "lucide-react";
 import Avatar from "@/shared/components/customs/Avatar";
 import { UserProfile } from "@/shared/lib/types/user.type";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
@@ -19,6 +26,7 @@ interface NavUserProfileProps {
   onLogout: () => void;
   onActionClick?: () => void;
   className?: string;
+  flatMenu?: boolean;
 }
 
 export default function NavUserProfile({
@@ -27,6 +35,7 @@ export default function NavUserProfile({
   onLogout,
   onActionClick,
   className,
+  flatMenu = false,
 }: Readonly<NavUserProfileProps>) {
   const router = useRouter();
   const { t } = useTranslation();
@@ -60,6 +69,89 @@ export default function NavUserProfile({
       </p>
     );
   })();
+
+  if (flatMenu) {
+    return (
+      <div className={cn("w-full border-t border-border pt-3", className)}>
+        {user ? (
+          <Button
+            variant="unstyled"
+            type="button"
+            onClick={() => {
+              onActionClick?.();
+              router.push("/settings/account");
+            }}
+            className="w-full flex items-center justify-between gap-2 px-2 py-2 rounded-lg hover:bg-surface-secondary transition-colors text-left cursor-pointer"
+          >
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="w-10 h-10 rounded-full bg-surface-secondary border border-border flex items-center justify-center overflow-hidden shrink-0">
+                <Avatar url={user.avatarUrl} size={40} iconSize={20} />
+              </div>
+              <div className="overflow-hidden min-w-0 min-h-9 flex flex-col justify-center">
+                {userProfileContent}
+              </div>
+            </div>
+            <ChevronRight
+              className="w-4 h-4 text-secondary-text shrink-0"
+              strokeWidth={1.75}
+            />
+          </Button>
+        ) : (
+          <div className="flex items-center gap-2 px-2 py-2">
+            <div className="w-10 h-10 rounded-full bg-surface-secondary border border-border flex items-center justify-center overflow-hidden shrink-0">
+              <Avatar size={40} iconSize={20} />
+            </div>
+            {userProfileContent}
+          </div>
+        )}
+
+        <div className="mt-1 space-y-1">
+          <Button
+            variant="unstyled"
+            type="button"
+            onClick={() => {
+              onActionClick?.();
+              router.push("/settings");
+            }}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-surface-secondary transition-colors text-left text-sm text-secondary-text cursor-pointer"
+          >
+            <Settings className="w-4 h-4" strokeWidth={1.75} />
+            {t("navSettings")}
+          </Button>
+
+          <div className="mt-1 border-t border-border pt-1">
+            {user ? (
+              <Button
+                variant="unstyled"
+                type="button"
+                onClick={() => {
+                  onActionClick?.();
+                  onLogout();
+                }}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-expense/10 transition-colors text-left text-sm text-expense cursor-pointer"
+              >
+                <LogOut className="w-4 h-4" strokeWidth={1.75} />
+                {t("signOut")}
+              </Button>
+            ) : (
+              <Button
+                variant="unstyled"
+                type="button"
+                onClick={() => {
+                  onActionClick?.();
+                  router.push("/login");
+                }}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-primary/10 transition-colors text-left text-sm text-primary cursor-pointer"
+              >
+                <LogIn className="w-4 h-4" strokeWidth={1.75} />
+                {t("connectAccountShort")}
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={cn("w-full border-t border-border", className)}>

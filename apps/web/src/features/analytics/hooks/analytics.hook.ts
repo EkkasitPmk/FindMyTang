@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { getCategoryBreakdownApi } from "../services/analytics.service";
 import { useGuestStore } from "@/shared/lib/storages/guest.storage";
 
@@ -12,5 +12,6 @@ export const useCategoryBreakdown = (
   return useQuery({
     queryKey: ["analytics", "category-breakdown", month, year, type, isGuest],
     queryFn: () => getCategoryBreakdownApi(month, year, type),
+    placeholderData: keepPreviousData,
   });
 };
