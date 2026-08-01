@@ -6,7 +6,7 @@ export const registerSchema = z
       .string()
       .trim()
       .min(1, "errDisplayNameRequired")
-      .max(25, "Display name must be under 25 characters"),
+      .max(25, "errDisplayNameLength"),
     email: z.email("errInvalidEmail").min(1, "errEmailRequired"),
     password: z
       .string()

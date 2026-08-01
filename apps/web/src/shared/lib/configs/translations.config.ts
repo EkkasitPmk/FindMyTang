@@ -98,6 +98,8 @@ export const translations = {
     cloudSync: "ซิงค์คลาวด์",
     localStorageLabel: "พื้นที่จัดเก็บในเครื่อง",
     syncing: "กำลังซิงค์...",
+    checkingSync: "กำลังตรวจสอบ...",
+    lastSyncedAt: "ซิงค์ล่าสุด: {time}",
     upToDate: "อัปเดตแล้ว",
     unlockFeature: "ปลดล็อก {featureName}",
     unlockFeatureDesc:
@@ -221,6 +223,16 @@ export const translations = {
     registerFailed: "การสมัครสมาชิกล้มเหลว โปรดลองอีกครั้ง",
     guestDataSynced: "ซิงค์ข้อมูลผู้เยี่ยมชมสำเร็จ",
     localDataDiscarded: "ยกเลิกข้อมูลในเครื่องแล้ว",
+    guestMigrationTitle: "ต้องการเก็บข้อมูลผู้เยี่ยมชมไว้หรือไม่?",
+    guestMigrationDesc:
+      "พบข้อมูลที่บันทึกไว้ในเครื่อง เลือกว่าจะรวมเข้าบัญชีหรือลบทิ้ง",
+    guestMigrationSyncing: "กำลังซิงค์...",
+    guestMigrationMerge: "รวมข้อมูล",
+    guestMigrationDiscard: "ลบข้อมูลในเครื่อง",
+    guestSyncEmpty: "ซิงค์เสร็จสิ้น (ไม่มีข้อมูลผู้เยี่ยมชมใหม่)",
+    guestSyncSuccess:
+      "ซิงค์ข้อมูลผู้เยี่ยมชมสำเร็จ: สินทรัพย์ {assets} รายการ, หมวดหมู่ {categories} รายการ, ธุรกรรม {transactions} รายการ",
+    guestSyncError: "เกิดข้อผิดพลาดในการซิงค์ข้อมูลผู้เยี่ยมชม: {error}",
 
     // Category Feature
     categoryManagement: "จัดการหมวดหมู่",
@@ -408,9 +420,11 @@ export const translations = {
     // Form Errors
     errInvalidEmail: "รูปแบบอีเมลไม่ถูกต้อง",
     errEmailRequired: "กรุณากรอกอีเมล",
+    errEmailLength: "อีเมลต้องไม่เกิน 254 ตัวอักษร",
     errPasswordRequired: "กรุณากรอกรหัสผ่าน",
     errPasswordLength: "รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร",
     errDisplayNameRequired: "กรุณากรอกชื่อที่แสดง",
+    errDisplayNameLength: "ชื่อที่แสดงต้องไม่เกิน 25 ตัวอักษร",
     errConfirmPasswordRequired: "กรุณายืนยันรหัสผ่าน",
     errAgreeTermsRequired: "คุณต้องยอมรับข้อตกลงและนโยบายความเป็นส่วนตัว",
     errPasswordsNotMatch: "รหัสผ่านไม่ตรงกัน",
@@ -532,6 +546,8 @@ export const translations = {
     cloudSync: "Cloud Sync",
     localStorageLabel: "Local Storage",
     syncing: "Syncing...",
+    checkingSync: "Checking...",
+    lastSyncedAt: "Last synced: {time}",
     upToDate: "Up to date",
     unlockFeature: "Unlock {featureName}",
     unlockFeatureDesc:
@@ -657,6 +673,16 @@ export const translations = {
     registerFailed: "Registration failed. Please try again.",
     guestDataSynced: "Guest data synced successfully",
     localDataDiscarded: "Local data discarded",
+    guestMigrationTitle: "Keep your Guest data?",
+    guestMigrationDesc:
+      "We found data saved on this device. Choose whether to merge it into your account or discard it.",
+    guestMigrationSyncing: "Syncing...",
+    guestMigrationMerge: "Merge data",
+    guestMigrationDiscard: "Discard local data",
+    guestSyncEmpty: "Sync complete (no new Guest data to sync)",
+    guestSyncSuccess:
+      "Guest data synced: {assets} assets, {categories} categories, {transactions} transactions",
+    guestSyncError: "Guest sync failed: {error}",
 
     // Category Feature
     categoryManagement: "Category Management",
@@ -846,9 +872,11 @@ export const translations = {
     // Form Errors
     errInvalidEmail: "Invalid email format",
     errEmailRequired: "Email is required",
+    errEmailLength: "Email must not exceed 254 characters",
     errPasswordRequired: "Password is required",
     errPasswordLength: "Password must be at least 8 characters long",
     errDisplayNameRequired: "Display name is required",
+    errDisplayNameLength: "Display name must be under 25 characters",
     errConfirmPasswordRequired: "Confirm password is required",
     errAgreeTermsRequired:
       "You must agree to the Terms of Service and Privacy Policy",
