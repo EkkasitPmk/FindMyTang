@@ -86,11 +86,6 @@ export default function NavContainer() {
 
     setIsSyncing(true);
     setSyncStatus("syncing");
-    setModalState({
-      isOpen: true,
-      status: "loading",
-      message: t("syncing"),
-    });
 
     syncUserMutation.mutate(undefined, {
       onSuccess: () => {
@@ -99,11 +94,6 @@ export default function NavContainer() {
           .then(() => {
             setIsSyncing(false);
             setSyncStatus("synced");
-            setModalState({
-              isOpen: true,
-              status: "success",
-              message: t("allDataSynced"),
-            });
           })
           .catch(() => {
             setIsSyncing(false);
@@ -244,7 +234,7 @@ export default function NavContainer() {
         des={isGuest ? t("clearSessionDesc") : t("signOutConfirmDesc")}
       />
 
-      {/* Loading Modal for Logout & Manual Sync */}
+      {/* Loading Modal for Logout and sync result feedback */}
       <LoadingModal
         isOpen={modalState.isOpen || isLoggingOut}
         status={modalState.isOpen ? modalState.status : "loading"}

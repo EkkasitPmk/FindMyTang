@@ -60,7 +60,7 @@ export default function DesktopSidebar({
         <SidebarTrigger className="text-secondary-text hover:text-primary-text hover:bg-surface-secondary shrink-0" />
       </SidebarHeader>
 
-      <SidebarContent className="px-2 py-4 group-data-[collapsible=icon]:px-0 items-center justify-between">
+      <SidebarContent className="px-2 py-4 sm:py-2 group-data-[collapsible=icon]:px-0 items-center justify-between">
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>

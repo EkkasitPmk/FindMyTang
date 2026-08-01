@@ -97,14 +97,14 @@ export function getMainContentClassNames({
   mainOverflowClassName: string;
 } {
   let mainContentClassName = "px-0 py-3";
-  let mainOverflowClassName = "overflow-y-auto max-h-screen";
+  let mainOverflowClassName = "overflow-y-auto";
 
   const route = getMainLayoutRoute(pathname);
 
   if (isMainTab) {
     if (shouldLockContentScroll(route)) {
       mainContentClassName = "py-3";
-      mainOverflowClassName = "overflow-hidden h-full";
+      mainOverflowClassName = "overflow-hidden";
     } else {
       mainContentClassName = "pt-15";
     }
