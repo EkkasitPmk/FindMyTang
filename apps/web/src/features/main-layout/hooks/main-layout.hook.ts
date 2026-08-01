@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCategories } from "@/shared/lib/hooks/useCategories.hook";
 import { useCategoryUIStore } from "@/features/category/hooks/category.hook";
@@ -18,6 +18,15 @@ import {
 export function useMainLayout() {
   const pathname = usePathname();
   const router = useRouter();
+  const shouldUseHomeFallback = useRef(
+    pathname === "/settings" &&
+      typeof window !== "undefined" &&
+      (
+        performance.getEntriesByType("navigation")[0] as
+          | PerformanceNavigationTiming
+          | undefined
+      )?.type === "reload",
+  );
   const searchParams = useSearchParams();
   const assetId = searchParams.get("id");
   const assetNameParam = searchParams.get("name");
@@ -101,6 +110,19 @@ export function useMainLayout() {
     setSearchKeyword("");
   };
 
+  useEffect(() => {
+    if (pathname !== "/settings") shouldUseHomeFallback.current = false;
+  }, [pathname]);
+
+  const handleClosePage = () => {
+    if (routeName === "settings" && shouldUseHomeFallback.current) {
+      router.push("/home");
+      return;
+    }
+
+    router.back();
+  };
+
   return {
     route: {
       pathname,
@@ -111,7 +133,7 @@ export function useMainLayout() {
     translation: t,
     navigation: {
       handleBack,
-      handleClosePage: () => router.back(),
+      handleClosePage,
     },
     header: {
       currentCategory,

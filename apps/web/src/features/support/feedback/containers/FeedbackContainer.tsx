@@ -62,7 +62,7 @@ export default function FeedbackContainer() {
   const closeEverything = () => {
     reset();
     resetModalState();
-    router.back();
+    router.push("/settings");
   };
 
   const onSubmit = async (values: FeedbackFormValues) => {
@@ -135,12 +135,14 @@ export default function FeedbackContainer() {
         typeMenuOpen={typeMenuOpen}
         onTypeMenuToggle={(value) => setTypeMenuOpen(value ?? !typeMenuOpen)}
       />
-      <div className="fixed bottom-0 w-full flex gap-3 border-t border-border px-4 py-3 [&>button]:h-10! [&>button]:min-h-10! [&>button]:min-w-0! [&>button]:flex-1! [&>button]:py-0! [&>button]:text-sm!">
+
+      <div className="px-4 py-3 mt-3">
         <Button
           type="submit"
           form="feedback-form"
           disabled={!canSubmit}
           isLoading={isSubmitting}
+          className="w-full py-5"
         >
           {isSubmitting ? t("feedbackSending") : t("sendFeedback")}
         </Button>
