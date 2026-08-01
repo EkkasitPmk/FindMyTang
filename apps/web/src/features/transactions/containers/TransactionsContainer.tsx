@@ -183,9 +183,11 @@ export default function TransactionsContainer() {
         message,
         shouldRedirect,
       });
-      reset(defaultValues);
-      setAmountDigits("");
-      setFile(null);
+      if (!shouldRedirect) {
+        reset(defaultValues);
+        setAmountDigits("");
+        setFile(null);
+      }
     },
     [reset, defaultValues, setModalState],
   );
@@ -384,16 +386,10 @@ export default function TransactionsContainer() {
   const { inputRef: amountInputRef, handleChange: handleCurrencyInput } =
     useCurrencyInput(displayAmount, handleAmountChange);
 
-  const onSubmit = (
-    data: CreateTransactionFormValues,
-    e?: React.BaseSyntheticEvent,
-  ) => {
-    const formData = new FormData(e?.target as HTMLFormElement);
-    const note = formData.get("note") as string;
-
+  const onSubmit = (data: CreateTransactionFormValues) => {
     submitTransaction({
       transactionType,
-      data: { ...data, note },
+      data,
       file,
       createTransaction,
       updateTransaction,

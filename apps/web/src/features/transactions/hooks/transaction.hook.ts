@@ -1,4 +1,5 @@
 import {
+  keepPreviousData,
   useMutation,
   useQuery,
   useQueryClient,
@@ -30,6 +31,7 @@ import { useGuestStore } from "@/shared/lib/storages/guest.storage";
 const invalidateQueries = (queryClient: QueryClient) => {
   queryClient.invalidateQueries({ queryKey: ["assets"] }).catch(() => {});
   queryClient.invalidateQueries({ queryKey: ["transactions"] }).catch(() => {});
+  queryClient.invalidateQueries({ queryKey: ["transaction"] }).catch(() => {});
   queryClient.invalidateQueries({ queryKey: ["summary"] }).catch(() => {});
 };
 
@@ -84,7 +86,12 @@ export const useUpdateTransactionMutation = (options?: {
 
 export const useTransactionsQuery = (
   params?: TransactionQuery,
-  options?: { enabled?: boolean },
+  options?: {
+    enabled?: boolean;
+    placeholderData?: (
+      previousData: PaginatedTransactionResponse | undefined,
+    ) => PaginatedTransactionResponse | undefined;
+  },
 ) => {
   const isGuest = useGuestStore((state) => state.isGuest);
   return useQuery<PaginatedTransactionResponse, AxiosError<ApiErrorResponse>>({
@@ -118,6 +125,7 @@ export const useInfiniteTransactionsQuery = (params?: TransactionQuery) => {
       return undefined;
     },
     initialPageParam: 1,
+    placeholderData: keepPreviousData,
   });
 };
 
