@@ -19,6 +19,7 @@ export const translations = {
     // More page
     preferences: "การตั้งค่า",
     language: "ภาษา",
+    themeMode: "ธีมสี",
     management: "การจัดการ",
     manageCategories: "จัดการหมวดหมู่",
     manageAssets: "จัดการสินทรัพย์",
@@ -447,6 +448,7 @@ export const translations = {
     // More page
     preferences: "Preferences",
     language: "Language",
+    themeMode: "Theme",
     management: "Management",
     manageCategories: "Manage Categories",
     manageAssets: "Manage Assets",

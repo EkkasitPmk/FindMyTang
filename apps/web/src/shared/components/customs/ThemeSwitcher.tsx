@@ -15,7 +15,13 @@ import {
   DropdownMenuTrigger,
 } from "@/shared/components/animate-ui/components/radix/dropdown-menu";
 
-export default function ThemeSwitcher() {
+interface ThemeSwitcherProps {
+  mobileMenu?: boolean;
+}
+
+export default function ThemeSwitcher({
+  mobileMenu = false,
+}: Readonly<ThemeSwitcherProps>) {
   const { theme, resolvedTheme, setTheme } = useTheme();
 
   const options = [
@@ -35,8 +41,60 @@ export default function ThemeSwitcher() {
           options.find((option) => option.value === effective) ?? options[1];
         const ActiveIcon = activeOption.icon;
 
+        if (mobileMenu) {
+          return (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="unstyled"
+                  type="button"
+                  className="w-full flex items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-sm text-secondary-text hover:bg-surface-secondary hover:text-primary-text transition-colors cursor-pointer"
+                  aria-label="Change appearance"
+                >
+                  <span className="flex items-center gap-3">
+                    <ActiveIcon
+                      className="w-4 h-4 text-primary"
+                      strokeWidth={1.75}
+                    />
+                    Appearance
+                  </span>
+                  <span className="text-xs text-secondary-text">
+                    {activeOption.label}
+                  </span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                side="top"
+                align="start"
+                className="w-48 rounded-xl border border-border bg-surface p-1.5 shadow-lg"
+              >
+                {options.map(({ value, icon: Icon, label }) => {
+                  const isActive = effective === value;
+                  return (
+                    <DropdownMenuItem
+                      key={value}
+                      onClick={() => toggleTheme(value)}
+                      className={cn(
+                        "my-0.5 flex cursor-pointer items-center justify-between rounded-lg px-3 py-2 text-xs font-medium transition-colors",
+                        isActive
+                          ? "bg-primary-light/80 font-semibold text-primary"
+                          : "text-secondary-text hover:bg-surface-secondary/70 hover:text-primary-text",
+                      )}
+                    >
+                      <span className="flex items-center gap-2.5">
+                        <Icon size={15} strokeWidth={isActive ? 2.2 : 1.75} />
+                        {label}
+                      </span>
+                    </DropdownMenuItem>
+                  );
+                })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          );
+        }
+
         return (
-          <div className="relative flex w-full items-center justify-center">
+          <div className="relative flex items-center justify-center">
             <div
               className={cn(
                 "relative m-0 flex w-fit max-w-60 shrink-0 select-none items-center justify-center overflow-hidden rounded-xl border border-border/80 bg-surface-secondary/80 p-1 backdrop-blur-xs",

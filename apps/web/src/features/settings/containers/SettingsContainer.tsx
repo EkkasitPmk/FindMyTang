@@ -10,6 +10,7 @@ import {
   MessageSquareText,
   Lightbulb,
   ChevronRight,
+  Moon,
 } from "lucide-react";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
@@ -20,6 +21,7 @@ import { useFeatureLockModal } from "@/shared/lib/hooks/useFeatureLockModal.hook
 import { APP_VERSION } from "@/shared/lib/configs/app.config";
 import SettingsMenuItem from "../components/SettingsMenuItem";
 import SettingsSection from "../components/SettingsSection";
+import ThemeSwitcher from "@/shared/components/customs/ThemeSwitcher";
 
 interface SettingsContainerProps {
   onClose?: () => void;
@@ -103,6 +105,17 @@ export default function SettingsContainer({
                 ไทย
               </Button>
             </div>
+          </div>
+          <div className="flex justify-between items-center gap-3 py-2 p-3.5">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-primary-light text-primary">
+                <Moon className="w-4 h-4" strokeWidth={1.5} />
+              </div>
+              <span className="text-xs font-semibold text-primary-text">
+                {t("themeMode")}
+              </span>
+            </div>
+            <ThemeSwitcher />
           </div>
         </div>
       </SettingsSection>
