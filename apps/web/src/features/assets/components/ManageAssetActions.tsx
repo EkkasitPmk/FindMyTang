@@ -29,7 +29,7 @@ export default function ManageAssetActions({
         <Button
           size="sm"
           variant="outline"
-          className="flex-1 text-primary border-primary hover:bg-primary/5"
+          className="grow min-w-0 h-auto min-h-7 whitespace-normal text-primary border-primary hover:bg-primary/5"
           onClick={(e) => {
             e.stopPropagation();
             onRestore();
@@ -41,7 +41,7 @@ export default function ManageAssetActions({
         <Button
           size="sm"
           variant="outline"
-          className="flex-1 text-destructive border-destructive hover:bg-destructive/5"
+          className="grow min-w-0 h-auto min-h-7 whitespace-normal text-destructive border-destructive hover:bg-destructive/5"
           onClick={(e) => {
             e.stopPropagation();
             onDelete();
@@ -59,7 +59,7 @@ export default function ManageAssetActions({
       <Button
         size="sm"
         variant="ghost"
-        className="flex-1 text-secondary-text hover:text-primary-text"
+        className="flex-1 min-w-0 h-auto min-h-7 whitespace-normal text-secondary-text hover:text-primary-text"
         onClick={(e) => {
           e.stopPropagation();
           onEdit();
@@ -73,7 +73,7 @@ export default function ManageAssetActions({
         <Button
           size="sm"
           variant="ghost"
-          className="flex-1 text-primary hover:text-primary/90 hover:bg-primary/5"
+          className="flex-1 min-w-0 h-auto min-h-7 whitespace-normal text-primary hover:text-primary/90 hover:bg-primary/5"
           onClick={(e) => {
             e.stopPropagation();
             onUnarchive();
@@ -86,7 +86,7 @@ export default function ManageAssetActions({
         <Button
           size="sm"
           variant="ghost"
-          className="flex-1 text-highlight hover:text-highlight hover:bg-highlight-light"
+          className="flex-1 min-w-0 h-auto min-h-7 whitespace-normal text-highlight hover:text-highlight hover:bg-highlight-light"
           onClick={(e) => {
             e.stopPropagation();
             onArchive();
@@ -100,7 +100,7 @@ export default function ManageAssetActions({
       <Button
         size="sm"
         variant="ghost"
-        className="flex-1 text-destructive hover:text-destructive/90 hover:bg-destructive/5"
+        className="flex-1 min-w-0 h-auto min-h-7 whitespace-normal text-destructive hover:text-destructive/90 hover:bg-destructive/5"
         onClick={(e) => {
           e.stopPropagation();
           onDelete();

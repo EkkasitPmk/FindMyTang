@@ -78,7 +78,11 @@ export default function AssetForm({
         if (!open) onClose?.();
       }}
     >
-      <SheetContent side="bottom" className="sm:mx-auto sm:max-w-lg">
+      <SheetContent
+        side="bottom"
+        className="sm:mx-auto sm:max-w-lg"
+        onOpenAutoFocus={(event) => event.preventDefault()}
+      >
         <SheetHeader>
           <SheetTitle>
             {isEdit ? t("editAsset") : t("createNewAsset")}
