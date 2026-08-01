@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { getDrilldownApi } from "../services/drilldown.service";
 import { useGuestStore } from "@/shared/lib/storages/guest.storage";
 
@@ -12,5 +12,6 @@ export const useDrilldown = (
   return useQuery({
     queryKey: ["analytics", "drilldown", categoryId, month, year, isGuest],
     queryFn: () => getDrilldownApi(categoryId, month, year),
+    placeholderData: keepPreviousData,
   });
 };

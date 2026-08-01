@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { getMonthlyTrendsApi } from "../services/trends.service";
 import { useGuestStore } from "@/shared/lib/storages/guest.storage";
 
@@ -8,5 +8,6 @@ export const useMonthlyTrends = (year: number) => {
   return useQuery({
     queryKey: ["analytics", "monthly-trends", year, isGuest],
     queryFn: () => getMonthlyTrendsApi(year),
+    placeholderData: keepPreviousData,
   });
 };
