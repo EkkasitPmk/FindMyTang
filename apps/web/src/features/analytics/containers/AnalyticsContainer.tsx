@@ -62,14 +62,20 @@ export default function AnalyticsContainer() {
         <TabsContents className="h-full flex-1 min-h-0">
           <TabsContent
             value="category"
-            className="h-full flex flex-col min-h-0"
+            className="h-[80dvh] flex flex-col min-h-0"
           >
             <CategoryBreakdownContainer />
           </TabsContent>
-          <TabsContent value="trends" className="h-full flex flex-col min-h-0">
+          <TabsContent
+            value="trends"
+            className="h-[80dvh] flex flex-col min-h-0"
+          >
             <MonthlyTrendsContainer />
           </TabsContent>
-          <TabsContent value="assets" className="h-full flex flex-col min-h-0">
+          <TabsContent
+            value="assets"
+            className="h-[80dvh] flex flex-col min-h-0"
+          >
             <AssetDistributionContainer
               onAddAsset={() => setIsCreateAssetOpen(true)}
             />
