@@ -8,12 +8,21 @@ import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { AttachmentOptionButton } from "./AttachmentOptionButton";
 import { TransactionAttachmentPreview } from "./TransactionAttachmentPreview";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/shared/components/animate-ui/primitives/radix/collapsible";
+import type { ReactNode } from "react";
 
 interface TransactionMoreDetailsProps {
   isMoreDetailsOpen: boolean;
   setIsMoreDetailsOpen: (open: boolean) => void;
   displayDate: string;
   onOpenCalendar: () => void;
+  isCalendarOpen: boolean;
+  onCalendarOpenChange: (open: boolean) => void;
+  datePicker: ReactNode;
   isPhotoMenuOpen: boolean;
   setIsPhotoMenuOpen: (open: boolean) => void;
   file: File | null;
@@ -33,6 +42,9 @@ export default function TransactionMoreDetails({
   setIsMoreDetailsOpen,
   displayDate,
   onOpenCalendar,
+  isCalendarOpen,
+  onCalendarOpenChange,
+  datePicker,
   isPhotoMenuOpen,
   setIsPhotoMenuOpen,
   file,
@@ -145,22 +157,37 @@ export default function TransactionMoreDetails({
             {isLoadingTx ? (
               <Skeleton className="w-full h-15 rounded-md" />
             ) : (
-              <div className="relative w-full flex items-center gap-2 bg-surface rounded-md border border-border px-4 py-3">
-                <CalendarLucide size={18} className="text-secondary-text" />
-                <Button
-                  variant="unstyled"
-                  type="button"
-                  tapScale={1}
-                  hoverScale={1}
-                  onClick={onOpenCalendar}
-                  className="flex flex-col flex-1 text-left"
-                >
-                  <span className="text-secondary-text text-xs font-medium uppercase">
-                    {t("date")}
-                  </span>
-                  <span className="text-sm font-medium">{displayDate}</span>
-                </Button>
-              </div>
+              <Collapsible
+                open={isCalendarOpen}
+                onOpenChange={onCalendarOpenChange}
+              >
+                <CollapsibleTrigger asChild>
+                  <Button
+                    variant="unstyled"
+                    type="button"
+                    tapScale={1}
+                    hoverScale={1}
+                    onClick={() => {
+                      if (!isCalendarOpen) onOpenCalendar();
+                    }}
+                    className={cn(
+                      "relative w-full flex items-center gap-2 bg-surface rounded-md border border-border px-4 py-3",
+                      isCalendarOpen && "rounded-bl-none rounded-br-none",
+                    )}
+                  >
+                    <CalendarLucide size={18} className="text-secondary-text" />
+                    <div className="flex flex-col flex-1 text-left">
+                      <span className="text-secondary-text text-xs font-medium uppercase">
+                        {t("date")}
+                      </span>
+                      <span className="text-sm font-medium">{displayDate}</span>
+                    </div>
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent keepRendered>
+                  {datePicker}
+                </CollapsibleContent>
+              </Collapsible>
             )}
 
             {isLoadingTx ? (

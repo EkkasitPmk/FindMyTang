@@ -258,7 +258,6 @@ export default function TransactionsContainer() {
   const handleOpenCalendar = () => {
     setTempDate(date);
     setDisplayMonth(date);
-    setIsCalendarOpen(true);
   };
 
   const handleConfirmDate = () => {
@@ -538,6 +537,19 @@ export default function TransactionsContainer() {
                     setIsMoreDetailsOpen={setIsMoreDetailsOpen}
                     displayDate={displayDate}
                     onOpenCalendar={handleOpenCalendar}
+                    isCalendarOpen={isCalendarOpen}
+                    onCalendarOpenChange={setIsCalendarOpen}
+                    datePicker={
+                      <ChooseADate
+                        selectedDate={tempDate}
+                        onSelectDate={setTempDate}
+                        displayMonth={displayMonth}
+                        onMonthChange={setDisplayMonth}
+                        onConfirm={handleConfirmDate}
+                        onPresetClick={handlePresetClick}
+                        locale={calendarLocale}
+                      />
+                    }
                     isPhotoMenuOpen={isPhotoMenuOpen}
                     setIsPhotoMenuOpen={setIsPhotoMenuOpen}
                     file={file}
@@ -577,18 +589,6 @@ export default function TransactionsContainer() {
           )}
         </section>
       </div>
-
-      <ChooseADate
-        isOpen={isCalendarOpen}
-        selectedDate={tempDate}
-        onSelectDate={setTempDate}
-        displayMonth={displayMonth}
-        onMonthChange={setDisplayMonth}
-        onConfirm={handleConfirmDate}
-        onClose={() => setIsCalendarOpen(false)}
-        onPresetClick={handlePresetClick}
-        locale={calendarLocale}
-      />
 
       <ConfirmModal
         isOpen={isDeleteModalOpen}

@@ -16,7 +16,7 @@ export default function MainLayoutSearchBar({
         placeholder={placeholder}
         value={searchKeyword}
         onChange={(e) => onSearchKeywordChange(e.target.value)}
-        className="h-8 text-sm flex-1 bg-surface"
+        className="h-8 text-sm flex-1 bg-surface focus:ring-0"
       />
       <Button
         variant="unstyled"

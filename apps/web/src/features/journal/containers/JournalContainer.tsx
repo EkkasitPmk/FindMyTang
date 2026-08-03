@@ -143,7 +143,7 @@ export default function JournalContainer() {
                       placeholder={t("searchTransactions")}
                       value={searchKeyword}
                       onChange={(e) => setSearchKeyword(e.target.value)}
-                      className="pl-10 pr-10 h-10 text-sm"
+                      className="pl-10 pr-10 h-10 text-sm focus:ring-0"
                     />
                     {searchKeyword.length > 0 && (
                       <Button

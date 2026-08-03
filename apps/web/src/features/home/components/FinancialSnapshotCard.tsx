@@ -46,7 +46,7 @@ export default function FinancialSnapshotCard({
 
   if (isLoading) {
     return (
-      <div className="relative overflow-hidden rounded-xl border border-border bg-surface p-4.5 sm:p-5 shadow-xs">
+      <div className="relative overflow-hidden rounded-xl border border-border bg-surface p-4.5 sm:p-5 shadow-sm">
         {/* Header Skeleton */}
         <div className="flex items-center justify-between mb-2">
           <Skeleton className="h-4 w-36" />
@@ -76,7 +76,7 @@ export default function FinancialSnapshotCard({
 
   if (!hasAssets) {
     return (
-      <div className="relative overflow-hidden rounded-xl border border-border bg-surface p-4.5 sm:p-5 shadow-xs flex flex-col gap-3">
+      <div className="relative overflow-hidden rounded-xl border border-border bg-surface p-4.5 sm:p-5 shadow-sm flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold uppercase tracking-wider text-secondary-text flex items-center gap-1.5">
             <Wallet className="size-3.5 text-primary" />
@@ -215,7 +215,7 @@ export default function FinancialSnapshotCard({
   };
 
   return (
-    <section className="relative overflow-hidden rounded-xl border border-border bg-surface p-4.5 sm:p-5 shadow-xs transition-all duration-200">
+    <section className="relative overflow-hidden rounded-xl border border-border bg-surface p-4.5 sm:p-5 shadow-sm transition-all duration-200">
       {/* Background Ambient Tint */}
       <div className="absolute -top-12 -right-12 size-36 rounded-full bg-primary/5 blur-2xl pointer-events-none" />
 

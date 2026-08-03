@@ -85,7 +85,7 @@ export function DropdownSelect({
             type="button"
             style={getTriggerStyle()}
             className={cn(
-              "flex items-center justify-between gap-2 px-3 py-2 rounded-md text-sm font-semibold tracking-wide border transition-all duration-200 cursor-pointer outline-none w-full shadow-2xs select-none",
+              "flex items-center justify-between gap-2 px-3 py-2 rounded-md text-sm font-semibold tracking-wide border transition-all duration-200 cursor-pointer outline-none w-full select-none",
               isOpen
                 ? !effectiveThemeColor && "text-primary"
                 : "text-primary-text border-border/70 hover:bg-surface-secondary hover:border-border hover:shadow-xs",

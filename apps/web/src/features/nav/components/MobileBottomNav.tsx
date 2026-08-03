@@ -18,6 +18,7 @@ interface MobileBottomNavProps {
   mobileMenuOpen: boolean;
   isHidden: boolean;
   onMenuOpen: () => void;
+  onNavigate: () => void;
 }
 
 export default function MobileBottomNav({
@@ -25,6 +26,7 @@ export default function MobileBottomNav({
   mobileMenuOpen,
   isHidden,
   onMenuOpen,
+  onNavigate,
 }: Readonly<MobileBottomNavProps>) {
   const { t } = useTranslation();
   const isMoreActive =
@@ -70,6 +72,7 @@ export default function MobileBottomNav({
               <HighlightItem key={item.href} value={item.href} asChild>
                 <Link
                   href={item.href}
+                  onClick={onNavigate}
                   aria-label={displayLabel}
                   aria-current={isActive ? "page" : undefined}
                   className={`relative z-10 flex min-h-10 flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-1 text-[9px] font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 ${
