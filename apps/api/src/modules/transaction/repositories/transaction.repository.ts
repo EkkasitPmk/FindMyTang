@@ -48,7 +48,7 @@ export class TransactionRepository {
   }> {
     const { page = 1, limit = 20, pagination = "page", cursor } = query;
     const useCursor = this.supportsCursor(pagination, query.sortType);
-    const where = this.buildWhere(userId, query);
+    const where = await this.buildWhere(userId, query);
     this.applyCursorFilter(
       where,
       useCursor ? cursor : undefined,
@@ -75,31 +75,49 @@ export class TransactionRepository {
     return { items: pageItems, total, nextCursor };
   }
 
-  private buildWhere(
+  private async buildWhere(
     userId: string,
     query: TransactionQueryDto,
-  ): Prisma.TransactionWhereInput {
+  ): Promise<Prisma.TransactionWhereInput> {
     const { type, assetId, categoryId, from, to, isDeleted, searchKeyword } =
       query;
+    const filters: Prisma.TransactionWhereInput[] = [];
+    const normalizedSearchKeyword = searchKeyword?.replace(/[฿,\s+-]/g, "");
+
+    if (assetId) {
+      filters.push({ OR: [{ assetId }, { toAssetId: assetId }] });
+    }
+
+    if (searchKeyword) {
+      const amountSearchIds = normalizedSearchKeyword
+        ? await this.findAmountSearchIds(userId, normalizedSearchKeyword)
+        : [];
+
+      filters.push({
+        OR: [
+          { note: { contains: searchKeyword, mode: "insensitive" } },
+          {
+            category: {
+              name: { contains: searchKeyword, mode: "insensitive" },
+            },
+          },
+          { asset: { name: { contains: searchKeyword, mode: "insensitive" } } },
+          {
+            toAsset: { name: { contains: searchKeyword, mode: "insensitive" } },
+          },
+          ...(amountSearchIds.length > 0
+            ? [{ id: { in: amountSearchIds } }]
+            : []),
+        ],
+      });
+    }
 
     return {
       userId,
       deletedAt: isDeleted ? { not: null } : null,
       ...(type && { type }),
-      ...(assetId && { OR: [{ assetId }, { toAssetId: assetId }] }),
       ...(categoryId && { categoryId }),
-      ...(searchKeyword && {
-        OR: [
-          { note: { contains: searchKeyword, mode: "insensitive" } },
-          {
-            amount: {
-              equals: Number.isNaN(Number(searchKeyword))
-                ? undefined
-                : Number(searchKeyword),
-            },
-          },
-        ],
-      }),
+      ...(filters.length > 0 && { AND: filters }),
       ...((from || to) && {
         date: {
           ...(from && { gte: new Date(from) }),
@@ -107,6 +125,22 @@ export class TransactionRepository {
         },
       }),
     };
+  }
+
+  private findAmountSearchIds(
+    userId: string,
+    searchKeyword: string,
+  ): Promise<string[]> {
+    return this.prisma
+      .$queryRaw<Array<{ id: string }>>(
+        Prisma.sql`
+      SELECT "id"
+      FROM "Transaction"
+      WHERE "userId" = ${userId}
+        AND CAST(ABS("amount") AS TEXT) LIKE ${`%${searchKeyword}%`}
+    `,
+      )
+      .then((rows) => rows.map((row) => row.id));
   }
 
   private supportsCursor(
@@ -147,22 +181,21 @@ export class TransactionRepository {
 
     const decoded = this.decodeCursor(cursor);
     const direction = sortType === "DATE_OLDEST" ? "gt" : "lt";
-    where.AND = [
-      {
-        OR: [
-          { date: { [direction]: new Date(decoded.date) } },
-          {
-            date: new Date(decoded.date),
-            createdAt: { [direction]: new Date(decoded.createdAt) },
-          },
-          {
-            date: new Date(decoded.date),
-            createdAt: new Date(decoded.createdAt),
-            id: { [direction]: decoded.id },
-          },
-        ],
-      },
-    ];
+    const cursorFilter: Prisma.TransactionWhereInput = {
+      OR: [
+        { date: { [direction]: new Date(decoded.date) } },
+        {
+          date: new Date(decoded.date),
+          createdAt: { [direction]: new Date(decoded.createdAt) },
+        },
+        {
+          date: new Date(decoded.date),
+          createdAt: new Date(decoded.createdAt),
+          id: { [direction]: decoded.id },
+        },
+      ],
+    };
+    where.AND = [...(Array.isArray(where.AND) ? where.AND : []), cursorFilter];
   }
 
   private decodeCursor(cursor: string): TransactionCursor {
