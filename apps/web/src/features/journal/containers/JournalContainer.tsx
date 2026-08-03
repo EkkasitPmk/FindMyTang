@@ -44,6 +44,11 @@ export default function JournalContainer() {
   >("DATE_NEWEST");
   const [isSortOpen, setIsSortOpen] = useState(false);
 
+  const handleViewModeChange = (value: string) => {
+    setViewMode(value as ViewMode);
+    window.dispatchEvent(new Event("bottomnav:show"));
+  };
+
   const queryType =
     selectedType === "all" ? undefined : selectedType.toUpperCase();
   const {
@@ -54,8 +59,6 @@ export default function JournalContainer() {
     isFetchingNextPage,
   } = useInfiniteTransactionsQuery({
     limit: 30,
-    // Cursor order is stable for date sorting; amount sorting keeps the existing
-    // page strategy until a matching amount cursor is needed.
     pagination: sortType.startsWith("DATE") ? "cursor" : "page",
     type: queryType,
     sortType,
@@ -113,7 +116,7 @@ export default function JournalContainer() {
     <div className="flex h-full flex-col bg-background space-y-2">
       <Tabs
         value={viewMode}
-        onValueChange={(val) => setViewMode(val as ViewMode)}
+        onValueChange={handleViewModeChange}
         className="flex-1 flex flex-col min-h-0 gap-1"
       >
         {/* 1. ใส่ Timeline สลับ Calendar */}
@@ -270,6 +273,7 @@ export default function JournalContainer() {
                     isSearchMode={searchKeyword.length > 0}
                     searchKeyword={searchKeyword}
                     page="journal"
+                    useVirtualization={true}
                   />
                 </div>
               </div>

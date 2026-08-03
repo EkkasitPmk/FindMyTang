@@ -53,6 +53,12 @@ export default function NavContainer() {
   }, [isMobileBottomNavHidden]);
 
   useEffect(() => {
+    const showBottomNav = () => setIsMobileBottomNavHidden(false);
+    window.addEventListener("bottomnav:show", showBottomNav);
+    return () => window.removeEventListener("bottomnav:show", showBottomNav);
+  }, []);
+
+  useEffect(() => {
     if (!shouldHideBottomNavOnScroll) return;
 
     const SHOW_AFTER_SCROLL_UP = 150;

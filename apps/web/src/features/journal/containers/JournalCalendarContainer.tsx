@@ -41,16 +41,19 @@ export default function JournalCalendarContainer() {
   const calStart = startOfWeek(monthStart, { weekStartsOn: 1 });
   const calEnd = endOfWeek(monthEnd, { weekStartsOn: 1 });
 
-  const { data: transactionsData, isLoading: isLoadingTransactions } =
-    useTransactionsQuery(
-      {
-        from: calStart.toISOString(),
-        to: calEnd.toISOString(),
-        limit: 1000,
-        sortType: "DATE_NEWEST",
-      },
-      { placeholderData: keepPreviousData },
-    );
+  const {
+    data: transactionsData,
+    isLoading: isLoadingTransactions,
+    isFetching: isFetchingTransactions,
+  } = useTransactionsQuery(
+    {
+      from: calStart.toISOString(),
+      to: calEnd.toISOString(),
+      limit: 1000,
+      sortType: "DATE_NEWEST",
+    },
+    { placeholderData: keepPreviousData },
+  );
 
   const allTransactions = useMemo(
     () => transactionsData?.items ?? [],
@@ -184,8 +187,12 @@ export default function JournalCalendarContainer() {
         {/* Section 4: Transaction List — Scrollable only here ฝ*/}
         <TransactionListContainer
           groupedTransactions={groupedTransactions}
-          isLoadingTransactions={isLoadingTransactions}
+          isLoadingTransactions={
+            isLoadingTransactions ||
+            (isFetchingTransactions && Boolean(transactionsData))
+          }
           page="journal"
+          disableOwnScroll
         />
       </div>
     </div>
