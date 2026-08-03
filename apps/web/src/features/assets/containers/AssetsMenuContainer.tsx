@@ -21,6 +21,7 @@ export default function AssetsMenuContainer() {
     "DATE" | "MONEY" | null
   >(null);
   const setSearchMode = useAssetUIStore((state) => state.setSearchMode);
+  const setSearchKeyword = useAssetUIStore((state) => state.setSearchKeyword);
   const filterType = useAssetUIStore((state) => state.filterType);
   const setFilterType = useAssetUIStore((state) => state.setFilterType);
   const sortType = useAssetUIStore((state) => state.sortType);
@@ -201,7 +202,10 @@ export default function AssetsMenuContainer() {
         assetName={name}
         onDelete={handleDelete}
         onArchive={handleArchive}
-        onSearch={() => setSearchMode(true)}
+        onSearch={() => {
+          setSearchKeyword("");
+          setSearchMode(true);
+        }}
         filterType={filterType}
         filterLabel={filterLabel}
         isFilterOpen={isFilterOpen}
