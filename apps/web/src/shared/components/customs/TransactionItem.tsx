@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { ChevronDown } from "lucide-react";
 import { TransactionResponse } from "@/shared/lib/types/transaction.type";
 import { cn } from "@/shared/lib/utils/core.util";
@@ -28,7 +29,7 @@ export interface TransactionItemProps {
   isLastItem?: boolean;
 }
 
-export function TransactionItem({
+function TransactionItemComponent({
   transaction,
   expandedTransactionId,
   setExpandedTransactionId,
@@ -142,3 +143,23 @@ export function TransactionItem({
     </Collapsible>
   );
 }
+
+export const TransactionItem = memo(
+  TransactionItemComponent,
+  (previous, next) => {
+    const previousExpanded =
+      previous.expandedTransactionId === previous.transaction.id;
+    const nextExpanded = next.expandedTransactionId === next.transaction.id;
+
+    return (
+      previous.transaction === next.transaction &&
+      previous.currentAssetId === next.currentAssetId &&
+      previous.isLastItem === next.isLastItem &&
+      previous.onTransactionItemClick === next.onTransactionItemClick &&
+      previous.onRestoreClick === next.onRestoreClick &&
+      previous.onDeleteClick === next.onDeleteClick &&
+      previous.onAttachmentClick === next.onAttachmentClick &&
+      previousExpanded === nextExpanded
+    );
+  },
+);

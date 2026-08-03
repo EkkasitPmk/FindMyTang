@@ -67,6 +67,8 @@ export type TransactionResponse = ZodTransactionResponse;
 export interface TransactionQuery {
   page?: number;
   limit?: number;
+  pagination?: "page" | "cursor";
+  cursor?: string;
   type?: string;
   assetId?: string;
   categoryId?: string;

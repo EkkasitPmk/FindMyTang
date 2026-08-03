@@ -111,20 +111,30 @@ export const useInfiniteTransactionsQuery = (params?: TransactionQuery) => {
     AxiosError<ApiErrorResponse>,
     InfiniteData<PaginatedTransactionResponse>,
     readonly unknown[],
-    number
+    number | string | undefined
   >({
     queryKey: ["transactions", "infinite", { isGuest, ...params }],
     queryFn: async ({ pageParam = 1 }) => {
-      const page = pageParam as number;
-      return getTransactionsApi({ ...queryParams, page });
+      if (queryParams?.pagination === "cursor") {
+        return getTransactionsApi({
+          ...queryParams,
+          cursor: pageParam === 1 ? undefined : (pageParam as string),
+        });
+      }
+
+      return getTransactionsApi({ ...queryParams, page: pageParam as number });
     },
     getNextPageParam: (lastPage: PaginatedTransactionResponse) => {
+      if (queryParams?.pagination === "cursor") {
+        return lastPage.meta.nextCursor ?? undefined;
+      }
+
       if (lastPage.meta.page < lastPage.meta.totalPages) {
         return lastPage.meta.page + 1;
       }
       return undefined;
     },
-    initialPageParam: 1,
+    initialPageParam: queryParams?.pagination === "cursor" ? undefined : 1,
     placeholderData: keepPreviousData,
   });
 };

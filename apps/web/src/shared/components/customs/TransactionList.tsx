@@ -5,21 +5,15 @@ import {
 } from "@/shared/lib/types/transaction.type";
 import { TransactionItem } from "./TransactionItem";
 import { TransactionGroupHeader } from "./TransactionGroupHeader";
-import { renderGroupContent } from "./TransactionVirtuosoGroup";
-import { renderItemContent } from "./TransactionVirtuosoItem";
-import { TransactionVirtuosoFooter } from "./TransactionVirtuosoFooter";
 import { cn } from "@/shared/lib/utils/core.util";
 import TransactionListSkeleton from "../skeletons/TransactionListSkeleton";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
-import { GroupedVirtuoso } from "react-virtuoso";
-import { TranslationKey } from "@/shared/lib/configs/translations.config";
 
 const SKELETON_GROUPS = Array.from({ length: 3 }, (_, i) => i);
 
 export interface TransactionListProps {
   groupedTransactions: GroupedTransaction[];
   isLoadingTransactions: boolean;
-  isFetchingNextPage?: boolean;
   assetId?: string;
   onTransactionItemClick: (transaction: TransactionResponse) => void;
   onRestoreClick?: (transaction: TransactionResponse) => void;
@@ -30,29 +24,11 @@ export interface TransactionListProps {
   expandedTransactionId: string | null;
   setExpandedTransactionId: (id: string | null) => void;
   onAttachmentClick: (url: string) => void;
-  useVirtualization?: boolean;
-  onEndReached?: () => void;
-}
-
-export interface VirtuosoContext {
-  groupedTransactions: GroupedTransaction[];
-  flatItems: TransactionResponse[];
-  t: (key: TranslationKey) => string;
-  locale: string;
-  assetId?: string;
-  expandedTransactionId: string | null;
-  setExpandedTransactionId: (id: string | null) => void;
-  onTransactionItemClick: (transaction: TransactionResponse) => void;
-  onRestoreClick?: (transaction: TransactionResponse) => void;
-  onDeleteClick?: (transaction: TransactionResponse) => void;
-  onAttachmentClick?: (url: string) => void;
-  isFetchingNextPage?: boolean;
 }
 
 export function TransactionList({
   groupedTransactions,
   isLoadingTransactions,
-  isFetchingNextPage = false,
   assetId,
   onTransactionItemClick,
   onRestoreClick,
@@ -63,26 +39,8 @@ export function TransactionList({
   expandedTransactionId,
   setExpandedTransactionId,
   onAttachmentClick,
-  useVirtualization = false,
-  onEndReached,
 }: Readonly<TransactionListProps>) {
   const { t, locale } = useTranslation();
-  const flatItems = groupedTransactions?.flatMap((group) => group.items) || [];
-
-  const virtuosoContext: VirtuosoContext = {
-    groupedTransactions,
-    flatItems,
-    t,
-    locale,
-    assetId,
-    expandedTransactionId,
-    setExpandedTransactionId,
-    onTransactionItemClick,
-    onRestoreClick,
-    onDeleteClick,
-    onAttachmentClick,
-    isFetchingNextPage,
-  };
 
   if (isSearchMode && !searchKeyword) {
     return (
@@ -116,36 +74,6 @@ export function TransactionList({
           ))}
         </section>
       </>
-    );
-  }
-
-  if (useVirtualization) {
-    if (!groupedTransactions?.length) {
-      return (
-        <div className="text-secondary-text h-100 flex items-center justify-center">
-          {isSearchMode
-            ? t("noMatchingTransactionsFound")
-            : t("noTransactionsFound")}
-        </div>
-      );
-    }
-
-    const groupCounts = groupedTransactions.map((group) => group.items.length);
-
-    return (
-      <section className="bg-surface h-full">
-        <GroupedVirtuoso
-          className="h-full w-full"
-          groupCounts={groupCounts}
-          endReached={onEndReached}
-          context={virtuosoContext}
-          groupContent={renderGroupContent}
-          itemContent={renderItemContent}
-          components={{
-            Footer: TransactionVirtuosoFooter,
-          }}
-        />
-      </section>
     );
   }
 

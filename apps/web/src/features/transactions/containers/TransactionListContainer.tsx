@@ -32,7 +32,6 @@ interface TransactionListContainerProps {
   searchKeyword?: string;
   assetId?: string;
   page?: "asset" | "journal" | "recent";
-  useVirtualization?: boolean;
 }
 
 export function TransactionListContainer({
@@ -45,7 +44,6 @@ export function TransactionListContainer({
   searchKeyword,
   assetId,
   page,
-  useVirtualization = false,
 }: Readonly<TransactionListContainerProps>) {
   const router = useRouter();
   const { t } = useTranslation();
@@ -143,29 +141,33 @@ export function TransactionListContainer({
     },
     [openDeleteModal],
   );
-  // Observer for Lazy Load (Infinite Scroll)
+
   const observer = useRef<IntersectionObserver | null>(null);
   const observerTarget = useCallback(
     (node: HTMLDivElement | null) => {
-      if (isLoadingTransactions || isFetchingNextPage) return;
-      if (observer.current) observer.current.disconnect();
+      observer.current?.disconnect();
+      if (!node || isLoadingTransactions || isFetchingNextPage) {
+        return;
+      }
 
       observer.current = new IntersectionObserver(
-        (entries) => {
-          if (entries[0].isIntersecting && hasNextPage && fetchNextPage) {
+        ([entry]) => {
+          if (entry.isIntersecting && hasNextPage && fetchNextPage) {
             fetchNextPage();
           }
         },
-        { threshold: 0.1 },
+        { rootMargin: "800px 0px" },
       );
-
-      if (node) observer.current.observe(node);
+      observer.current.observe(node);
     },
     [isLoadingTransactions, isFetchingNextPage, hasNextPage, fetchNextPage],
   );
-
   return (
-    <div className={cn("flex flex-col", useVirtualization ? "h-full" : "")}>
+    <div
+      className={cn(
+        "flex flex-col h-full min-h-0 overflow-y-auto overscroll-contain",
+      )}
+    >
       {groupedTransactions.some((group) =>
         group.items.some((transaction: TransactionResponse) =>
           Boolean(transaction.deletedAt),
@@ -176,11 +178,10 @@ export function TransactionListContainer({
         </p>
       )}
 
-      <div className={cn(useVirtualization ? "flex-1 min-h-0" : "")}>
+      <div className={cn(!hasNextPage && "pb-18")}>
         <TransactionList
           groupedTransactions={groupedTransactions}
           isLoadingTransactions={isLoadingTransactions}
-          isFetchingNextPage={isFetchingNextPage}
           onTransactionItemClick={handleTransactionItemClick}
           onRestoreClick={handleRestoreClick}
           onDeleteClick={handleDeleteClick}
@@ -191,23 +192,12 @@ export function TransactionListContainer({
           expandedTransactionId={expandedTransactionId}
           setExpandedTransactionId={setExpandedTransactionId}
           onAttachmentClick={setPreviewImageUrl}
-          useVirtualization={useVirtualization}
-          onEndReached={() => {
-            if (hasNextPage && !isFetchingNextPage && fetchNextPage) {
-              fetchNextPage();
-            }
-          }}
         />
       </div>
 
-      {/* Trigger for Lazy load */}
-      {hasNextPage && fetchNextPage && !useVirtualization && (
+      {hasNextPage && fetchNextPage && (
         <div ref={observerTarget} className="my-4 shrink-0">
-          {isFetchingNextPage && (
-            <div className="space-y-1">
-              <TransactionListSkeleton />
-            </div>
-          )}
+          {isFetchingNextPage && <TransactionListSkeleton />}
         </div>
       )}
 
