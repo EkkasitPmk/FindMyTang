@@ -323,7 +323,10 @@ export default function NavContainer() {
     if (href && isGuestNavBlocked(href, isGuest)) {
       e?.preventDefault();
       openLockModal(t("accountSettingsBackup"));
+      return;
     }
+
+    if (href) setIsMobileBottomNavHidden(false);
   };
 
   useEffect(() => {
@@ -416,6 +419,7 @@ export default function NavContainer() {
           mobileMenuOpen={mobileMenuOpen}
           isHidden={shouldHideBottomNavOnScroll && isMobileBottomNavHidden}
           onMenuOpen={() => setMobileMenuOpen((prev) => !prev)}
+          onNavigate={() => setIsMobileBottomNavHidden(false)}
         />
       )}
 
