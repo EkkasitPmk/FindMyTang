@@ -32,6 +32,8 @@ interface TransactionListContainerProps {
   searchKeyword?: string;
   assetId?: string;
   page?: "asset" | "journal" | "recent";
+  useVirtualization?: boolean;
+  disableOwnScroll?: boolean;
 }
 
 export function TransactionListContainer({
@@ -44,6 +46,8 @@ export function TransactionListContainer({
   searchKeyword,
   assetId,
   page,
+  useVirtualization = false,
+  disableOwnScroll = false,
 }: Readonly<TransactionListContainerProps>) {
   const router = useRouter();
   const { t } = useTranslation();
@@ -146,7 +150,12 @@ export function TransactionListContainer({
   const observerTarget = useCallback(
     (node: HTMLDivElement | null) => {
       observer.current?.disconnect();
-      if (!node || isLoadingTransactions || isFetchingNextPage) {
+      if (
+        !node ||
+        useVirtualization ||
+        isLoadingTransactions ||
+        isFetchingNextPage
+      ) {
         return;
       }
 
@@ -160,12 +169,19 @@ export function TransactionListContainer({
       );
       observer.current.observe(node);
     },
-    [isLoadingTransactions, isFetchingNextPage, hasNextPage, fetchNextPage],
+    [
+      useVirtualization,
+      isLoadingTransactions,
+      isFetchingNextPage,
+      hasNextPage,
+      fetchNextPage,
+    ],
   );
   return (
     <div
       className={cn(
         "flex flex-col h-full min-h-0 overflow-y-auto overscroll-contain",
+        disableOwnScroll && "h-auto min-h-0 overflow-visible overscroll-auto",
       )}
     >
       {groupedTransactions.some((group) =>
@@ -178,10 +194,12 @@ export function TransactionListContainer({
         </p>
       )}
 
-      <div className={cn(!hasNextPage && "pb-18")}>
+      <div className={cn(useVirtualization && "flex-1 min-h-0")}>
         <TransactionList
           groupedTransactions={groupedTransactions}
           isLoadingTransactions={isLoadingTransactions}
+          isFetchingNextPage={isFetchingNextPage}
+          hasNextPage={hasNextPage}
           onTransactionItemClick={handleTransactionItemClick}
           onRestoreClick={handleRestoreClick}
           onDeleteClick={handleDeleteClick}
@@ -192,10 +210,16 @@ export function TransactionListContainer({
           expandedTransactionId={expandedTransactionId}
           setExpandedTransactionId={setExpandedTransactionId}
           onAttachmentClick={setPreviewImageUrl}
+          useVirtualization={useVirtualization}
+          onEndReached={() => {
+            if (hasNextPage && !isFetchingNextPage && fetchNextPage) {
+              fetchNextPage();
+            }
+          }}
         />
       </div>
 
-      {hasNextPage && fetchNextPage && (
+      {!useVirtualization && hasNextPage && fetchNextPage && (
         <div ref={observerTarget} className="my-4 shrink-0">
           {isFetchingNextPage && <TransactionListSkeleton />}
         </div>

@@ -125,7 +125,7 @@ function TransactionItemComponent({
       />
 
       {/* Expandable Detail */}
-      <CollapsibleContent transition={{ duration: 0.25, ease: "easeInOut" }}>
+      <CollapsibleContent>
         <div className="overflow-hidden">
           <TransactionItemDetails
             transaction={transaction}
