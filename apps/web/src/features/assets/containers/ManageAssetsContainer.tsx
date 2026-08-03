@@ -356,7 +356,7 @@ export default function ManageAssetsContainer() {
                 onToggleSelect={() => toggleSelect(asset.id)}
                 index={index}
                 draggedIndex={draggedIndex}
-                draggable={isEditingList}
+                draggable={false}
                 onDragStart={handleDragStart}
                 onDragOver={handleDragOver}
                 onDragEnd={handleDragEnd}

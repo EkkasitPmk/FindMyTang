@@ -124,6 +124,8 @@ export default function ManageAssetItem({
           balanceClass={balanceClass}
           isEditingList={isEditingList}
           index={index}
+          onDragStart={onDragStart}
+          onDragEnd={onDragEnd}
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
@@ -139,21 +141,9 @@ export default function ManageAssetItem({
       className={cn(containerClasses, "group/collapsible")}
       style={{
         ...containerStyle,
-        touchAction: draggable ? "none" : "auto",
+        touchAction: "auto",
       }}
-      draggable={draggable}
-      onDragStart={(e) => index !== undefined && onDragStart?.(e, index)}
       onDragOver={(e) => index !== undefined && onDragOver?.(e, index)}
-      onDragEnd={onDragEnd}
-      onTouchStart={() => {
-        if (draggable && index !== undefined) onTouchStart?.(index);
-      }}
-      onTouchMove={(e) => {
-        if (draggable) onTouchMove?.(e);
-      }}
-      onTouchEnd={() => {
-        if (draggable) onTouchEnd?.();
-      }}
       data-index={index}
     >
       {isEditingList ? (

@@ -122,7 +122,7 @@ export default function AssetDetail({
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-118px)] space-y-4">
+    <div className="flex flex-col h-full space-y-4 pb-17">
       {!isSearchMode && (
         <section className="relative flex flex-col items-center justify-center mt-6">
           <div
@@ -250,7 +250,6 @@ export default function AssetDetail({
           fetchNextPage={fetchNextPage}
           hasNextPage={hasNextPage}
           isFetchingNextPage={isFetchingNextPage}
-          useVirtualization={true}
         />
       </section>
 
