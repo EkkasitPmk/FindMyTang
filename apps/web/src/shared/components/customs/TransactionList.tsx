@@ -229,7 +229,7 @@ export function TransactionList({
     }
 
     return (
-      <section className="bg-surface h-full">
+      <section className="h-full">
         <GroupedVirtuoso
           className="h-full w-full"
           groupCounts={groupedTransactions.map((group) => group.items.length)}
@@ -259,9 +259,7 @@ export function TransactionList({
   }
 
   return (
-    <section
-      className={cn("bg-surface space-y-2 pb-20", isSearchMode && "pb-0")}
-    >
+    <section className={cn("space-y-2 pb-20", isSearchMode && "pb-0")}>
       {groupedTransactions.map((group) => (
         <div
           key={group.dateStr}
