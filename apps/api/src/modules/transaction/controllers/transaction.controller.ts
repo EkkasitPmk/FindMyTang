@@ -40,8 +40,6 @@ type TransactionWithRelations = Transaction & {
   category?: Category | null;
 };
 
-// ponytail: maps Prisma Transaction to a plain JSON-safe object (Decimal → number)
-// and handles included relations if present
 function toResponse(tx: TransactionWithRelations): TransactionResponseDto {
   return {
     id: tx.id,
@@ -244,7 +242,7 @@ export class TransactionController {
     @CurrentUser() user: User,
     @Query() query: TransactionQueryDto,
   ): Promise<PaginatedTransactionResponseDto> {
-    const { items, total } = await this.transactionService.findAll(
+    const { items, total, nextCursor } = await this.transactionService.findAll(
       user.id,
       query,
     );
@@ -258,6 +256,7 @@ export class TransactionController {
         limit,
         total,
         totalPages: Math.ceil(total / limit),
+        nextCursor,
       },
     };
   }

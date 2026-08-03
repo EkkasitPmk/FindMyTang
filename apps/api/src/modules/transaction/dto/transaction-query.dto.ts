@@ -7,6 +7,7 @@ import {
   IsString,
   IsDateString,
   IsBoolean,
+  IsIn,
 } from "class-validator";
 import { Type, Transform } from "class-transformer";
 import { TransactionType } from "@prisma/client";
@@ -37,6 +38,24 @@ export class TransactionQueryDto {
   @IsInt()
   @Min(1)
   limit?: number = 20;
+
+  @ApiProperty({
+    description: "Pagination strategy",
+    enum: ["page", "cursor"],
+    required: false,
+    default: "page",
+  })
+  @IsOptional()
+  @IsIn(["page", "cursor"])
+  pagination?: "page" | "cursor" = "page";
+
+  @ApiProperty({
+    description: "Opaque cursor returned by the previous request",
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  cursor?: string;
 
   @ApiProperty({
     description:

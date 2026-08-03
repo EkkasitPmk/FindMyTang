@@ -210,6 +210,9 @@ export class TransactionPaginationMetaDto {
     type: Number,
   })
   totalPages!: number;
+
+  @ApiProperty({ required: false, nullable: true })
+  nextCursor?: string | null;
 }
 
 export class PaginatedTransactionResponseDto {
