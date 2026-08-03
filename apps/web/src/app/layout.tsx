@@ -32,7 +32,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning className="antialiased">
-      <body className="min-h-screen flex flex-col">
+      <body>
         <Providers>{children}</Providers>
       </body>
     </html>

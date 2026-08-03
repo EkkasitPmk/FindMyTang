@@ -37,6 +37,123 @@ export default function NavContainer() {
   const openLockModal = useFeatureLockModal((state) => state.openModal);
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isMobileBottomNavHidden, setIsMobileBottomNavHidden] = useState(false);
+  const shouldHideBottomNavOnScroll =
+    pathname === "/home" ||
+    pathname === "/journal" ||
+    pathname === "/analytics" ||
+    pathname.startsWith("/analytics/category");
+
+  useEffect(() => {
+    window.dispatchEvent(
+      new CustomEvent("bottomnav:visibility", {
+        detail: { hidden: isMobileBottomNavHidden },
+      }),
+    );
+  }, [isMobileBottomNavHidden]);
+
+  useEffect(() => {
+    if (!shouldHideBottomNavOnScroll) return;
+
+    const SHOW_AFTER_SCROLL_UP = 150;
+    const previousScrollPositions = new WeakMap<Element, number>();
+    const upwardScrollDistances = new WeakMap<Element, number>();
+    let previousWindowScrollTop = window.scrollY;
+    let upwardWindowScrollDistance = 0;
+    const visualViewport = window.visualViewport;
+    const isKeyboardOpen = () =>
+      Boolean(
+        visualViewport &&
+        Math.max(window.innerHeight, document.documentElement.clientHeight) -
+          visualViewport.height >
+          100,
+      );
+    const resetUpwardDistance = (scrollTarget?: Element) => {
+      if (scrollTarget) upwardScrollDistances.delete(scrollTarget);
+      else upwardWindowScrollDistance = 0;
+    };
+    const trackUpwardDistance = (
+      scrollTarget: Element | undefined,
+      distance: number,
+    ) => {
+      if (scrollTarget) upwardScrollDistances.set(scrollTarget, distance);
+      else upwardWindowScrollDistance = distance;
+    };
+
+    const updateVisibility = (
+      currentScrollTop: number,
+      previousScrollTop: number,
+      scrollTarget?: Element,
+    ) => {
+      if (isKeyboardOpen()) return;
+
+      const scrollDelta = currentScrollTop - previousScrollTop;
+
+      if (currentScrollTop <= 8) {
+        setIsMobileBottomNavHidden(false);
+        resetUpwardDistance(scrollTarget);
+        return;
+      }
+      if (scrollDelta > 4) {
+        setIsMobileBottomNavHidden(true);
+        resetUpwardDistance(scrollTarget);
+        return;
+      }
+      if (scrollDelta >= -4) return;
+
+      const upwardDistance =
+        (scrollTarget
+          ? (upwardScrollDistances.get(scrollTarget) ?? 0)
+          : upwardWindowScrollDistance) + Math.abs(scrollDelta);
+      trackUpwardDistance(scrollTarget, upwardDistance);
+
+      if (upwardDistance < SHOW_AFTER_SCROLL_UP) return;
+
+      setIsMobileBottomNavHidden(false);
+      resetUpwardDistance(scrollTarget);
+    };
+
+    const handleWindowScroll = () => {
+      if (isKeyboardOpen()) return;
+
+      const currentScrollTop = window.scrollY;
+      updateVisibility(currentScrollTop, previousWindowScrollTop);
+      previousWindowScrollTop = currentScrollTop;
+    };
+
+    const handleElementScroll = (event: Event) => {
+      if (isKeyboardOpen()) return;
+
+      if (!(event.target instanceof Element)) return;
+
+      const currentScrollTop = (event.target as HTMLElement).scrollTop;
+      const previousScrollTop =
+        previousScrollPositions.get(event.target) ?? currentScrollTop;
+      updateVisibility(currentScrollTop, previousScrollTop, event.target);
+      previousScrollPositions.set(event.target, currentScrollTop);
+    };
+
+    const handleViewportResize = () => {
+      setIsMobileBottomNavHidden(false);
+      previousWindowScrollTop = window.scrollY;
+      upwardWindowScrollDistance = 0;
+    };
+
+    window.addEventListener("scroll", handleWindowScroll, { passive: true });
+    document.addEventListener("scroll", handleElementScroll, {
+      passive: true,
+      capture: true,
+    });
+    visualViewport?.addEventListener("resize", handleViewportResize);
+
+    return () => {
+      window.removeEventListener("scroll", handleWindowScroll);
+      document.removeEventListener("scroll", handleElementScroll, {
+        capture: true,
+      });
+      visualViewport?.removeEventListener("resize", handleViewportResize);
+    };
+  }, [pathname, shouldHideBottomNavOnScroll]);
 
   useEffect(() => {
     if (mobileMenuOpen) {
@@ -291,6 +408,7 @@ export default function NavContainer() {
         <MobileBottomNav
           pathname={pathname}
           mobileMenuOpen={mobileMenuOpen}
+          isHidden={shouldHideBottomNavOnScroll && isMobileBottomNavHidden}
           onMenuOpen={() => setMobileMenuOpen((prev) => !prev)}
         />
       )}
