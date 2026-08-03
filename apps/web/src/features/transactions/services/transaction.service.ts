@@ -224,7 +224,40 @@ export const getTransactionsApi = async (query?: TransactionQuery) => {
 
     if (query?.searchKeyword) {
       const lowerSearch = query.searchKeyword.toLowerCase();
-      all = all.filter((t) => t.note?.toLowerCase().includes(lowerSearch));
+      const normalizedSearch = query.searchKeyword.replace(/[฿,\s+-]/g, "");
+
+      const [categories, assets] = await Promise.all([
+        db.categories.toArray(),
+        db.assets.toArray(),
+      ]);
+      const categoryMap = new Map(
+        categories.map((c) => [c.id, c.name.toLowerCase()]),
+      );
+      const assetMap = new Map(assets.map((a) => [a.id, a.name.toLowerCase()]));
+
+      all = all.filter((t) => {
+        const noteMatch = t.note?.toLowerCase().includes(lowerSearch);
+        const categoryMatch = t.categoryId
+          ? categoryMap.get(t.categoryId)?.includes(lowerSearch)
+          : false;
+        const assetMatch = t.assetId
+          ? assetMap.get(t.assetId)?.includes(lowerSearch)
+          : false;
+        const toAssetMatch = t.toAssetId
+          ? assetMap.get(t.toAssetId)?.includes(lowerSearch)
+          : false;
+        const amountMatch =
+          normalizedSearch !== "" &&
+          Math.abs(Number(t.amount)).toFixed(2).includes(normalizedSearch);
+
+        return (
+          noteMatch ||
+          categoryMatch ||
+          assetMatch ||
+          toAssetMatch ||
+          amountMatch
+        );
+      });
     }
 
     // Sort

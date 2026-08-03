@@ -6,6 +6,7 @@ import { useMemo } from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { cn } from "@/shared/lib/utils/core.util";
 
 export default function RecentJournalContainer() {
   const { t, locale } = useTranslation();
@@ -45,7 +46,7 @@ export default function RecentJournalContainer() {
   const isEmpty = groupedTransactions.length === 0 && !isLoading;
 
   return (
-    <section>
+    <section className={cn(isEmpty && "pb-18")}>
       <div className="flex items-center justify-between mb-2 px-4">
         <span className="text-lg font-medium">{t("recentJournal")}</span>
         {!isEmpty && (

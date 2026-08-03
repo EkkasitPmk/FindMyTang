@@ -558,19 +558,23 @@ export default function TransactionsContainer() {
         </Tabs>
 
         <section className="fixed inset-x-4 bottom-16 z-20 mb-4">
-          <Button
-            variant="unstyled"
-            type="submit"
-            disabled={isSubmitting || isTxLoading}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 text-base font-bold text-white shadow-lg transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {isSubmitting ? (
-              <Loader2 className="animate-spin" size={18} />
-            ) : (
-              <ArrowRight size={18} />
-            )}
-            {t("saveTransactionStr").replace("{type}", transactionTypeStr)}
-          </Button>
+          {isTxLoading ? (
+            <Skeleton className="h-12 w-full rounded-xl" />
+          ) : (
+            <Button
+              variant="unstyled"
+              type="submit"
+              disabled={isSubmitting}
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 text-base font-bold text-white shadow-lg transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {isSubmitting ? (
+                <Loader2 className="animate-spin" size={18} />
+              ) : (
+                <ArrowRight size={18} />
+              )}
+              {t("saveTransactionStr").replace("{type}", transactionTypeStr)}
+            </Button>
+          )}
         </section>
       </div>
 

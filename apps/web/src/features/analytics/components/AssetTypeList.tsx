@@ -27,7 +27,7 @@ export const AssetTypeList = ({
   const { t } = useTranslation();
 
   return (
-    <div className="space-y-2 pb-4">
+    <div className="space-y-2 pb-18">
       {data.map((group, index) => {
         const isExpanded = expandedTypes[group.assetType] ?? false;
 

@@ -27,7 +27,7 @@ export const CategoryList = ({
   if (data.length === 0) return null;
 
   return (
-    <div className="space-y-1 px-4 pb-4">
+    <div className="space-y-1 px-4 pb-18">
       <p className="text-primary-text text-base">{t("categoryList")}</p>
       {data.map((item, index) => {
         const color = item.categoryColor || `var(--chart-${(index % 5) + 1})`;

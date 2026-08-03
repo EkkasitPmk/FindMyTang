@@ -33,7 +33,7 @@ export const MonthlyTrendsTable = ({ data, year }: MonthlyTrendsTableProps) => {
         <div className="text-right">{t("netFlow")}</div>
       </div>
 
-      <div className="flex flex-col gap-3 px-4 pb-4 sm:gap-0 sm:divide-y sm:divide-border">
+      <div className="flex flex-col gap-3 px-4 pb-18 sm:gap-0 sm:divide-y sm:divide-border">
         {validData.map((item) => (
           <div
             key={item.month}

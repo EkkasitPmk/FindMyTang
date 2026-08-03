@@ -9,6 +9,7 @@ import { TransactionListContainer } from "@/features/transactions/containers/Tra
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { TranslationKey } from "@/shared/lib/configs/translations.config";
+import { Slide } from "@/shared/components/animate-ui/primitives/effects/slide";
 
 const DEFAULT_ASSET_COLOR = "#2563EB";
 const SKELETON_GROUPS = Array.from({ length: 3 }, (_, i) => i);
@@ -122,7 +123,7 @@ export default function AssetDetail({
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-118px)] space-y-4">
+    <div className="flex flex-col h-full space-y-4">
       {!isSearchMode && (
         <section className="relative flex flex-col items-center justify-center mt-6">
           <div
@@ -219,7 +220,12 @@ export default function AssetDetail({
         </section>
       )}
 
-      <section className="flex-1 relative flex flex-col min-h-0 m-0">
+      <section
+        className={cn(
+          "flex-1 relative flex flex-col min-h-0 m-0",
+          isSearchMode && "pb-6",
+        )}
+      >
         {isSearchMode && (
           <div className="flex items-end justify-end shrink-0 px-4 py-1">
             <DropdownSelect
@@ -250,114 +256,121 @@ export default function AssetDetail({
           fetchNextPage={fetchNextPage}
           hasNextPage={hasNextPage}
           isFetchingNextPage={isFetchingNextPage}
-          useVirtualization={true}
         />
       </section>
 
       {/* nav action bottom */}
       {!isSearchMode && (
-        <section className="fixed bottom-0 right-0 left-0 py-2 px-4 border-t border-border bg-surface z-50">
-          <div className="flex gap-3">
-            <Button
-              variant="unstyled"
-              onClick={onEditClick}
-              className="w-[25%] flex flex-col items-center justify-center border border-border py-1.5 rounded-md hover:bg-surface-secondary cursor-pointer"
-            >
-              <Pencil size={18} />
-              <span className="text-sm mt-px">{t("edit")}</span>
-            </Button>
-            <div
-              className={cn(
-                "relative w-[75%] flex items-center bg-primary text-white text-sm font-medium rounded-md cursor-pointer",
-                isAddMenuOpen ? "rounded-tl-none rounded-tr-none" : "",
-              )}
-              style={{ backgroundColor: asset?.color || undefined }}
-            >
+        <Slide
+          asChild
+          direction="up"
+          offset={96}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        >
+          <section className="fixed bottom-4 left-3 right-3 z-50 rounded-xl border border-border/70 bg-surface/95 px-1.5 py-1.5 backdrop-blur-xl md:bottom-4">
+            <div className="flex items-center gap-1.5">
               <Button
                 variant="unstyled"
-                onClick={onAddTransactionClick}
-                className={cn(
-                  "w-full h-full px-2 truncate rounded-md hover:bg-black/10 transition-colors",
-                  isAddMenuOpen
-                    ? "rounded-tl-none rounded-tr-none rounded-br-none"
-                    : "rounded-tr-none rounded-br-none",
-                )}
+                onClick={onEditClick}
+                className="flex min-h-10 w-[25%] flex-col items-center justify-center gap-0.5 rounded-lg px-1 py-1 text-white transition-colors duration-150 hover:bg-primary-light hover:text-primary cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+                style={{ backgroundColor: asset?.color || undefined }}
               >
-                {t("addTransaction")}
+                <Pencil className="h-4.5 w-4.5" strokeWidth={2} />
+                <span className="text-[9px] font-semibold">{t("edit")}</span>
               </Button>
-
-              <div className="h-full w-px bg-background" />
-
-              <Button
-                variant="unstyled"
-                onClick={onAddMenuToggle}
+              <div
                 className={cn(
-                  "w-[20%] h-full rounded-md hover:bg-black/10 transition-colors flex items-center justify-center",
-                  isAddMenuOpen
-                    ? "rounded-tr-none rounded-tl-none rounded-bl-none"
-                    : "rounded-tl-none rounded-bl-none",
+                  "relative flex w-[75%] items-center rounded-lg bg-primary text-sm font-medium text-white cursor-pointer",
+                  isAddMenuOpen ? "rounded-tl-none rounded-tr-none" : "",
                 )}
+                style={{ backgroundColor: asset?.color || undefined }}
               >
-                <ChevronRight
-                  size={20}
+                <Button
+                  variant="unstyled"
+                  onClick={onAddTransactionClick}
                   className={cn(
-                    "transition-transform",
-                    isAddMenuOpen && "-rotate-90",
+                    "min-h-10 w-full truncate rounded-xl px-2 transition-colors hover:bg-black/10",
+                    isAddMenuOpen
+                      ? "rounded-tl-none rounded-tr-none rounded-br-none"
+                      : "rounded-tr-none rounded-br-none",
                   )}
-                />
-              </Button>
+                >
+                  {t("addTransaction")}
+                </Button>
 
-              {isAddMenuOpen && (
-                <>
-                  <Button
-                    variant="unstyled"
-                    type="button"
-                    aria-label="Close add menu"
-                    className="fixed inset-0 z-0 w-full h-full cursor-default focus:outline-none"
-                    onClick={onAddMenuClose}
-                    tabIndex={-1}
-                  />
-                  <div
+                <div className="min-h-10 w-px bg-background" />
+
+                <Button
+                  variant="unstyled"
+                  onClick={onAddMenuToggle}
+                  className={cn(
+                    "flex min-h-10 w-[20%] items-center justify-center rounded-xl transition-colors hover:bg-black/10",
+                    isAddMenuOpen
+                      ? "rounded-tr-none rounded-tl-none rounded-bl-none"
+                      : "rounded-tl-none rounded-bl-none",
+                  )}
+                >
+                  <ChevronRight
+                    size={20}
                     className={cn(
-                      "absolute w-full bottom-full py-1 left-1/2 -translate-x-1/2 z-10 border border-border rounded-md flex flex-col bg-primary text-white overflow-hidden",
-                      isAddMenuOpen ? "rounded-bl-none rounded-br-none" : "",
+                      "transition-transform",
+                      isAddMenuOpen && "-rotate-90",
                     )}
-                    style={{ backgroundColor: asset?.color || undefined }}
-                  >
+                  />
+                </Button>
+
+                {isAddMenuOpen && (
+                  <>
                     <Button
                       variant="unstyled"
-                      onClick={onAddExpenseClick}
-                      className="w-full py-2 text-sm hover:bg-black/10 border-b border-border/20 font-medium"
+                      type="button"
+                      aria-label="Close add menu"
+                      className="fixed inset-0 z-0 w-full h-full cursor-default focus:outline-none"
+                      onClick={onAddMenuClose}
+                      tabIndex={-1}
+                    />
+                    <div
+                      className={cn(
+                        "absolute bottom-full left-1/2 z-10 flex w-full -translate-x-1/2 flex-col overflow-hidden rounded-2xl border border-border bg-primary py-1 text-white",
+                        isAddMenuOpen ? "rounded-bl-none rounded-br-none" : "",
+                      )}
+                      style={{ backgroundColor: asset?.color || undefined }}
                     >
-                      {t("expense")}
-                    </Button>
-                    <Button
-                      variant="unstyled"
-                      onClick={onAddIncomeClick}
-                      className="w-full py-2 text-sm hover:bg-black/10 border-b border-border/20 font-medium"
-                    >
-                      {t("income")}
-                    </Button>
-                    <Button
-                      variant="unstyled"
-                      onClick={onTransferClick}
-                      className="w-full py-2 text-sm hover:bg-black/10 border-b border-border/20 font-medium"
-                    >
-                      {t("transfer")}
-                    </Button>
-                    <Button
-                      variant="unstyled"
-                      onClick={onAdjustmentClick}
-                      className="w-full py-2 text-sm hover:bg-black/10 font-medium"
-                    >
-                      {t("adjustment")}
-                    </Button>
-                  </div>
-                </>
-              )}
+                      <Button
+                        variant="unstyled"
+                        onClick={onAddExpenseClick}
+                        className="w-full py-2 text-sm hover:bg-black/10 border-b border-border/20 font-medium"
+                      >
+                        {t("expense")}
+                      </Button>
+                      <Button
+                        variant="unstyled"
+                        onClick={onAddIncomeClick}
+                        className="w-full py-2 text-sm hover:bg-black/10 border-b border-border/20 font-medium"
+                      >
+                        {t("income")}
+                      </Button>
+                      <Button
+                        variant="unstyled"
+                        onClick={onTransferClick}
+                        className="w-full py-2 text-sm hover:bg-black/10 border-b border-border/20 font-medium"
+                      >
+                        {t("transfer")}
+                      </Button>
+                      <Button
+                        variant="unstyled"
+                        onClick={onAdjustmentClick}
+                        className="w-full py-2 text-sm hover:bg-black/10 font-medium"
+                      >
+                        {t("adjustment")}
+                      </Button>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </Slide>
       )}
     </div>
   );

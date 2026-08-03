@@ -320,7 +320,11 @@ export class TransactionService implements OnModuleInit, OnModuleDestroy {
   async findAll(
     userId: string,
     query: TransactionQueryDto,
-  ): Promise<{ items: Transaction[]; total: number }> {
+  ): Promise<{
+    items: Transaction[];
+    total: number;
+    nextCursor?: string | null;
+  }> {
     const result = await this.transactionRepository.findAllByUserId(
       userId,
       query,

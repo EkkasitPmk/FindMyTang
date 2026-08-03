@@ -71,7 +71,7 @@ export const DrilldownContainer = ({
 
   return (
     <div className="flex flex-col animate-in fade-in duration-300">
-      <div className="px-4 space-y-4 pb-4 py-2">
+      <div className="px-4 space-y-4 pb-20 py-2">
         <DrilldownSummary
           summary={data.summary}
           color={data.category?.color || "var(--chart-1)"}

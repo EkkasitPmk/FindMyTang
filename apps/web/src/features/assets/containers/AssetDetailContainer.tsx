@@ -29,6 +29,19 @@ export default function AssetDetailContainer() {
   const filterType = useAssetUIStore((state) => state.filterType);
   const sortType = useAssetUIStore((state) => state.sortType);
   const resetFilters = useAssetUIStore((state) => state.resetFilters);
+  const [debouncedSearchKeyword, setDebouncedSearchKeyword] = useState("");
+
+  useEffect(() => {
+    const nextKeyword = isSearchMode ? searchKeyword.trim() : "";
+    const timeoutId = window.setTimeout(
+      () => {
+        setDebouncedSearchKeyword(nextKeyword);
+      },
+      nextKeyword ? 300 : 0,
+    );
+
+    return () => window.clearTimeout(timeoutId);
+  }, [isSearchMode, searchKeyword]);
 
   useEffect(() => {
     return () => resetFilters();
@@ -60,6 +73,15 @@ export default function AssetDetailContainer() {
 
   const [selectedMonth, setSelectedMonth] = useState("Select");
   const [selectedYear, setSelectedYear] = useState("Select");
+
+  useEffect(() => {
+    if (!isSearchMode) return undefined;
+    const timeoutId = window.setTimeout(() => {
+      setSelectedMonth("Select");
+      setSelectedYear("All time");
+    }, 0);
+    return () => window.clearTimeout(timeoutId);
+  }, [id, isSearchMode]);
 
   const effectiveYear = useMemo(() => {
     if (isSearchMode)
@@ -122,9 +144,12 @@ export default function AssetDetailContainer() {
     return { from: undefined, to: undefined };
   }, [effectiveYear, effectiveMonth, isSearchMode]);
 
+  const canFetchTransactions = !isSearchMode || Boolean(debouncedSearchKeyword);
+
   const {
     data: transactionsData,
     isPending: isTransactionsPending,
+    isFetching: isTransactionsFetching,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
@@ -135,13 +160,20 @@ export default function AssetDetailContainer() {
           isDeleted: viewOption === "showDeletedItems",
           sortType,
           type: filterType === "ALL" ? undefined : filterType,
-          searchKeyword: isSearchMode ? searchKeyword : undefined,
+          searchKeyword:
+            isSearchMode && debouncedSearchKeyword
+              ? debouncedSearchKeyword
+              : undefined,
           from,
           to,
         }
       : undefined,
+    { enabled: canFetchTransactions },
   );
-  const isLoadingTransactions = isTransactionsPending;
+  const isLoadingTransactions =
+    isTransactionsFetching &&
+    !isFetchingNextPage &&
+    (isTransactionsPending || isSearchMode);
 
   const groupedTransactions = useMemo(() => {
     if (!transactionsData) return [];
@@ -166,7 +198,6 @@ export default function AssetDetailContainer() {
   const handleEditClose = useCallback(
     (newName?: string) => {
       setIsEditModalOpen(false);
-      // ponytail: sync URL ?name= param หลัง edit เพื่อ TopAppBar แสดงชื่อใหม่ทันที
       if (typeof newName === "string" && id) {
         const params = new URLSearchParams(searchParams.toString());
         params.set("name", newName);
@@ -207,7 +238,7 @@ export default function AssetDetailContainer() {
           <AssetDetail
             asset={asset}
             groupedTransactions={groupedTransactions}
-            isLoading={isLoading}
+            isLoading={isLoading && !isSearchMode}
             isLoadingTransactions={isLoadingTransactions}
             isAddMenuOpen={isAddMenuOpen}
             onAddMenuToggle={() => setIsAddMenuOpen((prev) => !prev)}
@@ -249,10 +280,10 @@ export default function AssetDetailContainer() {
             monthRef={monthRef}
             yearRef={yearRef}
             isSearchMode={isSearchMode}
-            searchKeyword={searchKeyword}
-            fetchNextPage={fetchNextPage}
-            hasNextPage={hasNextPage}
-            isFetchingNextPage={isFetchingNextPage}
+            searchKeyword={debouncedSearchKeyword}
+            fetchNextPage={canFetchTransactions ? fetchNextPage : undefined}
+            hasNextPage={canFetchTransactions && hasNextPage}
+            isFetchingNextPage={canFetchTransactions && isFetchingNextPage}
             translateDropdownItem={translateDropdownItem}
           />
           {isEditModalOpen && asset && (

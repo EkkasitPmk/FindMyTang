@@ -10,7 +10,7 @@ export default function HomeContainer() {
 
   return (
     <>
-      <div className="space-y-4 py-1 pb-22">
+      <div className="space-y-4">
         <div className="px-4">
           <FinancialSnapshotContainer />
         </div>

@@ -21,6 +21,11 @@ export default function AnalyticsContainer() {
   );
   const [isCreateAssetOpen, setIsCreateAssetOpen] = useState(false);
 
+  const handleTabChange = (value: string) => {
+    setActiveTab(value as "category" | "trends" | "assets");
+    window.dispatchEvent(new Event("bottomnav:show"));
+  };
+
   const tabs = [
     {
       value: "category",
@@ -40,12 +45,10 @@ export default function AnalyticsContainer() {
   ];
 
   return (
-    <div className="flex flex-col h-[calc(100vh-80px)] bg-background">
+    <div className="flex h-full flex-col bg-background">
       <Tabs
         value={activeTab}
-        onValueChange={(val) =>
-          setActiveTab(val as "category" | "trends" | "assets")
-        }
+        onValueChange={handleTabChange}
         className="flex-1 flex flex-col min-h-0 gap-1"
       >
         <div className="px-4 shrink-0 pt-1 pb-1 bg-background z-10">
@@ -62,20 +65,14 @@ export default function AnalyticsContainer() {
         <TabsContents className="h-full flex-1 min-h-0">
           <TabsContent
             value="category"
-            className="h-[80dvh] flex flex-col min-h-0"
+            className="h-full flex flex-col min-h-0"
           >
             <CategoryBreakdownContainer />
           </TabsContent>
-          <TabsContent
-            value="trends"
-            className="h-[80dvh] flex flex-col min-h-0"
-          >
+          <TabsContent value="trends" className="h-full flex flex-col min-h-0">
             <MonthlyTrendsContainer />
           </TabsContent>
-          <TabsContent
-            value="assets"
-            className="h-[80dvh] flex flex-col min-h-0"
-          >
+          <TabsContent value="assets" className="h-full flex flex-col min-h-0">
             <AssetDistributionContainer
               onAddAsset={() => setIsCreateAssetOpen(true)}
             />

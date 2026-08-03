@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useRef, useCallback } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import { keepPreviousData } from "@tanstack/react-query";
 import {
   startOfMonth,
@@ -36,22 +36,24 @@ export default function JournalCalendarContainer() {
 
   const transactionListRef = useRef<HTMLDivElement>(null);
 
-  // fetch transactions for the entire calendar grid (including outside days)
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
   const calStart = startOfWeek(monthStart, { weekStartsOn: 1 });
   const calEnd = endOfWeek(monthEnd, { weekStartsOn: 1 });
 
-  const { data: transactionsData, isLoading: isLoadingTransactions } =
-    useTransactionsQuery(
-      {
-        from: calStart.toISOString(),
-        to: calEnd.toISOString(),
-        limit: 1000,
-        sortType: "DATE_NEWEST",
-      },
-      { placeholderData: keepPreviousData },
-    );
+  const {
+    data: transactionsData,
+    isLoading: isLoadingTransactions,
+    isFetching: isFetchingTransactions,
+  } = useTransactionsQuery(
+    {
+      from: calStart.toISOString(),
+      to: calEnd.toISOString(),
+      limit: 1000,
+      sortType: "DATE_NEWEST",
+    },
+    { placeholderData: keepPreviousData },
+  );
 
   const allTransactions = useMemo(
     () => transactionsData?.items ?? [],
@@ -146,8 +148,14 @@ export default function JournalCalendarContainer() {
         const target = container.querySelector(
           `[data-date-group="${dateStr}"]`,
         );
-        if (target) {
-          target.scrollIntoView({ behavior: "smooth", block: "start" });
+        if (target instanceof HTMLElement) {
+          const containerRect = container.getBoundingClientRect();
+          const targetRect = target.getBoundingClientRect();
+
+          container.scrollTo({
+            top: container.scrollTop + targetRect.top - containerRect.top,
+            behavior: "smooth",
+          });
         }
       });
     },
@@ -164,10 +172,7 @@ export default function JournalCalendarContainer() {
         <JournalCalendarGrid weeks={weeks} onSelectDate={handleDateClick} />
       </div>
 
-      <div
-        ref={transactionListRef}
-        className="flex-1 overflow-y-auto relative min-h-0 pb-4"
-      >
+      <div ref={transactionListRef} className="flex-1 overflow-y-auto relative">
         {/* Section 3: Monthly Summary */}
         <div className="mb-1 shrink-0">
           <TransactionSummary
@@ -182,8 +187,12 @@ export default function JournalCalendarContainer() {
         {/* Section 4: Transaction List — Scrollable only here ฝ*/}
         <TransactionListContainer
           groupedTransactions={groupedTransactions}
-          isLoadingTransactions={isLoadingTransactions}
+          isLoadingTransactions={
+            isLoadingTransactions ||
+            (isFetchingTransactions && Boolean(transactionsData))
+          }
           page="journal"
+          disableOwnScroll
         />
       </div>
     </div>

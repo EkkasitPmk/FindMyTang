@@ -1,25 +1,100 @@
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import {
   GroupedTransaction,
   TransactionResponse,
 } from "@/shared/lib/types/transaction.type";
 import { TransactionItem } from "./TransactionItem";
 import { TransactionGroupHeader } from "./TransactionGroupHeader";
-import { renderGroupContent } from "./TransactionVirtuosoGroup";
-import { renderItemContent } from "./TransactionVirtuosoItem";
-import { TransactionVirtuosoFooter } from "./TransactionVirtuosoFooter";
 import { cn } from "@/shared/lib/utils/core.util";
 import TransactionListSkeleton from "../skeletons/TransactionListSkeleton";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { GroupedVirtuoso } from "react-virtuoso";
-import { TranslationKey } from "@/shared/lib/configs/translations.config";
 
 const SKELETON_GROUPS = Array.from({ length: 3 }, (_, i) => i);
 
-export interface TransactionListProps {
+interface TransactionListVirtuosoContext {
+  isFetchingNextPage: boolean;
+  hasNextPage: boolean;
+  groupedTransactions: GroupedTransaction[];
+  flatItems: TransactionResponse[];
+  t: ReturnType<typeof useTranslation>["t"];
+  locale: string;
+  assetId?: string;
+  expandedTransactionId: string | null;
+  setExpandedTransactionId: (id: string | null) => void;
+  onTransactionItemClick: (transaction: TransactionResponse) => void;
+  onRestoreClick?: (transaction: TransactionResponse) => void;
+  onDeleteClick?: (transaction: TransactionResponse) => void;
+  onAttachmentClick?: (url: string) => void;
+}
+
+function renderTransactionGroupContent(
+  groupIndex: number,
+  context: TransactionListVirtuosoContext,
+) {
+  const group = context.groupedTransactions[groupIndex];
+  return (
+    <TransactionGroupHeader
+      group={group}
+      t={context.t}
+      locale={context.locale}
+      className="bg-surface py-1.5 px-4 pb-2"
+    />
+  );
+}
+
+function renderTransactionItemContent(
+  index: number,
+  groupIndex: number,
+  _item: unknown,
+  context: TransactionListVirtuosoContext,
+) {
+  const transaction = context.flatItems[index];
+  const group = context.groupedTransactions[groupIndex];
+  if (!transaction || !group) return null;
+
+  const isLastItem = group.items.at(-1) === transaction;
+  return (
+    <div className={cn(isLastItem && "pb-4")}>
+      <TransactionItem
+        transaction={transaction}
+        isLastItem={isLastItem}
+        currentAssetId={context.assetId}
+        expandedTransactionId={context.expandedTransactionId}
+        setExpandedTransactionId={context.setExpandedTransactionId}
+        onTransactionItemClick={context.onTransactionItemClick}
+        onRestoreClick={context.onRestoreClick}
+        onDeleteClick={context.onDeleteClick}
+        onAttachmentClick={context.onAttachmentClick}
+      />
+    </div>
+  );
+}
+
+function TransactionListFooter({
+  context,
+}: Readonly<{
+  context?: TransactionListVirtuosoContext;
+}>) {
+  if (context?.isFetchingNextPage) {
+    return (
+      <div className="py-4">
+        <TransactionListSkeleton />
+      </div>
+    );
+  }
+
+  return context?.hasNextPage ? null : (
+    <div className="h-18" aria-hidden="true" />
+  );
+}
+
+interface TransactionListProps {
   groupedTransactions: GroupedTransaction[];
   isLoadingTransactions: boolean;
   isFetchingNextPage?: boolean;
+  hasNextPage?: boolean;
   assetId?: string;
   onTransactionItemClick: (transaction: TransactionResponse) => void;
   onRestoreClick?: (transaction: TransactionResponse) => void;
@@ -34,25 +109,11 @@ export interface TransactionListProps {
   onEndReached?: () => void;
 }
 
-export interface VirtuosoContext {
-  groupedTransactions: GroupedTransaction[];
-  flatItems: TransactionResponse[];
-  t: (key: TranslationKey) => string;
-  locale: string;
-  assetId?: string;
-  expandedTransactionId: string | null;
-  setExpandedTransactionId: (id: string | null) => void;
-  onTransactionItemClick: (transaction: TransactionResponse) => void;
-  onRestoreClick?: (transaction: TransactionResponse) => void;
-  onDeleteClick?: (transaction: TransactionResponse) => void;
-  onAttachmentClick?: (url: string) => void;
-  isFetchingNextPage?: boolean;
-}
-
 export function TransactionList({
   groupedTransactions,
   isLoadingTransactions,
   isFetchingNextPage = false,
+  hasNextPage = false,
   assetId,
   onTransactionItemClick,
   onRestoreClick,
@@ -67,9 +128,15 @@ export function TransactionList({
   onEndReached,
 }: Readonly<TransactionListProps>) {
   const { t, locale } = useTranslation();
-  const flatItems = groupedTransactions?.flatMap((group) => group.items) || [];
-
-  const virtuosoContext: VirtuosoContext = {
+  const fetchLock = useRef(false);
+  const lastRequestedLength = useRef(0);
+  const flatItems = useMemo(
+    () => groupedTransactions.flatMap((group) => group.items),
+    [groupedTransactions],
+  );
+  const virtuosoContext: TransactionListVirtuosoContext = {
+    isFetchingNextPage,
+    hasNextPage,
     groupedTransactions,
     flatItems,
     t,
@@ -81,18 +148,49 @@ export function TransactionList({
     onRestoreClick,
     onDeleteClick,
     onAttachmentClick,
-    isFetchingNextPage,
   };
+
+  useEffect(() => {
+    if (!isFetchingNextPage) fetchLock.current = false;
+  }, [isFetchingNextPage]);
+
+  const requestNextPage = useCallback(() => {
+    if (
+      !onEndReached ||
+      !hasNextPage ||
+      isFetchingNextPage ||
+      fetchLock.current ||
+      lastRequestedLength.current === flatItems.length
+    ) {
+      return;
+    }
+
+    fetchLock.current = true;
+    lastRequestedLength.current = flatItems.length;
+    onEndReached();
+  }, [flatItems.length, hasNextPage, isFetchingNextPage, onEndReached]);
 
   if (isSearchMode && !searchKeyword) {
     return (
-      <div className="flex flex-col items-center justify-center h-full text-disabled-text">
+      <div className="flex flex-col items-center justify-center h-100 text-secondary-text">
         <p>{t("typeToSearchTransactions")}</p>
       </div>
     );
   }
 
   if (isLoadingTransactions) {
+    if (isSearchMode) {
+      return (
+        <section className="flex flex-col gap-4">
+          {SKELETON_GROUPS.map((i) => (
+            <div key={`search-skeleton-group-${i}`} className="my-1">
+              <TransactionListSkeleton />
+            </div>
+          ))}
+        </section>
+      );
+    }
+
     return (
       <>
         {page !== "journal" && (
@@ -120,7 +218,7 @@ export function TransactionList({
   }
 
   if (useVirtualization) {
-    if (!groupedTransactions?.length) {
+    if (!groupedTransactions.length) {
       return (
         <div className="text-secondary-text h-100 flex items-center justify-center">
           {isSearchMode
@@ -130,19 +228,20 @@ export function TransactionList({
       );
     }
 
-    const groupCounts = groupedTransactions.map((group) => group.items.length);
-
     return (
       <section className="bg-surface h-full">
         <GroupedVirtuoso
           className="h-full w-full"
-          groupCounts={groupCounts}
-          endReached={onEndReached}
+          groupCounts={groupedTransactions.map((group) => group.items.length)}
+          groupContent={renderTransactionGroupContent}
+          itemContent={renderTransactionItemContent}
+          increaseViewportBy={{ top: 400, bottom: 1000 }}
+          rangeChanged={({ endIndex }) => {
+            if (endIndex >= flatItems.length - 8) requestNextPage();
+          }}
           context={virtuosoContext}
-          groupContent={renderGroupContent}
-          itemContent={renderItemContent}
           components={{
-            Footer: TransactionVirtuosoFooter,
+            Footer: TransactionListFooter,
           }}
         />
       </section>
@@ -151,7 +250,7 @@ export function TransactionList({
 
   if (!groupedTransactions?.length) {
     return (
-      <div className="text-secondary-text h-50 flex items-center justify-center">
+      <div className="text-secondary-text h-100 flex items-center justify-center">
         {isSearchMode
           ? t("noMatchingTransactionsFound")
           : t("noTransactionsFound")}
@@ -160,7 +259,9 @@ export function TransactionList({
   }
 
   return (
-    <section className="bg-surface space-y-2">
+    <section
+      className={cn("bg-surface space-y-2 pb-20", isSearchMode && "pb-0")}
+    >
       {groupedTransactions.map((group) => (
         <div
           key={group.dateStr}

@@ -34,7 +34,7 @@ export default function Providers({ children }: Readonly<ProvidersProps>) {
       <ToastContainer position="top-center" autoClose={2000} />
       <GlobalFeatureLockModal />
       {process.env.NODE_ENV === "development" && (
-        <ReactQueryDevtools buttonPosition="bottom-right" />
+        <ReactQueryDevtools buttonPosition="bottom-left" />
       )}
     </QueryClientProvider>
   );

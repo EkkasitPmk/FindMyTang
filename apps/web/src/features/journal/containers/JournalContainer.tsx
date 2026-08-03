@@ -44,6 +44,11 @@ export default function JournalContainer() {
   >("DATE_NEWEST");
   const [isSortOpen, setIsSortOpen] = useState(false);
 
+  const handleViewModeChange = (value: string) => {
+    setViewMode(value as ViewMode);
+    window.dispatchEvent(new Event("bottomnav:show"));
+  };
+
   const queryType =
     selectedType === "all" ? undefined : selectedType.toUpperCase();
   const {
@@ -53,7 +58,8 @@ export default function JournalContainer() {
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteTransactionsQuery({
-    limit: 20, // Load 20 per page
+    limit: 30,
+    pagination: sortType.startsWith("DATE") ? "cursor" : "page",
     type: queryType,
     sortType,
   });
@@ -107,10 +113,10 @@ export default function JournalContainer() {
   }, [transactionsData, searchKeyword, locale]);
 
   return (
-    <div className="flex flex-col h-[calc(100vh-80px)] bg-background space-y-2">
+    <div className="flex h-full flex-col bg-background space-y-2">
       <Tabs
         value={viewMode}
-        onValueChange={(val) => setViewMode(val as ViewMode)}
+        onValueChange={handleViewModeChange}
         className="flex-1 flex flex-col min-h-0 gap-1"
       >
         {/* 1. ใส่ Timeline สลับ Calendar */}
@@ -123,7 +129,7 @@ export default function JournalContainer() {
 
         <div className="flex-1 min-h-0">
           <TabsContents className="h-full">
-            <TabsContent value="timeline" className="h-[80dvh]">
+            <TabsContent value="timeline" className="h-full">
               <div className="flex flex-col h-full space-y-4">
                 {/* ส่วนแสดงผล timeline */}
                 <section className="px-4 space-y-4 shrink-0 bg-background z-10">
@@ -254,7 +260,7 @@ export default function JournalContainer() {
                   </div>
                 </section>
 
-                {/* 4. แสดง transaction เรียงลงมาแบบปกติ และมี Lazy Load ด้วย Intersection Observer */}
+                {/* 4. Animated list with cursor pagination and end-of-list loading */}
                 <div className="flex-1 min-h-0">
                   <TransactionListContainer
                     groupedTransactions={groupedTransactions}
@@ -272,7 +278,7 @@ export default function JournalContainer() {
                 </div>
               </div>
             </TabsContent>
-            <TabsContent value="calendar" className="h-[80dvh] flex flex-col">
+            <TabsContent value="calendar" className="h-full flex flex-col">
               <JournalCalendarContainer />
             </TabsContent>
           </TabsContents>

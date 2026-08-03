@@ -102,8 +102,8 @@ export const getManageAssetItemClasses = ({
   else if (isArchived) titleClass = "text-disabled-text";
 
   let rowBgClass = "hover:bg-surface-secondary";
-  if (isExpanded) rowBgClass = "bg-surface-secondary";
-  else if (isEditingList) rowBgClass = isSelected ? "bg-primary/10" : "";
+  if (isEditingList) rowBgClass = isSelected ? "bg-primary/10" : "";
+  else if (isExpanded) rowBgClass = "bg-surface-secondary";
 
   const iconBgClass =
     hasColor && !isInactive

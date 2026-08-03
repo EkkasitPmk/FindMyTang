@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { PrismaService } from "../../../prisma/prisma.service";
 import { Transaction, TransactionType, Prisma } from "@prisma/client";
 import { TransactionQueryDto } from "../dto/transaction-query.dto";
@@ -13,6 +13,8 @@ export interface CreateTransactionData {
   categoryId?: string;
   attachmentUrl?: string | null;
 }
+
+type TransactionCursor = { date: string; createdAt: string; id: string };
 
 @Injectable()
 export class TransactionRepository {
@@ -39,41 +41,83 @@ export class TransactionRepository {
   async findAllByUserId(
     userId: string,
     query: TransactionQueryDto = {},
-  ): Promise<{ items: Transaction[]; total: number }> {
-    const {
-      page = 1,
-      limit = 20,
-      type,
-      assetId,
-      categoryId,
-      from,
-      to,
-      isDeleted,
-      sortType,
-      searchKeyword,
-    } = query;
-    const skip = (page - 1) * limit;
+  ): Promise<{
+    items: Transaction[];
+    total: number;
+    nextCursor?: string | null;
+  }> {
+    const { page = 1, limit = 20, pagination = "page", cursor } = query;
+    const useCursor = this.supportsCursor(pagination, query.sortType);
+    const where = await this.buildWhere(userId, query);
+    this.applyCursorFilter(
+      where,
+      useCursor ? cursor : undefined,
+      query.sortType,
+    );
 
-    const where: Prisma.TransactionWhereInput = {
-      userId,
-      deletedAt: isDeleted ? { not: null } : null,
-      ...(type && { type }),
-      ...(assetId && {
-        OR: [{ assetId }, { toAssetId: assetId }],
-      }),
-      ...(categoryId && { categoryId }),
-      ...(searchKeyword && {
+    const items = await this.prisma.transaction.findMany({
+      where,
+      include: {
+        asset: true,
+        toAsset: true,
+        category: true,
+      },
+      orderBy: this.getOrderBy(query.sortType),
+      skip: useCursor ? undefined : (page - 1) * limit,
+      take: useCursor ? limit + 1 : limit,
+    });
+    const pageItems = useCursor ? items.slice(0, limit) : items;
+    const nextCursor = this.getNextCursor(items, pageItems, limit, useCursor);
+    const total = useCursor
+      ? 0
+      : await this.prisma.transaction.count({ where });
+
+    return { items: pageItems, total, nextCursor };
+  }
+
+  private async buildWhere(
+    userId: string,
+    query: TransactionQueryDto,
+  ): Promise<Prisma.TransactionWhereInput> {
+    const { type, assetId, categoryId, from, to, isDeleted, searchKeyword } =
+      query;
+    const filters: Prisma.TransactionWhereInput[] = [];
+    const normalizedSearchKeyword = searchKeyword?.replace(/[฿,\s+-]/g, "");
+
+    if (assetId) {
+      filters.push({ OR: [{ assetId }, { toAssetId: assetId }] });
+    }
+
+    if (searchKeyword) {
+      const amountSearchIds = normalizedSearchKeyword
+        ? await this.findAmountSearchIds(userId, normalizedSearchKeyword)
+        : [];
+
+      filters.push({
         OR: [
           { note: { contains: searchKeyword, mode: "insensitive" } },
           {
-            amount: {
-              equals: Number.isNaN(Number(searchKeyword))
-                ? undefined
-                : Number(searchKeyword),
+            category: {
+              name: { contains: searchKeyword, mode: "insensitive" },
             },
           },
+          { asset: { name: { contains: searchKeyword, mode: "insensitive" } } },
+          {
+            toAsset: { name: { contains: searchKeyword, mode: "insensitive" } },
+          },
+          ...(amountSearchIds.length > 0
+            ? [{ id: { in: amountSearchIds } }]
+            : []),
         ],
-      }),
+      });
+    }
+
+    return {
+      userId,
+      deletedAt: isDeleted ? { not: null } : null,
+      ...(type && { type }),
+      ...(categoryId && { categoryId }),
+      ...(filters.length > 0 && { AND: filters }),
       ...((from || to) && {
         date: {
           ...(from && { gte: new Date(from) }),
@@ -81,40 +125,121 @@ export class TransactionRepository {
         },
       }),
     };
+  }
 
-    let orderBy:
-      | Prisma.TransactionOrderByWithRelationInput
-      | Prisma.TransactionOrderByWithRelationInput[] = [
-      { date: "desc" },
-      { createdAt: "desc" },
-    ];
+  private findAmountSearchIds(
+    userId: string,
+    searchKeyword: string,
+  ): Promise<string[]> {
+    return this.prisma
+      .$queryRaw<Array<{ id: string }>>(
+        Prisma.sql`
+      SELECT "id"
+      FROM "Transaction"
+      WHERE "userId" = ${userId}
+        AND CAST(ABS("amount") AS TEXT) LIKE ${`%${searchKeyword}%`}
+    `,
+      )
+      .then((rows) => rows.map((row) => row.id));
+  }
 
-    if (sortType === "DATE_OLDEST") {
-      orderBy = [{ date: "asc" }, { createdAt: "asc" }];
-    } else if (sortType === "AMOUNT_HIGHEST") {
-      orderBy = { amount: "desc" };
-    } else if (sortType === "AMOUNT_LOWEST") {
-      orderBy = { amount: "asc" };
-    } else if (sortType === "DATE_NEWEST") {
-      orderBy = [{ date: "desc" }, { createdAt: "desc" }];
+  private supportsCursor(
+    pagination: TransactionQueryDto["pagination"],
+    sortType?: string,
+  ): boolean {
+    return (
+      pagination === "cursor" &&
+      (!sortType || sortType === "DATE_NEWEST" || sortType === "DATE_OLDEST")
+    );
+  }
+
+  private getOrderBy(
+    sortType?: string,
+  ):
+    | Prisma.TransactionOrderByWithRelationInput
+    | Prisma.TransactionOrderByWithRelationInput[] {
+    switch (sortType) {
+      case "DATE_OLDEST":
+        return [{ date: "asc" }, { createdAt: "asc" }, { id: "asc" }];
+      case "AMOUNT_HIGHEST":
+        return { amount: "desc" };
+      case "AMOUNT_LOWEST":
+        return { amount: "asc" };
+      case "DATE_NEWEST":
+        return [{ date: "desc" }, { createdAt: "desc" }, { id: "desc" }];
+      default:
+        return [{ date: "desc" }, { createdAt: "desc" }];
     }
+  }
 
-    const [items, total] = await Promise.all([
-      this.prisma.transaction.findMany({
-        where,
-        include: {
-          asset: true,
-          toAsset: true,
-          category: true,
+  private applyCursorFilter(
+    where: Prisma.TransactionWhereInput,
+    cursor: string | undefined,
+    sortType?: string,
+  ): void {
+    if (!cursor) return;
+
+    const decoded = this.decodeCursor(cursor);
+    const direction = sortType === "DATE_OLDEST" ? "gt" : "lt";
+    const cursorFilter: Prisma.TransactionWhereInput = {
+      OR: [
+        { date: { [direction]: new Date(decoded.date) } },
+        {
+          date: new Date(decoded.date),
+          createdAt: { [direction]: new Date(decoded.createdAt) },
         },
-        orderBy,
-        skip,
-        take: limit,
-      }),
-      this.prisma.transaction.count({ where }),
-    ]);
+        {
+          date: new Date(decoded.date),
+          createdAt: new Date(decoded.createdAt),
+          id: { [direction]: decoded.id },
+        },
+      ],
+    };
+    where.AND = [...(Array.isArray(where.AND) ? where.AND : []), cursorFilter];
+  }
 
-    return { items, total };
+  private decodeCursor(cursor: string): TransactionCursor {
+    try {
+      const parsed: unknown = JSON.parse(
+        Buffer.from(cursor, "base64url").toString("utf8"),
+      );
+      if (
+        typeof parsed !== "object" ||
+        parsed === null ||
+        !("date" in parsed) ||
+        typeof parsed.date !== "string" ||
+        !("createdAt" in parsed) ||
+        typeof parsed.createdAt !== "string" ||
+        !("id" in parsed) ||
+        typeof parsed.id !== "string" ||
+        !parsed.date ||
+        !parsed.createdAt ||
+        !parsed.id
+      ) {
+        throw new Error("missing cursor fields");
+      }
+      return parsed as TransactionCursor;
+    } catch {
+      throw new BadRequestException("Invalid transaction cursor");
+    }
+  }
+
+  private getNextCursor(
+    items: Transaction[],
+    pageItems: Transaction[],
+    limit: number,
+    useCursor: boolean,
+  ): string | null {
+    const last = pageItems.at(-1);
+    if (!useCursor || items.length <= limit || !last) return null;
+
+    return Buffer.from(
+      JSON.stringify({
+        date: last.date.toISOString(),
+        createdAt: last.createdAt.toISOString(),
+        id: last.id,
+      }),
+    ).toString("base64url");
   }
 
   async update(

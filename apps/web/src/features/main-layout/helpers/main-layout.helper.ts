@@ -103,7 +103,7 @@ export function getMainContentClassNames({
 
   if (isMainTab) {
     if (shouldLockContentScroll(route)) {
-      mainContentClassName = "py-3";
+      mainContentClassName = "pt-3";
       mainOverflowClassName = "overflow-hidden";
     } else {
       mainContentClassName = "pt-15";

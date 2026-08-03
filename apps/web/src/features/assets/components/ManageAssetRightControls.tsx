@@ -9,6 +9,8 @@ interface ManageAssetRightControlsProps {
   balanceClass: string;
   isEditingList?: boolean;
   index?: number;
+  onDragStart?: (e: React.DragEvent, index: number) => void;
+  onDragEnd?: () => void;
   onTouchStart?: (index: number) => void;
   onTouchMove?: (e: React.TouchEvent) => void;
   onTouchEnd?: () => void;
@@ -20,6 +22,8 @@ export default function ManageAssetRightControls({
   balanceClass,
   isEditingList,
   index,
+  onDragStart,
+  onDragEnd,
   onTouchStart,
   onTouchMove,
   onTouchEnd,
@@ -38,6 +42,8 @@ export default function ManageAssetRightControls({
           >
             <ManageAssetDragHandle
               index={index}
+              onDragStart={onDragStart}
+              onDragEnd={onDragEnd}
               onTouchStart={onTouchStart}
               onTouchMove={onTouchMove}
               onTouchEnd={onTouchEnd}

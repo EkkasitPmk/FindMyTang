@@ -81,7 +81,7 @@ describe("main-layout.helper", () => {
       isSearchMode: false,
       pathname: "/transaction",
     });
-    expect(mainTabRes.mainContentClassName).toBe("py-3");
+    expect(mainTabRes.mainContentClassName).toBe("pt-3");
     expect(mainTabRes.mainOverflowClassName).toBe("overflow-hidden");
 
     const assetSearchRes = getMainContentClassNames({

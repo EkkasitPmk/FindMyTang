@@ -256,7 +256,7 @@ export default function AccountContainer() {
         onRemoveAvatar={handleRemoveAvatar}
       />
 
-      <section className="space-y-10 px-4">
+      <section className="space-y-10 px-4 pb-18">
         {/* Personal Info Form Presentation Component (React Hook Form & Zod) */}
         <PersonalInfoForm
           user={user}
