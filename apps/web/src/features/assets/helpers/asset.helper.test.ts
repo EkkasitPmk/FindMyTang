@@ -1,5 +1,8 @@
 import { describe, it, expect, vi } from "vitest";
-import { processAssetTransactions } from "./asset.helper";
+import {
+  getManageAssetItemClasses,
+  processAssetTransactions,
+} from "./asset.helper";
 import {
   TransactionResponse,
   TransactionType,
@@ -9,6 +12,21 @@ import { formatDisplayDate } from "@/shared/lib/helpers/date.helper";
 vi.mock("react-toastify", () => ({ toast: { error: vi.fn() } }));
 
 describe("asset.helper", () => {
+  it("does not keep expanded highlighting while selecting assets", () => {
+    const result = getManageAssetItemClasses({
+      isDeleted: false,
+      isArchived: false,
+      isInactive: false,
+      isExpanded: true,
+      isEditingList: true,
+      isSelected: false,
+      draggable: false,
+      hasColor: true,
+    });
+
+    expect(result.headerClasses).not.toContain("bg-surface-secondary");
+  });
+
   describe("processAssetTransactions", () => {
     it("should return empty state when transactions is undefined or empty", () => {
       const result = processAssetTransactions({

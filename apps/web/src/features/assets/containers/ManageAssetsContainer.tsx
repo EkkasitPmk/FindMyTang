@@ -21,6 +21,7 @@ import ManageAssetItem from "../components/ManageAssetItem";
 import EditAssetsContainer from "./EditAssetsContainer";
 import { RotateCcw, Trash2, Archive } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import { Slide } from "@/shared/components/animate-ui/primitives/effects/slide";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { reorderList } from "../helpers/asset.helper";
@@ -326,7 +327,7 @@ export default function ManageAssetsContainer() {
             archivedAssets.length === 0 &&
             deletedAssets.length === 0 &&
             "my-2 pb-4",
-          isEditingList ? "pb-18" : "pb-4",
+          isEditingList ? "pb-20" : "pb-4",
         )}
       >
         {/* Active Assets */}
@@ -464,50 +465,53 @@ export default function ManageAssetsContainer() {
       {/* Bulk Bottom Bar */}
       <AnimatePresence>
         {isEditingList && (
-          <motion.div
-            initial={{ y: 80, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 80, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="fixed bottom-0 left-0 right-0 bg-surface border-t border-border p-4 shadow-[0_-4px_10px_-4px_rgba(0,0,0,0.1)] z-50 flex items-center justify-between gap-2 overflow-x-auto"
+          <Slide
+            asChild
+            direction="up"
+            offset={96}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
-            <span className="text-sm font-medium text-secondary-text whitespace-nowrap pl-2">
-              {selectedIds.size} {t("selected")}
-            </span>
-            <div className="flex gap-2 min-w-max">
-              {hasActiveSelected && (
-                <Button
-                  variant="default"
-                  className="bg-investment-light hover:bg-investment/20 text-investment rounded-full px-4 text-xs h-9"
-                  disabled={selectedIds.size === 0}
-                  onClick={openBulkArchiveModal}
-                >
-                  <Archive size={16} className="mr-1.5 inline" />
-                  {t("archive")}
-                </Button>
-              )}
-              {hasDeletedSelected && (
-                <Button
-                  variant="default"
-                  className="bg-income-light hover:bg-income/20 text-income rounded-full px-4 text-xs h-9"
-                  disabled={selectedIds.size === 0}
-                  onClick={openBulkRestoreModal}
-                >
-                  <RotateCcw size={16} className="mr-1.5 inline" />
-                  {t("restore")}
-                </Button>
-              )}
-              <Button
-                variant="default"
-                className="bg-expense hover:bg-expense-dark text-white rounded-full px-4 text-xs h-9"
-                disabled={selectedIds.size === 0}
-                onClick={openBulkDeleteModal}
-              >
-                <Trash2 size={16} className="mr-1.5 inline" />
-                {t("delete")}
-              </Button>
+            <div className="fixed bottom-4 left-3 right-3 z-50 rounded-[1.5rem] border border-border/70 bg-surface/95 px-1.5 py-1.5 backdrop-blur-xl">
+              <div className="flex items-center gap-1.5 overflow-x-auto">
+                <span className="flex min-h-10 shrink-0 items-center justify-center rounded-xl px-3 text-sm font-semibold text-secondary-text">
+                  {selectedIds.size} {t("selected")}
+                </span>
+                <div className="flex min-w-max flex-1 items-center justify-end gap-0.5">
+                  {hasActiveSelected && (
+                    <Button
+                      variant="unstyled"
+                      className="flex min-h-10 flex-col items-center justify-center gap-0.5 rounded-xl px-3 py-1 text-[9px] font-semibold text-investment transition-colors hover:bg-investment-light focus-visible:ring-2 focus-visible:ring-primary/50"
+                      disabled={selectedIds.size === 0}
+                      onClick={openBulkArchiveModal}
+                    >
+                      <Archive className="h-4.5 w-4.5" strokeWidth={2} />
+                      {t("archive")}
+                    </Button>
+                  )}
+                  {hasDeletedSelected && (
+                    <Button
+                      variant="unstyled"
+                      className="flex min-h-10 flex-col items-center justify-center gap-0.5 rounded-xl px-3 py-1 text-[9px] font-semibold text-income transition-colors hover:bg-income-light focus-visible:ring-2 focus-visible:ring-primary/50"
+                      disabled={selectedIds.size === 0}
+                      onClick={openBulkRestoreModal}
+                    >
+                      <RotateCcw className="h-4.5 w-4.5" strokeWidth={2} />
+                      {t("restore")}
+                    </Button>
+                  )}
+                  <Button
+                    variant="unstyled"
+                    className="flex min-h-10 flex-col items-center justify-center gap-0.5 rounded-xl px-3 py-1 text-[9px] font-semibold text-expense transition-colors hover:bg-expense-light focus-visible:ring-2 focus-visible:ring-expense/50"
+                    disabled={selectedIds.size === 0}
+                    onClick={openBulkDeleteModal}
+                  >
+                    <Trash2 className="h-4.5 w-4.5" strokeWidth={2} />
+                    {t("delete")}
+                  </Button>
+                </div>
+              </div>
             </div>
-          </motion.div>
+          </Slide>
         )}
       </AnimatePresence>
 
