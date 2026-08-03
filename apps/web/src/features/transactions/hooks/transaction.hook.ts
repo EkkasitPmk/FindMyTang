@@ -101,7 +101,10 @@ export const useTransactionsQuery = (
   });
 };
 
-export const useInfiniteTransactionsQuery = (params?: TransactionQuery) => {
+export const useInfiniteTransactionsQuery = (
+  params?: TransactionQuery,
+  options?: { enabled?: boolean },
+) => {
   const isGuest = useGuestStore((state) => state.isGuest);
 
   const queryParams = isGuest ? { limit: 20, ...params } : params;
@@ -114,6 +117,7 @@ export const useInfiniteTransactionsQuery = (params?: TransactionQuery) => {
     number | string | undefined
   >({
     queryKey: ["transactions", "infinite", { isGuest, ...params }],
+    enabled: options?.enabled ?? true,
     queryFn: async ({ pageParam = 1 }) => {
       if (queryParams?.pagination === "cursor") {
         return getTransactionsApi({
