@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { TransactionListContainer } from "@/features/transactions/containers/TransactionListContainer";
 import {
   Tabs,
@@ -37,6 +37,7 @@ export default function JournalContainer() {
   const { t, locale } = useTranslation();
   const [viewMode, setViewMode] = useState<ViewMode>("timeline");
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [debouncedSearchKeyword, setDebouncedSearchKeyword] = useState("");
   const [selectedType, setSelectedType] =
     useState<JournalTransactionType>("all");
   const [sortType, setSortType] = useState<
@@ -44,50 +45,56 @@ export default function JournalContainer() {
   >("DATE_NEWEST");
   const [isSortOpen, setIsSortOpen] = useState(false);
 
+  useEffect(() => {
+    const keyword = searchKeyword.trim();
+    const timeoutId = window.setTimeout(
+      () => setDebouncedSearchKeyword(keyword),
+      keyword ? 300 : 0,
+    );
+
+    return () => window.clearTimeout(timeoutId);
+  }, [searchKeyword]);
+
   const handleViewModeChange = (value: string) => {
     setViewMode(value as ViewMode);
     window.dispatchEvent(new Event("bottomnav:show"));
   };
 
+  const isDeleted = selectedType === "deleted";
   const queryType =
-    selectedType === "all" ? undefined : selectedType.toUpperCase();
+    selectedType === "all" || isDeleted
+      ? undefined
+      : selectedType.toUpperCase();
   const {
     data: transactionsData,
     isLoading: isLoadingTransactions,
+    isFetching: isFetchingTransactions,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteTransactionsQuery({
     limit: 30,
-    pagination: sortType.startsWith("DATE") ? "cursor" : "page",
+    pagination:
+      debouncedSearchKeyword || !sortType.startsWith("DATE")
+        ? "page"
+        : "cursor",
     type: queryType,
+    isDeleted,
     sortType,
+    searchKeyword: debouncedSearchKeyword || undefined,
   });
 
   const groupedTransactions = useMemo(() => {
     if (!transactionsData?.pages) return [];
 
     const seen = new Set<string>();
-    let filteredItems = transactionsData.pages
+    const filteredItems = transactionsData.pages
       .flatMap((page) => page.items)
       .filter((tx) => {
         if (seen.has(tx.id)) return false;
         seen.add(tx.id);
         return true;
       });
-
-    if (searchKeyword.trim()) {
-      const lowerKeyword = searchKeyword.toLowerCase();
-      filteredItems = filteredItems.filter(
-        (tx) =>
-          tx.note?.toLowerCase().includes(lowerKeyword) ||
-          tx.category?.name?.toLowerCase().includes(lowerKeyword) ||
-          tx.asset?.name?.toLowerCase().includes(lowerKeyword) ||
-          tx.toAsset?.name?.toLowerCase().includes(lowerKeyword) ||
-          tx.amount.toString().includes(lowerKeyword) ||
-          tx.type.toLowerCase().includes(lowerKeyword),
-      );
-    }
 
     const groupsMap = new Map<string, TransactionResponse[]>();
     const dateFormatter = new Intl.DateTimeFormat(locale, {
@@ -110,7 +117,7 @@ export default function JournalContainer() {
       dateStr,
       items,
     }));
-  }, [transactionsData, searchKeyword, locale]);
+  }, [transactionsData, locale]);
 
   return (
     <div className="flex h-full flex-col bg-background space-y-2">
@@ -160,23 +167,41 @@ export default function JournalContainer() {
                   {/* 3. แสดง ui tabs switch และ sort */}
                   <div className="flex items-center gap-2 pb-1">
                     <div className="flex-1 flex overflow-x-auto gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
-                      {JOURNAL_TRANSACTION_TYPES.map((type) => (
-                        <Button
-                          variant={"unstyled"}
-                          key={type.value}
-                          onClick={() => setSelectedType(type.value)}
-                          className={cn(
-                            "flex-none px-4 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer",
-                            selectedType === type.value
-                              ? type.activeColorClass
-                              : "bg-surface border border-border text-secondary-text hover:bg-surface-secondary",
-                          )}
-                        >
-                          {type.value === "all"
-                            ? t("all")
-                            : t(type.value as TranslationKey)}
-                        </Button>
-                      ))}
+                      {JOURNAL_TRANSACTION_TYPES.map((type) => {
+                        let typeLabel = t(type.value as TranslationKey);
+                        if (type.value === "all") typeLabel = t("all");
+                        if (type.value === "deleted") {
+                          typeLabel = t("deletedItems");
+                        }
+
+                        return (
+                          <div
+                            key={type.value}
+                            className="flex items-center gap-2"
+                          >
+                            {type.value === "deleted" && (
+                              <span
+                                className="text-secondary-text"
+                                aria-hidden="true"
+                              >
+                                |
+                              </span>
+                            )}
+                            <Button
+                              variant={"unstyled"}
+                              onClick={() => setSelectedType(type.value)}
+                              className={cn(
+                                "flex-none px-4 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer",
+                                selectedType === type.value
+                                  ? type.activeColorClass
+                                  : "bg-surface border border-border text-secondary-text hover:bg-surface-secondary",
+                              )}
+                            >
+                              {typeLabel}
+                            </Button>
+                          </div>
+                        );
+                      })}
                     </div>
 
                     <DropdownMenu
@@ -267,6 +292,7 @@ export default function JournalContainer() {
                     isLoadingTransactions={
                       !transactionsData && isLoadingTransactions
                     }
+                    isFetchingTransactions={isFetchingTransactions}
                     isFetchingNextPage={isFetchingNextPage}
                     hasNextPage={hasNextPage}
                     fetchNextPage={fetchNextPage}
@@ -274,6 +300,7 @@ export default function JournalContainer() {
                     searchKeyword={searchKeyword}
                     page="journal"
                     useVirtualization={true}
+                    paginationKey={`${selectedType}:${sortType}:${debouncedSearchKeyword}`}
                   />
                 </div>
               </div>

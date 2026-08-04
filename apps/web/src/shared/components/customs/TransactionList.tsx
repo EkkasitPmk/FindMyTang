@@ -93,6 +93,7 @@ function TransactionListFooter({
 interface TransactionListProps {
   groupedTransactions: GroupedTransaction[];
   isLoadingTransactions: boolean;
+  isFetchingTransactions?: boolean;
   isFetchingNextPage?: boolean;
   hasNextPage?: boolean;
   assetId?: string;
@@ -107,11 +108,13 @@ interface TransactionListProps {
   onAttachmentClick: (url: string) => void;
   useVirtualization?: boolean;
   onEndReached?: () => void;
+  paginationKey?: string;
 }
 
 export function TransactionList({
   groupedTransactions,
   isLoadingTransactions,
+  isFetchingTransactions = false,
   isFetchingNextPage = false,
   hasNextPage = false,
   assetId,
@@ -126,6 +129,7 @@ export function TransactionList({
   onAttachmentClick,
   useVirtualization = false,
   onEndReached,
+  paginationKey,
 }: Readonly<TransactionListProps>) {
   const { t, locale } = useTranslation();
   const fetchLock = useRef(false);
@@ -154,10 +158,16 @@ export function TransactionList({
     if (!isFetchingNextPage) fetchLock.current = false;
   }, [isFetchingNextPage]);
 
+  useEffect(() => {
+    fetchLock.current = false;
+    lastRequestedLength.current = 0;
+  }, [paginationKey]);
+
   const requestNextPage = useCallback(() => {
     if (
       !onEndReached ||
       !hasNextPage ||
+      isFetchingTransactions ||
       isFetchingNextPage ||
       fetchLock.current ||
       lastRequestedLength.current === flatItems.length
@@ -168,7 +178,13 @@ export function TransactionList({
     fetchLock.current = true;
     lastRequestedLength.current = flatItems.length;
     onEndReached();
-  }, [flatItems.length, hasNextPage, isFetchingNextPage, onEndReached]);
+  }, [
+    flatItems.length,
+    hasNextPage,
+    isFetchingTransactions,
+    isFetchingNextPage,
+    onEndReached,
+  ]);
 
   if (isSearchMode && !searchKeyword) {
     return (
