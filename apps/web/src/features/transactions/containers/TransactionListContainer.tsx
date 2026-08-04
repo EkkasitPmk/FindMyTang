@@ -25,6 +25,7 @@ import { ApiErrorResponse } from "@/shared/lib/types/api.type";
 interface TransactionListContainerProps {
   groupedTransactions: GroupedTransaction[];
   isLoadingTransactions: boolean;
+  isFetchingTransactions?: boolean;
   isFetchingNextPage?: boolean;
   hasNextPage?: boolean;
   fetchNextPage?: () => void;
@@ -34,11 +35,13 @@ interface TransactionListContainerProps {
   page?: "asset" | "journal" | "recent";
   useVirtualization?: boolean;
   disableOwnScroll?: boolean;
+  paginationKey?: string;
 }
 
 export function TransactionListContainer({
   groupedTransactions,
   isLoadingTransactions,
+  isFetchingTransactions = false,
   isFetchingNextPage = false,
   hasNextPage = false,
   fetchNextPage,
@@ -48,6 +51,7 @@ export function TransactionListContainer({
   page,
   useVirtualization = false,
   disableOwnScroll = false,
+  paginationKey,
 }: Readonly<TransactionListContainerProps>) {
   const router = useRouter();
   const { t } = useTranslation();
@@ -198,6 +202,7 @@ export function TransactionListContainer({
         <TransactionList
           groupedTransactions={groupedTransactions}
           isLoadingTransactions={isLoadingTransactions}
+          isFetchingTransactions={isFetchingTransactions}
           isFetchingNextPage={isFetchingNextPage}
           hasNextPage={hasNextPage}
           onTransactionItemClick={handleTransactionItemClick}
@@ -211,8 +216,14 @@ export function TransactionListContainer({
           setExpandedTransactionId={setExpandedTransactionId}
           onAttachmentClick={setPreviewImageUrl}
           useVirtualization={useVirtualization}
+          paginationKey={paginationKey}
           onEndReached={() => {
-            if (hasNextPage && !isFetchingNextPage && fetchNextPage) {
+            if (
+              hasNextPage &&
+              !isFetchingTransactions &&
+              !isFetchingNextPage &&
+              fetchNextPage
+            ) {
               fetchNextPage();
             }
           }}

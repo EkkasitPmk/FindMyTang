@@ -194,7 +194,7 @@ export default function CUCategoryModal({
               <p className="text-xs text-muted-foreground font-semibold">
                 {t("icon")}
               </p>
-              <div className="grid grid-cols-6 place-items-center max-h-[15vh] overflow-auto border border-border rounded-md p-1 bg-background">
+              <div className="grid grid-cols-6 place-items-center max-h-[16dvh] overflow-auto border border-border rounded-md p-1 bg-background">
                 {SELECTABLE_ICONS.map((iconName) => {
                   const Icon = getCategoryIcon(iconName);
                   const isSelected = selectedIconName === iconName;
@@ -253,7 +253,7 @@ export default function CUCategoryModal({
                   {t("accentColor")}
                 </p>
               </div>
-              <div className="grid grid-cols-7 gap-2 p-3 max-h-[15vh] overflow-auto bg-surface-secondary/50 rounded-lg border border-border">
+              <div className="grid grid-cols-7 gap-2 p-3 max-h-[16dvh] overflow-auto bg-surface-secondary/50 rounded-lg border border-border">
                 {PREMIUM_COLORS.map((color) => {
                   const isSelected = selectedColor === color;
                   return (

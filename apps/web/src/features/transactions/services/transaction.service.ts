@@ -199,7 +199,10 @@ export const createTransactionApi = async (
   return createCloudTransactionApi(data, type);
 };
 
-export const getTransactionsApi = async (query?: TransactionQuery) => {
+export const getTransactionsApi = async (
+  query?: TransactionQuery,
+  signal?: AbortSignal,
+) => {
   if (useGuestStore.getState().isGuest) {
     let all = await db.transactions.toArray();
 
@@ -246,6 +249,7 @@ export const getTransactionsApi = async (query?: TransactionQuery) => {
         const toAssetMatch = t.toAssetId
           ? assetMap.get(t.toAssetId)?.includes(lowerSearch)
           : false;
+        const typeMatch = t.type.toLowerCase().includes(lowerSearch);
         const amountMatch =
           normalizedSearch !== "" &&
           Math.abs(Number(t.amount)).toFixed(2).includes(normalizedSearch);
@@ -255,6 +259,7 @@ export const getTransactionsApi = async (query?: TransactionQuery) => {
           categoryMatch ||
           assetMatch ||
           toAssetMatch ||
+          typeMatch ||
           amountMatch
         );
       });
@@ -345,7 +350,7 @@ export const getTransactionsApi = async (query?: TransactionQuery) => {
 
   const { data } = await http.get<PaginatedTransactionResponse>(
     "/transactions",
-    { params: query },
+    { params: query, signal },
   );
   return paginatedTransactionResponseSchema.parse(data);
 };

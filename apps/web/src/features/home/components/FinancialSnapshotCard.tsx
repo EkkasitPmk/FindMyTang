@@ -216,9 +216,6 @@ export default function FinancialSnapshotCard({
 
   return (
     <section className="relative overflow-hidden rounded-xl border border-border bg-surface p-4.5 sm:p-5 shadow-sm transition-all duration-200">
-      {/* Background Ambient Tint */}
-      <div className="absolute -top-12 -right-12 size-36 rounded-full bg-primary/5 blur-2xl pointer-events-none" />
-
       {/* Header */}
       <div className="flex items-center justify-between mb-2 relative z-10">
         <span className="text-xs font-semibold uppercase tracking-wider text-secondary-text flex items-center gap-1.5">

@@ -92,9 +92,16 @@ export class TransactionRepository {
       const amountSearchIds = normalizedSearchKeyword
         ? await this.findAmountSearchIds(userId, normalizedSearchKeyword)
         : [];
+      const transactionType = searchKeyword.toUpperCase();
+      const typeSearch = Object.values(TransactionType).includes(
+        transactionType as TransactionType,
+      )
+        ? [{ type: transactionType as TransactionType }]
+        : [];
 
       filters.push({
         OR: [
+          ...typeSearch,
           { note: { contains: searchKeyword, mode: "insensitive" } },
           {
             category: {

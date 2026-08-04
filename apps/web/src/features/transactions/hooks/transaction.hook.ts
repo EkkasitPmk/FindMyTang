@@ -1,5 +1,4 @@
 import {
-  keepPreviousData,
   useMutation,
   useQuery,
   useQueryClient,
@@ -118,15 +117,21 @@ export const useInfiniteTransactionsQuery = (
   >({
     queryKey: ["transactions", "infinite", { isGuest, ...params }],
     enabled: options?.enabled ?? true,
-    queryFn: async ({ pageParam = 1 }) => {
+    queryFn: async ({ pageParam = 1, signal }) => {
       if (queryParams?.pagination === "cursor") {
-        return getTransactionsApi({
-          ...queryParams,
-          cursor: pageParam === 1 ? undefined : (pageParam as string),
-        });
+        return getTransactionsApi(
+          {
+            ...queryParams,
+            cursor: pageParam === 1 ? undefined : (pageParam as string),
+          },
+          signal,
+        );
       }
 
-      return getTransactionsApi({ ...queryParams, page: pageParam as number });
+      return getTransactionsApi(
+        { ...queryParams, page: pageParam as number },
+        signal,
+      );
     },
     getNextPageParam: (lastPage: PaginatedTransactionResponse) => {
       if (queryParams?.pagination === "cursor") {
@@ -139,7 +144,6 @@ export const useInfiniteTransactionsQuery = (
       return undefined;
     },
     initialPageParam: queryParams?.pagination === "cursor" ? undefined : 1,
-    placeholderData: keepPreviousData,
   });
 };
 

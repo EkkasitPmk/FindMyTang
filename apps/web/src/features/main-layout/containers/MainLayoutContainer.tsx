@@ -33,9 +33,6 @@ export default function MainLayoutContainer({
   return (
     <SidebarProvider defaultOpen className="h-svh min-h-0 overflow-hidden">
       <div className="text-primary-text flex flex-col relative flex-1 min-w-0 min-h-0">
-        <div className="absolute top-0 right-0 w-[40vw] h-[40vw] rounded-full bg-primary-light/20 blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-[40vw] h-[40vw] rounded-full bg-primary-light/20 blur-[120px] pointer-events-none" />
-
         <div className="flex flex-1 relative z-10 min-w-0 min-h-0">
           <NavContainer />
 
