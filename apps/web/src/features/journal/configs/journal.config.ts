@@ -1,5 +1,10 @@
 export type JournalTransactionType =
-  "all" | "income" | "expense" | "transfer" | "adjustment";
+  | "all"
+  | "income"
+  | "expense"
+  | "transfer"
+  | "adjustment"
+  | "deleted";
 
 export const JOURNAL_TRANSACTION_TYPES: {
   label: string;
@@ -26,5 +31,10 @@ export const JOURNAL_TRANSACTION_TYPES: {
     label: "Adjustment",
     value: "adjustment",
     activeColorClass: "bg-info text-white",
+  },
+  {
+    label: "Deleted",
+    value: "deleted",
+    activeColorClass: "bg-secondary-text text-white",
   },
 ];
