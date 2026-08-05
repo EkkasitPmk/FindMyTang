@@ -5,7 +5,7 @@ import RecentJournalContainer from "@/features/journal/containers/RecentJournalC
 import ListAssetsContainer from "../../assets/containers/ListAssetsContainer";
 import CreateAssetsContainer from "@/features/assets/containers/CreateAssetsContainer";
 
-export default function HomeContainer() {
+export default function DashboardContainer() {
   const [isCreateAssetOpen, setIsCreateAssetOpen] = useState(false);
 
   return (

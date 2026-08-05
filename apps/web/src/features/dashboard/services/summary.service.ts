@@ -4,7 +4,7 @@ import { db } from "@/shared/lib/storages/dexie.storage";
 import {
   todaySummaryResponseSchema,
   TodaySummaryResponse,
-} from "../schemas/home.response.schema";
+} from "../schemas/dashboard.response.schema";
 
 export const getTodaySummaryApi = async (): Promise<TodaySummaryResponse> => {
   if (useGuestStore.getState().isGuest) {
