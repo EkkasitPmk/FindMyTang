@@ -11,7 +11,7 @@ import { useFeatureLockModal } from "@/shared/lib/hooks/useFeatureLockModal.hook
 
 export default function ShowProfileContainer() {
   const pathname = usePathname();
-  const { data: user, isLoading } = useMeQuery();
+  const { data: user, isLoading, isError } = useMeQuery();
   const isGuest = useIsGuest();
   const openLockModal = useFeatureLockModal((state) => state.openModal);
 
@@ -49,7 +49,7 @@ export default function ShowProfileContainer() {
           <Avatar url={user?.avatarUrl} size={40} />
         </Link>
         <div className="flex flex-col">
-          {isLoading && !isGuest ? (
+          {!isGuest && (isLoading || isError) ? (
             <Skeleton className="h-5 w-32 mb-1" />
           ) : (
             <h1 className="text-base font-medium leading-tight line-clamp-1">
@@ -57,7 +57,7 @@ export default function ShowProfileContainer() {
             </h1>
           )}
 
-          {isLoading && !isGuest ? (
+          {!isGuest && (isLoading || isError) ? (
             <Skeleton className="h-4 w-24" />
           ) : (
             <p className="text-sm text-secondary-text">{currentDate}</p>

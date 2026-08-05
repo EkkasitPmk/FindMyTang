@@ -30,10 +30,11 @@ const CLOUD_SYNC_INTERVAL_MS = 60_000;
 
 export default function NavContainer() {
   const pathname = usePathname();
-  const { data: user, isLoading } = useMeQuery();
-  const isAuthenticated = Boolean(user);
+  const { data: user, isLoading, isError } = useMeQuery();
   const queryClient = useQueryClient();
   const { isGuest, setGuestMode, clearGuestData } = useGuestStore();
+  const isAuthenticated = Boolean(user);
+  const isUserProfileLoading = isLoading || (isError && !isGuest);
   const openLockModal = useFeatureLockModal((state) => state.openModal);
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -386,7 +387,7 @@ export default function NavContainer() {
       <DesktopSidebar
         pathname={pathname}
         user={user}
-        isLoading={isLoading}
+        isLoading={isUserProfileLoading}
         onLogout={openLogoutConfirm}
         isGuest={isGuest}
         isSyncing={isSyncing}
@@ -402,7 +403,7 @@ export default function NavContainer() {
         onClose={() => setMobileMenuOpen(false)}
         pathname={pathname}
         user={user}
-        isLoading={isLoading}
+        isLoading={isUserProfileLoading}
         onLogout={openLogoutConfirm}
         isGuest={isGuest}
         isSyncing={isSyncing}
