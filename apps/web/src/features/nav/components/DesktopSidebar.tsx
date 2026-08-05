@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Wallet } from "lucide-react";
-import ThemeSwitcher from "@/shared/components/customs/ThemeSwitcher";
 import SyncStatusButton from "@/shared/components/customs/SyncStatusButton";
 import NavUserProfile from "./NavUserProfile";
 import { UserProfile } from "@/shared/lib/types/user.type";
@@ -121,7 +120,6 @@ export default function DesktopSidebar({
             lastSyncedAt={lastSyncedAt}
             onSyncClick={onSyncClick}
           />
-          <ThemeSwitcher />
         </div>
       </SidebarContent>
 
