@@ -7,6 +7,10 @@ export default function MainLayoutTitle({
   currentCategory,
   t,
 }: Readonly<MainLayoutTitleProps>) {
+  if (route === "dashboard") return <>{t("navDashboard")}</>;
+  if (route === "journal") return <>{t("navJournal")}</>;
+  if (route === "transaction") return <>{t("navTransactions")}</>;
+  if (route === "analytics") return <>{t("navAnalytics")}</>;
   if (route === "categories") return <>{t("manageCategories")}</>;
   if (route === "assetsNew") return <>{t("newAssets")}</>;
   if (route === "settingsAccount") return <>{t("profileSettings")}</>;

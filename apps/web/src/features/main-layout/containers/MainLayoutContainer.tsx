@@ -9,7 +9,10 @@ import { useMainLayout } from "../hooks/main-layout.hook";
 import MainLayoutSearchBar from "../components/MainLayoutSearchBar";
 import MainLayoutRightAction from "../components/MainLayoutRightAction";
 import MainLayoutTitle from "../components/MainLayoutTitle";
-import { shouldShowProfile } from "../helpers/main-layout.helper";
+import {
+  getMainLayoutDescription,
+  shouldShowProfile,
+} from "../helpers/main-layout.helper";
 import { cn } from "@/shared/lib/utils/core.util";
 
 export default function MainLayoutContainer({
@@ -73,6 +76,24 @@ export default function MainLayoutContainer({
               </div>
             )}
 
+            {/* Header */}
+            <div
+              className={cn(
+                "hidden md:block bg-surface sm:px-6 py-4",
+                "border-b border-border",
+              )}
+            >
+              <MainLayoutTitle
+                route={route.name}
+                assetName={header.assetName}
+                currentCategory={header.currentCategory}
+                t={t}
+              />
+              <p className="text-sm text-muted-foreground">
+                {getMainLayoutDescription(route.name, t)}
+              </p>
+            </div>
+
             {route.shouldShowTopAppBar && search.isSearchMode && (
               <MainLayoutSearchBar
                 searchKeyword={search.searchKeyword}
@@ -84,7 +105,7 @@ export default function MainLayoutContainer({
 
             <main
               className={cn(
-                "flex-1 min-h-0",
+                "flex-1 min-h-0 sm:px-6",
                 content.mainOverflowClassName,
                 content.mainContentClassName,
               )}

@@ -37,6 +37,28 @@ export function shouldShowProfile(route: MainLayoutRoute): boolean {
   return route === "dashboard";
 }
 
+export function getMainLayoutDescription(
+  route: MainLayoutRoute,
+  t: (key: TranslationKey) => string,
+): string {
+  const descriptionKeys: Partial<Record<MainLayoutRoute, TranslationKey>> = {
+    dashboard: "navDashboardDesc",
+    journal: "navJournalDesc",
+    transaction: "navTransactionsDesc",
+    analytics: "navAnalyticsDesc",
+    categories: "navCategoriesDesc",
+    assets: "navAssetsDesc",
+    assetsNew: "navAssetsNewDesc",
+    settings: "navSettingsDesc",
+    settingsAccount: "navSettingsAccountDesc",
+    supportContact: "navSupportContactDesc",
+    supportFeedback: "navSupportFeedbackDesc",
+    analyticsCategory: "navAnalyticsCategoryDesc",
+  };
+
+  return t(descriptionKeys[route] || "appDescription");
+}
+
 export function shouldLockContentScroll(route: MainLayoutRoute): boolean {
   return ["transaction", "journal", "analytics"].includes(route);
 }
@@ -106,13 +128,13 @@ export function getMainContentClassNames({
       mainContentClassName = "pt-3";
       mainOverflowClassName = "overflow-hidden";
     } else {
-      mainContentClassName = "pt-15 md:pt-4";
+      mainContentClassName = "pt-15 md:py-4";
     }
   } else if (shouldShowTopAppBar) {
     if (route === "assets" && isSearchMode) {
       mainContentClassName = "";
     } else {
-      mainContentClassName = "pt-12 md:pt-4";
+      mainContentClassName = "pt-12 md:py-4";
     }
   }
 

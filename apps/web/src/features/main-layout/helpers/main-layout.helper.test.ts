@@ -7,6 +7,7 @@ import {
   getSyntheticCategory,
   getMainContentClassNames,
   getMainLayoutRoute,
+  getMainLayoutDescription,
   shouldShowProfile,
   shouldLockContentScroll,
 } from "./main-layout.helper";
@@ -30,6 +31,18 @@ describe("main-layout.helper", () => {
     expect(shouldShowProfile("dashboard")).toBe(true);
     expect(shouldShowProfile("journal")).toBe(false);
     expect(shouldShowProfile("analytics")).toBe(false);
+  });
+
+  it("returns a description for supported pages", () => {
+    const mockT = (key: TranslationKey) => key;
+
+    expect(getMainLayoutDescription("dashboard", mockT)).toBe(
+      "navDashboardDesc",
+    );
+    expect(getMainLayoutDescription("supportFeedback", mockT)).toBe(
+      "navSupportFeedbackDesc",
+    );
+    expect(getMainLayoutDescription("other", mockT)).toBe("appDescription");
   });
 
   it("locks content scrolling only for full-height main tabs", () => {
