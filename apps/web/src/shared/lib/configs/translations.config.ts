@@ -9,7 +9,7 @@ export const translations = {
     appVersionLabel: "เวอร์ชันระบบ",
 
     // Navigation / Layout
-    navHome: "หน้าแรก",
+    navDashboard: "แดชบอร์ด",
     navJournal: "ประวัติ",
     navTransactions: "บันทึก",
     navAnalytics: "วิเคราะห์",
@@ -456,7 +456,7 @@ export const translations = {
     appVersionLabel: "System Version",
 
     // Navigation / Layout
-    navHome: "Home",
+    navDashboard: "Dashboard",
     navJournal: "Journal",
     navTransactions: "Transactions",
     navAnalytics: "Analytics",

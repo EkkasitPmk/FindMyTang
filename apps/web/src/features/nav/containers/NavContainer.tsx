@@ -40,7 +40,7 @@ export default function NavContainer() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isMobileBottomNavHidden, setIsMobileBottomNavHidden] = useState(false);
   const shouldHideBottomNavOnScroll =
-    pathname === "/home" ||
+    pathname === "/dashboard" ||
     pathname === "/journal" ||
     pathname === "/analytics" ||
     pathname.startsWith("/analytics/category");
@@ -209,7 +209,7 @@ export default function NavContainer() {
   const { mutateAsync: logoutUserAsync, isPending: isLogoutPending } =
     useLogoutMutation({
       onSuccess: () => {
-        window.location.href = "/home";
+        window.location.href = "/dashboard";
       },
       onError: () => {
         setIsLoggingOutLocal(false);
@@ -366,7 +366,7 @@ export default function NavContainer() {
         setGuestMode(true);
         await useGuestStore.getState().seedDefaultGuestData();
 
-        // Logout from server, which will trigger a hard reload to /home
+        // Logout from server, which will trigger a hard reload to /dashboard
         await logoutUserAsync();
       } catch (error) {
         console.error("Logout failed", error);

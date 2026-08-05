@@ -6,7 +6,7 @@ import {
 } from "../types/main-layout.type";
 
 const MAIN_TAB_ROUTES = new Set<MainLayoutRoute>([
-  "home",
+  "dashboard",
   "journal",
   "analytics",
   "transaction",
@@ -14,7 +14,7 @@ const MAIN_TAB_ROUTES = new Set<MainLayoutRoute>([
 const ANALYTICS_CATEGORY_ROUTE = /^\/analytics\/category\/([^/]+)$/;
 
 export function getMainLayoutRoute(pathname: string): MainLayoutRoute {
-  if (pathname === "/home") return "home";
+  if (pathname === "/dashboard") return "dashboard";
   if (pathname === "/journal") return "journal";
   if (pathname === "/analytics") return "analytics";
   if (pathname === "/transaction") return "transaction";
@@ -34,7 +34,7 @@ export function isMainTabRoute(pathname: string): boolean {
 }
 
 export function shouldShowProfile(route: MainLayoutRoute): boolean {
-  return route === "home";
+  return route === "dashboard";
 }
 
 export function shouldLockContentScroll(route: MainLayoutRoute): boolean {
@@ -106,13 +106,13 @@ export function getMainContentClassNames({
       mainContentClassName = "pt-3";
       mainOverflowClassName = "overflow-hidden";
     } else {
-      mainContentClassName = "pt-15";
+      mainContentClassName = "pt-15 md:pt-4";
     }
   } else if (shouldShowTopAppBar) {
     if (route === "assets" && isSearchMode) {
       mainContentClassName = "";
     } else {
-      mainContentClassName = "pt-12";
+      mainContentClassName = "pt-12 md:pt-4";
     }
   }
 

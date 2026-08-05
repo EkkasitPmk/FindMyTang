@@ -116,7 +116,7 @@ export function useMainLayout() {
 
   const handleClosePage = () => {
     if (routeName === "settings" && shouldUseHomeFallback.current) {
-      router.push("/home");
+      router.push("/dashboard");
       return;
     }
 

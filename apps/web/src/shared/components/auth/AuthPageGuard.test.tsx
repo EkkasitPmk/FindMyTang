@@ -66,7 +66,7 @@ describe("AuthPageGuard", () => {
     } as never);
     render(<AuthPageGuard>{child}</AuthPageGuard>);
 
-    await waitFor(() => expect(routerReplace).toHaveBeenCalledWith("/home"));
+    await waitFor(() => expect(routerReplace).toHaveBeenCalledWith("/dashboard"));
     expect(screen.queryByText("Auth form")).not.toBeInTheDocument();
   });
 

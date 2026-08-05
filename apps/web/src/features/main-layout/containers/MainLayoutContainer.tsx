@@ -10,6 +10,7 @@ import MainLayoutSearchBar from "../components/MainLayoutSearchBar";
 import MainLayoutRightAction from "../components/MainLayoutRightAction";
 import MainLayoutTitle from "../components/MainLayoutTitle";
 import { shouldShowProfile } from "../helpers/main-layout.helper";
+import { cn } from "@/shared/lib/utils/core.util";
 
 export default function MainLayoutContainer({
   children,
@@ -42,7 +43,7 @@ export default function MainLayoutContainer({
             )}
 
             {route.shouldShowTopAppBar && !search.isSearchMode && (
-              <div className="fixed w-full top-0 z-40 bg-background/80 backdrop-blur-md">
+              <div className="fixed md:hidden w-full top-0 z-40 bg-background/80 backdrop-blur-md">
                 <TopAppBarMobile
                   title={
                     <MainLayoutTitle
@@ -82,7 +83,11 @@ export default function MainLayoutContainer({
             )}
 
             <main
-              className={`flex-1 min-h-0 ${content.mainOverflowClassName} ${content.mainContentClassName}`}
+              className={cn(
+                "flex-1 min-h-0",
+                content.mainOverflowClassName,
+                content.mainContentClassName,
+              )}
             >
               {children}
 
