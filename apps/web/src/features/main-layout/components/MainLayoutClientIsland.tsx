@@ -1,5 +1,4 @@
 "use client";
-import NavContainer from "@/features/nav/containers/NavContainer";
 import TopAppBarMobile from "@/shared/components/customs/TopAppBarMobile";
 import CreateAssetsContainer from "@/features/assets/containers/CreateAssetsContainer";
 import AssetsMenuContainer from "@/features/assets/containers/AssetsMenuContainer";
@@ -18,10 +17,12 @@ export default function MainLayoutClientIsland({
   children,
   initialAssets,
   initialCategories,
+  nav,
 }: Readonly<{
   children: React.ReactNode;
   initialAssets?: Asset[];
   initialCategories?: Category[];
+  nav: React.ReactNode;
 }>) {
   const {
     route,
@@ -43,7 +44,7 @@ export default function MainLayoutClientIsland({
     <SidebarProvider defaultOpen className="h-svh min-h-0 overflow-hidden">
       <div className="text-primary-text flex flex-col relative flex-1 min-w-0 min-h-0">
         <div className="flex flex-1 relative z-10 min-w-0 min-h-0">
-          <NavContainer />
+          {nav}
           <TransactionSheet />
 
           <div className="flex-1 flex flex-col min-w-0 min-h-0">
