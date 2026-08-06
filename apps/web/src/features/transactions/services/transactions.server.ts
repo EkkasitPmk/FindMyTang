@@ -6,18 +6,23 @@ const BACKEND_URL =
   "http://localhost:3001";
 
 export async function getRecentTransactionsServer() {
-  const cookieStore = await cookies();
-  if (!cookieStore.has("access_token")) return null;
+  try {
+    const cookieStore = await cookies();
+    if (!cookieStore.has("access_token")) return null;
 
-  const response = await fetch(
-    `${BACKEND_URL}/api/v1/transactions?limit=5&sortType=DATE_NEWEST`,
-    {
-      headers: { cookie: cookieStore.toString() },
-      cache: "no-store",
-    },
-  );
+    const response = await fetch(
+      `${BACKEND_URL}/api/v1/transactions?limit=5&sortType=DATE_NEWEST`,
+      {
+        headers: { cookie: cookieStore.toString() },
+        cache: "no-store",
+      },
+    );
 
-  if (!response.ok) return null;
+    if (!response.ok) return null;
 
-  return paginatedTransactionResponseSchema.parse(await response.json());
+    return paginatedTransactionResponseSchema.parse(await response.json());
+  } catch (error) {
+    console.error("Failed to load recent transactions on the server", error);
+    return null;
+  }
 }

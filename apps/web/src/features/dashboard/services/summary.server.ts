@@ -6,15 +6,20 @@ const BACKEND_URL =
   "http://localhost:3001";
 
 export async function getThisMonthSummaryServer() {
-  const cookieStore = await cookies();
-  if (!cookieStore.has("access_token")) return null;
+  try {
+    const cookieStore = await cookies();
+    if (!cookieStore.has("access_token")) return null;
 
-  const response = await fetch(`${BACKEND_URL}/api/v1/summary/monthly`, {
-    headers: { cookie: cookieStore.toString() },
-    cache: "no-store",
-  });
+    const response = await fetch(`${BACKEND_URL}/api/v1/summary/monthly`, {
+      headers: { cookie: cookieStore.toString() },
+      cache: "no-store",
+    });
 
-  if (!response.ok) return null;
+    if (!response.ok) return null;
 
-  return todaySummaryResponseSchema.parse(await response.json());
+    return todaySummaryResponseSchema.parse(await response.json());
+  } catch (error) {
+    console.error("Failed to load monthly summary on the server", error);
+    return null;
+  }
 }
