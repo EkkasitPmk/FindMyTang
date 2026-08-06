@@ -5,6 +5,16 @@ import { ChangePasswordDto } from "../dto/change-password.dto";
 import { User } from "@prisma/client";
 import * as bcrypt from "bcrypt";
 
+export const USER_ERROR_CODES = {
+  PASSWORD_MISMATCH: "PASSWORD_MISMATCH",
+  PASSWORD_SAME_AS_CURRENT: "PASSWORD_SAME_AS_CURRENT",
+  USER_NOT_FOUND: "USER_NOT_FOUND",
+  INCORRECT_CURRENT_PASSWORD: "INCORRECT_CURRENT_PASSWORD",
+} as const;
+
+const userError = (code: string, field: string, message: string) =>
+  new BadRequestException({ code, field, message });
+
 @Injectable()
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
@@ -17,17 +27,27 @@ export class UserService {
     const { currentPassword, newPassword, confirmNewPassword } = dto;
 
     if (newPassword !== confirmNewPassword) {
-      throw new BadRequestException("New passwords do not match");
+      throw userError(
+        USER_ERROR_CODES.PASSWORD_MISMATCH,
+        "confirmNewPassword",
+        "New passwords do not match",
+      );
     }
     if (currentPassword === newPassword) {
-      throw new BadRequestException(
+      throw userError(
+        USER_ERROR_CODES.PASSWORD_SAME_AS_CURRENT,
+        "newPassword",
         "New password must be different from current password",
       );
     }
 
     const user = await this.userRepository.findById(userId);
     if (!user) {
-      throw new BadRequestException("User not found");
+      throw userError(
+        USER_ERROR_CODES.USER_NOT_FOUND,
+        "account",
+        "User not found",
+      );
     }
 
     // ponytail: compare existing password if it is set. If not set (e.g. guest/oauth), skip check.
@@ -37,7 +57,11 @@ export class UserService {
         user.password,
       );
       if (!isPasswordValid) {
-        throw new BadRequestException("Incorrect current password");
+        throw userError(
+          USER_ERROR_CODES.INCORRECT_CURRENT_PASSWORD,
+          "currentPassword",
+          "Incorrect current password",
+        );
       }
     }
 

@@ -1,3 +1,4 @@
+"use client";
 import { ClipboardPenLine, ChevronRight } from "lucide-react";
 import { useTransactionsQuery } from "@/features/transactions/hooks/transaction.hook";
 import { TransactionListContainer } from "@/features/transactions/containers/TransactionListContainer";
@@ -7,14 +8,24 @@ import Link from "next/link";
 import { motion } from "motion/react";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { cn } from "@/shared/lib/utils/core.util";
+import type { PaginatedTransactionResponse } from "@/shared/lib/types/transaction.type";
 
-export default function RecentJournalContainer() {
+export default function RecentJournalContainer({
+  initialTransactions,
+}: Readonly<{
+  initialTransactions?: PaginatedTransactionResponse;
+}>) {
   const { t, locale } = useTranslation();
   const { data: transactionsData, isPending: isTransactionsPending } =
-    useTransactionsQuery({
-      limit: 5,
-      sortType: "DATE_NEWEST",
-    });
+    useTransactionsQuery(
+      {
+        limit: 5,
+        sortType: "DATE_NEWEST",
+      },
+      {
+        initialData: initialTransactions,
+      },
+    );
 
   const isLoading = isTransactionsPending;
 

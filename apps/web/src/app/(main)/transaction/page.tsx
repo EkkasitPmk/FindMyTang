@@ -1,5 +1,5 @@
-import TransactionsContainer from "@/features/transactions/containers/TransactionsContainer";
+import TransactionMobileGuard from "./TransactionMobileGuard";
 
 export default function TransactionPage() {
-  return <TransactionsContainer />;
+  return <TransactionMobileGuard />;
 }

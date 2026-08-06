@@ -3,9 +3,9 @@ import { NavItem } from "../types/navigation.type";
 
 export const navItems: NavItem[] = [
   {
-    href: "/home",
+    href: "/dashboard",
     label: "Dashboard",
-    translationKey: "navHome",
+    translationKey: "navDashboard",
     icon: Home,
     mobilePlacement: "primary",
   },

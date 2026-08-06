@@ -20,7 +20,7 @@ export default function AuthPageGuard({ children }: AuthPageGuardProps) {
   const { data: user, error, isPending, refetch } = useMeQuery();
 
   useEffect(() => {
-    if (!isGuest && user) router.replace("/home");
+    if (!isGuest && user) router.replace("/dashboard");
   }, [isGuest, router, user]);
 
   if ((!isGuest && isPending) || (!isGuest && user)) {

@@ -56,7 +56,7 @@ export interface MainContentClassNamesParams {
 }
 
 export type MainLayoutRoute =
-  | "home"
+  | "dashboard"
   | "journal"
   | "analytics"
   | "transaction"

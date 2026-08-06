@@ -25,11 +25,18 @@ function Tabs({ className, ...props }: TabsProps) {
   );
 }
 
-type TabsListProps = TabsListPrimitiveProps;
+type TabsListProps = TabsListPrimitiveProps & {
+  highlightClassName?: string;
+};
 
-function TabsList({ className, ...props }: TabsListProps) {
+function TabsList({ className, highlightClassName, ...props }: TabsListProps) {
   return (
-    <TabsHighlightPrimitive className="absolute z-0 inset-0 border border-primary/20 dark:border-primary/30 rounded-lg bg-surface shadow-xs">
+    <TabsHighlightPrimitive
+      className={cn(
+        "absolute z-0 inset-0 border border-primary/20 dark:border-primary/30 rounded-lg bg-surface shadow-xs",
+        highlightClassName,
+      )}
+    >
       <TabsListPrimitive
         className={cn(
           "bg-surface-secondary text-secondary-text inline-flex h-10 w-fit items-center justify-center rounded-xl p-1",

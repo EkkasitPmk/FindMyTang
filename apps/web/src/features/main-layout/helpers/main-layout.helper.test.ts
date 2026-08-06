@@ -7,13 +7,14 @@ import {
   getSyntheticCategory,
   getMainContentClassNames,
   getMainLayoutRoute,
+  getMainLayoutDescription,
   shouldShowProfile,
   shouldLockContentScroll,
 } from "./main-layout.helper";
 
 describe("main-layout.helper", () => {
   it("maps supported paths to one route policy", () => {
-    expect(getMainLayoutRoute("/home")).toBe("home");
+    expect(getMainLayoutRoute("/dashboard")).toBe("dashboard");
     expect(getMainLayoutRoute("/assets/new")).toBe("assetsNew");
     expect(getMainLayoutRoute("/settings/account")).toBe("settingsAccount");
     expect(getMainLayoutRoute("/support/contact")).toBe("supportContact");
@@ -27,20 +28,32 @@ describe("main-layout.helper", () => {
   });
 
   it("shows the profile only on the home route", () => {
-    expect(shouldShowProfile("home")).toBe(true);
+    expect(shouldShowProfile("dashboard")).toBe(true);
     expect(shouldShowProfile("journal")).toBe(false);
     expect(shouldShowProfile("analytics")).toBe(false);
+  });
+
+  it("returns a description for supported pages", () => {
+    const mockT = (key: TranslationKey) => key;
+
+    expect(getMainLayoutDescription("dashboard", mockT)).toBe(
+      "navDashboardDesc",
+    );
+    expect(getMainLayoutDescription("supportFeedback", mockT)).toBe(
+      "navSupportFeedbackDesc",
+    );
+    expect(getMainLayoutDescription("other", mockT)).toBe("appDescription");
   });
 
   it("locks content scrolling only for full-height main tabs", () => {
     expect(shouldLockContentScroll("journal")).toBe(true);
     expect(shouldLockContentScroll("analytics")).toBe(true);
     expect(shouldLockContentScroll("transaction")).toBe(true);
-    expect(shouldLockContentScroll("home")).toBe(false);
+    expect(shouldLockContentScroll("dashboard")).toBe(false);
   });
 
   it("correctly identifies main tab routes", () => {
-    expect(isMainTabRoute("/home")).toBe(true);
+    expect(isMainTabRoute("/dashboard")).toBe(true);
     expect(isMainTabRoute("/journal")).toBe(true);
     expect(isMainTabRoute("/analytics")).toBe(true);
     expect(isMainTabRoute("/transaction")).toBe(true);

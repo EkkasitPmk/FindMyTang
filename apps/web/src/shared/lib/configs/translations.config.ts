@@ -9,12 +9,24 @@ export const translations = {
     appVersionLabel: "เวอร์ชันระบบ",
 
     // Navigation / Layout
-    navHome: "หน้าแรก",
+    navDashboard: "แดชบอร์ด",
     navJournal: "ประวัติ",
     navTransactions: "บันทึก",
     navAnalytics: "วิเคราะห์",
     navMore: "อื่นๆ",
     navSettings: "ตั้งค่า",
+    navDashboardDesc: "ดูภาพรวมสินทรัพย์ รายรับ รายจ่าย และสถานะการเงินของคุณ",
+    navJournalDesc: "ดูประวัติธุรกรรมทั้งหมดและค้นหารายการที่ต้องการ",
+    navTransactionsDesc: "บันทึกรายรับ รายจ่าย และการโอนเงินของคุณ",
+    navAnalyticsDesc: "วิเคราะห์แนวโน้มและพฤติกรรมทางการเงินของคุณ",
+    navCategoriesDesc: "จัดการหมวดหมู่สำหรับจัดระเบียบธุรกรรมของคุณ",
+    navAssetsDesc: "จัดการสินทรัพย์และบัญชีที่เชื่อมต่อของคุณ",
+    navAssetsNewDesc: "เพิ่มสินทรัพย์ใหม่เพื่อเริ่มติดตามยอดคงเหลือ",
+    navSettingsDesc: "ปรับแต่งการใช้งานและจัดการข้อมูลของคุณ",
+    navSettingsAccountDesc: "จัดการข้อมูลโปรไฟล์และบัญชีของคุณ",
+    navSupportContactDesc: "ติดต่อทีมงานเมื่อคุณต้องการความช่วยเหลือ",
+    navSupportFeedbackDesc: "แชร์ความคิดเห็นเพื่อช่วยให้เราปรับปรุง FindMyTang",
+    navAnalyticsCategoryDesc: "ดูรายละเอียดรายการของหมวดหมู่นี้ตามช่วงเวลา",
 
     // More page
     preferences: "การตั้งค่า",
@@ -218,6 +230,8 @@ export const translations = {
     loginFailed: "การเข้าสู่ระบบล้มเหลว โปรดตรวจสอบข้อมูลของคุณ",
     authCheckingSession: "กำลังตรวจสอบสถานะการเข้าสู่ระบบ...",
     authSessionError: "ไม่สามารถตรวจสอบสถานะการเข้าสู่ระบบได้",
+    dashboardErrorTitle: "ไม่สามารถโหลด Dashboard ได้",
+    dashboardErrorDesc: "เกิดข้อผิดพลาดชั่วคราว กรุณาลองใหม่อีกครั้ง",
     retry: "ลองใหม่",
     registerSuccess: "สมัครสมาชิกสำเร็จ! กำลังไปยังหน้าเข้าสู่ระบบ...",
     registerFailed: "การสมัครสมาชิกล้มเหลว โปรดลองอีกครั้ง",
@@ -456,12 +470,26 @@ export const translations = {
     appVersionLabel: "System Version",
 
     // Navigation / Layout
-    navHome: "Home",
+    navDashboard: "Dashboard",
     navJournal: "Journal",
     navTransactions: "Transactions",
     navAnalytics: "Analytics",
     navMore: "More",
     navSettings: "Settings",
+    navDashboardDesc:
+      "View your assets, income, expenses, and overall financial status.",
+    navJournalDesc:
+      "Review your complete transaction history and find specific entries.",
+    navTransactionsDesc: "Record your income, expenses, and transfers.",
+    navAnalyticsDesc: "Analyze your financial trends and spending behavior.",
+    navCategoriesDesc: "Manage categories to organize your transactions.",
+    navAssetsDesc: "Manage your assets and connected accounts.",
+    navAssetsNewDesc: "Add a new asset to start tracking its balance.",
+    navSettingsDesc: "Customize your experience and manage your data.",
+    navSettingsAccountDesc: "Manage your profile and account information.",
+    navSupportContactDesc: "Contact our team whenever you need help.",
+    navSupportFeedbackDesc: "Share feedback to help us improve FindMyTang.",
+    navAnalyticsCategoryDesc: "View this category's transactions over time.",
 
     // More page
     preferences: "Preferences",
@@ -669,6 +697,8 @@ export const translations = {
     loginFailed: "Login failed. Please check your credentials.",
     authCheckingSession: "Checking login status...",
     authSessionError: "Unable to check login status",
+    dashboardErrorTitle: "Unable to load Dashboard",
+    dashboardErrorDesc: "Something went wrong. Please try again.",
     retry: "Try again",
     registerSuccess: "Registration successful! Redirecting to login...",
     registerFailed: "Registration failed. Please try again.",

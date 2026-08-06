@@ -77,7 +77,7 @@ export default function LoginContainer({
     resetModalState();
     if (shouldRedirect) {
       setIsRedirecting(true);
-      window.location.href = "/home";
+      window.location.href = "/dashboard";
     }
   };
 
@@ -108,7 +108,7 @@ export default function LoginContainer({
   const handleGuestLogin = () => {
     setIsRedirecting(true);
     setGuestMode(true);
-    window.location.href = "/home";
+    window.location.href = "/dashboard";
   };
 
   return (

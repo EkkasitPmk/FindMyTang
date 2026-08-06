@@ -69,14 +69,14 @@ export default function SyncStatusButton({
       disabled={isSyncing}
       title={getTitle()}
       className={cn(
-        "flex items-center justify-center group-data-[collapsible=icon]:justify-center gap-2 p-2 rounded-lg shrink-0 cursor-pointer hover:bg-surface-secondary/80 transition-all text-sm group w-full",
+        "flex items-center justify-center group-data-[collapsible=icon]:justify-center gap-2 p-2 rounded-lg shrink-0 cursor-pointer hover:bg-surface-secondary/80 transition-[width,height,padding,gap,background-color,color] duration-300 ease-in-out text-sm group w-full group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:gap-0",
       )}
       aria-label={getStatusText()}
     >
       <div className="flex items-center justify-center w-6 h-6 rounded bg-surface border border-border/50 shadow-2xs shrink-0">
         {getIcon()}
       </div>
-      <div className="min-w-0 text-left group-data-[collapsible=icon]:hidden overflow-hidden">
+      <div className="min-w-0 max-w-40 text-left overflow-hidden transition-[max-width,opacity] duration-300 ease-in-out group-data-[collapsible=icon]:max-w-0 group-data-[collapsible=icon]:opacity-0">
         <span className="block truncate text-xs font-medium text-primary-text leading-tight">
           {getStatusText()}
         </span>

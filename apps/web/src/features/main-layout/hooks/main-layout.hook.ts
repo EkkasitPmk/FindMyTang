@@ -14,8 +14,17 @@ import {
   getMainContentClassNames,
   getMainLayoutRoute,
 } from "../helpers/main-layout.helper";
+import type { Asset } from "@/shared/lib/types/asset.type";
 
-export function useMainLayout() {
+type MainLayoutInitialData = {
+  initialAssets?: Asset[];
+  initialCategories?: Category[];
+};
+
+export function useMainLayout({
+  initialAssets,
+  initialCategories,
+}: MainLayoutInitialData = {}) {
   const pathname = usePathname();
   const router = useRouter();
   const shouldUseHomeFallback = useRef(
@@ -36,7 +45,10 @@ export function useMainLayout() {
   // Asset Fetching & Resolution
   const shouldFetchAssets =
     routeName === "assets" && !assetNameParam && Boolean(assetId);
-  const { data: assets } = useAssets({ enabled: shouldFetchAssets });
+  const { data: assets } = useAssets({
+    enabled: shouldFetchAssets,
+    initialData: initialAssets,
+  });
   const currentAsset = assets?.find((a) => a.id === assetId);
   const assetName = assetNameParam || currentAsset?.name;
 
@@ -46,6 +58,7 @@ export function useMainLayout() {
   const shouldFetchCategories = Boolean(categoryId && !isSynthetic);
   const { data: categories } = useCategories({
     enabled: shouldFetchCategories,
+    initialData: initialCategories,
   });
 
   const currentCategory = useMemo(() => {
@@ -116,7 +129,7 @@ export function useMainLayout() {
 
   const handleClosePage = () => {
     if (routeName === "settings" && shouldUseHomeFallback.current) {
-      router.push("/home");
+      router.push("/dashboard");
       return;
     }
 

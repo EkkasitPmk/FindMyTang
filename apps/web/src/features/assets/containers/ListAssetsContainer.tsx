@@ -11,21 +11,26 @@ import { Skeleton } from "@/shared/components/ui/skeleton";
 import { usePathname } from "next/navigation";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { TranslationKey } from "@/shared/lib/configs/translations.config";
+import { Asset } from "@/shared/lib/types/asset.type";
 
 const SKELETON_ASSETS = Array.from({ length: 3 }, (_, i) => i);
 
 interface ListAssetsContainerProps {
   onAddAsset?: () => void;
   id?: string | null;
+  initialAssets?: Asset[];
 }
 
 export default function ListAssetsContainer({
   onAddAsset,
   id,
+  initialAssets,
 }: Readonly<ListAssetsContainerProps>) {
   const pathname = usePathname();
   const { t, locale } = useTranslation();
-  const { data: assets, isPending: isAssetsPending } = useAssets();
+  const { data: assets, isPending: isAssetsPending } = useAssets({
+    initialData: initialAssets,
+  });
 
   const isLoading = isAssetsPending;
 
