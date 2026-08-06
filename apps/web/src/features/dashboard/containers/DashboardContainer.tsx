@@ -1,90 +1,53 @@
-"use client";
-import { useState } from "react";
-import dynamic from "next/dynamic";
-import Link from "next/link";
-import { ChevronRight, Plus } from "lucide-react";
-import { motion } from "motion/react";
-import { Button } from "@/shared/components/animate-ui/components/buttons/button";
+import { cookies } from "next/headers";
+import { getAssetsServer } from "@/features/assets/services/assets.server";
+import { getRecentTransactionsServer } from "@/features/transactions/services/transactions.server";
+import { getThisMonthSummaryServer } from "@/features/dashboard/services/summary.server";
+import DashboardAssetList from "@/features/assets/components/DashboardAssetList";
+import DashboardAssetHeader from "@/features/dashboard/components/DashboardAssetHeader";
+import DashboardGuestAssets from "@/features/dashboard/components/DashboardGuestAssets";
 import FinancialSnapshotContainer from "./FinancialSnapshotContainer";
-import CreateAssetsContainer from "@/features/assets/containers/CreateAssetsContainer";
-import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import RecentJournalServer from "@/features/journal/containers/RecentJournalServer";
 import type { Asset } from "@/shared/lib/types/asset.type";
+import type { PaginatedTransactionResponse } from "@/shared/lib/types/transaction.type";
 import type { TodaySummaryResponse } from "../schemas/dashboard.response.schema";
 
-const ListAssetsContainer = dynamic(
-  () => import("../../assets/containers/ListAssetsContainer"),
-  { ssr: false },
-);
+export default async function DashboardContainer() {
+  const [initialAssets, initialTransactions, initialSummary] =
+    await Promise.all([
+      getAssetsServer(),
+      getRecentTransactionsServer(),
+      getThisMonthSummaryServer(),
+    ]);
+  const language =
+    (await cookies()).get("findmytang-language")?.value === "th" ? "th" : "en";
 
-export default function DashboardContainer({
-  initialAssets,
-  initialSummary,
-  serverAssetList,
-  serverRecentJournal,
-}: Readonly<{
-  initialAssets?: Asset[];
-  initialSummary?: TodaySummaryResponse;
-  serverAssetList?: React.ReactNode;
-  serverRecentJournal?: React.ReactNode;
-}>) {
-  const [isCreateAssetOpen, setIsCreateAssetOpen] = useState(false);
-  const { t } = useTranslation();
+  const assets = (initialAssets as Asset[] | null) ?? undefined;
+  const hasServerAssetList = assets?.some((asset) => !asset.isArchived);
+  const transactions =
+    (initialTransactions as PaginatedTransactionResponse | null) ?? undefined;
+  const summary = (initialSummary as TodaySummaryResponse | null) ?? undefined;
 
   return (
-    <>
-      <div className="space-y-4">
-        <div className="px-4">
-          <FinancialSnapshotContainer
-            initialAssets={initialAssets}
-            initialSummary={initialSummary}
-          />
-        </div>
-
-        <div className="px-4">
-          {serverAssetList ? (
-            <section className="space-y-4">
-              <div className="flex items-center justify-between mb-2">
-                <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.96 }}
-                >
-                  <Link
-                    href="/assets"
-                    className="text-lg font-medium hover:text-primary transition-colors cursor-pointer flex items-center gap-1 group"
-                  >
-                    {t("assetsTitle")}
-                    <ChevronRight
-                      size={18}
-                      className="text-disabled-text group-hover:text-primary transition-colors"
-                    />
-                  </Link>
-                </motion.div>
-                <Button
-                  variant="unstyled"
-                  type="button"
-                  onClick={() => setIsCreateAssetOpen(true)}
-                  className="flex items-center justify-center bg-surface-secondary hover:bg-border transition-colors p-1 rounded-full cursor-pointer"
-                  aria-label={t("addAsset")}
-                >
-                  <Plus size={18} className="text-secondary-text" />
-                </Button>
-              </div>
-              {serverAssetList}
-            </section>
-          ) : (
-            <ListAssetsContainer
-              initialAssets={initialAssets}
-              onAddAsset={() => setIsCreateAssetOpen(true)}
-            />
-          )}
-        </div>
-
-        {serverRecentJournal}
+    <div className="space-y-4">
+      <div className="px-4">
+        <FinancialSnapshotContainer
+          initialAssets={assets}
+          initialSummary={summary}
+        />
       </div>
 
-      {isCreateAssetOpen && (
-        <CreateAssetsContainer onClose={() => setIsCreateAssetOpen(false)} />
-      )}
-    </>
+      <div className="px-4">
+        {hasServerAssetList ? (
+          <section className="space-y-4">
+            <DashboardAssetHeader />
+            <DashboardAssetList assets={assets!} language={language} />
+          </section>
+        ) : (
+          <DashboardGuestAssets initialAssets={assets} />
+        )}
+      </div>
+
+      <RecentJournalServer initialTransactions={transactions} />
+    </div>
   );
 }

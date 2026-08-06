@@ -33,7 +33,9 @@ export default function RecentJournalContainer({
       },
     );
 
-  const isLoading = isTransactionsPending;
+  const isLoading = initialGroupedTransactions
+    ? false
+    : isTransactionsPending;
 
   const groupedTransactions = useMemo(() => {
     if (initialGroupedTransactions) return initialGroupedTransactions;
