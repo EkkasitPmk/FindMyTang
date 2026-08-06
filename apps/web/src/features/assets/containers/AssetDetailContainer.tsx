@@ -15,14 +15,18 @@ import AssetDetail from "../components/AssetDetail";
 import ManageAssetsContainer from "./ManageAssetsContainer";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
-export default function AssetDetailContainer() {
+export default function AssetDetailContainer({
+  initialAssets,
+}: Readonly<{ initialAssets?: Asset[] }>) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const id = searchParams.get("id");
 
   const { t, locale } = useTranslation();
 
-  const { data: assets, isPending: isAssetsPending } = useAssets();
+  const { data: assets, isPending: isAssetsPending } = useAssets({
+    initialData: initialAssets,
+  });
   const isLoading = isAssetsPending;
   const searchKeyword = useAssetUIStore((state) => state.searchKeyword);
   const isSearchMode = useAssetUIStore((state) => state.isSearchMode);

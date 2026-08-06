@@ -60,7 +60,7 @@ export const CategoryBreakdownContainer = () => {
           <div className="px-4">
             <Skeleton className="h-9 w-full rounded-md" />
           </div>
-          <Skeleton className="h-46 w-full rounded-none" />
+          <Skeleton className="h-52 w-full rounded-none" />
           <div className="space-y-1 px-4">
             <Skeleton className="h-4 w-30 rounded-xl" />
             <Skeleton className="h-15 w-full rounded-xl" />

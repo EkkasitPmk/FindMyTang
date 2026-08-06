@@ -25,21 +25,27 @@ import {
   isGuestNavBlocked,
   shouldShowMobileBottomNav,
 } from "../helpers/navigation.helper";
+import { useTransactionSheetStore } from "@/features/transactions/hooks/transaction-sheet.hook";
+import type { UserProfile } from "@/shared/lib/types/user.type";
 
 const CLOUD_SYNC_INTERVAL_MS = 60_000;
 
-export default function NavContainer() {
+export default function NavContainer({
+  initialUser,
+}: Readonly<{ initialUser: UserProfile | null }>) {
   const pathname = usePathname();
-  const { data: user, isLoading } = useMeQuery();
-  const isAuthenticated = Boolean(user);
+  const { data: user, isLoading, isError } = useMeQuery({ initialUser });
   const queryClient = useQueryClient();
   const { isGuest, setGuestMode, clearGuestData } = useGuestStore();
+  const isAuthenticated = Boolean(user);
+  const isUserProfileLoading = isLoading || (isError && !isGuest);
   const openLockModal = useFeatureLockModal((state) => state.openModal);
+  const openTransactionSheet = useTransactionSheetStore((state) => state.open);
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isMobileBottomNavHidden, setIsMobileBottomNavHidden] = useState(false);
   const shouldHideBottomNavOnScroll =
-    pathname === "/home" ||
+    pathname === "/dashboard" ||
     pathname === "/journal" ||
     pathname === "/analytics" ||
     pathname.startsWith("/analytics/category");
@@ -208,7 +214,7 @@ export default function NavContainer() {
   const { mutateAsync: logoutUserAsync, isPending: isLogoutPending } =
     useLogoutMutation({
       onSuccess: () => {
-        window.location.href = "/home";
+        window.location.href = "/dashboard";
       },
       onError: () => {
         setIsLoggingOutLocal(false);
@@ -320,6 +326,15 @@ export default function NavContainer() {
     e?: React.MouseEvent<HTMLAnchorElement>,
     href?: string,
   ) => {
+    if (
+      href === "/transaction" &&
+      window.matchMedia("(min-width: 1024px)").matches
+    ) {
+      e?.preventDefault();
+      openTransactionSheet();
+      return;
+    }
+
     if (href && isGuestNavBlocked(href, isGuest)) {
       e?.preventDefault();
       openLockModal(t("accountSettingsBackup"));
@@ -365,7 +380,7 @@ export default function NavContainer() {
         setGuestMode(true);
         await useGuestStore.getState().seedDefaultGuestData();
 
-        // Logout from server, which will trigger a hard reload to /home
+        // Logout from server, which will trigger a hard reload to /dashboard
         await logoutUserAsync();
       } catch (error) {
         console.error("Logout failed", error);
@@ -386,7 +401,7 @@ export default function NavContainer() {
       <DesktopSidebar
         pathname={pathname}
         user={user}
-        isLoading={isLoading}
+        isLoading={isUserProfileLoading}
         onLogout={openLogoutConfirm}
         isGuest={isGuest}
         isSyncing={isSyncing}
@@ -402,7 +417,7 @@ export default function NavContainer() {
         onClose={() => setMobileMenuOpen(false)}
         pathname={pathname}
         user={user}
-        isLoading={isLoading}
+        isLoading={isUserProfileLoading}
         onLogout={openLogoutConfirm}
         isGuest={isGuest}
         isSyncing={isSyncing}

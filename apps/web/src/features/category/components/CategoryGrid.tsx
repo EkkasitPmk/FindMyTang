@@ -47,7 +47,7 @@ export default function CategoryGrid({
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-3 gap-2 overflow-auto max-h-[74dvh]">
+      <div className="grid grid-cols-3 gap-2 overflow-auto max-h-[74dvh] md:max-h-screen">
         {SKELETON_CATEGORIES.map((id) => (
           <div
             key={`skeleton-${id}`}
@@ -62,7 +62,7 @@ export default function CategoryGrid({
   }
 
   return (
-    <div className="grid grid-cols-3 gap-2 overflow-auto max-h-[74dvh] p-1">
+    <div className="grid grid-cols-3 gap-2 overflow-auto max-h-[74dvh] md:max-h-screen p-1">
       {/* New Category (Hide on Deleted Tab) */}
       {!isDeletedTab && (
         <div>

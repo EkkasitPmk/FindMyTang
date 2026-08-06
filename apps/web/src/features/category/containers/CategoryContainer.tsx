@@ -42,7 +42,9 @@ import {
 
 type TabType = "EXPENSE" | "INCOME" | "DELETED";
 
-export default function CategoryContainer() {
+export default function CategoryContainer({
+  initialCategories,
+}: Readonly<{ initialCategories?: Category[] }>) {
   const { t } = useTranslation();
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>("EXPENSE");
@@ -108,7 +110,10 @@ export default function CategoryContainer() {
     };
   }, [setEditingList]);
 
-  const { data: categories, isPending } = useCategories(true);
+  const { data: categories, isPending } = useCategories({
+    includeDeleted: true,
+    initialData: initialCategories,
+  });
   const isCategoriesLoading = isPending;
 
   const [prevCategories, setPrevCategories] = useState(categories);

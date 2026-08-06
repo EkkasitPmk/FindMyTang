@@ -100,21 +100,37 @@ export const useTransactionInitialization = ({
   convertAmountToDigits,
   setFile,
 }: UseTransactionInitializationParams) => {
-  if (existingTx && existingTx.id !== prevTxId) {
-    setPrevTxId(existingTx.id);
-    setTransactionType(existingTx.type);
-    setAmountDigits(convertAmountToDigits(existingTx.amount));
-    setDisplayMonth(new Date(existingTx.transactionDate));
-    setRemovedAttachment(false);
-  } else if (!existingTx && prevTxId !== null) {
-    setPrevTxId(null);
-    setAmountDigits("");
-    setRemovedAttachment(false);
-    setFile(null);
-    setTransactionType(resolveDefaultTransactionType(undefined, typeParam));
-    setPrevTypeParam(typeParam);
-  } else if (!existingTx && typeParam !== prevTypeParam) {
-    setPrevTypeParam(typeParam);
-    setTransactionType(resolveDefaultTransactionType(undefined, typeParam));
-  }
+  useEffect(() => {
+    if (existingTx && existingTx.id !== prevTxId) {
+      setPrevTxId(existingTx.id);
+      setTransactionType(existingTx.type);
+      setAmountDigits(convertAmountToDigits(existingTx.amount));
+      setDisplayMonth(new Date(existingTx.transactionDate));
+      setRemovedAttachment(false);
+    } else if (!existingTx && prevTxId !== null) {
+      setPrevTxId(null);
+      setAmountDigits("");
+      setRemovedAttachment(false);
+      setFile(null);
+      setTransactionType(resolveDefaultTransactionType(undefined, typeParam));
+      setPrevTypeParam(typeParam);
+    } else if (!existingTx && typeParam !== prevTypeParam) {
+      setPrevTypeParam(typeParam);
+      setTransactionType(resolveDefaultTransactionType(undefined, typeParam));
+    }
+  }, [
+    existingTx,
+    prevTxId,
+    setPrevTxId,
+    setTransactionType,
+    setAmountDigits,
+    setDisplayMonth,
+    setRemovedAttachment,
+    setFile,
+    typeParam,
+    prevTypeParam,
+    setPrevTypeParam,
+    resolveDefaultTransactionType,
+    convertAmountToDigits,
+  ]);
 };

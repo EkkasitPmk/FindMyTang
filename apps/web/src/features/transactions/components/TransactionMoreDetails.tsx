@@ -112,6 +112,8 @@ export default function TransactionMoreDetails({
         ) : (
           <Button
             variant="unstyled"
+            tapScale={1}
+            hoverScale={1}
             type="button"
             onClick={() => setIsPhotoMenuOpen(true)}
             className="group flex h-113 w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border transition-colors hover:border-primary hover:bg-surface-secondary/50"
