@@ -1,8 +1,8 @@
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { ChevronRight } from "lucide-react";
-import TransactionListSkeleton from "@/shared/components/skeletons/TransactionListSkeleton";
 
 const ASSET_ROWS = [0, 1, 2];
+const RECENT_JOURNAL_GROUPS = [0, 1, 2];
 
 export default function DashboardLoading() {
   return (
@@ -70,7 +70,35 @@ export default function DashboardLoading() {
           <Skeleton className="h-6 w-32" />
           <Skeleton className="h-4 w-16" />
         </div>
-        <TransactionListSkeleton />
+        <section className="space-y-4">
+          {RECENT_JOURNAL_GROUPS.map((group) => (
+            <div
+              key={`recent-journal-skeleton-group-${group}`}
+              className="my-1 mb-3 space-y-1"
+            >
+              <div className="flex items-center justify-between px-4 pb-2">
+                <div className="flex flex-col gap-1">
+                  <Skeleton className="h-6 w-32" />
+                  <Skeleton className="h-4 w-32" />
+                </div>
+                <Skeleton className="h-5 w-22" />
+              </div>
+              <div className="flex h-13 items-center gap-3 px-4 py-2">
+                <Skeleton className="size-9.5 shrink-0 rounded-lg" />
+                <div className="grid min-w-0 flex-1 grid-cols-2 gap-3">
+                  <div className="flex flex-col gap-1">
+                    <Skeleton className="h-5 w-28" />
+                    <Skeleton className="h-3 w-16" />
+                  </div>
+                  <div className="flex items-center justify-end gap-1">
+                    <Skeleton className="h-5 w-20" />
+                    <Skeleton className="size-4 rounded" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </section>
       </section>
     </div>
   );

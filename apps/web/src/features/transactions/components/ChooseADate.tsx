@@ -76,7 +76,7 @@ export default function ChooseADate({
           className="p-0 w-full max-w-sm rounded-md"
           classNames={{
             month: "flex w-full flex-col gap-4 p-2",
-            nav: "absolute top-4 px-4 flex w-full items-center justify-between",
+            nav: "absolute top-2 px-4 flex w-full items-center justify-between",
             week: "flex w-full justify-between",
             day_button:
               "data-[selected-single=true]:bg-primary data-[selected-single=true]:text-white h-9 w-9 rounded-lg font-medium transition-all hover:bg-surface-secondary",
