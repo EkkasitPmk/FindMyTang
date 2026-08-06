@@ -26,12 +26,15 @@ import {
   shouldShowMobileBottomNav,
 } from "../helpers/navigation.helper";
 import { useTransactionSheetStore } from "@/features/transactions/hooks/transaction-sheet.hook";
+import type { UserProfile } from "@/shared/lib/types/user.type";
 
 const CLOUD_SYNC_INTERVAL_MS = 60_000;
 
-export default function NavContainer() {
+export default function NavContainer({
+  initialUser,
+}: Readonly<{ initialUser: UserProfile | null }>) {
   const pathname = usePathname();
-  const { data: user, isLoading, isError } = useMeQuery();
+  const { data: user, isLoading, isError } = useMeQuery({ initialUser });
   const queryClient = useQueryClient();
   const { isGuest, setGuestMode, clearGuestData } = useGuestStore();
   const isAuthenticated = Boolean(user);
