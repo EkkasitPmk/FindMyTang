@@ -1,5 +1,4 @@
 "use client";
-import ShowProfileContainer from "@/features/account/containers/ShowProfileContainer";
 import NavContainer from "@/features/nav/containers/NavContainer";
 import TopAppBarMobile from "@/shared/components/customs/TopAppBarMobile";
 import CreateAssetsContainer from "@/features/assets/containers/CreateAssetsContainer";
@@ -9,10 +8,7 @@ import { useMainLayout } from "../hooks/main-layout.hook";
 import MainLayoutSearchBar from "../components/MainLayoutSearchBar";
 import MainLayoutRightAction from "../components/MainLayoutRightAction";
 import MainLayoutTitle from "../components/MainLayoutTitle";
-import {
-  getMainLayoutDescription,
-  shouldShowProfile,
-} from "../helpers/main-layout.helper";
+import { getMainLayoutDescription } from "../helpers/main-layout.helper";
 import { cn } from "@/shared/lib/utils/core.util";
 import TransactionSheet from "@/features/transactions/components/TransactionSheet";
 
@@ -43,10 +39,6 @@ export default function MainLayoutContainer({
           <TransactionSheet />
 
           <div className="flex-1 flex flex-col min-w-0 min-h-0">
-            {route.isMainTab && shouldShowProfile(route.name) && (
-              <ShowProfileContainer />
-            )}
-
             {route.shouldShowTopAppBar && !search.isSearchMode && (
               <div className="fixed md:hidden w-full top-0 z-40 bg-background/80 backdrop-blur-md">
                 <TopAppBarMobile

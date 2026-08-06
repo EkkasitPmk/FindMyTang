@@ -7,6 +7,16 @@ const ASSET_ROWS = [0, 1, 2];
 export default function DashboardLoading() {
   return (
     <div className="space-y-4" aria-label="Loading dashboard">
+      <header className="bg-background fixed md:hidden top-0 z-40 w-full flex items-center px-4 py-2">
+        <div className="flex items-center gap-2">
+          <Skeleton className="size-10 rounded-full" />
+          <div className="flex flex-col gap-1">
+            <Skeleton className="h-4 w-36" />
+            <Skeleton className="h-3 w-28" />
+          </div>
+        </div>
+      </header>
+
       <div className="px-4">
         <div className="relative overflow-hidden rounded-xl border border-border bg-surface p-4.5 sm:p-5 shadow-sm">
           <div className="flex items-center justify-between mb-2">
