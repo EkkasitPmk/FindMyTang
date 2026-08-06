@@ -1,26 +1,19 @@
 "use client";
-import { useCallback, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { TransactionList } from "@/shared/components/customs/TransactionList";
 import TransactionListSkeleton from "@/shared/components/skeletons/TransactionListSkeleton";
-import ConfirmModal from "@/shared/components/customs/ConfirmModal";
-import LoadingModal from "@/shared/components/customs/LoadingModal";
-import ImagePreviewModal from "@/shared/components/customs/ImagePreviewModal";
+import TransactionListModals from "../components/TransactionListModals";
+import { useInfiniteTransactionScroll } from "../hooks/useInfiniteTransactionScroll.hook";
+import { useTransactionListMutations } from "../hooks/useTransactionListMutations.hook";
+import { useTransactionListActions } from "../hooks/useTransactionListActions.hook";
 import { useConfirmModal } from "@/shared/lib/hooks/useConfirmModal.hook";
 import { useModalState } from "@/shared/lib/hooks/useModalState.hook";
-import {
-  useDeleteTransactionMutation,
-  useUpdateTransactionMutation,
-} from "@/features/transactions/hooks/transaction.hook";
-import { RotateCcw, Trash } from "lucide-react";
 import {
   TransactionResponse,
   GroupedTransaction,
 } from "@/shared/lib/types/transaction.type";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { cn } from "@/shared/lib/utils/core.util";
-import { AxiosError } from "axios";
-import { ApiErrorResponse } from "@/shared/lib/types/api.type";
 
 interface TransactionListContainerProps {
   groupedTransactions: GroupedTransaction[];
@@ -53,7 +46,6 @@ export function TransactionListContainer({
   disableOwnScroll = false,
   paginationKey,
 }: Readonly<TransactionListContainerProps>) {
-  const router = useRouter();
   const { t } = useTranslation();
 
   const [expandedTransactionId, setExpandedTransactionId] = useState<
@@ -62,34 +54,6 @@ export function TransactionListContainer({
   const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
   const { modalState, setModalState, resetModalState } = useModalState();
 
-  // Restore logic
-  const [isRestoreModalOpen, setIsRestoreModalOpen] = useState(false);
-  const [transactionToRestore, setTransactionToRestore] =
-    useState<TransactionResponse | null>(null);
-
-  const restoreTransaction = useUpdateTransactionMutation({
-    onSuccess: () => {
-      setModalState({
-        isOpen: true,
-        status: "success",
-        message:
-          t("transactionRestoredSuccess") ||
-          "Transaction restored successfully",
-      });
-    },
-    onError: (err: AxiosError<ApiErrorResponse>) => {
-      const msg = err.response?.data?.message;
-      setModalState({
-        isOpen: true,
-        status: "error",
-        message: Array.isArray(msg)
-          ? msg[0]
-          : msg || "Failed to restore transaction",
-      });
-    },
-  });
-
-  // Delete logic
   const {
     isOpen: isDeleteModalOpen,
     open: openDeleteModal,
@@ -98,89 +62,36 @@ export function TransactionListContainer({
     setIsHardDelete,
   } = useConfirmModal();
 
-  const [transactionToDelete, setTransactionToDelete] =
-    useState<TransactionResponse | null>(null);
+  const {
+    isRestoreModalOpen,
+    setIsRestoreModalOpen,
+    transactionToRestore,
+    setTransactionToRestore,
+    transactionToDelete,
+    setTransactionToDelete,
+    handleTransactionItemClick,
+    handleRestoreClick,
+    handleDeleteClick,
+  } = useTransactionListActions(openDeleteModal);
 
-  const deleteTransaction = useDeleteTransactionMutation({
-    onSuccess: () => {
-      setModalState({
-        isOpen: true,
-        status: "success",
-        message: t("transactionDeletedSuccess"),
-      });
+  const { restoreTransaction, deleteTransaction } = useTransactionListMutations(
+    {
+      t,
+      onSuccess: (message) =>
+        setModalState({ isOpen: true, status: "success", message }),
+      onError: (message) =>
+        setModalState({ isOpen: true, status: "error", message }),
     },
-    onError: (err: AxiosError<ApiErrorResponse>) => {
-      const msg = err.response?.data?.message;
-      setModalState({
-        isOpen: true,
-        status: "error",
-        message: Array.isArray(msg)
-          ? msg[0]
-          : msg || "Failed to delete transaction",
-      });
-    },
+  );
+
+  const observerTarget = useInfiniteTransactionScroll({
+    useVirtualization,
+    isLoadingTransactions,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
   });
 
-  const handleTransactionItemClick = useCallback(
-    (transaction: TransactionResponse) => {
-      const url = new URL("/transaction", globalThis.location.origin);
-      url.searchParams.set("type", transaction.type);
-      url.searchParams.set("id", transaction.id);
-      if (transaction.assetId) {
-        url.searchParams.set("assetId", transaction.assetId);
-      }
-      if (transaction.deletedAt) {
-        url.searchParams.set("isDeleted", "true");
-      }
-      router.push(url.pathname + url.search);
-    },
-    [router],
-  );
-
-  const handleRestoreClick = useCallback((tx: TransactionResponse) => {
-    setTransactionToRestore(tx);
-    setIsRestoreModalOpen(true);
-  }, []);
-
-  const handleDeleteClick = useCallback(
-    (tx: TransactionResponse) => {
-      setTransactionToDelete(tx);
-      openDeleteModal();
-    },
-    [openDeleteModal],
-  );
-
-  const observer = useRef<IntersectionObserver | null>(null);
-  const observerTarget = useCallback(
-    (node: HTMLDivElement | null) => {
-      observer.current?.disconnect();
-      if (
-        !node ||
-        useVirtualization ||
-        isLoadingTransactions ||
-        isFetchingNextPage
-      ) {
-        return;
-      }
-
-      observer.current = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting && hasNextPage && fetchNextPage) {
-            fetchNextPage();
-          }
-        },
-        { rootMargin: "800px 0px" },
-      );
-      observer.current.observe(node);
-    },
-    [
-      useVirtualization,
-      isLoadingTransactions,
-      isFetchingNextPage,
-      hasNextPage,
-      fetchNextPage,
-    ],
-  );
   return (
     <div
       className={cn(
@@ -236,13 +147,13 @@ export function TransactionListContainer({
         </div>
       )}
 
-      <ConfirmModal
-        isOpen={isRestoreModalOpen}
-        onClose={() => {
+      <TransactionListModals
+        isRestoreOpen={isRestoreModalOpen}
+        onCloseRestore={() => {
           setIsRestoreModalOpen(false);
           setTransactionToRestore(null);
         }}
-        onConfirm={() => {
+        onConfirmRestore={() => {
           if (transactionToRestore) {
             restoreTransaction.mutate({
               id: transactionToRestore.id,
@@ -258,20 +169,15 @@ export function TransactionListContainer({
             setTransactionToRestore(null);
           }
         }}
-        icon={RotateCcw}
-        title={t("restoreTransaction")}
-        des={t("restoreTransactionDesc")}
-        confirmLabel={t("restore")}
-        variant="success"
-      />
-
-      <ConfirmModal
-        isOpen={isDeleteModalOpen}
-        onClose={() => {
+        restoreTitle={t("restoreTransaction")}
+        restoreDescription={t("restoreTransactionDesc")}
+        restoreLabel={t("restore")}
+        isDeleteOpen={isDeleteModalOpen}
+        onCloseDelete={() => {
           closeDeleteModal();
           setTransactionToDelete(null);
         }}
-        onConfirm={() => {
+        onConfirmDelete={() => {
           if (transactionToDelete) {
             deleteTransaction.mutate({
               id: transactionToDelete.id,
@@ -282,40 +188,32 @@ export function TransactionListContainer({
             setTransactionToDelete(null);
           }
         }}
-        icon={Trash}
-        title={
+        deleteTitle={
           transactionToDelete?.deletedAt
             ? t("deletePermanently")
             : t("deleteTransaction")
         }
-        des={
+        deleteDescription={
           transactionToDelete?.deletedAt
             ? t("deletePermanentlyDesc")
             : t("deleteTransactionDesc")
         }
-        confirmLabel={t("delete")}
-        variant="danger"
+        deleteLabel={t("delete")}
         withHardDeleteOption={!transactionToDelete?.deletedAt}
         isHardDelete={isHardDelete}
         onHardDeleteChange={setIsHardDelete}
-        hardDeleteCheckboxLabel={t("deletePermanently")}
-      />
-
-      <LoadingModal
-        isOpen={
-          modalState.isOpen ||
-          restoreTransaction.isPending ||
-          deleteTransaction.isPending
-        }
-        status={modalState.isOpen ? modalState.status : "loading"}
-        message={modalState.isOpen ? modalState.message : undefined}
-        onClose={resetModalState}
-      />
-
-      <ImagePreviewModal
-        isOpen={!!previewImageUrl}
-        onClose={() => setPreviewImageUrl(null)}
-        imageUrl={previewImageUrl || ""}
+        hardDeleteLabel={t("deletePermanently")}
+        loadingModal={{
+          isOpen:
+            modalState.isOpen ||
+            restoreTransaction.isPending ||
+            deleteTransaction.isPending,
+          status: modalState.isOpen ? modalState.status : "loading",
+          message: modalState.isOpen ? modalState.message : undefined,
+        }}
+        onCloseLoading={resetModalState}
+        previewImageUrl={previewImageUrl}
+        onClosePreview={() => setPreviewImageUrl(null)}
       />
     </div>
   );
