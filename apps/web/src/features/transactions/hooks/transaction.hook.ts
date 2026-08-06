@@ -87,6 +87,7 @@ export const useTransactionsQuery = (
   params?: TransactionQuery,
   options?: {
     enabled?: boolean;
+    initialData?: PaginatedTransactionResponse;
     placeholderData?: (
       previousData: PaginatedTransactionResponse | undefined,
     ) => PaginatedTransactionResponse | undefined;
@@ -96,6 +97,8 @@ export const useTransactionsQuery = (
   return useQuery<PaginatedTransactionResponse, AxiosError<ApiErrorResponse>>({
     queryKey: ["transactions", { isGuest, ...params }],
     queryFn: () => getTransactionsApi(params),
+    initialData: options?.initialData,
+    staleTime: options?.initialData ? 30_000 : 0,
     ...options,
   });
 };

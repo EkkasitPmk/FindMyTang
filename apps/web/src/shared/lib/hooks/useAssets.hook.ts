@@ -8,16 +8,20 @@ import { useGuestStore } from "@/shared/lib/storages/guest.storage";
 export type UseAssetsOptions = {
   includeDeleted?: boolean;
   enabled?: boolean;
+  initialData?: Asset[];
 };
 
 export const useAssets = (options?: UseAssetsOptions) => {
   const includeDeleted = options?.includeDeleted ?? false;
   const enabled = options?.enabled ?? true;
+  const initialData = options?.initialData;
   const isGuest = useGuestStore((state) => state.isGuest);
 
   return useQuery<Asset[], AxiosError<ApiErrorResponse>>({
     queryKey: ["assets", { includeDeleted, isGuest }],
     queryFn: () => getAssetsApi(includeDeleted),
     enabled,
+    initialData,
+    staleTime: initialData ? 30_000 : 0,
   });
 };
