@@ -8,17 +8,12 @@ import Link from "next/link";
 import { motion } from "motion/react";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { cn } from "@/shared/lib/utils/core.util";
-import type {
-  GroupedTransaction,
-  PaginatedTransactionResponse,
-} from "@/shared/lib/types/transaction.type";
+import type { PaginatedTransactionResponse } from "@/shared/lib/types/transaction.type";
 
 export default function RecentJournalContainer({
   initialTransactions,
-  initialGroupedTransactions,
 }: Readonly<{
   initialTransactions?: PaginatedTransactionResponse;
-  initialGroupedTransactions?: GroupedTransaction[];
 }>) {
   const { t, locale } = useTranslation();
   const { data: transactionsData, isPending: isTransactionsPending } =
@@ -29,16 +24,12 @@ export default function RecentJournalContainer({
       },
       {
         initialData: initialTransactions,
-        enabled: !initialGroupedTransactions,
       },
     );
 
-  const isLoading = initialGroupedTransactions
-    ? false
-    : isTransactionsPending;
+  const isLoading = isTransactionsPending;
 
   const groupedTransactions = useMemo(() => {
-    if (initialGroupedTransactions) return initialGroupedTransactions;
     if (!transactionsData?.items) return [];
 
     const groupsMap = new Map<string, TransactionResponse[]>();
@@ -61,7 +52,7 @@ export default function RecentJournalContainer({
       dateStr,
       items,
     }));
-  }, [initialGroupedTransactions, transactionsData, locale]);
+  }, [transactionsData, locale]);
 
   const isEmpty = groupedTransactions.length === 0 && !isLoading;
 
