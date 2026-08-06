@@ -1,12 +1,21 @@
 import { getCurrentUserServer } from "@/features/account/services/account.server";
+import { getAssetsServer } from "@/features/assets/services/assets.server";
+import { getCategoriesServer } from "@/features/category/services/category.server";
 import AccountContainer from "@/features/account/containers/AccountContainer";
 import CategoryContainer from "@/features/category/containers/CategoryContainer";
 import ManageAssetsContainer from "@/features/assets/containers/ManageAssetsContainer";
+import type { Asset } from "@/shared/lib/types/asset.type";
+import type { Category } from "@/shared/lib/types/category.type";
 import { cn } from "@/shared/lib/utils/core.util";
-import SettingsClientIsland from "./SettingsClientIsland";
+import SettingsMobileContainer from "./SettingsMobileContainer";
 
 export default async function SettingsContainer() {
-  const initialUser = await getCurrentUserServer();
+  const [initialUser, initialAssets, initialCategories] = await Promise.all([
+    getCurrentUserServer(),
+    getAssetsServer(),
+    getCategoriesServer(),
+  ]);
+
   return (
     <>
       {/* desktop ui */}
@@ -42,7 +51,9 @@ export default async function SettingsContainer() {
                 "lg:row-start-2",
               )}
             >
-              <ManageAssetsContainer />
+              <ManageAssetsContainer
+                initialAssets={(initialAssets as Asset[] | null) ?? undefined}
+              />
             </div>
           </div>
           <div
@@ -53,13 +64,17 @@ export default async function SettingsContainer() {
               "lg:self-stretch",
             )}
           >
-            <CategoryContainer />
+            <CategoryContainer
+              initialCategories={
+                (initialCategories as Category[] | null) ?? undefined
+              }
+            />
           </div>
         </div>
       </div>
       {/* desktop ui */}
 
-      <SettingsClientIsland />
+      <SettingsMobileContainer />
     </>
   );
 }
