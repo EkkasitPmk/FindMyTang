@@ -30,9 +30,14 @@ import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 const SKELETON_ITEMS = Array.from({ length: 4 }, (_, i) => i);
 
-export default function ManageAssetsContainer() {
+export default function ManageAssetsContainer({
+  initialAssets,
+}: Readonly<{ initialAssets?: Asset[] }>) {
   const { t } = useTranslation();
-  const { data: assets, isPending } = useAssets({ includeDeleted: true });
+  const { data: assets, isPending } = useAssets({
+    includeDeleted: true,
+    initialData: initialAssets,
+  });
   const isLoading = isPending;
 
   const [expandedId, setExpandedId] = useState<string | null>(null);
