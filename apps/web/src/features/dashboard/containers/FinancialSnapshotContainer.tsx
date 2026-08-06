@@ -3,8 +3,16 @@ import { useState } from "react";
 import { useAssets } from "@/shared/lib/hooks/useAssets.hook";
 import { useThisMonthSummary } from "../hooks/summary.hook";
 import FinancialSnapshotCard from "../components/FinancialSnapshotCard";
+import type { Asset } from "@/shared/lib/types/asset.type";
+import type { TodaySummaryResponse } from "../schemas/dashboard.response.schema";
 
-export default function FinancialSnapshotContainer() {
+export default function FinancialSnapshotContainer({
+  initialAssets,
+  initialSummary,
+}: Readonly<{
+  initialAssets?: Asset[];
+  initialSummary?: TodaySummaryResponse;
+}>) {
   const [isPrivate, setIsPrivate] = useState<boolean>(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("findmytang_privacy_mode");
@@ -23,8 +31,11 @@ export default function FinancialSnapshotContainer() {
     });
   };
 
-  const { data: assets, isPending: isAssetsPending } = useAssets();
-  const { data: summary, isPending: isSummaryPending } = useThisMonthSummary();
+  const { data: assets, isPending: isAssetsPending } = useAssets({
+    initialData: initialAssets,
+  });
+  const { data: summary, isPending: isSummaryPending } =
+    useThisMonthSummary(initialSummary);
 
   const netWorth = summary?.totalNetWorth || 0;
   const income = summary?.income || 0;
