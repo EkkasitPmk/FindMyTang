@@ -14,6 +14,7 @@ import {
   shouldShowProfile,
 } from "../helpers/main-layout.helper";
 import { cn } from "@/shared/lib/utils/core.util";
+import TransactionSheet from "@/features/transactions/components/TransactionSheet";
 
 export default function MainLayoutContainer({
   children,
@@ -39,6 +40,7 @@ export default function MainLayoutContainer({
       <div className="text-primary-text flex flex-col relative flex-1 min-w-0 min-h-0">
         <div className="flex flex-1 relative z-10 min-w-0 min-h-0">
           <NavContainer />
+          <TransactionSheet />
 
           <div className="flex-1 flex flex-col min-w-0 min-h-0">
             {route.isMainTab && shouldShowProfile(route.name) && (

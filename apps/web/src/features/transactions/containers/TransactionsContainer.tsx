@@ -73,7 +73,9 @@ import { useAssets } from "@/shared/lib/hooks/useAssets.hook";
 import { AxiosError } from "axios";
 import { ApiErrorResponse } from "@/shared/lib/types/api.type";
 
-export default function TransactionsContainer() {
+export default function TransactionsContainer({
+  isDesktopSheet = false,
+}: Readonly<{ isDesktopSheet?: boolean }>) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const editId = searchParams.get("id");
@@ -422,162 +424,176 @@ export default function TransactionsContainer() {
   const attachmentUrl = removedAttachment ? null : existingTx?.attachmentUrl;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} onReset={handleResetForm}>
-      <header
-        className={cn(
-          "flex items-center relative mb-2 px-4",
-          hasAssetId ? "" : "mb-2 justify-center",
-          editId ? "justify-between" : "",
-        )}
-      >
-        {hasAssetId && (
-          <Button
-            variant="unstyled"
-            type="button"
-            onClick={() => router.back()}
-            className="p-1 -ml-1 cursor-pointer hover:bg-surface-secondary transition-colors"
-          >
-            <ChevronLeft size={24} />
-          </Button>
-        )}
-        <p
+    <form 
+      onSubmit={handleSubmit(onSubmit)}
+      onReset={handleResetForm}
+      className={cn(
+        "grid grid-cols-1 grid-rows-[79dvh_auto]",
+        editId ? "lg:grid-rows-[80dvh_auto]" : "lg:grid-rows-[86dvh_auto]",
+      )}
+    >
+      <div className="min-h-0 overflow-y-auto mb-2 lg:m-0">
+        <header
           className={cn(
-            "text-center text-2xl font-bold truncate",
-            hasAssetId ? "absolute left-1/2 -translate-x-1/2" : "",
+            "flex items-center relative mb-2 px-4",
+            hasAssetId ? "" : "mb-2 justify-center",
+            editId ? "justify-between" : "",
           )}
         >
-          {editId ? t("editTransaction") : t("addTransaction")}
-        </p>
-        {editId && (
-          <Button
-            variant="unstyled"
-            type="button"
-            className="p-1 cursor-pointer hover:bg-surface-secondary transition-colors text-expense rounded-full"
-            onClick={openDeleteModal}
-          >
-            <Trash size={20} />
-          </Button>
-        )}
-      </header>
-
-      <div className="px-4">
-        <Tabs
-          value={tabsValue}
-          onValueChange={(val) => {
-            if (isTxLoading) return;
-            setTransactionType(val as TransactionType);
-            clearErrors();
-          }}
-          className="gap-3"
-        >
-          <TabsList className="w-full">
-            {isTxLoading ? (
-              <Skeleton className="w-full h-10 rounded-lg" />
-            ) : (
-              transactionTypeOptions.map((option) => (
-                <TabsTrigger key={option.value} value={option.value}>
-                  {option.label}
-                </TabsTrigger>
-              ))
+          {hasAssetId && (
+            <Button
+              variant="unstyled"
+              type="button"
+              onClick={() => router.back()}
+              className="p-1 -ml-1 cursor-pointer hover:bg-surface-secondary transition-colors"
+            >
+              <ChevronLeft size={24} />
+            </Button>
+          )}
+          <p
+            className={cn(
+              "text-center text-2xl font-bold truncate",
+              hasAssetId ? "absolute left-1/2 -translate-x-1/2" : "",
             )}
-          </TabsList>
+          >
+            {editId ? t("editTransaction") : t("addTransaction")}
+          </p>
+          {editId && (
+            <Button
+              variant="unstyled"
+              type="button"
+              className="p-1 cursor-pointer hover:bg-surface-secondary transition-colors text-expense rounded-full"
+              onClick={openDeleteModal}
+            >
+              <Trash size={20} />
+            </Button>
+          )}
+        </header>
 
-          <TabsContents>
-            {tabsContentOptions.map((option) => (
-              <TabsContent key={option.value} value={option.value}>
-                <div className="h-full overflow-y-auto max-h-[64dvh] space-y-4">
-                  <section className="flex flex-col items-center gap-1 relative min-h-10 justify-center">
-                    {isTxLoading ? (
-                      <Skeleton className="w-60 h-10 rounded-lg" />
-                    ) : (
-                      <>
-                        <CurrencyInput
-                          id="transaction-amount"
-                          ref={amountInputRef}
-                          value={displayAmount}
-                          onChange={handleCurrencyInput}
-                        />
-                        <input
-                          type="hidden"
-                          name="amount"
-                          value={numericAmount}
-                        />
-                        {(isSubmitted || Boolean(touchedFields.amount)) &&
-                          errors.amount && (
-                            <p className="text-expense text-xs">
-                              {errors.amount.message}
-                            </p>
-                          )}
-                      </>
-                    )}
-                  </section>
+        <div className="px-4 lg:px-0">
+          <Tabs
+            value={tabsValue}
+            onValueChange={(val) => {
+              if (isTxLoading) return;
+              setTransactionType(val as TransactionType);
+              clearErrors();
+            }}
+            className="gap-3"
+          >
+            <TabsList className="w-full">
+              {isTxLoading ? (
+                <Skeleton className="w-full h-10 rounded-lg" />
+              ) : (
+                transactionTypeOptions.map((option) => (
+                  <TabsTrigger key={option.value} value={option.value}>
+                    {option.label}
+                  </TabsTrigger>
+                ))
+              )}
+            </TabsList>
 
-                  {showCategoryList && (
-                    <TransactionCategoryList
-                      categories={filteredCategories}
-                      activeCategoryId={watchCategoryId || null}
-                      onSelectCategory={(id) => setValue("categoryId", id)}
-                      onEditClick={handleEditCategoryClick}
-                      isLoadingCategoryList={showCategorySkeleton}
-                    />
-                  )}
+            <TabsContents>
+              {tabsContentOptions.map((option) => (
+                <TabsContent key={option.value} value={option.value}>
+                  <div className="space-y-4">
+                    <section className="flex flex-col items-center gap-1 relative min-h-10 justify-center">
+                      {isTxLoading ? (
+                        <Skeleton className="w-60 h-10 rounded-lg" />
+                      ) : (
+                        <>
+                          <CurrencyInput
+                            id="transaction-amount"
+                            ref={amountInputRef}
+                            value={displayAmount}
+                            onChange={handleCurrencyInput}
+                          />
+                          <input
+                            type="hidden"
+                            name="amount"
+                            value={numericAmount}
+                          />
+                          {(isSubmitted || Boolean(touchedFields.amount)) &&
+                            errors.amount && (
+                              <p className="text-expense text-xs">
+                                {errors.amount.message}
+                              </p>
+                            )}
+                        </>
+                      )}
+                    </section>
 
-                  <TransactionAssetList
-                    assets={safeAssets}
-                    activeAssetId={watchAssetId || null}
-                    onSelectAsset={(id) => setValue("assetId", id)}
-                    activeAssetToId={watchToAssetId || null}
-                    onSelectAssetTo={(id) => setValue("toAssetId", id)}
-                    transactionType={transactionType}
-                    isLoadingAssetList={showAssetSkeleton}
-                  />
-
-                  <TransactionMoreDetails
-                    isMoreDetailsOpen={isMoreDetailsOpen}
-                    setIsMoreDetailsOpen={setIsMoreDetailsOpen}
-                    displayDate={displayDate}
-                    onOpenCalendar={handleOpenCalendar}
-                    isCalendarOpen={isCalendarOpen}
-                    onCalendarOpenChange={setIsCalendarOpen}
-                    datePicker={
-                      <ChooseADate
-                        selectedDate={tempDate}
-                        onSelectDate={setTempDate}
-                        displayMonth={displayMonth}
-                        onMonthChange={setDisplayMonth}
-                        onConfirm={handleConfirmDate}
-                        onPresetClick={handlePresetClick}
-                        locale={calendarLocale}
+                    {showCategoryList && (
+                      <TransactionCategoryList
+                        categories={filteredCategories}
+                        activeCategoryId={watchCategoryId || null}
+                        onSelectCategory={(id) => setValue("categoryId", id)}
+                        onEditClick={handleEditCategoryClick}
+                        isLoadingCategoryList={showCategorySkeleton}
                       />
-                    }
-                    isPhotoMenuOpen={isPhotoMenuOpen}
-                    setIsPhotoMenuOpen={setIsPhotoMenuOpen}
-                    file={file}
-                    attachmentUrl={attachmentUrl}
-                    onRemoveFile={handleRemoveFile}
-                    onTakeAPhoto={handleTakeAPhoto}
-                    onSelectAPhoto={handleSelectAPhoto}
-                    fileInputRef={fileInputRef}
-                    cameraInputRef={cameraInputRef}
-                    handleFileChange={handleFileChange}
-                    register={register}
-                    isLoadingTx={isTxLoading}
-                  />
-                </div>
-              </TabsContent>
-            ))}
-          </TabsContents>
-        </Tabs>
+                    )}
 
-        <section className="fixed inset-x-4 bottom-16 z-20 mb-4">
-          {isTxLoading ? (
+                    <TransactionAssetList
+                      assets={safeAssets}
+                      activeAssetId={watchAssetId || null}
+                      onSelectAsset={(id) => setValue("assetId", id)}
+                      activeAssetToId={watchToAssetId || null}
+                      onSelectAssetTo={(id) => setValue("toAssetId", id)}
+                      transactionType={transactionType}
+                      isLoadingAssetList={showAssetSkeleton}
+                    />
+
+                    <TransactionMoreDetails
+                      isMoreDetailsOpen={isMoreDetailsOpen}
+                      setIsMoreDetailsOpen={setIsMoreDetailsOpen}
+                      displayDate={displayDate}
+                      onOpenCalendar={handleOpenCalendar}
+                      isCalendarOpen={isCalendarOpen}
+                      onCalendarOpenChange={setIsCalendarOpen}
+                      datePicker={
+                        <ChooseADate
+                          selectedDate={tempDate}
+                          onSelectDate={setTempDate}
+                          displayMonth={displayMonth}
+                          onMonthChange={setDisplayMonth}
+                          onConfirm={handleConfirmDate}
+                          onPresetClick={handlePresetClick}
+                          locale={calendarLocale}
+                        />
+                      }
+                      isPhotoMenuOpen={isPhotoMenuOpen}
+                      setIsPhotoMenuOpen={setIsPhotoMenuOpen}
+                      file={file}
+                      attachmentUrl={attachmentUrl}
+                      onRemoveFile={handleRemoveFile}
+                      onTakeAPhoto={handleTakeAPhoto}
+                      onSelectAPhoto={handleSelectAPhoto}
+                      fileInputRef={fileInputRef}
+                      cameraInputRef={cameraInputRef}
+                      handleFileChange={handleFileChange}
+                      register={register}
+                      isLoadingTx={isTxLoading}
+                    />
+                  </div>
+                </TabsContent>
+              ))}
+            </TabsContents>
+          </Tabs>
+        </div>
+      </div>
+
+      <section className={cn("mx-4 lg:absolute lg:inset-x-0 lg:bottom-4")}>
+        {isTxLoading ? (
+          <>
             <Skeleton className="h-12 w-full rounded-xl" />
-          ) : (
+            <Skeleton className="h-12 w-full rounded-xl" />
+          </>
+        ) : (
+          <>
             <Button
               variant="unstyled"
               type="submit"
               disabled={isSubmitting}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 text-base font-bold text-white shadow-lg transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 text-base font-bold text-white shadow-lg transition-colors hover:bg-primary-hover cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isSubmitting ? (
                 <Loader2 className="animate-spin" size={18} />
@@ -586,9 +602,21 @@ export default function TransactionsContainer() {
               )}
               {t("saveTransactionStr").replace("{type}", transactionTypeStr)}
             </Button>
-          )}
-        </section>
-      </div>
+            {isDesktopSheet && editId && (
+              <Button
+                variant="unstyled"
+                type="button"
+                disabled={isSubmitting}
+                onClick={openDeleteModal}
+                className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-expense py-3 text-base font-bold text-white shadow-lg transition-colors hover:opacity-90 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <Trash size={18} />
+                {t("delete")}
+              </Button>
+            )}
+          </>
+        )}
+      </section>
 
       <ConfirmModal
         isOpen={isDeleteModalOpen}

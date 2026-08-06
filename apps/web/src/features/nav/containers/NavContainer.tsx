@@ -25,6 +25,7 @@ import {
   isGuestNavBlocked,
   shouldShowMobileBottomNav,
 } from "../helpers/navigation.helper";
+import { useTransactionSheetStore } from "@/features/transactions/hooks/transaction-sheet.hook";
 
 const CLOUD_SYNC_INTERVAL_MS = 60_000;
 
@@ -36,6 +37,7 @@ export default function NavContainer() {
   const isAuthenticated = Boolean(user);
   const isUserProfileLoading = isLoading || (isError && !isGuest);
   const openLockModal = useFeatureLockModal((state) => state.openModal);
+  const openTransactionSheet = useTransactionSheetStore((state) => state.open);
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isMobileBottomNavHidden, setIsMobileBottomNavHidden] = useState(false);
@@ -321,6 +323,15 @@ export default function NavContainer() {
     e?: React.MouseEvent<HTMLAnchorElement>,
     href?: string,
   ) => {
+    if (
+      href === "/transaction" &&
+      window.matchMedia("(min-width: 1024px)").matches
+    ) {
+      e?.preventDefault();
+      openTransactionSheet();
+      return;
+    }
+
     if (href && isGuestNavBlocked(href, isGuest)) {
       e?.preventDefault();
       openLockModal(t("accountSettingsBackup"));
