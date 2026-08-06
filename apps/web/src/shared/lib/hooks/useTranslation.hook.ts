@@ -4,7 +4,7 @@ import {
   TranslationKey,
   Language,
 } from "../configs/translations.config";
-import { updateProfileApi } from "@/features/account/services/account.service";
+import { updateLanguageAction } from "@/features/account/services/account.actions";
 import { useGuestStore } from "@/shared/lib/storages/guest.storage";
 import { useRouter } from "next/navigation";
 
@@ -30,7 +30,8 @@ export function useTranslation() {
     // 2. Sync to Server if user is logged in
     if (!isGuest) {
       try {
-        await updateProfileApi({ language: lang });
+        const result = await updateLanguageAction(lang);
+        if (!result.success) throw new Error(result.message);
       } catch (error) {
         console.error("Failed to sync language setting to server", error);
       }
