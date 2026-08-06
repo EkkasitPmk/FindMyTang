@@ -22,8 +22,12 @@ const getMeOrRestoreGuest = async (): Promise<UserProfile> => {
   }
 };
 
-export const useMeQuery = (options?: { enabled?: boolean }) => {
+export const useMeQuery = (options?: {
+  enabled?: boolean;
+  initialUser?: UserProfile | null;
+}) => {
   const isGuest = useIsGuest();
+  const { enabled, initialUser } = options ?? {};
   return useQuery<UserProfile>({
     queryKey: ["auth", "me"],
     queryFn: getMeOrRestoreGuest,
@@ -38,7 +42,7 @@ export const useMeQuery = (options?: { enabled?: boolean }) => {
     refetchOnReconnect: true,
     refetchInterval: (query) =>
       query.state.status === "error" ? AUTH_RECOVERY_POLL_MS : false,
-    ...options,
-    enabled: options?.enabled !== false && !isGuest,
+    initialData: initialUser ?? undefined,
+    enabled: enabled !== false && !isGuest,
   });
 };
