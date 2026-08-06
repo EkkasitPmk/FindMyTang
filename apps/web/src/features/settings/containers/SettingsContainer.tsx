@@ -44,7 +44,7 @@ export default function SettingsContainer({
   return (
     <>
       {/* desktop ui */}
-      <div className={cn("hidden md:block", "animate-in fade-in duration-300")}>
+      <div className={cn("hidden lg:block", "animate-in fade-in duration-300")}>
         <div
           className={cn(
             "grid gap-4 lg:gap-6",
@@ -94,7 +94,7 @@ export default function SettingsContainer({
       {/* desktop ui */}
 
       {/* mobile ui */}
-      <div className="md:hidden space-y-6 px-4 py-3 animate-in fade-in duration-300">
+      <div className="lg:hidden space-y-6 px-4 py-3 animate-in fade-in duration-300">
         <SettingsSection title={t("personalInfo")}>
           <Link
             href="/settings/account"
