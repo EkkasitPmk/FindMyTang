@@ -1,3 +1,4 @@
+"use client";
 import {
   Eye,
   EyeOff,
@@ -8,9 +9,9 @@ import {
   TrendingUp,
   TrendingDown,
 } from "lucide-react";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
-import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/shared/lib/utils/core.util";
 

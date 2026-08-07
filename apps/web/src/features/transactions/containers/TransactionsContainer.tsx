@@ -122,12 +122,13 @@ export default function TransactionsContainer({
 
   useEffect(() => {
     reset(defaultValues);
-  }, [defaultValues, reset]);
+  }, [existingTx?.id, defaultAssetId, reset]);
 
   const watchTransactionDate = useWatch({ control, name: "transactionDate" });
   const watchCategoryId = useWatch({ control, name: "categoryId" });
   const watchAssetId = useWatch({ control, name: "assetId" });
   const watchToAssetId = useWatch({ control, name: "toAssetId" });
+  const watchNote = useWatch({ control, name: "note" });
 
   const date = useMemo(
     () => (watchTransactionDate ? new Date(watchTransactionDate) : new Date()),
@@ -354,6 +355,8 @@ export default function TransactionsContainer({
                 cameraInputRef,
                 handleFileChange,
                 register,
+                noteValue: watchNote || "",
+                onNoteChange: (value) => setValue("note", value),
                 isLoadingTx: isTxLoading,
               }}
               datePicker={{

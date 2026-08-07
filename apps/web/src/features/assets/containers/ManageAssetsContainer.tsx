@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useAssets } from "@/shared/lib/hooks/useAssets.hook";
 import {
   useDeleteAssetMutation,
@@ -33,6 +34,7 @@ const SKELETON_ITEMS = Array.from({ length: 4 }, (_, i) => i);
 export default function ManageAssetsContainer({
   initialAssets,
 }: Readonly<{ initialAssets?: Asset[] }>) {
+  const router = useRouter();
   const { t } = useTranslation();
   const { data: assets, isPending } = useAssets({
     includeDeleted: true,
@@ -132,12 +134,14 @@ export default function ManageAssetsContainer({
   } = useConfirmModal();
 
   const restoreAsset = useRestoreAssetMutation({
-    onSuccess: () =>
+    onSuccess: () => {
+      router.refresh();
       setModalState({
         isOpen: true,
         status: "success",
         message: "Asset restored successfully!",
-      }),
+      });
+    },
     onError: () =>
       setModalState({
         isOpen: true,
@@ -147,12 +151,14 @@ export default function ManageAssetsContainer({
   });
 
   const deleteAsset = useDeleteAssetMutation({
-    onSuccess: () =>
+    onSuccess: () => {
+      router.refresh();
       setModalState({
         isOpen: true,
         status: "success",
         message: "Asset deleted successfully!",
-      }),
+      });
+    },
     onError: () =>
       setModalState({
         isOpen: true,
@@ -163,12 +169,14 @@ export default function ManageAssetsContainer({
 
   const { mutate: updateAsset, isPending: isUpdatingAsset } =
     useUpdateAssetMutation({
-      onSuccess: () =>
+      onSuccess: () => {
+        router.refresh();
         setModalState({
           isOpen: true,
           status: "success",
           message: "Asset updated successfully!",
-        }),
+        });
+      },
       onError: () =>
         setModalState({
           isOpen: true,
@@ -178,11 +186,13 @@ export default function ManageAssetsContainer({
     });
 
   const { mutate: reorderAssets } = useReorderAssetsMutation({
+    onSuccess: () => router.refresh(),
     onError: () => toast.error("Failed to update asset order."),
   });
 
   const bulkDeleteAssets = useBulkDeleteAssetsMutation({
     onSuccess: () => {
+      router.refresh();
       setModalState({
         isOpen: true,
         status: "success",
@@ -201,6 +211,7 @@ export default function ManageAssetsContainer({
 
   const bulkArchiveAssets = useBulkArchiveAssetsMutation({
     onSuccess: () => {
+      router.refresh();
       setModalState({
         isOpen: true,
         status: "success",
@@ -219,6 +230,7 @@ export default function ManageAssetsContainer({
 
   const bulkRestoreAssets = useBulkRestoreAssetsMutation({
     onSuccess: () => {
+      router.refresh();
       setModalState({
         isOpen: true,
         status: "success",

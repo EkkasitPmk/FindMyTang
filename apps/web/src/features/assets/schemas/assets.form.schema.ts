@@ -39,4 +39,10 @@ export const createAssetSchema = z.object({
   color: z.string().optional(),
 });
 
+export const editAssetSchema = createAssetSchema.extend({
+  balance: z
+    .union([z.number(), z.string(), z.null(), z.undefined()])
+    .optional(),
+});
+
 export type CreateAssetFormValues = z.infer<typeof createAssetSchema>;

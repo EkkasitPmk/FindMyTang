@@ -96,7 +96,8 @@ export default function AssetsMenuContainer() {
     const shouldRedirect = modalState.shouldRedirect;
     resetModalState();
     if (shouldRedirect) {
-      router.push("/");
+      router.replace("/dashboard");
+      router.refresh();
     }
   };
 
