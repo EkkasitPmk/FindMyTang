@@ -34,6 +34,8 @@ interface TransactionMoreDetailsProps {
   cameraInputRef: React.RefObject<HTMLInputElement | null>;
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   register: UseFormRegister<CreateTransactionFormValues>;
+  noteValue: string;
+  onNoteChange: (value: string) => void;
   isLoadingTx?: boolean;
 }
 
@@ -56,10 +58,13 @@ export default function TransactionMoreDetails({
   cameraInputRef,
   handleFileChange,
   register,
+  noteValue,
+  onNoteChange,
   isLoadingTx,
 }: Readonly<TransactionMoreDetailsProps>) {
   const { t } = useTranslation();
   const filePreview = useImagePreview(file);
+  const noteField = register("note");
 
   const renderAttachment = () => {
     if (file && filePreview) {
@@ -223,7 +228,12 @@ export default function TransactionMoreDetails({
                   maxLength={255}
                   placeholder={t("addANote")}
                   className="w-full min-h-15 max-h-30 placeholder:text-secondary-text outline-none transition-all bg-surface"
-                  {...register("note")}
+                  {...noteField}
+                  value={noteValue}
+                  onChange={(event) => {
+                    noteField.onChange(event);
+                    onNoteChange(event.target.value);
+                  }}
                 ></textarea>
               </div>
             )}

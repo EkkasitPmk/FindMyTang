@@ -444,8 +444,14 @@ const updateGuestTransactionApi = async (
     type: (data.type as unknown as DexieTransactionType) ?? existing.type,
     amount: data.amount ?? existing.amount,
     assetId: data.assetId ?? existing.assetId,
-    categoryId: data.categoryId ?? existing.categoryId,
-    toAssetId: data.toAssetId ?? existing.toAssetId,
+    categoryId:
+      data.categoryId !== undefined
+        ? data.categoryId || null
+        : existing.categoryId,
+    toAssetId:
+      data.toAssetId !== undefined
+        ? data.toAssetId || null
+        : existing.toAssetId,
     date: data.transactionDate ?? existing.date,
     note: data.note ?? existing.note,
     attachmentUrl,

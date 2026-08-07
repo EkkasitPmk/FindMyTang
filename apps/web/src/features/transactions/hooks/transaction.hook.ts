@@ -27,11 +27,66 @@ import { AxiosError } from "axios";
 import { ApiErrorResponse } from "@/shared/lib/types/api.type";
 import { useGuestStore } from "@/shared/lib/storages/guest.storage";
 
-const invalidateQueries = (queryClient: QueryClient) => {
-  queryClient.invalidateQueries({ queryKey: ["assets"] }).catch(() => {});
-  queryClient.invalidateQueries({ queryKey: ["transactions"] }).catch(() => {});
-  queryClient.invalidateQueries({ queryKey: ["transaction"] }).catch(() => {});
-  queryClient.invalidateQueries({ queryKey: ["summary"] }).catch(() => {});
+const invalidateQueries = async (queryClient: QueryClient) => {
+  await Promise.all([
+    queryClient.invalidateQueries({ queryKey: ["assets"] }),
+    queryClient.invalidateQueries({
+      queryKey: ["transactions"],
+      refetchType: "all",
+    }),
+    queryClient.invalidateQueries({
+      queryKey: ["transaction"],
+      refetchType: "all",
+    }),
+    queryClient.invalidateQueries({ queryKey: ["summary"] }),
+  ]);
+};
+
+const getTransactionCachePatch = (transaction: TransactionResponse) => ({
+  id: transaction.id,
+  type: transaction.type,
+  amount: transaction.amount,
+  note: transaction.note,
+  transactionDate: transaction.transactionDate,
+  assetId: transaction.assetId,
+  toAssetId: transaction.toAssetId,
+  categoryId: transaction.categoryId,
+  attachmentUrl: transaction.attachmentUrl,
+  updatedAt: transaction.updatedAt,
+  deletedAt: transaction.deletedAt,
+});
+
+const updateTransactionListCache = (
+  cached: unknown,
+  transaction: TransactionResponse,
+): unknown => {
+  if (!cached || typeof cached !== "object") return cached;
+
+  const value = cached as {
+    items?: Array<{ id: string }>;
+    pages?: unknown[];
+  };
+  const patch = getTransactionCachePatch(transaction);
+
+  if (Array.isArray(value.items)) {
+    return {
+      ...value,
+      items: value.items.map((item) =>
+        item.id === transaction.id ? { ...item, ...patch } : item,
+      ),
+    };
+  }
+
+  if (Array.isArray(value.pages)) {
+    return {
+      ...value,
+      pages: value.pages.map((page) =>
+        updateTransactionListCache(page, transaction),
+      ),
+    };
+  }
+
+  return cached;
 };
 
 export const useCreateTransactionMutation = (options?: {
@@ -56,8 +111,8 @@ export const useCreateTransactionMutation = (options?: {
   >({
     mutationFn: ({ type, data }) => createTransactionApi(data, type),
     ...options,
-    onSuccess: (data, variables) => {
-      invalidateQueries(queryClient);
+    onSuccess: async (data, variables) => {
+      await invalidateQueries(queryClient);
       options?.onSuccess?.(data, variables);
     },
   });
@@ -76,8 +131,20 @@ export const useUpdateTransactionMutation = (options?: {
   >({
     mutationFn: ({ id, data }) => updateTransactionApi(id, data),
     ...options,
-    onSuccess: (data) => {
-      invalidateQueries(queryClient);
+    onSuccess: async (data, variables) => {
+      const patch = getTransactionCachePatch(data);
+      queryClient.setQueriesData(
+        { queryKey: ["transaction", variables.id] },
+        (cached: unknown) =>
+          cached && typeof cached === "object"
+            ? { ...(cached as object), ...patch }
+            : data,
+      );
+      queryClient.setQueriesData(
+        { queryKey: ["transactions"] },
+        (cached: unknown) => updateTransactionListCache(cached, data),
+      );
+      await invalidateQueries(queryClient);
       options?.onSuccess?.(data);
     },
   });
@@ -164,8 +231,8 @@ export const useDeleteTransactionMutation = (options?: {
     mutationFn: ({ id, isHardDelete }) =>
       deleteTransactionApi(id, isHardDelete),
     ...options,
-    onSuccess: () => {
-      invalidateQueries(queryClient);
+    onSuccess: async () => {
+      await invalidateQueries(queryClient);
       options?.onSuccess?.();
     },
   });
