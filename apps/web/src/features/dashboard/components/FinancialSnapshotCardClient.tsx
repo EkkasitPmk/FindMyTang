@@ -1,6 +1,6 @@
 "use client";
-import { useState } from "react";
 import FinancialSnapshotCard from "./FinancialSnapshotCard";
+import { useFinancialSnapshotPrivacy } from "../hooks/financialSnapshotPrivacy.hook";
 
 interface FinancialSnapshotCardClientProps {
   netWorth: number;
@@ -17,18 +17,7 @@ export default function FinancialSnapshotCardClient({
   netChange,
   hasAssets,
 }: Readonly<FinancialSnapshotCardClientProps>) {
-  const [isPrivate, setIsPrivate] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return localStorage.getItem("findmytang_privacy_mode") === "true";
-  });
-
-  const togglePrivacy = () => {
-    setIsPrivate((previous) => {
-      const next = !previous;
-      localStorage.setItem("findmytang_privacy_mode", String(next));
-      return next;
-    });
-  };
+  const { isPrivate, togglePrivacy } = useFinancialSnapshotPrivacy();
 
   return (
     <FinancialSnapshotCard
