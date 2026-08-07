@@ -1,24 +1,29 @@
-"use client";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
-import { motion } from "motion/react";
-import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import DashboardAssetTitleMotion from "./DashboardAssetTitleMotion";
+import {
+  translations,
+  type Language,
+} from "@/shared/lib/configs/translations.config";
 
-export default function DashboardAssetTitle() {
-  const { t } = useTranslation();
+export default function DashboardAssetTitle({
+  language,
+}: Readonly<{ language: Language }>) {
+  const title =
+    translations[language].assetsTitle ?? translations.en.assetsTitle;
 
   return (
-    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.96 }}>
+    <DashboardAssetTitleMotion>
       <Link
         href="/assets"
         className="text-lg font-medium hover:text-primary transition-colors cursor-pointer flex items-center gap-1 group"
       >
-        {t("assetsTitle")}
+        {title}
         <ChevronRight
           size={18}
           className="text-disabled-text group-hover:text-primary transition-colors"
         />
       </Link>
-    </motion.div>
+    </DashboardAssetTitleMotion>
   );
 }
