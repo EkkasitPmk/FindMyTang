@@ -22,6 +22,6 @@ export const useAssets = (options?: UseAssetsOptions) => {
     queryFn: () => getAssetsApi(includeDeleted),
     enabled,
     initialData,
-    staleTime: initialData ? 30_000 : 0,
+    staleTime: 30_000,
   });
 };

@@ -10,6 +10,6 @@ export const useThisMonthSummary = (initialData?: TodaySummaryResponse) => {
     queryKey: ["summary", "monthly", { isGuest }],
     queryFn: getThisMonthSummaryApi,
     initialData,
-    staleTime: initialData ? 30_000 : 0,
+    staleTime: 30_000,
   });
 };
