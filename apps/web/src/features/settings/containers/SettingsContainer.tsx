@@ -6,15 +6,21 @@ import CategoryContainer from "@/features/category/containers/CategoryContainer"
 import ManageAssetsContainer from "@/features/assets/containers/ManageAssetsContainer";
 import type { Asset } from "@/shared/lib/types/asset.type";
 import type { Category } from "@/shared/lib/types/category.type";
+import type { Language } from "@/shared/lib/configs/translations.config";
 import { cn } from "@/shared/lib/utils/core.util";
+import { cookies } from "next/headers";
 import SettingsMobileContainer from "./SettingsMobileContainer";
 
 export default async function SettingsContainer() {
-  const [initialUser, initialAssets, initialCategories] = await Promise.all([
-    getCurrentUserServer(),
-    getAssetsServer(),
-    getCategoriesServer(),
-  ]);
+  const [cookieStore, initialUser, initialAssets, initialCategories] =
+    await Promise.all([
+      cookies(),
+      getCurrentUserServer(),
+      getAssetsServer(),
+      getCategoriesServer(),
+    ]);
+  const language: Language =
+    cookieStore.get("findmytang-language")?.value === "th" ? "th" : "en";
 
   return (
     <>
@@ -74,7 +80,7 @@ export default async function SettingsContainer() {
       </div>
       {/* desktop ui */}
 
-      <SettingsMobileContainer />
+      <SettingsMobileContainer language={language} />
     </>
   );
 }

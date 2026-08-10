@@ -1,4 +1,3 @@
-"use client";
 import {
   Globe,
   Lightbulb,
@@ -8,7 +7,10 @@ import {
   Wallet,
 } from "lucide-react";
 import { APP_VERSION } from "@/shared/lib/configs/app.config";
-import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import {
+  translations,
+  type Language,
+} from "@/shared/lib/configs/translations.config";
 import SettingsMenuItem from "../components/SettingsMenuItem";
 import SettingsSection from "../components/SettingsSection";
 import SettingsAccountLinkClient from "../components/SettingsAccountLinkClient";
@@ -16,8 +18,11 @@ import SettingsLanguageClient from "../components/SettingsLanguageClient";
 import SettingsLegalClient from "../components/SettingsLegalClient";
 import SettingsThemeClient from "../components/SettingsThemeClient";
 
-export default function SettingsMobileContainer() {
-  const { t } = useTranslation();
+export default function SettingsMobileContainer({
+  language,
+}: Readonly<{ language: Language }>) {
+  const t = (key: keyof (typeof translations)["en"]) =>
+    translations[language][key] ?? translations.en[key];
 
   return (
     <div className="lg:hidden space-y-6 px-4 py-3 animate-in fade-in duration-300">
