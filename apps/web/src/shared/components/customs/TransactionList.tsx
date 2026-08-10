@@ -225,7 +225,6 @@ export function TransactionList({
               className={cn("space-y-1", "my-1 mb-3")}
             >
               <TransactionListSkeleton />
-              <Skeleton className="h-13 w-full rounded-none" />
             </div>
           ))}
         </section>
@@ -275,7 +274,9 @@ export function TransactionList({
   }
 
   return (
-    <section className={cn("space-y-2 pb-20", isSearchMode && "pb-0")}>
+    <section
+      className={cn("space-y-2 pb-20", (isSearchMode || hasNextPage) && "pb-0")}
+    >
       {groupedTransactions.map((group) => (
         <div
           key={group.dateStr}
