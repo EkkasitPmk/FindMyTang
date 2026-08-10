@@ -8,7 +8,6 @@ export default function AccountLoading() {
           <Skeleton className="size-18 rounded-full border border-border" />
           <Skeleton className="absolute bottom-0 right-0 size-6 rounded-full border border-border" />
         </div>
-        <Skeleton className="h-3 w-28" />
       </div>
 
       <section className="space-y-10 px-4 pb-18 md:space-y-4 md:pb-4">
