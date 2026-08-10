@@ -16,7 +16,7 @@ export default async function SettingsContainer() {
     await Promise.all([
       cookies(),
       getCurrentUserServer(),
-      getAssetsServer(),
+      getAssetsServer(true),
       getCategoriesServer(),
     ]);
   const language: Language =

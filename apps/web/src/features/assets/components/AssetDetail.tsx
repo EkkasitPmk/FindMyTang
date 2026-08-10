@@ -123,7 +123,7 @@ export default function AssetDetail({
   }
 
   return (
-    <div className="flex flex-col h-full space-y-4">
+    <div className="relative flex flex-col h-full space-y-4">
       {!isSearchMode && (
         <section className="relative flex flex-col items-center justify-center mt-6">
           <div
@@ -267,8 +267,8 @@ export default function AssetDetail({
           offset={96}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
         >
-          <section className="fixed bottom-4 left-3 right-3 z-50 rounded-xl border border-border/70 bg-surface/95 px-1.5 py-1.5 backdrop-blur-xl md:bottom-4">
-            <div className="flex items-center gap-1.5">
+          <section className="absolute bottom-4 left-3 right-3 z-50 rounded-xl border border-border/70 bg-surface/95 px-1.5 py-1.5 backdrop-blur-xl">
+            <div className="flex items-center gap-1.5 md:gap-4">
               <Button
                 variant="unstyled"
                 onClick={onEditClick}

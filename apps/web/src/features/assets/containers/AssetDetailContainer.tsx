@@ -17,15 +17,22 @@ import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 export default function AssetDetailContainer({
   initialAssets,
-}: Readonly<{ initialAssets?: Asset[] }>) {
+  initialIncludeDeleted,
+}: Readonly<{
+  initialAssets?: Asset[];
+  initialIncludeDeleted?: boolean;
+}>) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const id = searchParams.get("id");
 
   const { t, locale } = useTranslation();
 
+  const includeDeleted = id === null;
   const { data: assets, isPending: isAssetsPending } = useAssets({
-    initialData: initialAssets,
+    includeDeleted,
+    initialData:
+      includeDeleted === initialIncludeDeleted ? initialAssets : undefined,
   });
   const isLoading = isAssetsPending;
   const searchKeyword = useAssetUIStore((state) => state.searchKeyword);
@@ -236,7 +243,7 @@ export default function AssetDetailContainer({
   return (
     <>
       {id === null ? (
-        <ManageAssetsContainer />
+        <ManageAssetsContainer initialAssets={assets} />
       ) : (
         <>
           <AssetDetail
