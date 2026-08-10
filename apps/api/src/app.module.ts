@@ -21,6 +21,7 @@ import { APP_GUARD } from "@nestjs/core";
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: [".env.local", ".env"],
       load: [jwtConfig, cookieConfig],
     }),
     ThrottlerModule.forRoot([
