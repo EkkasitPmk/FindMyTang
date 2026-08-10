@@ -1,4 +1,3 @@
-import FinancialSnapshotCardClient from "../components/FinancialSnapshotCardClient";
 import FinancialSnapshotClient from "../components/FinancialSnapshotClient";
 import FinancialSnapshotEmpty from "../components/FinancialSnapshotEmpty";
 import type { Asset } from "@/shared/lib/types/asset.type";
@@ -25,12 +24,9 @@ export default function FinancialSnapshotContainer({
   }
 
   return (
-    <FinancialSnapshotCardClient
-      netWorth={initialSummary.totalNetWorth || 0}
-      income={initialSummary.income || 0}
-      expense={initialSummary.expense || 0}
-      netChange={initialSummary.net || 0}
-      hasAssets={initialAssets.length > 0}
+    <FinancialSnapshotClient
+      initialAssets={initialAssets}
+      initialSummary={initialSummary}
     />
   );
 }

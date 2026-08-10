@@ -1,15 +1,9 @@
+"use client";
 import { Wallet } from "lucide-react";
-import { cookies } from "next/headers";
-import {
-  translations,
-  type TranslationKey,
-} from "@/shared/lib/configs/translations.config";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
-export default async function FinancialSnapshotEmpty() {
-  const language =
-    (await cookies()).get("findmytang-language")?.value === "th" ? "th" : "en";
-  const t = (key: TranslationKey) =>
-    translations[language][key] ?? translations.en[key];
+export default function FinancialSnapshotEmpty() {
+  const { t } = useTranslation();
 
   return (
     <div className="relative overflow-hidden rounded-xl border border-border bg-surface p-4.5 sm:p-5 shadow-sm flex flex-col gap-3">
