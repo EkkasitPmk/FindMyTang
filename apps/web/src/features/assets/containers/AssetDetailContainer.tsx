@@ -2,6 +2,7 @@
 import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAssets } from "@/shared/lib/hooks/useAssets.hook";
+import { useIsGuest } from "@/shared/lib/storages/guest.storage";
 import { useAssetUIStore } from "../hooks/assets.hook";
 import { Asset } from "@/shared/lib/types/asset.type";
 import {
@@ -27,6 +28,7 @@ export default function AssetDetailContainer({
   const id = searchParams.get("id");
 
   const { t, locale } = useTranslation();
+  const isGuest = useIsGuest();
 
   const includeDeleted = id === null;
   const { data: assets, isPending: isAssetsPending } = useAssets({
@@ -34,7 +36,11 @@ export default function AssetDetailContainer({
     initialData:
       includeDeleted === initialIncludeDeleted ? initialAssets : undefined,
   });
-  const isLoading = isAssetsPending;
+  const isLoading =
+    isAssetsPending &&
+    (isGuest ||
+      initialAssets === undefined ||
+      includeDeleted !== initialIncludeDeleted);
   const searchKeyword = useAssetUIStore((state) => state.searchKeyword);
   const isSearchMode = useAssetUIStore((state) => state.isSearchMode);
   const filterType = useAssetUIStore((state) => state.filterType);
