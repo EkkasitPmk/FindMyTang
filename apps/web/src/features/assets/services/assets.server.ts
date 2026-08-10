@@ -1,16 +1,20 @@
 import { cookies } from "next/headers";
+import { cache } from "react";
 import { assetListResponseSchema } from "../schemas/assets.response.schema";
 
 const BACKEND_URL =
   process.env.NEXT_PUBLIC_URL_BACKEND?.replace("/api/v1", "") ??
   "http://localhost:3001";
 
-export async function getAssetsServer() {
+export const getAssetsServer = cache(async function getAssetsServer(
+  includeDeleted = false,
+) {
   try {
     const cookieStore = await cookies();
     if (!cookieStore.has("access_token")) return null;
 
-    const response = await fetch(`${BACKEND_URL}/api/v1/assets`, {
+    const query = includeDeleted ? "?includeDeleted=true" : "";
+    const response = await fetch(`${BACKEND_URL}/api/v1/assets${query}`, {
       headers: { cookie: cookieStore.toString() },
       cache: "no-store",
     });
@@ -22,4 +26,4 @@ export async function getAssetsServer() {
     console.error("Failed to load assets on the server", error);
     return null;
   }
-}
+});

@@ -165,7 +165,7 @@ export const useTransactionsQuery = (
     queryKey: ["transactions", { isGuest, ...params }],
     queryFn: () => getTransactionsApi(params),
     initialData: options?.initialData,
-    staleTime: options?.initialData ? 30_000 : 0,
+    staleTime: 30_000,
     ...options,
   });
 };

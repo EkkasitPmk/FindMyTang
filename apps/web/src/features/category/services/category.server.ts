@@ -1,11 +1,12 @@
 import { cookies } from "next/headers";
+import { cache } from "react";
 import { categoryListResponseSchema } from "../schemas/category.response.schema";
 
 const BACKEND_URL =
   process.env.NEXT_PUBLIC_URL_BACKEND?.replace("/api/v1", "") ??
   "http://localhost:3001";
 
-export async function getCategoriesServer() {
+export const getCategoriesServer = cache(async function getCategoriesServer() {
   try {
     const cookieStore = await cookies();
     if (!cookieStore.has("access_token")) return null;
@@ -22,4 +23,4 @@ export async function getCategoriesServer() {
     console.error("Failed to load categories on the server", error);
     return null;
   }
-}
+});

@@ -6,13 +6,12 @@ import { Button } from "@/shared/components/animate-ui/components/buttons/button
 import { DropdownSelect } from "@/shared/components/customs/DropdownSelect";
 import { Dispatch, SetStateAction, RefObject } from "react";
 import { TransactionListContainer } from "@/features/transactions/containers/TransactionListContainer";
-import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { TranslationKey } from "@/shared/lib/configs/translations.config";
 import { Slide } from "@/shared/components/animate-ui/primitives/effects/slide";
+import AssetPageSkeleton from "./AssetPageSkeleton";
 
 const DEFAULT_ASSET_COLOR = "#2563EB";
-const SKELETON_GROUPS = Array.from({ length: 3 }, (_, i) => i);
 
 interface AssetDetailProps {
   asset?: Asset;
@@ -94,36 +93,10 @@ export default function AssetDetail({
   const { t, locale } = useTranslation();
   const viewOptionsList = ["recentTransactions", "showDeletedItems"];
 
-  if (isLoading) {
-    return (
-      <div className="flex flex-col h-[calc(100vh-118px)] space-y-4">
-        <section className="relative flex flex-col items-center justify-center mt-6">
-          <Skeleton className="h-9 w-30 rounded-full mb-2" />
-          <Skeleton className="h-10 w-48" />
-        </section>
-        <section className="mb-2 px-4">
-          <Skeleton className="h-10 w-full rounded-md mb-1" />
-          <Skeleton className="h-4 w-14 mb-1" />
-          <div className="flex items-center justify-between gap-4">
-            <Skeleton className="h-8 w-1/2 rounded-md" />
-            <Skeleton className="h-8 w-1/2 rounded-md" />
-          </div>
-        </section>
-        <section className="flex-1 space-y-4 overflow-hidden">
-          {SKELETON_GROUPS.map((i) => (
-            <div key={`skeleton-group-${i}`} className="space-y-1 my-2">
-              <Skeleton className="h-5 w-32 mx-4 mb-3" />
-              <Skeleton className="h-13 w-full rounded-none" />
-              <Skeleton className="h-13 w-full rounded-none" />
-            </div>
-          ))}
-        </section>
-      </div>
-    );
-  }
+  if (isLoading) return <AssetPageSkeleton />;
 
   return (
-    <div className="flex flex-col h-full space-y-4">
+    <div className="relative flex flex-col h-full space-y-4">
       {!isSearchMode && (
         <section className="relative flex flex-col items-center justify-center mt-6">
           <div
@@ -267,8 +240,8 @@ export default function AssetDetail({
           offset={96}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
         >
-          <section className="fixed bottom-4 left-3 right-3 z-50 rounded-xl border border-border/70 bg-surface/95 px-1.5 py-1.5 backdrop-blur-xl md:bottom-4">
-            <div className="flex items-center gap-1.5">
+          <section className="absolute bottom-4 left-3 right-3 z-50 rounded-xl border border-border/70 bg-surface/95 px-1.5 py-1.5 backdrop-blur-xl">
+            <div className="flex items-center gap-1.5 md:gap-4">
               <Button
                 variant="unstyled"
                 onClick={onEditClick}

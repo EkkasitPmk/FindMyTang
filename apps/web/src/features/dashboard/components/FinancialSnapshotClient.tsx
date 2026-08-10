@@ -26,7 +26,7 @@ export default function FinancialSnapshotClient({
       income={summary?.income || 0}
       expense={summary?.expense || 0}
       netChange={summary?.net || 0}
-      hasAssets={Boolean(assets && assets.length > 0)}
+      hasAssets={Boolean(assets?.some((asset) => !asset.isArchived))}
       isPrivate={isPrivate}
       onTogglePrivacy={togglePrivacy}
       isLoading={isAssetsPending || isSummaryPending}

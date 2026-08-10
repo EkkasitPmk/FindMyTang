@@ -50,8 +50,7 @@ export default function DangerZoneClientIsland() {
     await clearGuestData();
     setGuestMode(false);
     queryClient.clear();
-    router.refresh();
-    window.location.href = "/login";
+    router.replace("/login");
   };
 
   return (
