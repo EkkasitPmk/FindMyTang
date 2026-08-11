@@ -39,6 +39,7 @@ const invalidateQueries = async (queryClient: QueryClient) => {
       refetchType: "all",
     }),
     queryClient.invalidateQueries({ queryKey: ["summary"] }),
+    queryClient.invalidateQueries({ queryKey: ["analytics"] }),
   ]);
 };
 
@@ -172,7 +173,10 @@ export const useTransactionsQuery = (
 
 export const useInfiniteTransactionsQuery = (
   params?: TransactionQuery,
-  options?: { enabled?: boolean },
+  options?: {
+    enabled?: boolean;
+    initialData?: PaginatedTransactionResponse;
+  },
 ) => {
   const isGuest = useGuestStore((state) => state.isGuest);
 
@@ -214,6 +218,14 @@ export const useInfiniteTransactionsQuery = (
       return undefined;
     },
     initialPageParam: queryParams?.pagination === "cursor" ? undefined : 1,
+    initialData:
+      isGuest || !options?.initialData
+        ? undefined
+        : {
+            pages: [options.initialData],
+            pageParams: [queryParams?.pagination === "cursor" ? undefined : 1],
+          },
+    staleTime: !isGuest && options?.initialData ? 30_000 : 0,
   });
 };
 
@@ -250,19 +262,28 @@ export const useTransactionYearsQuery = (options?: { enabled?: boolean }) => {
 export const useAvailableDatesQuery = (
   assetId?: string,
   isDeleted?: boolean,
+  options?: { initialData?: Record<string, string[]> },
 ) => {
   const isGuest = useGuestStore((state) => state.isGuest);
   return useQuery<Record<string, string[]>, AxiosError<ApiErrorResponse>>({
     queryKey: ["transactions", "availableDates", assetId, isDeleted, isGuest],
     queryFn: () => getAvailableDatesApi(assetId, isDeleted),
+    enabled: Boolean(assetId),
+    initialData: isGuest ? undefined : options?.initialData,
+    staleTime: !isGuest && options?.initialData ? 30_000 : 0,
   });
 };
 
-export const useTransactionQuery = (id?: string) => {
+export const useTransactionQuery = (
+  id?: string,
+  options?: { initialData?: TransactionResponse },
+) => {
   const isGuest = useGuestStore((state) => state.isGuest);
   return useQuery<TransactionResponse, AxiosError<ApiErrorResponse>>({
     queryKey: ["transaction", id, isGuest],
     queryFn: () => getTransactionApi(id!),
     enabled: !!id,
+    initialData: isGuest ? undefined : options?.initialData,
+    staleTime: !isGuest && options?.initialData ? 30_000 : 0,
   });
 };

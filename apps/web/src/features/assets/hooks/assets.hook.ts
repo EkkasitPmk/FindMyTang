@@ -28,6 +28,7 @@ const invalidateQueries = (queryClient: QueryClient) => {
   queryClient.invalidateQueries({ queryKey: ["assets"] }).catch(() => {});
   queryClient.invalidateQueries({ queryKey: ["transactions"] }).catch(() => {});
   queryClient.invalidateQueries({ queryKey: ["summary"] }).catch(() => {});
+  queryClient.invalidateQueries({ queryKey: ["analytics"] }).catch(() => {});
 };
 
 export const useCreateAssetMutation = (options?: {
@@ -75,6 +76,7 @@ export const useUpdateAssetMutation = (options?: {
         queryClient.invalidateQueries({ queryKey: ["assets"] }),
         queryClient.invalidateQueries({ queryKey: ["transactions"] }),
         queryClient.invalidateQueries({ queryKey: ["summary"] }),
+        queryClient.invalidateQueries({ queryKey: ["analytics"] }),
       ]);
       options?.onSuccess?.(data);
     },

@@ -1,5 +1,5 @@
-import JournalContainer from "@/features/journal/containers/JournalContainer";
+import JournalRouteContainer from "@/features/journal/containers/JournalRouteContainer";
 
 export default function JournalPage() {
-  return <JournalContainer />;
+  return <JournalRouteContainer />;
 }

@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { keepPreviousData } from "@tanstack/react-query";
 import {
   startOfMonth,
@@ -35,6 +35,10 @@ export default function JournalCalendarContainer() {
     useJournalCalendar(locale);
 
   const transactionListRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    transactionListRef.current?.scrollTo({ top: 0 });
+  }, [currentMonth]);
 
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);

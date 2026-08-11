@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Fragment } from "react";
 import { Wallet } from "lucide-react";
 import SyncStatusButton from "@/shared/components/customs/SyncStatusButton";
 import NavUserProfile from "./NavUserProfile";
@@ -16,6 +17,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarSeparator,
   SidebarTrigger,
 } from "@/shared/components/animate-ui/components/radix/sidebar";
 import { cn } from "@/shared/lib/utils/core.util";
@@ -46,6 +48,10 @@ export default function DesktopSidebar({
   onNavigate,
 }: Readonly<DesktopSidebarProps>) {
   const { t } = useTranslation();
+  const desktopNavItems = [...navItems].sort(
+    (a, b) =>
+      Number(b.href === "/transaction") - Number(a.href === "/transaction"),
+  );
 
   return (
     <Sidebar collapsible="icon" className="border-border bg-surface shadow-xs">
@@ -65,7 +71,7 @@ export default function DesktopSidebar({
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navItems.map((item) => {
+              {desktopNavItems.map((item, index) => {
                 const Icon = item.icon;
                 const isActive = isNavItemActive(pathname, item);
                 const displayLabel = item.translationKey
@@ -73,39 +79,46 @@ export default function DesktopSidebar({
                   : item.label;
 
                 return (
-                  <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton
-                      isActive={isActive}
-                      tooltip={displayLabel}
-                      size="lg"
-                      asChild
-                      className={cn(
-                        "rounded-xl border border-transparent transition-colors duration-200 cursor-pointer font-medium text-sm",
-                        isActive
-                          ? "bg-primary-light text-primary font-semibold border-primary-light/80 shadow-xs"
-                          : "text-secondary-text hover:text-primary-text",
-                      )}
-                    >
-                      <Link
-                        href={item.href}
-                        onClick={(e) => onNavigate?.(e, item.href)}
-                        className="flex items-center gap-3 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0"
+                  <Fragment key={item.href}>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton
+                        isActive={isActive}
+                        tooltip={displayLabel}
+                        size="lg"
+                        asChild
+                        className={cn(
+                          "rounded-xl border border-transparent transition-colors duration-200 cursor-pointer font-medium text-sm",
+                          isActive
+                            ? "bg-primary-light text-primary font-semibold border-primary-light/80 shadow-xs"
+                            : "text-secondary-text hover:text-primary-text",
+                        )}
                       >
-                        <Icon
-                          className={cn(
-                            "size-5 shrink-0 transition-transform",
-                            isActive
-                              ? "text-primary scale-105"
-                              : "text-secondary-text",
-                          )}
-                          strokeWidth={isActive ? 2.2 : 1.75}
-                        />
-                        <span className="truncate group-data-[collapsible=icon]:hidden">
-                          {displayLabel}
-                        </span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
+                        <Link
+                          href={item.href}
+                          onClick={(e) => onNavigate?.(e, item.href)}
+                          className="flex items-center gap-3 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0"
+                        >
+                          <Icon
+                            className={cn(
+                              "size-5 shrink-0 transition-transform",
+                              isActive
+                                ? "text-primary scale-105"
+                                : "text-secondary-text",
+                            )}
+                            strokeWidth={isActive ? 2.2 : 1.75}
+                          />
+                          <span className="truncate group-data-[collapsible=icon]:hidden">
+                            {displayLabel}
+                          </span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    {index === 0 && (
+                      <li aria-hidden="true">
+                        <SidebarSeparator />
+                      </li>
+                    )}
+                  </Fragment>
                 );
               })}
             </SidebarMenu>

@@ -4,20 +4,28 @@ import { DrilldownSummary } from "../components/DrilldownSummary";
 import { DrilldownTransactionList } from "../components/DrilldownTransactionList";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useAssets } from "@/shared/lib/hooks/useAssets.hook";
+import type { Asset } from "@/shared/lib/types/asset.type";
+import type { DrilldownResponse } from "../schemas/analytics.response.schema";
 
 interface DrilldownContainerProps {
   categoryId: string;
   month: number;
   year: number;
+  initialDrilldown?: DrilldownResponse;
+  initialAssets?: Asset[];
 }
 
 export const DrilldownContainer = ({
   categoryId,
   month,
   year,
+  initialDrilldown,
+  initialAssets,
 }: DrilldownContainerProps) => {
-  const { data, isLoading } = useDrilldown(categoryId, month, year);
-  const { data: assets } = useAssets();
+  const { data, isLoading } = useDrilldown(categoryId, month, year, {
+    initialData: initialDrilldown,
+  });
+  const { data: assets } = useAssets({ initialData: initialAssets });
 
   if (isLoading) {
     return (

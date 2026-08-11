@@ -14,17 +14,33 @@ import {
   TabsContent,
 } from "@/shared/components/animate-ui/components/animate/tabs";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import type { CategoryBreakdownResponse } from "../schemas/analytics.response.schema";
 
-export const CategoryBreakdownContainer = () => {
+export const CategoryBreakdownContainer = ({
+  initialData,
+  initialMonth,
+  initialYear,
+}: Readonly<{
+  initialData?: CategoryBreakdownResponse;
+  initialMonth?: number;
+  initialYear?: number;
+}>) => {
   const { t } = useTranslation();
   const currentDate = new Date();
-  const [month, setMonth] = useState(currentDate.getMonth() + 1);
-  const [year, setYear] = useState(currentDate.getFullYear());
+  const [month, setMonth] = useState(
+    initialMonth ?? currentDate.getMonth() + 1,
+  );
+  const [year, setYear] = useState(initialYear ?? currentDate.getFullYear());
   const [type, setType] = useState<"EXPENSE" | "INCOME" | "TRANSFER">(
     "EXPENSE",
   );
 
-  const { data, isLoading } = useCategoryBreakdown(month, year, type);
+  const { data, isLoading } = useCategoryBreakdown(month, year, type, {
+    initialData:
+      type === "EXPENSE" && month === initialMonth && year === initialYear
+        ? initialData
+        : undefined,
+  });
 
   const handlePrev = () => {
     if (month === 1) {

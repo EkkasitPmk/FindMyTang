@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { cache } from "react";
+import { BACKEND_URL } from "@/shared/lib/configs/backend.config";
 import { userSchema } from "@/shared/lib/schemas/user.schema";
 import type {
   ChangePasswordRequest,
@@ -9,10 +10,6 @@ import {
   changePasswordResponseSchema,
   updateProfileResponseSchema,
 } from "../schemas/account.response.schema";
-
-const BACKEND_URL =
-  process.env.NEXT_PUBLIC_URL_BACKEND?.replace("/api/v1", "") ??
-  "http://localhost:3001";
 
 type BackendError = {
   code?: string;

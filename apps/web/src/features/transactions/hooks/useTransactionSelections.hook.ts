@@ -4,6 +4,8 @@ import { useCategories } from "@/shared/lib/hooks/useCategories.hook";
 import { useAssets } from "@/shared/lib/hooks/useAssets.hook";
 import type { TransactionType } from "@/shared/lib/types/transaction.type";
 import type { CreateTransactionFormValues } from "../schemas/transaction.form.schema";
+import type { Asset } from "@/shared/lib/types/asset.type";
+import type { Category } from "@/shared/lib/types/category.type";
 import { checkIsLoading, getActiveItemId } from "../helpers/transaction.helper";
 import { useTransactionFormSync } from "./transaction-form.hook";
 
@@ -13,6 +15,8 @@ interface UseTransactionSelectionsParams {
   watchAssetId: string | undefined;
   watchToAssetId: string | undefined;
   setValue: UseFormSetValue<CreateTransactionFormValues>;
+  initialAssets?: Asset[];
+  initialCategories?: Category[];
 }
 
 export function useTransactionSelections({
@@ -21,17 +25,19 @@ export function useTransactionSelections({
   watchAssetId,
   watchToAssetId,
   setValue,
+  initialAssets,
+  initialCategories,
 }: UseTransactionSelectionsParams) {
   const {
     data: categories,
     isPending: isCategoryPending,
     isFetching: isCategoryFetching,
-  } = useCategories();
+  } = useCategories({ initialData: initialCategories });
   const {
     data: assets,
     isPending: isAssetPending,
     isFetching: isAssetFetching,
-  } = useAssets();
+  } = useAssets({ initialData: initialAssets });
 
   const filteredCategories = useMemo(
     () =>

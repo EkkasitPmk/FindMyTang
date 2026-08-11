@@ -115,7 +115,6 @@ export function useMainLayout({
       setSearchMode(false);
       setSearchKeyword("");
       router.replace("/dashboard");
-      router.refresh();
       return;
     }
     router.back();
