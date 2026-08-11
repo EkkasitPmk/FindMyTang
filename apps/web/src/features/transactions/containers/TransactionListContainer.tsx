@@ -142,7 +142,10 @@ export function TransactionListContainer({
       </div>
 
       {!useVirtualization && hasNextPage && fetchNextPage && (
-        <div ref={observerTarget} className="my-4 shrink-0">
+        <div
+          ref={observerTarget}
+          className={cn("my-4 shrink-0", page === "asset" && "pb-20")}
+        >
           {isFetchingNextPage && <TransactionListSkeleton />}
         </div>
       )}
