@@ -38,10 +38,21 @@ import { useTransactionAmount } from "../hooks/useTransactionAmount.hook";
 import { useTransactionMutations } from "../hooks/useTransactionMutations.hook";
 import { useTransactionSelections } from "../hooks/useTransactionSelections.hook";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import type { Asset } from "@/shared/lib/types/asset.type";
+import type { Category } from "@/shared/lib/types/category.type";
+import type { TransactionResponse } from "@/shared/lib/types/transaction.type";
 
 export default function TransactionsContainer({
   isDesktopSheet = false,
-}: Readonly<{ isDesktopSheet?: boolean }>) {
+  initialAssets,
+  initialCategories,
+  initialTransaction,
+}: Readonly<{
+  isDesktopSheet?: boolean;
+  initialAssets?: Asset[];
+  initialCategories?: Category[];
+  initialTransaction?: TransactionResponse;
+}>) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const editId = searchParams.get("id");
@@ -52,6 +63,10 @@ export default function TransactionsContainer({
 
   const { data: existingTx, isPending: isTxPending } = useTransactionQuery(
     editId || undefined,
+    {
+      initialData:
+        initialTransaction?.id === editId ? initialTransaction : undefined,
+    },
   );
 
   const isTxLoading = checkIsTxLoading(editId, isTxPending);
@@ -122,7 +137,7 @@ export default function TransactionsContainer({
 
   useEffect(() => {
     reset(defaultValues);
-  }, [existingTx?.id, defaultAssetId, reset]);
+  }, [defaultValues, reset]);
 
   const watchTransactionDate = useWatch({ control, name: "transactionDate" });
   const watchCategoryId = useWatch({ control, name: "categoryId" });
@@ -179,6 +194,7 @@ export default function TransactionsContainer({
         setRemovedAttachment(false);
         setIsPhotoMenuOpen(false);
       }
+      router.refresh();
     },
     [
       reset,
@@ -188,6 +204,7 @@ export default function TransactionsContainer({
       setFile,
       setRemovedAttachment,
       setIsPhotoMenuOpen,
+      router,
     ],
   );
 
@@ -238,6 +255,8 @@ export default function TransactionsContainer({
     watchAssetId,
     watchToAssetId,
     setValue,
+    initialAssets,
+    initialCategories,
   });
 
   const handleResetForm = () => {

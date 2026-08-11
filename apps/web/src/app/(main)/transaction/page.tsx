@@ -1,5 +1,9 @@
-import TransactionMobileGuard from "./TransactionMobileGuard";
+import TransactionsRouteContainer from "@/features/transactions/containers/TransactionsRouteContainer";
 
-export default function TransactionPage() {
-  return <TransactionMobileGuard />;
+export default async function TransactionPage({
+  searchParams,
+}: Readonly<{ searchParams: Promise<{ id?: string }> }>) {
+  const { id } = await searchParams;
+
+  return <TransactionsRouteContainer transactionId={id} />;
 }
