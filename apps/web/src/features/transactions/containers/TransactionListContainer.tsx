@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { TransactionList } from "@/shared/components/customs/TransactionList";
 import TransactionListSkeleton from "@/shared/components/skeletons/TransactionListSkeleton";
 import TransactionListModals from "../components/TransactionListModals";
@@ -47,6 +48,7 @@ export function TransactionListContainer({
   paginationKey,
 }: Readonly<TransactionListContainerProps>) {
   const { t } = useTranslation();
+  const router = useRouter();
 
   const [expandedTransactionId, setExpandedTransactionId] = useState<
     string | null
@@ -77,8 +79,10 @@ export function TransactionListContainer({
   const { restoreTransaction, deleteTransaction } = useTransactionListMutations(
     {
       t,
-      onSuccess: (message) =>
-        setModalState({ isOpen: true, status: "success", message }),
+      onSuccess: (message) => {
+        setModalState({ isOpen: true, status: "success", message });
+        router.refresh();
+      },
       onError: (message) =>
         setModalState({ isOpen: true, status: "error", message }),
     },

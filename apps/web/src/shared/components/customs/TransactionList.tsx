@@ -9,15 +9,13 @@ import { TransactionGroupHeader } from "./TransactionGroupHeader";
 import { cn } from "@/shared/lib/utils/core.util";
 import TransactionListSkeleton from "../skeletons/TransactionListSkeleton";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
-import { GroupedVirtuoso } from "react-virtuoso";
+import { Virtuoso } from "react-virtuoso";
 
 const SKELETON_GROUPS = Array.from({ length: 3 }, (_, i) => i);
 
 interface TransactionListVirtuosoContext {
   isFetchingNextPage: boolean;
   hasNextPage: boolean;
-  groupedTransactions: GroupedTransaction[];
-  flatItems: TransactionResponse[];
   t: ReturnType<typeof useTranslation>["t"];
   locale: string;
   assetId?: string;
@@ -29,37 +27,36 @@ interface TransactionListVirtuosoContext {
   onAttachmentClick?: (url: string) => void;
 }
 
-function renderTransactionGroupContent(
-  groupIndex: number,
+type VirtualTransactionRow =
+  | { kind: "group"; key: string; group: GroupedTransaction }
+  | {
+      kind: "item";
+      key: string;
+      transaction: TransactionResponse;
+      isLastItem: boolean;
+    };
+
+function renderVirtualTransactionRow(
+  _index: number,
+  row: VirtualTransactionRow,
   context: TransactionListVirtuosoContext,
 ) {
-  const group = context.groupedTransactions[groupIndex];
-  return (
-    <TransactionGroupHeader
-      group={group}
-      t={context.t}
-      locale={context.locale}
-      className="bg-surface py-1.5 px-4 pb-2"
-    />
-  );
-}
+  if (row.kind === "group") {
+    return (
+      <TransactionGroupHeader
+        group={row.group}
+        t={context.t}
+        locale={context.locale}
+        className="bg-surface py-1.5 px-4 pb-2"
+      />
+    );
+  }
 
-function renderTransactionItemContent(
-  index: number,
-  groupIndex: number,
-  _item: unknown,
-  context: TransactionListVirtuosoContext,
-) {
-  const transaction = context.flatItems[index];
-  const group = context.groupedTransactions[groupIndex];
-  if (!transaction || !group) return null;
-
-  const isLastItem = group.items.at(-1) === transaction;
   return (
-    <div className={cn(isLastItem && "pb-4")}>
+    <div className={cn(row.isLastItem && "pb-4")}>
       <TransactionItem
-        transaction={transaction}
-        isLastItem={isLastItem}
+        transaction={row.transaction}
+        isLastItem={row.isLastItem}
         currentAssetId={context.assetId}
         expandedTransactionId={context.expandedTransactionId}
         setExpandedTransactionId={context.setExpandedTransactionId}
@@ -77,17 +74,15 @@ function TransactionListFooter({
 }: Readonly<{
   context?: TransactionListVirtuosoContext;
 }>) {
-  if (context?.isFetchingNextPage) {
+  if (context?.hasNextPage) {
     return (
-      <div className="py-4">
-        <TransactionListSkeleton />
+      <div className="h-30 overflow-hidden py-4" aria-live="polite">
+        {context.isFetchingNextPage && <TransactionListSkeleton />}
       </div>
     );
   }
 
-  return context?.hasNextPage ? null : (
-    <div className="h-18" aria-hidden="true" />
-  );
+  return <div className="h-18" aria-hidden="true" />;
 }
 
 interface TransactionListProps {
@@ -138,11 +133,22 @@ export function TransactionList({
     () => groupedTransactions.flatMap((group) => group.items),
     [groupedTransactions],
   );
+  const virtualRows = useMemo(
+    () =>
+      groupedTransactions.flatMap((group) => [
+        { kind: "group" as const, key: `group-${group.dateStr}`, group },
+        ...group.items.map((transaction, index) => ({
+          kind: "item" as const,
+          key: transaction.id,
+          transaction,
+          isLastItem: index === group.items.length - 1,
+        })),
+      ]),
+    [groupedTransactions],
+  );
   const virtuosoContext: TransactionListVirtuosoContext = {
     isFetchingNextPage,
     hasNextPage,
-    groupedTransactions,
-    flatItems,
     t,
     locale,
     assetId,
@@ -245,14 +251,15 @@ export function TransactionList({
 
     return (
       <section className="h-full">
-        <GroupedVirtuoso
+        <Virtuoso
+          key={paginationKey}
           className="h-full w-full"
-          groupCounts={groupedTransactions.map((group) => group.items.length)}
-          groupContent={renderTransactionGroupContent}
-          itemContent={renderTransactionItemContent}
+          data={virtualRows}
+          computeItemKey={(_index, row) => row.key}
+          itemContent={renderVirtualTransactionRow}
           increaseViewportBy={{ top: 400, bottom: 1000 }}
           rangeChanged={({ endIndex }) => {
-            if (endIndex >= flatItems.length - 8) requestNextPage();
+            if (endIndex >= virtualRows.length - 8) requestNextPage();
           }}
           context={virtuosoContext}
           components={{
