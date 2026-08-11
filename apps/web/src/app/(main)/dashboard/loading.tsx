@@ -2,7 +2,7 @@ import { Skeleton } from "@/shared/components/ui/skeleton";
 import TransactionListSkeleton from "@/shared/components/skeletons/TransactionListSkeleton";
 import { ChevronRight } from "lucide-react";
 
-const ASSET_ROWS = [0, 1, 2];
+const ASSET_ROWS = [0, 1, 2, 3, 4];
 const RECENT_JOURNAL_GROUPS = [0, 1, 2];
 
 export default function DashboardLoading() {
@@ -21,16 +21,20 @@ export default function DashboardLoading() {
       <div className="px-4">
         <div className="relative overflow-hidden rounded-xl border border-border bg-surface p-4.5 sm:p-5 shadow-sm">
           <div className="flex items-center justify-between mb-2">
-            <Skeleton className="h-4 w-36" />
+            <Skeleton className="h-4 w-44" />
             <Skeleton className="size-7 rounded-lg" />
           </div>
-          <div className="mb-3">
+          <div className="mb-2">
             <Skeleton className="h-3 w-16 mb-1.5" />
             <Skeleton className="h-9 w-44" />
           </div>
-          <div className="grid grid-cols-2 gap-2.5">
-            <Skeleton className="h-13.5 rounded-lg" />
-            <Skeleton className="h-13.5 rounded-lg" />
+          <div className="flex gap-2.5 overflow-x-auto hide-scrollbar">
+            {Array.from({ length: 4 }, (_, index) => (
+              <Skeleton
+                key={index}
+                className="h-15 w-[42%] shrink-0 rounded-lg"
+              />
+            ))}
           </div>
           <div className="mt-3 pt-2.5 border-t border-border/50 flex items-center justify-between">
             <Skeleton className="h-3.5 w-32" />
@@ -42,7 +46,7 @@ export default function DashboardLoading() {
       <div className="px-4 space-y-4">
         <div className="flex items-center justify-between mb-2">
           <Skeleton className="h-6 w-28" />
-          <Skeleton className="size-7 rounded-full" />
+          <Skeleton className="size-6.5 rounded-full" />
         </div>
         <div className="space-y-1">
           {ASSET_ROWS.map((row) => (
@@ -66,8 +70,8 @@ export default function DashboardLoading() {
         </div>
       </div>
 
-      <section>
-        <div className="flex items-center justify-between mb-2 px-4">
+      <section className="mt-5.5">
+        <div className="flex items-center justify-between mb-4 px-4">
           <Skeleton className="h-6 w-32" />
           <Skeleton className="h-4 w-16" />
         </div>
@@ -75,7 +79,7 @@ export default function DashboardLoading() {
           {RECENT_JOURNAL_GROUPS.map((group) => (
             <div
               key={`recent-journal-skeleton-group-${group}`}
-              className="my-1 mb-3 space-y-1"
+              className="my-1 mb-5 space-y-1"
             >
               <TransactionListSkeleton />
             </div>
