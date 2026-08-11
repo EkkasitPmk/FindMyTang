@@ -23,13 +23,11 @@ import EditAssetsContainer from "./EditAssetsContainer";
 import { RotateCcw, Trash2, Archive } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { Slide } from "@/shared/components/animate-ui/primitives/effects/slide";
-import { Skeleton } from "@/shared/components/ui/skeleton";
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { reorderList } from "../helpers/asset.helper";
 import { cn } from "@/shared/lib/utils/core.util";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
-
-const SKELETON_ITEMS = Array.from({ length: 4 }, (_, i) => i);
+import ManageAssetsSkeleton from "../components/ManageAssetsSkeleton";
 
 export default function ManageAssetsContainer({
   initialAssets,
@@ -316,24 +314,7 @@ export default function ManageAssetsContainer({
     reorderAssets(localActiveAssets.map((a) => a.id));
   };
 
-  if (isLoading) {
-    return (
-      <section className="px-4 my-2 space-y-1">
-        {SKELETON_ITEMS.map((i) => (
-          <div
-            key={`manage-skeleton-${i}`}
-            className="flex items-center justify-between bg-surface px-3 py-2.5 rounded-lg border-l-4 border-border"
-          >
-            <div className="flex items-center gap-3">
-              <Skeleton className="h-9.5 w-9.5 rounded-full" />
-              <Skeleton className="h-5 w-24" />
-            </div>
-            <Skeleton className="h-5 w-20" />
-          </div>
-        ))}
-      </section>
-    );
-  }
+  if (isLoading) return <ManageAssetsSkeleton />;
 
   return (
     <>
