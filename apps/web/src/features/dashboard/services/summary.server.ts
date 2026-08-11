@@ -1,9 +1,6 @@
 import { cookies } from "next/headers";
+import { BACKEND_URL } from "@/shared/lib/configs/backend.config";
 import { todaySummaryResponseSchema } from "../schemas/dashboard.response.schema";
-
-const BACKEND_URL =
-  process.env.NEXT_PUBLIC_URL_BACKEND?.replace("/api/v1", "") ??
-  "http://localhost:3001";
 
 export async function getThisMonthSummaryServer() {
   try {

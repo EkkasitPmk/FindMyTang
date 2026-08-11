@@ -1,10 +1,7 @@
 import { cookies } from "next/headers";
 import { cache } from "react";
+import { BACKEND_URL } from "@/shared/lib/configs/backend.config";
 import { categoryListResponseSchema } from "../schemas/category.response.schema";
-
-const BACKEND_URL =
-  process.env.NEXT_PUBLIC_URL_BACKEND?.replace("/api/v1", "") ??
-  "http://localhost:3001";
 
 export const getCategoriesServer = cache(async function getCategoriesServer(
   includeDeleted = true,

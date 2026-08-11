@@ -1,15 +1,12 @@
 import { cookies } from "next/headers";
 import { cache } from "react";
 import { z } from "zod";
+import { BACKEND_URL } from "@/shared/lib/configs/backend.config";
 import {
   paginatedTransactionResponseSchema,
   transactionResponseSchema,
 } from "../schemas/transaction.response.schema";
 import type { TransactionQuery } from "@/shared/lib/types/transaction.type";
-
-const BACKEND_URL =
-  process.env.NEXT_PUBLIC_URL_BACKEND?.replace("/api/v1", "") ??
-  "http://localhost:3001";
 
 const toSearchParams = (query: TransactionQuery) => {
   const params = new URLSearchParams();
