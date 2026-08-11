@@ -11,6 +11,7 @@ import { useTransactionSheetStore } from "../hooks/transaction-sheet.hook";
 
 export default function TransactionSheet() {
   const isOpen = useTransactionSheetStore((state) => state.isOpen);
+  const transaction = useTransactionSheetStore((state) => state.transaction);
   const close = useTransactionSheetStore((state) => state.close);
 
   useEffect(() => {
@@ -35,7 +36,10 @@ export default function TransactionSheet() {
           <SheetDescription>Create or edit a transaction.</SheetDescription>
         </SheetHeader>
         <div className="relative min-h-0 flex-1 overflow-y-auto p-4">
-          <TransactionsContainer isDesktopSheet />
+          <TransactionsContainer
+            isDesktopSheet
+            desktopTransaction={transaction}
+          />
         </div>
       </SheetContent>
     </Sheet>

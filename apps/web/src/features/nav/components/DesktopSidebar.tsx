@@ -48,10 +48,6 @@ export default function DesktopSidebar({
   onNavigate,
 }: Readonly<DesktopSidebarProps>) {
   const { t } = useTranslation();
-  const desktopNavItems = [...navItems].sort(
-    (a, b) =>
-      Number(b.href === "/transaction") - Number(a.href === "/transaction"),
-  );
 
   return (
     <Sidebar collapsible="icon" className="border-border bg-surface shadow-xs">
@@ -71,7 +67,7 @@ export default function DesktopSidebar({
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {desktopNavItems.map((item, index) => {
+              {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = isNavItemActive(pathname, item);
                 const displayLabel = item.translationKey
@@ -80,7 +76,14 @@ export default function DesktopSidebar({
 
                 return (
                   <Fragment key={item.href}>
-                    <SidebarMenuItem>
+                    <SidebarMenuItem
+                      className={cn(
+                        item.href === "/transaction" && "lg:order-1",
+                        item.href === "/dashboard" && "lg:order-3",
+                        item.href === "/journal" && "lg:order-4",
+                        item.href === "/analytics" && "lg:order-5",
+                      )}
+                    >
                       <SidebarMenuButton
                         isActive={isActive}
                         tooltip={displayLabel}
@@ -113,9 +116,12 @@ export default function DesktopSidebar({
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
-                    {index === 0 && (
-                      <li aria-hidden="true">
-                        <SidebarSeparator />
+                    {item.href === "/transaction" && (
+                      <li
+                        aria-hidden="true"
+                        className="hidden w-full lg:list-item lg:order-2"
+                      >
+                        <SidebarSeparator className="mx-0" />
                       </li>
                     )}
                   </Fragment>

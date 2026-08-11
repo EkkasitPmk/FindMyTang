@@ -15,21 +15,36 @@ export function useTransactionListActions(openDeleteModal: () => void) {
   const handleTransactionItemClick = useCallback(
     (transaction: TransactionResponse) => {
       const isDesktop = globalThis.matchMedia("(min-width: 1024px)").matches;
+      if (isDesktop) {
+        openTransactionSheet(transaction);
+        return;
+      }
       const url = new URL(
         isDesktop ? globalThis.location.href : "/transaction",
         globalThis.location.origin,
       );
-      url.searchParams.set("type", transaction.type);
-      url.searchParams.set("id", transaction.id);
-      if (transaction.assetId) {
-        url.searchParams.set("assetId", transaction.assetId);
+      if (isDesktop) {
+        url.searchParams.set("transactionType", transaction.type);
+        url.searchParams.set("transactionId", transaction.id);
+        if (transaction.assetId) {
+          url.searchParams.set("transactionAssetId", transaction.assetId);
+        } else {
+          url.searchParams.delete("transactionAssetId");
+        }
+        if (transaction.deletedAt) {
+          url.searchParams.set("transactionDeleted", "true");
+        } else {
+          url.searchParams.delete("transactionDeleted");
+        }
       } else {
-        url.searchParams.delete("assetId");
-      }
-      if (transaction.deletedAt) {
-        url.searchParams.set("isDeleted", "true");
-      } else {
-        url.searchParams.delete("isDeleted");
+        url.searchParams.set("type", transaction.type);
+        url.searchParams.set("id", transaction.id);
+        if (transaction.assetId) {
+          url.searchParams.set("assetId", transaction.assetId);
+        }
+        if (transaction.deletedAt) {
+          url.searchParams.set("isDeleted", "true");
+        }
       }
 
       if (isDesktop) {

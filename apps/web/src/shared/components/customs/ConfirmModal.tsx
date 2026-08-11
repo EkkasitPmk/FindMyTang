@@ -18,6 +18,7 @@ interface ConfirmModalProps {
   title: string;
   des: string;
   confirmLabel?: string;
+  cancelLabel?: string;
   showCancelButton?: boolean;
   withHardDeleteOption?: boolean;
   hardDeleteCheckboxLabel?: string;
@@ -37,6 +38,7 @@ export default function ConfirmModal({
   title,
   des,
   confirmLabel = "Sign out",
+  cancelLabel = "Cancel",
   showCancelButton = true,
   withHardDeleteOption,
   hardDeleteCheckboxLabel = "Delete permanently",
@@ -167,7 +169,7 @@ export default function ConfirmModal({
               onClick={onClose}
               className="flex-1 py-2.5 px-4 rounded-md border border-border hover:bg-surface-secondary text-secondary-text text-xs font-semibold transition-colors cursor-pointer"
             >
-              Cancel
+              {cancelLabel}
             </Button>
           )}
           <Button
