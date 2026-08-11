@@ -92,6 +92,7 @@ export default function RecentJournalContainer({
           groupedTransactions={groupedTransactions}
           isLoadingTransactions={isLoading}
           page="journal"
+          disableOwnScroll
         />
       )}
     </section>
