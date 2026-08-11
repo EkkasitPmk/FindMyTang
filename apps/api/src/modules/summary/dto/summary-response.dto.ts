@@ -16,6 +16,20 @@ export class SummaryResponseDto {
   expense!: number;
 
   @ApiProperty({
+    description: "Total transfer amount",
+    example: 1000.0,
+    type: Number,
+  })
+  transfer!: number;
+
+  @ApiProperty({
+    description: "Total adjustment amount",
+    example: 250.0,
+    type: Number,
+  })
+  adjustment!: number;
+
+  @ApiProperty({
     description: "Net cash flow amount (income - expense)",
     example: 3799.5,
     type: Number,

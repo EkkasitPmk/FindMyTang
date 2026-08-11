@@ -3,6 +3,8 @@ import { z } from "zod";
 export const todaySummaryResponseSchema = z.object({
   income: z.number(),
   expense: z.number(),
+  transfer: z.number(),
+  adjustment: z.number(),
   net: z.number(),
   totalNetWorth: z.number(),
 });
