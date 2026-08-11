@@ -1,4 +1,4 @@
-import { Trash } from "lucide-react";
+import { CalendarClock, Trash } from "lucide-react";
 import ConfirmModal from "@/shared/components/customs/ConfirmModal";
 import LoadingModal, {
   type LoadingModalProps,
@@ -18,6 +18,13 @@ interface TransactionModalsProps {
   deletePermanentlyLabel: string;
   loadingModal: Pick<LoadingModalProps, "isOpen" | "status" | "message">;
   onCloseLoading: () => void;
+  isUnconfirmedDateModalOpen: boolean;
+  onCloseUnconfirmedDate: () => void;
+  onConfirmUnconfirmedDate: () => void;
+  unconfirmedDateTitle: string;
+  unconfirmedDateDescription: string;
+  saveConfirmedDateLabel: string;
+  returnToDatePickerLabel: string;
 }
 
 export default function TransactionModals({
@@ -34,6 +41,13 @@ export default function TransactionModals({
   deletePermanentlyLabel,
   loadingModal,
   onCloseLoading,
+  isUnconfirmedDateModalOpen,
+  onCloseUnconfirmedDate,
+  onConfirmUnconfirmedDate,
+  unconfirmedDateTitle,
+  unconfirmedDateDescription,
+  saveConfirmedDateLabel,
+  returnToDatePickerLabel,
 }: Readonly<TransactionModalsProps>) {
   return (
     <>
@@ -51,6 +65,17 @@ export default function TransactionModals({
         hardDeleteCheckboxLabel={deletePermanentlyLabel}
         inputValue={confirmInput}
         onInputChange={onConfirmInputChange}
+      />
+      <ConfirmModal
+        isOpen={isUnconfirmedDateModalOpen}
+        onClose={onCloseUnconfirmedDate}
+        onConfirm={onConfirmUnconfirmedDate}
+        icon={CalendarClock}
+        title={unconfirmedDateTitle}
+        des={unconfirmedDateDescription}
+        confirmLabel={saveConfirmedDateLabel}
+        cancelLabel={returnToDatePickerLabel}
+        variant="warning"
       />
       <LoadingModal {...loadingModal} onClose={onCloseLoading} />
     </>

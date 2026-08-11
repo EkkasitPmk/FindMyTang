@@ -5,6 +5,7 @@ import { cn } from "@/shared/lib/utils/core.util";
 interface TransactionHeaderProps {
   hasAssetId: boolean;
   isEditing: boolean;
+  hideActions?: boolean;
   title: string;
   deleteLabel: string;
   onBack: () => void;
@@ -14,6 +15,7 @@ interface TransactionHeaderProps {
 export default function TransactionHeader({
   hasAssetId,
   isEditing,
+  hideActions = false,
   title,
   deleteLabel,
   onBack,
@@ -27,7 +29,7 @@ export default function TransactionHeader({
         isEditing ? "justify-between" : "",
       )}
     >
-      {hasAssetId && (
+      {hasAssetId && !hideActions && (
         <Button
           variant="unstyled"
           type="button"
@@ -41,12 +43,13 @@ export default function TransactionHeader({
       <p
         className={cn(
           "text-center text-2xl font-bold truncate",
-          hasAssetId ? "absolute left-1/2 -translate-x-1/2" : "",
+          hasAssetId && !hideActions && "absolute left-1/2 -translate-x-1/2",
+          hideActions && "w-full",
         )}
       >
         {title}
       </p>
-      {isEditing && (
+      {isEditing && !hideActions && (
         <Button
           variant="unstyled"
           type="button"

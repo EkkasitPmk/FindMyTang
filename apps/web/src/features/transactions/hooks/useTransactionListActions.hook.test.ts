@@ -7,7 +7,7 @@ const openTransactionSheet = vi.fn();
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }));
 vi.mock("./transaction-sheet.hook", () => ({
   useTransactionSheetStore: (
-    selector: (state: { open: () => void }) => unknown,
+    selector: (state: { open: (transaction: unknown) => void }) => unknown,
   ) => selector({ open: openTransactionSheet }),
 }));
 
@@ -27,7 +27,7 @@ describe("useTransactionListActions", () => {
     openTransactionSheet.mockClear();
   });
 
-  it("opens the desktop sheet while keeping the transaction list route", () => {
+  it("opens the desktop sheet without navigating away from the list", () => {
     vi.stubGlobal(
       "matchMedia",
       vi.fn(() => ({ matches: true })),
@@ -37,11 +37,8 @@ describe("useTransactionListActions", () => {
 
     act(() => result.current.handleTransactionItemClick(transaction));
 
-    expect(push).toHaveBeenCalledWith(
-      "/journal?month=2026-08&type=EXPENSE&id=tx-1&assetId=asset-1",
-      { scroll: false },
-    );
-    expect(openTransactionSheet).toHaveBeenCalledOnce();
+    expect(push).not.toHaveBeenCalled();
+    expect(openTransactionSheet).toHaveBeenCalledWith(transaction);
   });
 
   it("navigates to the transaction page on mobile", () => {

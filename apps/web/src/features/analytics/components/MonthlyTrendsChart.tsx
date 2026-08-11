@@ -111,13 +111,13 @@ export const MonthlyTrendsChart = ({
                 />
               }
             />
-            <ChartLegend content={<ChartLegendContent />} verticalAlign="top" />
+            <ChartLegend content={<ChartLegendContent />} position="top" />
             {activeTypes.income && (
               <Bar
                 dataKey="income"
                 fill="var(--color-income)"
                 radius={[4, 4, 0, 0]}
-                animationDuration={400}
+                animationDuration={300}
                 animationEasing="ease-out"
               />
             )}
@@ -126,7 +126,7 @@ export const MonthlyTrendsChart = ({
                 dataKey="expense"
                 fill="var(--color-expense)"
                 radius={[4, 4, 0, 0]}
-                animationDuration={400}
+                animationDuration={300}
                 animationEasing="ease-out"
               />
             )}
@@ -135,7 +135,7 @@ export const MonthlyTrendsChart = ({
                 dataKey="transfer"
                 fill="var(--color-transfer)"
                 radius={[4, 4, 0, 0]}
-                animationDuration={400}
+                animationDuration={300}
                 animationEasing="ease-out"
               />
             )}
@@ -144,7 +144,7 @@ export const MonthlyTrendsChart = ({
                 dataKey="adjust"
                 fill="var(--color-adjust)"
                 radius={[4, 4, 0, 0]}
-                animationDuration={400}
+                animationDuration={300}
                 animationEasing="ease-out"
               />
             )}
