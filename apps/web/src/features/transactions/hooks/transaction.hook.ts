@@ -39,6 +39,7 @@ const invalidateQueries = async (queryClient: QueryClient) => {
       refetchType: "all",
     }),
     queryClient.invalidateQueries({ queryKey: ["summary"] }),
+    queryClient.invalidateQueries({ queryKey: ["analytics"] }),
   ]);
 };
 
