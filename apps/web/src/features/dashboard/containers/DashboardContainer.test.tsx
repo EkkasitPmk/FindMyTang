@@ -54,6 +54,8 @@ describe("DashboardContainer", () => {
     mockGetThisMonthSummaryServer.mockResolvedValue({
       income: 0,
       expense: 0,
+      transfer: 0,
+      adjustment: 0,
       net: 0,
       totalNetWorth: 0,
     });

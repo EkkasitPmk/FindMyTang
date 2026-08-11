@@ -25,6 +25,8 @@ export default function FinancialSnapshotClient({
       netWorth={summary?.totalNetWorth || 0}
       income={summary?.income || 0}
       expense={summary?.expense || 0}
+      transfer={summary?.transfer || 0}
+      adjustment={summary?.adjustment || 0}
       netChange={summary?.net || 0}
       hasAssets={Boolean(assets?.some((asset) => !asset.isArchived))}
       isPrivate={isPrivate}
