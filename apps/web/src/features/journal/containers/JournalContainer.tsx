@@ -30,10 +30,13 @@ import {
   JOURNAL_TRANSACTION_TYPES,
   JournalTransactionType,
 } from "../configs/journal.config";
+import type { PaginatedTransactionResponse } from "@/shared/lib/types/transaction.type";
 
 type ViewMode = "timeline" | "calendar";
 
-export default function JournalContainer() {
+export default function JournalContainer({
+  initialTransactions,
+}: Readonly<{ initialTransactions?: PaginatedTransactionResponse }>) {
   const { t, locale } = useTranslation();
   const [viewMode, setViewMode] = useState<ViewMode>("timeline");
   const [searchKeyword, setSearchKeyword] = useState("");
@@ -65,6 +68,10 @@ export default function JournalContainer() {
     selectedType === "all" || isDeleted
       ? undefined
       : selectedType.toUpperCase();
+  const canUseInitialTransactions =
+    selectedType === "all" &&
+    sortType === "DATE_NEWEST" &&
+    debouncedSearchKeyword === "";
   const {
     data: transactionsData,
     isLoading: isLoadingTransactions,
@@ -72,17 +79,22 @@ export default function JournalContainer() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useInfiniteTransactionsQuery({
-    limit: 30,
-    pagination:
-      debouncedSearchKeyword || !sortType.startsWith("DATE")
-        ? "page"
-        : "cursor",
-    type: queryType,
-    isDeleted,
-    sortType,
-    searchKeyword: debouncedSearchKeyword || undefined,
-  });
+  } = useInfiniteTransactionsQuery(
+    {
+      limit: 30,
+      pagination:
+        debouncedSearchKeyword || !sortType.startsWith("DATE")
+          ? "page"
+          : "cursor",
+      type: queryType,
+      isDeleted,
+      sortType,
+      searchKeyword: debouncedSearchKeyword || undefined,
+    },
+    {
+      initialData: canUseInitialTransactions ? initialTransactions : undefined,
+    },
+  );
 
   const groupedTransactions = useMemo(() => {
     if (!transactionsData?.pages) return [];
@@ -299,7 +311,7 @@ export default function JournalContainer() {
                     isSearchMode={searchKeyword.length > 0}
                     searchKeyword={searchKeyword}
                     page="journal"
-                    useVirtualization={true}
+                    useVirtualization
                     paginationKey={`${selectedType}:${sortType}:${debouncedSearchKeyword}`}
                   />
                 </div>
