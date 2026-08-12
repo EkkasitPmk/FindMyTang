@@ -23,6 +23,6 @@ export const useCategories = (options?: UseCategoriesOptions | boolean) => {
     queryFn: () => getCategoriesApi(includeDeleted),
     enabled,
     initialData,
-    staleTime: initialData ? 30_000 : 0,
+    staleTime: !isGuest && initialData ? 30_000 : 0,
   });
 };

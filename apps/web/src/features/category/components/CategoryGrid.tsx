@@ -70,7 +70,7 @@ export default function CategoryGrid({
             variant="unstyled"
             type="button"
             onClick={onNewCategoryClick}
-            className="w-full flex flex-col items-center justify-center gap-3 border border-border border-dashed p-4 rounded-lg cursor-pointer hover:bg-surface-variant/10 transition-colors"
+            className="w-full flex flex-col items-center justify-center gap-2.5 border border-border border-dashed p-3.5 rounded-lg cursor-pointer hover:bg-surface-variant/10 transition-colors"
           >
             <span className="bg-surface-secondary p-2 rounded-lg text-secondary-text">
               <Plus size={16} />
@@ -83,7 +83,7 @@ export default function CategoryGrid({
       )}
 
       {categories.length === 0 && isDeletedTab && (
-        <div className="col-span-3 flex flex-col items-center justify-center h-[50vh] text-secondary-text text-xs">
+        <div className="col-span-3 flex flex-col items-center justify-center h-[50vh] text-secondary-text text-sm">
           <p>{t("noCategoriesFound")}</p>
         </div>
       )}

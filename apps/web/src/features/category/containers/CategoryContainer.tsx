@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -46,6 +47,7 @@ export default function CategoryContainer({
   initialCategories,
 }: Readonly<{ initialCategories?: Category[] }>) {
   const { t } = useTranslation();
+  const router = useRouter();
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>("EXPENSE");
   const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(
@@ -128,6 +130,7 @@ export default function CategoryContainer({
   }
 
   const { mutate: reorderCategories } = useReorderCategoriesMutation({
+    onSuccess: () => router.refresh(),
     onError: () => {
       toast.error(t("errUpdateCategoryOrder"));
     },
@@ -198,6 +201,7 @@ export default function CategoryContainer({
           message: t("categoryCreatedSuccess").replace("{name}", data.name),
         });
         setIsCUModalOpen(false);
+        router.refresh();
       },
     });
 
@@ -211,6 +215,7 @@ export default function CategoryContainer({
         });
         setEditingCategory(null);
         setIsCUModalOpen(false);
+        router.refresh();
       },
     });
 
@@ -226,6 +231,7 @@ export default function CategoryContainer({
           setIsCUModalOpen(false);
           setEditingCategory(null);
         }
+        router.refresh();
       },
       onError: (err) => {
         const message = err.response?.data?.message;
@@ -251,6 +257,7 @@ export default function CategoryContainer({
         if (editingCategory?.id === data.id) {
           cancelEdit();
         }
+        router.refresh();
       },
       onError: (err) => {
         const message = err.response?.data?.message;
