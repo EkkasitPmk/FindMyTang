@@ -166,6 +166,8 @@ export const translations = {
       "คุณแน่ใจหรือไม่ว่าต้องการลบบัญชีผู้ใช้ของคุณ? การกระทำนี้จะเป็นการลบอย่างถาวรและไม่สามารถย้อนกลับได้",
     deleteAccountCheckbox: "ฉันเข้าใจและต้องการลบบัญชีอย่างถาวร",
     deleteBtn: "ลบ",
+    deleteConfirmationKeyword: "ลบ",
+    typeToConfirm: "พิมพ์ {value} เพื่อยืนยัน",
     cancelBtn: "ยกเลิก",
     currentPasswordLabel: "รหัสผ่านปัจจุบัน",
     newPasswordLabel: "รหัสผ่านใหม่",
@@ -637,6 +639,8 @@ export const translations = {
     deleteAccountCheckbox:
       "I understand and want to permanently delete the account",
     deleteBtn: "Delete",
+    deleteConfirmationKeyword: "DELETE",
+    typeToConfirm: "Type {value} to confirm",
     cancelBtn: "Cancel",
     currentPasswordLabel: "Current Password",
     newPasswordLabel: "New Password",

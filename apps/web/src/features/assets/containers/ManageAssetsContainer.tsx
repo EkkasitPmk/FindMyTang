@@ -197,6 +197,7 @@ export default function ManageAssetsContainer({
         message: "Assets deleted successfully!",
       });
       setSelectedIds(new Set());
+      setEditingList(false);
       closeBulkDeleteModal();
     },
     onError: () =>
@@ -581,7 +582,7 @@ export default function ManageAssetsContainer({
         confirmLabel={t("deleteAll")}
         withHardDeleteOption={true}
         hardDeleteCheckboxLabel={t("deletePermanently")}
-        expectedInputToConfirm="DELETE"
+        expectedInputToConfirm={t("deleteConfirmationKeyword")}
         isHardDelete={isBulkHardDelete}
         onHardDeleteChange={setIsBulkHardDelete}
         inputValue={bulkConfirmInput}

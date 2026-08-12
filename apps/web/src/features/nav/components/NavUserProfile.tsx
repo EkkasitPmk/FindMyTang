@@ -65,7 +65,7 @@ export default function NavUserProfile({
 
     return (
       <p className="text-xs font-semibold text-primary-text truncate leading-tight">
-        Guest User
+        {t("guestUserText")}
       </p>
     );
   })();
