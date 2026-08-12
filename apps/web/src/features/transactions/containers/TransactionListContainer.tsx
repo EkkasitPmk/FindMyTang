@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { RefObject, useState } from "react";
 import { useRouter } from "next/navigation";
 import { TransactionList } from "@/shared/components/customs/TransactionList";
 import TransactionListSkeleton from "@/shared/components/skeletons/TransactionListSkeleton";
@@ -30,6 +30,7 @@ interface TransactionListContainerProps {
   useVirtualization?: boolean;
   disableOwnScroll?: boolean;
   paginationKey?: string;
+  transactionListRef?: RefObject<HTMLDivElement | null>;
 }
 
 export function TransactionListContainer({
@@ -46,6 +47,7 @@ export function TransactionListContainer({
   useVirtualization = false,
   disableOwnScroll = false,
   paginationKey,
+  transactionListRef,
 }: Readonly<TransactionListContainerProps>) {
   const { t } = useTranslation();
   const router = useRouter();
@@ -142,6 +144,7 @@ export function TransactionListContainer({
               fetchNextPage();
             }
           }}
+          transactionListRef={transactionListRef}
         />
       </div>
 

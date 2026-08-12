@@ -1,5 +1,5 @@
 import { Skeleton } from "@/shared/components/ui/skeleton";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { RefObject, useCallback, useEffect, useMemo, useRef } from "react";
 import {
   GroupedTransaction,
   TransactionResponse,
@@ -104,6 +104,7 @@ interface TransactionListProps {
   useVirtualization?: boolean;
   onEndReached?: () => void;
   paginationKey?: string;
+  transactionListRef?: RefObject<HTMLDivElement | null>;
 }
 
 export function TransactionList({
@@ -125,6 +126,7 @@ export function TransactionList({
   useVirtualization = false,
   onEndReached,
   paginationKey,
+  transactionListRef,
 }: Readonly<TransactionListProps>) {
   const { t, locale } = useTranslation();
   const fetchLock = useRef(false);
@@ -159,6 +161,9 @@ export function TransactionList({
     onDeleteClick,
     onAttachmentClick,
   };
+  const emptyMessage = t(
+    isSearchMode ? "noMatchingTransactionsFound" : "noTransactionsFound",
+  );
 
   useEffect(() => {
     if (!isFetchingNextPage) fetchLock.current = false;
@@ -242,9 +247,7 @@ export function TransactionList({
     if (!groupedTransactions.length) {
       return (
         <div className="text-secondary-text h-100 flex items-center justify-center">
-          {isSearchMode
-            ? t("noMatchingTransactionsFound")
-            : t("noTransactionsFound")}
+          {emptyMessage}
         </div>
       );
     }
@@ -272,10 +275,13 @@ export function TransactionList({
 
   if (!groupedTransactions?.length) {
     return (
-      <div className="text-secondary-text h-100 flex items-center justify-center">
-        {isSearchMode
-          ? t("noMatchingTransactionsFound")
-          : t("noTransactionsFound")}
+      <div
+        className={cn(
+          "text-secondary-text h-100 flex items-center justify-center",
+          page === "journal" && transactionListRef && "h-40",
+        )}
+      >
+        {emptyMessage}
       </div>
     );
   }

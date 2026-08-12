@@ -83,15 +83,14 @@ export default function CategoryGrid({
       )}
 
       {categories.length === 0 && isDeletedTab && (
-        <div className="col-span-3 flex flex-col items-center justify-center h-[50vh] text-secondary-text text-sm">
+        <div className="col-span-3 flex flex-col items-center justify-center h-[50vh] text-secondary-text text-base">
           <p>{t("noCategoriesFound")}</p>
         </div>
       )}
 
       {categories.map((category, index) => {
         const IconComponent = getCategoryIcon(category.icon);
-        const isDraggable =
-          !isDeletedTab && isEditingList && !category.isSystem;
+        const isDraggable = !isDeletedTab && isEditingList;
 
         let cardInteractionClass = "cursor-pointer hover:bg-surface-variant/10";
         if (isDraggable) {
@@ -188,7 +187,7 @@ export default function CategoryGrid({
             </AnimatePresence>
 
             <AnimatePresence>
-              {!category.isSystem && isEditingList && (
+              {isEditingList && (
                 <motion.div
                   layout={false}
                   key={`delete-${category.id}`}
@@ -216,7 +215,7 @@ export default function CategoryGrid({
             </AnimatePresence>
 
             <AnimatePresence>
-              {!isDeletedTab && !category.isSystem && isEditingList && (
+              {!isDeletedTab && isEditingList && (
                 <motion.div
                   layout={false}
                   key={`grip-${category.id}`}
