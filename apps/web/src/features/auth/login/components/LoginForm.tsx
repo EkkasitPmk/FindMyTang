@@ -36,7 +36,7 @@ export default function LoginForm({
   const { t } = useTranslation();
 
   return (
-    <div className="min-h-screen flex flex-col justify-center bg-background py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-dvh flex flex-col justify-center bg-background py-8 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-sm mx-auto bg-surface p-8 sm:p-10 border border-border/60 rounded-2xl shadow-sm animate-subtle-pop space-y-6">
         {/* Brand Logo Section */}
         <div className="text-center flex flex-col items-center space-y-2 mb-4">

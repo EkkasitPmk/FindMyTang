@@ -50,8 +50,7 @@ export default function DangerZoneClientIsland() {
     await clearGuestData();
     setGuestMode(false);
     queryClient.clear();
-    router.refresh();
-    window.location.href = "/login";
+    router.replace("/login");
   };
 
   return (
@@ -97,7 +96,7 @@ export default function DangerZoneClientIsland() {
           onHardDeleteChange={modal.setIsHardDelete}
           inputValue={modal.inputValue}
           onInputChange={modal.setInputValue}
-          expectedInputToConfirm="DELETE"
+          expectedInputToConfirm={t("deleteConfirmationKeyword")}
           hardDeleteCheckboxLabel={t("deleteAccountCheckbox")}
         />
       )}

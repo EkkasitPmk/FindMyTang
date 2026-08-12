@@ -1,9 +1,11 @@
 "use client";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import AvatarSection from "./AvatarSection";
 import LoadingModal from "@/shared/components/customs/LoadingModal";
 import { updateProfileAction } from "../services/account.actions";
+import { syncProfileCache } from "../helpers/profile-cache.helper";
 import { useModalState } from "@/shared/lib/hooks/useModalState.hook";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import type { UserProfile } from "@/shared/lib/types/user.type";
@@ -12,6 +14,7 @@ export default function AvatarClientIsland({
   user,
 }: Readonly<{ user: UserProfile | null }>) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { t } = useTranslation();
   const [isPending, startTransition] = useTransition();
   const [isSelectingAvatar, setIsSelectingAvatar] = useState(false);
@@ -21,6 +24,7 @@ export default function AvatarClientIsland({
     startTransition(async () => {
       const result = await updateProfileAction({ avatarUrl });
       if (result.success) {
+        await syncProfileCache(queryClient, result.data);
         router.refresh();
         return;
       }

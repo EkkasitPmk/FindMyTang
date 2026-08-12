@@ -13,8 +13,17 @@ import { AssetDistributionContainer } from "./AssetDistributionContainer";
 import { PieChart, TrendingUp, Wallet } from "lucide-react";
 import CreateAssetsContainer from "@/features/assets/containers/CreateAssetsContainer";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import type { CategoryBreakdownResponse } from "../schemas/analytics.response.schema";
 
-export default function AnalyticsContainer() {
+export default function AnalyticsContainer({
+  initialCategoryBreakdown,
+  initialMonth,
+  initialYear,
+}: Readonly<{
+  initialCategoryBreakdown?: CategoryBreakdownResponse;
+  initialMonth?: number;
+  initialYear?: number;
+}>) {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<"category" | "trends" | "assets">(
     "category",
@@ -67,7 +76,11 @@ export default function AnalyticsContainer() {
             value="category"
             className="h-full flex flex-col min-h-0"
           >
-            <CategoryBreakdownContainer />
+            <CategoryBreakdownContainer
+              initialData={initialCategoryBreakdown}
+              initialMonth={initialMonth}
+              initialYear={initialYear}
+            />
           </TabsContent>
           <TabsContent value="trends" className="h-full flex flex-col min-h-0">
             <MonthlyTrendsContainer />

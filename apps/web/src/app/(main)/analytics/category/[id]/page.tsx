@@ -1,4 +1,4 @@
-import { DrilldownContainer } from "@/features/analytics/containers/DrilldownContainer";
+import DrilldownRouteContainer from "@/features/analytics/containers/DrilldownRouteContainer";
 
 export default async function CategoryDrilldownPage({
   params,
@@ -18,5 +18,5 @@ export default async function CategoryDrilldownPage({
     ? Number(resolvedSearchParams.year)
     : new Date().getFullYear();
 
-  return <DrilldownContainer categoryId={id} month={month} year={year} />;
+  return <DrilldownRouteContainer categoryId={id} month={month} year={year} />;
 }

@@ -1,19 +1,20 @@
 import { cookies } from "next/headers";
+import { cache } from "react";
+import { BACKEND_URL } from "@/shared/lib/configs/backend.config";
 import { categoryListResponseSchema } from "../schemas/category.response.schema";
 
-const BACKEND_URL =
-  process.env.NEXT_PUBLIC_URL_BACKEND?.replace("/api/v1", "") ??
-  "http://localhost:3001";
-
-export async function getCategoriesServer() {
+export const getCategoriesServer = cache(async function getCategoriesServer(
+  includeDeleted = true,
+) {
   try {
     const cookieStore = await cookies();
     if (!cookieStore.has("access_token")) return null;
 
-    const response = await fetch(
-      `${BACKEND_URL}/api/v1/categories?includeDeleted=true`,
-      { headers: { cookie: cookieStore.toString() }, cache: "no-store" },
-    );
+    const query = includeDeleted ? "?includeDeleted=true" : "";
+    const response = await fetch(`${BACKEND_URL}/api/v1/categories${query}`, {
+      headers: { cookie: cookieStore.toString() },
+      cache: "no-store",
+    });
 
     if (!response.ok) return null;
 
@@ -22,4 +23,4 @@ export async function getCategoriesServer() {
     console.error("Failed to load categories on the server", error);
     return null;
   }
-}
+});

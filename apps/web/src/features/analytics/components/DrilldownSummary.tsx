@@ -47,7 +47,7 @@ export const DrilldownSummary = ({ summary, color }: DrilldownSummaryProps) => {
           title={`${t("lastMonth")}: ${formatCurrency(summary.previousMonth)}`}
         />
       </div>
-      <div className="flex justify-between text-[11px] text-secondary-text px-1 mt-1">
+      <div className="flex justify-between text-[0.6875rem] text-secondary-text px-1 mt-1">
         <span>{t("thisMonth")}</span>
         <span>
           {t("lastMonth")}: {formatCurrency(summary.previousMonth)}

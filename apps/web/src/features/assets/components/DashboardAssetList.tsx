@@ -1,5 +1,7 @@
+"use client";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import { useAssets } from "@/shared/lib/hooks/useAssets.hook";
 import { getAssetIcon } from "@/shared/components/customs/AssetIcon";
 import { AssetIconWrapper } from "@/shared/components/customs/AssetIconWrapper";
 import DashboardAssetMotion from "./DashboardAssetMotion";
@@ -14,9 +16,12 @@ export default function DashboardAssetList({
   assets,
   language,
 }: Readonly<{ assets: Asset[]; language: Language }>) {
+  const { data: currentAssets = assets } = useAssets({
+    initialData: assets,
+  });
   const t = (key: TranslationKey) =>
     translations[language][key] ?? translations.en[key];
-  const activeAssets = assets.filter((asset) => !asset.isArchived);
+  const activeAssets = currentAssets.filter((asset) => !asset.isArchived);
 
   if (activeAssets.length === 0) {
     return (

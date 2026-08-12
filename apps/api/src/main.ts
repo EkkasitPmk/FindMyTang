@@ -26,16 +26,16 @@ function validateProductionEnvironment() {
     );
   }
 
-  const insecureDefaults = [
+  const insecureDefaults = new Set([
     "your-super-secret",
     "your-refresh-secret",
     "super-secret-cookie-key-for-development",
-  ];
+  ]);
   const hasInsecureSecret = [
     process.env.JWT_ACCESS_SECRET,
     process.env.JWT_REFRESH_SECRET,
     process.env.COOKIE_SECRET,
-  ].some((secret) => insecureDefaults.includes(secret ?? ""));
+  ].some((secret) => insecureDefaults.has(secret ?? ""));
 
   if (hasInsecureSecret) {
     throw new Error("Production secrets must not use development defaults");
@@ -63,7 +63,6 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.use(helmet());
-  // ponytail: Keep request bodies bounded; receipts use the multipart limit below.
   app.use(json({ limit: "10mb" }));
   app.use(urlencoded({ extended: true, limit: "10mb" }));
 

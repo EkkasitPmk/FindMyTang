@@ -10,7 +10,7 @@ export default function SettingsLanguageClient() {
       <Button
         variant="unstyled"
         onClick={() => changeLanguage("en")}
-        className={`py-1 px-3 rounded-md text-[11px] font-semibold transition-all cursor-pointer ${
+        className={`py-1 px-3 rounded-md text-[0.6875rem] font-semibold transition-all cursor-pointer ${
           currentLanguage === "en"
             ? "bg-primary text-white shadow-xs"
             : "text-secondary-text hover:text-primary-text"
@@ -21,7 +21,7 @@ export default function SettingsLanguageClient() {
       <Button
         variant="unstyled"
         onClick={() => changeLanguage("th")}
-        className={`py-1 px-3 rounded-md text-[11px] font-semibold transition-all cursor-pointer ${
+        className={`py-1 px-3 rounded-md text-[0.6875rem] font-semibold transition-all cursor-pointer ${
           currentLanguage === "th"
             ? "bg-primary text-white shadow-xs"
             : "text-secondary-text hover:text-primary-text"

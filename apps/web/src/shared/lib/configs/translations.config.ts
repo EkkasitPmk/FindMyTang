@@ -166,6 +166,8 @@ export const translations = {
       "คุณแน่ใจหรือไม่ว่าต้องการลบบัญชีผู้ใช้ของคุณ? การกระทำนี้จะเป็นการลบอย่างถาวรและไม่สามารถย้อนกลับได้",
     deleteAccountCheckbox: "ฉันเข้าใจและต้องการลบบัญชีอย่างถาวร",
     deleteBtn: "ลบ",
+    deleteConfirmationKeyword: "ลบ",
+    typeToConfirm: "พิมพ์ {value} เพื่อยืนยัน",
     cancelBtn: "ยกเลิก",
     currentPasswordLabel: "รหัสผ่านปัจจุบัน",
     newPasswordLabel: "รหัสผ่านใหม่",
@@ -327,6 +329,11 @@ export const translations = {
     oneWeekAgo: "1 สัปดาห์ที่แล้ว",
     weeksAgo: "{weeks} สัปดาห์ที่แล้ว",
     confirm: "ยืนยัน",
+    unconfirmedDateTitle: "ยังไม่ได้ยืนยันวันและเวลา",
+    unconfirmedDateDesc:
+      "คุณเลือก {dateTime} ไว้ แต่ยังไม่ได้กดยืนยัน ต้องการบันทึกโดยใช้วันและเวลาเดิมที่ยืนยันแล้วหรือไม่?",
+    saveConfirmedDate: "บันทึกวันและเวลาเดิม",
+    returnToDatePicker: "กลับไปยืนยัน",
     details: "รายละเอียด",
     deletedTransactionsNotice: "ธุรกรรมที่ถูกลบจะถูกลบอย่างถาวรหลังจาก 30 วัน",
 
@@ -632,6 +639,8 @@ export const translations = {
     deleteAccountCheckbox:
       "I understand and want to permanently delete the account",
     deleteBtn: "Delete",
+    deleteConfirmationKeyword: "DELETE",
+    typeToConfirm: "Type {value} to confirm",
     cancelBtn: "Cancel",
     currentPasswordLabel: "Current Password",
     newPasswordLabel: "New Password",
@@ -794,6 +803,11 @@ export const translations = {
     oneWeekAgo: "1 week ago",
     weeksAgo: "{weeks} weeks ago",
     confirm: "Confirm",
+    unconfirmedDateTitle: "Date and time not confirmed",
+    unconfirmedDateDesc:
+      "You selected {dateTime}, but have not confirmed it. Save using the previously confirmed date and time?",
+    saveConfirmedDate: "Save confirmed date",
+    returnToDatePicker: "Return to picker",
     details: "DETAILS",
     deletedTransactionsNotice:
       "Deleted transactions are permanently removed after 30 days.",

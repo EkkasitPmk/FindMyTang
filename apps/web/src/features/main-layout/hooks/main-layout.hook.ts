@@ -114,6 +114,8 @@ export function useMainLayout({
     if (routeName === "assets" && assetName) {
       setSearchMode(false);
       setSearchKeyword("");
+      router.replace("/dashboard");
+      return;
     }
     router.back();
   };

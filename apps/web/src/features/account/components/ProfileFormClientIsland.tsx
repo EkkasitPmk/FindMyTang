@@ -1,11 +1,13 @@
 "use client";
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import PersonalInfoForm from "./PersonalInfoForm";
 import LoadingModal from "@/shared/components/customs/LoadingModal";
 import { updateProfileAction } from "../services/account.actions";
+import { syncProfileCache } from "../helpers/profile-cache.helper";
 import {
   updateProfileSchema,
   UpdateProfileFormValues,
@@ -18,6 +20,7 @@ export default function ProfileFormClientIsland({
   user,
 }: Readonly<{ user: UserProfile | null }>) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { t } = useTranslation();
   const [isPending, startTransition] = useTransition();
   const { modalState, setModalState, resetModalState } = useModalState();
@@ -38,6 +41,7 @@ export default function ProfileFormClientIsland({
         displayName: values.displayName,
       });
       if (result.success) {
+        await syncProfileCache(queryClient, result.data);
         setModalState({
           isOpen: true,
           status: "success",

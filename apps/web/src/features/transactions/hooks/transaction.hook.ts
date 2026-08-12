@@ -27,11 +27,67 @@ import { AxiosError } from "axios";
 import { ApiErrorResponse } from "@/shared/lib/types/api.type";
 import { useGuestStore } from "@/shared/lib/storages/guest.storage";
 
-const invalidateQueries = (queryClient: QueryClient) => {
-  queryClient.invalidateQueries({ queryKey: ["assets"] }).catch(() => {});
-  queryClient.invalidateQueries({ queryKey: ["transactions"] }).catch(() => {});
-  queryClient.invalidateQueries({ queryKey: ["transaction"] }).catch(() => {});
-  queryClient.invalidateQueries({ queryKey: ["summary"] }).catch(() => {});
+const invalidateQueries = async (queryClient: QueryClient) => {
+  await Promise.all([
+    queryClient.invalidateQueries({ queryKey: ["assets"] }),
+    queryClient.invalidateQueries({
+      queryKey: ["transactions"],
+      refetchType: "all",
+    }),
+    queryClient.invalidateQueries({
+      queryKey: ["transaction"],
+      refetchType: "all",
+    }),
+    queryClient.invalidateQueries({ queryKey: ["summary"] }),
+    queryClient.invalidateQueries({ queryKey: ["analytics"] }),
+  ]);
+};
+
+const getTransactionCachePatch = (transaction: TransactionResponse) => ({
+  id: transaction.id,
+  type: transaction.type,
+  amount: transaction.amount,
+  note: transaction.note,
+  transactionDate: transaction.transactionDate,
+  assetId: transaction.assetId,
+  toAssetId: transaction.toAssetId,
+  categoryId: transaction.categoryId,
+  attachmentUrl: transaction.attachmentUrl,
+  updatedAt: transaction.updatedAt,
+  deletedAt: transaction.deletedAt,
+});
+
+const updateTransactionListCache = (
+  cached: unknown,
+  transaction: TransactionResponse,
+): unknown => {
+  if (!cached || typeof cached !== "object") return cached;
+
+  const value = cached as {
+    items?: Array<{ id: string }>;
+    pages?: unknown[];
+  };
+  const patch = getTransactionCachePatch(transaction);
+
+  if (Array.isArray(value.items)) {
+    return {
+      ...value,
+      items: value.items.map((item) =>
+        item.id === transaction.id ? { ...item, ...patch } : item,
+      ),
+    };
+  }
+
+  if (Array.isArray(value.pages)) {
+    return {
+      ...value,
+      pages: value.pages.map((page) =>
+        updateTransactionListCache(page, transaction),
+      ),
+    };
+  }
+
+  return cached;
 };
 
 export const useCreateTransactionMutation = (options?: {
@@ -56,8 +112,8 @@ export const useCreateTransactionMutation = (options?: {
   >({
     mutationFn: ({ type, data }) => createTransactionApi(data, type),
     ...options,
-    onSuccess: (data, variables) => {
-      invalidateQueries(queryClient);
+    onSuccess: async (data, variables) => {
+      await invalidateQueries(queryClient);
       options?.onSuccess?.(data, variables);
     },
   });
@@ -76,8 +132,20 @@ export const useUpdateTransactionMutation = (options?: {
   >({
     mutationFn: ({ id, data }) => updateTransactionApi(id, data),
     ...options,
-    onSuccess: (data) => {
-      invalidateQueries(queryClient);
+    onSuccess: async (data, variables) => {
+      const patch = getTransactionCachePatch(data);
+      queryClient.setQueriesData(
+        { queryKey: ["transaction", variables.id] },
+        (cached: unknown) =>
+          cached && typeof cached === "object"
+            ? { ...(cached as object), ...patch }
+            : data,
+      );
+      queryClient.setQueriesData(
+        { queryKey: ["transactions"] },
+        (cached: unknown) => updateTransactionListCache(cached, data),
+      );
+      await invalidateQueries(queryClient);
       options?.onSuccess?.(data);
     },
   });
@@ -98,14 +166,17 @@ export const useTransactionsQuery = (
     queryKey: ["transactions", { isGuest, ...params }],
     queryFn: () => getTransactionsApi(params),
     initialData: options?.initialData,
-    staleTime: options?.initialData ? 30_000 : 0,
+    staleTime: 30_000,
     ...options,
   });
 };
 
 export const useInfiniteTransactionsQuery = (
   params?: TransactionQuery,
-  options?: { enabled?: boolean },
+  options?: {
+    enabled?: boolean;
+    initialData?: PaginatedTransactionResponse;
+  },
 ) => {
   const isGuest = useGuestStore((state) => state.isGuest);
 
@@ -147,6 +218,14 @@ export const useInfiniteTransactionsQuery = (
       return undefined;
     },
     initialPageParam: queryParams?.pagination === "cursor" ? undefined : 1,
+    initialData:
+      isGuest || !options?.initialData
+        ? undefined
+        : {
+            pages: [options.initialData],
+            pageParams: [queryParams?.pagination === "cursor" ? undefined : 1],
+          },
+    staleTime: !isGuest && options?.initialData ? 30_000 : 0,
   });
 };
 
@@ -164,8 +243,8 @@ export const useDeleteTransactionMutation = (options?: {
     mutationFn: ({ id, isHardDelete }) =>
       deleteTransactionApi(id, isHardDelete),
     ...options,
-    onSuccess: () => {
-      invalidateQueries(queryClient);
+    onSuccess: async () => {
+      await invalidateQueries(queryClient);
       options?.onSuccess?.();
     },
   });
@@ -183,19 +262,28 @@ export const useTransactionYearsQuery = (options?: { enabled?: boolean }) => {
 export const useAvailableDatesQuery = (
   assetId?: string,
   isDeleted?: boolean,
+  options?: { initialData?: Record<string, string[]> },
 ) => {
   const isGuest = useGuestStore((state) => state.isGuest);
   return useQuery<Record<string, string[]>, AxiosError<ApiErrorResponse>>({
     queryKey: ["transactions", "availableDates", assetId, isDeleted, isGuest],
     queryFn: () => getAvailableDatesApi(assetId, isDeleted),
+    enabled: Boolean(assetId),
+    initialData: isGuest ? undefined : options?.initialData,
+    staleTime: !isGuest && options?.initialData ? 30_000 : 0,
   });
 };
 
-export const useTransactionQuery = (id?: string) => {
+export const useTransactionQuery = (
+  id?: string,
+  options?: { initialData?: TransactionResponse },
+) => {
   const isGuest = useGuestStore((state) => state.isGuest);
   return useQuery<TransactionResponse, AxiosError<ApiErrorResponse>>({
     queryKey: ["transaction", id, isGuest],
     queryFn: () => getTransactionApi(id!),
     enabled: !!id,
+    initialData: isGuest ? undefined : options?.initialData,
+    staleTime: !isGuest && options?.initialData ? 30_000 : 0,
   });
 };

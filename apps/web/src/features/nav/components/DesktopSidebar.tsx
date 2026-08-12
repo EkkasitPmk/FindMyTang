@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Fragment } from "react";
 import { Wallet } from "lucide-react";
 import SyncStatusButton from "@/shared/components/customs/SyncStatusButton";
 import NavUserProfile from "./NavUserProfile";
@@ -16,6 +17,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarSeparator,
   SidebarTrigger,
 } from "@/shared/components/animate-ui/components/radix/sidebar";
 import { cn } from "@/shared/lib/utils/core.util";
@@ -73,39 +75,56 @@ export default function DesktopSidebar({
                   : item.label;
 
                 return (
-                  <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton
-                      isActive={isActive}
-                      tooltip={displayLabel}
-                      size="lg"
-                      asChild
+                  <Fragment key={item.href}>
+                    <SidebarMenuItem
                       className={cn(
-                        "rounded-xl border border-transparent transition-colors duration-200 cursor-pointer font-medium text-sm",
-                        isActive
-                          ? "bg-primary-light text-primary font-semibold border-primary-light/80 shadow-xs"
-                          : "text-secondary-text hover:text-primary-text",
+                        item.href === "/transaction" && "lg:order-1",
+                        item.href === "/dashboard" && "lg:order-3",
+                        item.href === "/journal" && "lg:order-4",
+                        item.href === "/analytics" && "lg:order-5",
                       )}
                     >
-                      <Link
-                        href={item.href}
-                        onClick={(e) => onNavigate?.(e, item.href)}
-                        className="flex items-center gap-3 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0"
+                      <SidebarMenuButton
+                        isActive={isActive}
+                        tooltip={displayLabel}
+                        size="lg"
+                        asChild
+                        className={cn(
+                          "rounded-xl border border-transparent transition-colors duration-200 cursor-pointer font-medium text-sm",
+                          isActive
+                            ? "bg-primary-light text-primary font-semibold border-primary-light/80 shadow-xs"
+                            : "text-secondary-text hover:text-primary-text",
+                        )}
                       >
-                        <Icon
-                          className={cn(
-                            "size-5 shrink-0 transition-transform",
-                            isActive
-                              ? "text-primary scale-105"
-                              : "text-secondary-text",
-                          )}
-                          strokeWidth={isActive ? 2.2 : 1.75}
-                        />
-                        <span className="truncate group-data-[collapsible=icon]:hidden">
-                          {displayLabel}
-                        </span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
+                        <Link
+                          href={item.href}
+                          onClick={(e) => onNavigate?.(e, item.href)}
+                          className="flex items-center gap-3 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0"
+                        >
+                          <Icon
+                            className={cn(
+                              "size-5 shrink-0 transition-transform",
+                              isActive
+                                ? "text-primary scale-105"
+                                : "text-secondary-text",
+                            )}
+                            strokeWidth={isActive ? 2.2 : 1.75}
+                          />
+                          <span className="truncate group-data-[collapsible=icon]:hidden">
+                            {displayLabel}
+                          </span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    {item.href === "/transaction" && (
+                      <li
+                        aria-hidden="true"
+                        className="hidden w-full lg:list-item lg:order-2"
+                      >
+                        <SidebarSeparator className="mx-0" />
+                      </li>
+                    )}
+                  </Fragment>
                 );
               })}
             </SidebarMenu>

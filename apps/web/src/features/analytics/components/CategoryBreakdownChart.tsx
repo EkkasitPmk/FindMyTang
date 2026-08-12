@@ -57,7 +57,7 @@ export const CategoryBreakdownChart = ({
               stroke="none"
               labelLine={false}
               label={<CategoryBreakdownChartLabel />}
-              animationDuration={400}
+              animationDuration={300}
               animationEasing="ease-out"
             />
             <ChartTooltip

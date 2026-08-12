@@ -12,6 +12,7 @@ import LoadingModal from "@/shared/components/customs/LoadingModal";
 import { handleFormError } from "@/shared/lib/helpers/form.helper";
 import { AssetType } from "@/shared/lib/types/asset.type";
 import { useModalState } from "@/shared/lib/hooks/useModalState.hook";
+import { useRouter } from "next/navigation";
 
 interface CreateAssetsContainerProps {
   onClose?: () => void;
@@ -20,6 +21,7 @@ interface CreateAssetsContainerProps {
 export default function CreateAssetsContainer({
   onClose,
 }: Readonly<CreateAssetsContainerProps>) {
+  const router = useRouter();
   const [isSelectOpen, setIsSelectOpen] = useState(false);
   const [selected, setSelected] = useState<string>(AssetType.CASH);
   const { modalState, setModalState, resetModalState } = useModalState();
@@ -55,6 +57,7 @@ export default function CreateAssetsContainer({
 
   const { mutate: createAsset, isPending } = useCreateAssetMutation({
     onSuccess: (data) => {
+      router.refresh();
       setModalState({
         isOpen: true,
         status: "success",

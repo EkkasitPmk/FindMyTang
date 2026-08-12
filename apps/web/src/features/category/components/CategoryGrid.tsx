@@ -70,7 +70,7 @@ export default function CategoryGrid({
             variant="unstyled"
             type="button"
             onClick={onNewCategoryClick}
-            className="w-full flex flex-col items-center justify-center gap-3 border border-border border-dashed p-4 rounded-lg cursor-pointer hover:bg-surface-variant/10 transition-colors"
+            className="w-full flex flex-col items-center justify-center gap-2.5 border border-border border-dashed p-3.5 rounded-lg cursor-pointer hover:bg-surface-variant/10 transition-colors"
           >
             <span className="bg-surface-secondary p-2 rounded-lg text-secondary-text">
               <Plus size={16} />
@@ -83,15 +83,14 @@ export default function CategoryGrid({
       )}
 
       {categories.length === 0 && isDeletedTab && (
-        <div className="col-span-3 flex flex-col items-center justify-center h-[50vh] text-secondary-text text-xs">
+        <div className="col-span-3 flex flex-col items-center justify-center h-[50vh] text-secondary-text text-base">
           <p>{t("noCategoriesFound")}</p>
         </div>
       )}
 
       {categories.map((category, index) => {
         const IconComponent = getCategoryIcon(category.icon);
-        const isDraggable =
-          !isDeletedTab && isEditingList && !category.isSystem;
+        const isDraggable = !isDeletedTab && isEditingList;
 
         let cardInteractionClass = "cursor-pointer hover:bg-surface-variant/10";
         if (isDraggable) {
@@ -152,7 +151,7 @@ export default function CategoryGrid({
                   {category.name}
                 </span>
                 {isDeletedTab && (
-                  <span className="text-[10px] font-medium px-1.5 py-0.5 rounded text-secondary-text/80 bg-surface-variant/20 mt-0.5">
+                  <span className="text-[0.625rem] font-medium px-1.5 py-0.5 rounded text-secondary-text/80 bg-surface-variant/20 mt-0.5">
                     {category.type === "EXPENSE" ? t("expenses") : t("income")}
                   </span>
                 )}
@@ -188,7 +187,7 @@ export default function CategoryGrid({
             </AnimatePresence>
 
             <AnimatePresence>
-              {!category.isSystem && isEditingList && (
+              {isEditingList && (
                 <motion.div
                   layout={false}
                   key={`delete-${category.id}`}
@@ -216,7 +215,7 @@ export default function CategoryGrid({
             </AnimatePresence>
 
             <AnimatePresence>
-              {!isDeletedTab && !category.isSystem && isEditingList && (
+              {!isDeletedTab && isEditingList && (
                 <motion.div
                   layout={false}
                   key={`grip-${category.id}`}

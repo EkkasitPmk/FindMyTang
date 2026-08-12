@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useAssets } from "@/shared/lib/hooks/useAssets.hook";
 import {
   useDeleteAssetMutation,
@@ -22,17 +23,16 @@ import EditAssetsContainer from "./EditAssetsContainer";
 import { RotateCcw, Trash2, Archive } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { Slide } from "@/shared/components/animate-ui/primitives/effects/slide";
-import { Skeleton } from "@/shared/components/ui/skeleton";
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { reorderList } from "../helpers/asset.helper";
 import { cn } from "@/shared/lib/utils/core.util";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
-
-const SKELETON_ITEMS = Array.from({ length: 4 }, (_, i) => i);
+import ManageAssetsSkeleton from "../components/ManageAssetsSkeleton";
 
 export default function ManageAssetsContainer({
   initialAssets,
 }: Readonly<{ initialAssets?: Asset[] }>) {
+  const router = useRouter();
   const { t } = useTranslation();
   const { data: assets, isPending } = useAssets({
     includeDeleted: true,
@@ -132,12 +132,14 @@ export default function ManageAssetsContainer({
   } = useConfirmModal();
 
   const restoreAsset = useRestoreAssetMutation({
-    onSuccess: () =>
+    onSuccess: () => {
+      router.refresh();
       setModalState({
         isOpen: true,
         status: "success",
         message: "Asset restored successfully!",
-      }),
+      });
+    },
     onError: () =>
       setModalState({
         isOpen: true,
@@ -147,12 +149,14 @@ export default function ManageAssetsContainer({
   });
 
   const deleteAsset = useDeleteAssetMutation({
-    onSuccess: () =>
+    onSuccess: () => {
+      router.refresh();
       setModalState({
         isOpen: true,
         status: "success",
         message: "Asset deleted successfully!",
-      }),
+      });
+    },
     onError: () =>
       setModalState({
         isOpen: true,
@@ -163,12 +167,14 @@ export default function ManageAssetsContainer({
 
   const { mutate: updateAsset, isPending: isUpdatingAsset } =
     useUpdateAssetMutation({
-      onSuccess: () =>
+      onSuccess: () => {
+        router.refresh();
         setModalState({
           isOpen: true,
           status: "success",
           message: "Asset updated successfully!",
-        }),
+        });
+      },
       onError: () =>
         setModalState({
           isOpen: true,
@@ -178,17 +184,20 @@ export default function ManageAssetsContainer({
     });
 
   const { mutate: reorderAssets } = useReorderAssetsMutation({
+    onSuccess: () => router.refresh(),
     onError: () => toast.error("Failed to update asset order."),
   });
 
   const bulkDeleteAssets = useBulkDeleteAssetsMutation({
     onSuccess: () => {
+      router.refresh();
       setModalState({
         isOpen: true,
         status: "success",
         message: "Assets deleted successfully!",
       });
       setSelectedIds(new Set());
+      setEditingList(false);
       closeBulkDeleteModal();
     },
     onError: () =>
@@ -201,6 +210,7 @@ export default function ManageAssetsContainer({
 
   const bulkArchiveAssets = useBulkArchiveAssetsMutation({
     onSuccess: () => {
+      router.refresh();
       setModalState({
         isOpen: true,
         status: "success",
@@ -219,6 +229,7 @@ export default function ManageAssetsContainer({
 
   const bulkRestoreAssets = useBulkRestoreAssetsMutation({
     onSuccess: () => {
+      router.refresh();
       setModalState({
         isOpen: true,
         status: "success",
@@ -304,24 +315,7 @@ export default function ManageAssetsContainer({
     reorderAssets(localActiveAssets.map((a) => a.id));
   };
 
-  if (isLoading) {
-    return (
-      <section className="px-4 my-2 space-y-1">
-        {SKELETON_ITEMS.map((i) => (
-          <div
-            key={`manage-skeleton-${i}`}
-            className="flex items-center justify-between bg-surface px-3 py-2.5 rounded-lg border-l-4 border-border"
-          >
-            <div className="flex items-center gap-3">
-              <Skeleton className="h-9.5 w-9.5 rounded-full" />
-              <Skeleton className="h-5 w-24" />
-            </div>
-            <Skeleton className="h-5 w-20" />
-          </div>
-        ))}
-      </section>
-    );
-  }
+  if (isLoading) return <ManageAssetsSkeleton />;
 
   return (
     <>
@@ -485,7 +479,7 @@ export default function ManageAssetsContainer({
                   {hasActiveSelected && (
                     <Button
                       variant="unstyled"
-                      className="flex min-h-10 flex-col items-center justify-center gap-0.5 rounded-xl px-3 py-1 text-[9px] font-semibold text-investment transition-colors hover:bg-investment-light focus-visible:ring-2 focus-visible:ring-primary/50"
+                      className="flex min-h-10 flex-col items-center justify-center gap-0.5 rounded-xl px-3 py-1 text-[0.5625rem] font-semibold text-investment transition-colors hover:bg-investment-light focus-visible:ring-2 focus-visible:ring-primary/50"
                       disabled={selectedIds.size === 0}
                       onClick={openBulkArchiveModal}
                     >
@@ -496,7 +490,7 @@ export default function ManageAssetsContainer({
                   {hasDeletedSelected && (
                     <Button
                       variant="unstyled"
-                      className="flex min-h-10 flex-col items-center justify-center gap-0.5 rounded-xl px-3 py-1 text-[9px] font-semibold text-income transition-colors hover:bg-income-light focus-visible:ring-2 focus-visible:ring-primary/50"
+                      className="flex min-h-10 flex-col items-center justify-center gap-0.5 rounded-xl px-3 py-1 text-[0.5625rem] font-semibold text-income transition-colors hover:bg-income-light focus-visible:ring-2 focus-visible:ring-primary/50"
                       disabled={selectedIds.size === 0}
                       onClick={openBulkRestoreModal}
                     >
@@ -506,7 +500,7 @@ export default function ManageAssetsContainer({
                   )}
                   <Button
                     variant="unstyled"
-                    className="flex min-h-10 flex-col items-center justify-center gap-0.5 rounded-xl px-3 py-1 text-[9px] font-semibold text-expense transition-colors hover:bg-expense-light focus-visible:ring-2 focus-visible:ring-expense/50"
+                    className="flex min-h-10 flex-col items-center justify-center gap-0.5 rounded-xl px-3 py-1 text-[0.5625rem] font-semibold text-expense transition-colors hover:bg-expense-light focus-visible:ring-2 focus-visible:ring-expense/50"
                     disabled={selectedIds.size === 0}
                     onClick={openBulkDeleteModal}
                   >
@@ -588,7 +582,7 @@ export default function ManageAssetsContainer({
         confirmLabel={t("deleteAll")}
         withHardDeleteOption={true}
         hardDeleteCheckboxLabel={t("deletePermanently")}
-        expectedInputToConfirm="DELETE"
+        expectedInputToConfirm={t("deleteConfirmationKeyword")}
         isHardDelete={isBulkHardDelete}
         onHardDeleteChange={setIsBulkHardDelete}
         inputValue={bulkConfirmInput}

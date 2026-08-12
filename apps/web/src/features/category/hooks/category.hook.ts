@@ -29,6 +29,7 @@ export const useCreateCategoryMutation = (options?: {
     ...options,
     onSuccess: (data) => {
       void queryClient.invalidateQueries({ queryKey: ["categories"] });
+      void queryClient.invalidateQueries({ queryKey: ["analytics"] });
       options?.onSuccess?.(data);
     },
   });
@@ -49,6 +50,7 @@ export const useUpdateCategoryMutation = (options?: {
     ...options,
     onSuccess: (data) => {
       void queryClient.invalidateQueries({ queryKey: ["categories"] });
+      void queryClient.invalidateQueries({ queryKey: ["analytics"] });
       options?.onSuccess?.(data);
     },
   });
@@ -65,6 +67,7 @@ export const useRestoreCategoryMutation = (options?: {
     ...options,
     onSuccess: (data) => {
       void queryClient.invalidateQueries({ queryKey: ["categories"] });
+      void queryClient.invalidateQueries({ queryKey: ["analytics"] });
       options?.onSuccess?.(data);
     },
   });
@@ -90,6 +93,7 @@ export const useDeleteCategoryMutation = (options?: {
     ...options,
     onSuccess: (data) => {
       void queryClient.invalidateQueries({ queryKey: ["categories"] });
+      void queryClient.invalidateQueries({ queryKey: ["analytics"] });
       options?.onSuccess?.(data);
     },
   });
@@ -110,6 +114,7 @@ export const useReorderCategoriesMutation = (options?: {
     ...options,
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["categories"] });
+      void queryClient.invalidateQueries({ queryKey: ["analytics"] });
       options?.onSuccess?.();
     },
   });

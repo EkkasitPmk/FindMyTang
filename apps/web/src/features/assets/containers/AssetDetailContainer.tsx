@@ -2,6 +2,7 @@
 import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAssets } from "@/shared/lib/hooks/useAssets.hook";
+import { useIsGuest } from "@/shared/lib/storages/guest.storage";
 import { useAssetUIStore } from "../hooks/assets.hook";
 import { Asset } from "@/shared/lib/types/asset.type";
 import {
@@ -9,6 +10,11 @@ import {
   useAvailableDatesQuery,
 } from "../../transactions/hooks/transaction.hook";
 import { groupTransactionsByDate } from "../helpers/asset-transactions.helper";
+import {
+  getTransactionDateRange,
+  shouldFetchTransactions,
+  shouldShowAssetLoading,
+} from "../helpers/asset-detail.helper";
 import { MONTHS } from "@/shared/lib/configs/date.config";
 import EditAssetsContainer from "./EditAssetsContainer";
 import AssetDetail from "../components/AssetDetail";
@@ -17,17 +23,35 @@ import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 
 export default function AssetDetailContainer({
   initialAssets,
-}: Readonly<{ initialAssets?: Asset[] }>) {
+  initialIncludeDeleted,
+  initialAvailableDates,
+  initialAvailableDatesAssetId,
+}: Readonly<{
+  initialAssets?: Asset[];
+  initialIncludeDeleted?: boolean;
+  initialAvailableDates?: Record<string, string[]>;
+  initialAvailableDatesAssetId?: string;
+}>) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const id = searchParams.get("id");
 
   const { t, locale } = useTranslation();
+  const isGuest = useIsGuest();
 
+  const includeDeleted = id === null;
   const { data: assets, isPending: isAssetsPending } = useAssets({
-    initialData: initialAssets,
+    includeDeleted,
+    initialData:
+      includeDeleted === initialIncludeDeleted ? initialAssets : undefined,
   });
-  const isLoading = isAssetsPending;
+  const isLoading = shouldShowAssetLoading(
+    isAssetsPending,
+    isGuest,
+    initialAssets !== undefined,
+    includeDeleted,
+    initialIncludeDeleted,
+  );
   const searchKeyword = useAssetUIStore((state) => state.searchKeyword);
   const isSearchMode = useAssetUIStore((state) => state.isSearchMode);
   const filterType = useAssetUIStore((state) => state.filterType);
@@ -59,10 +83,15 @@ export default function AssetDetailContainer({
 
   const asset = assets?.find((a: Asset) => a.id === id) || assets?.[0];
 
-  const { data: availableDatesData } = useAvailableDatesQuery(
-    asset?.id,
-    viewOption === "showDeletedItems",
-  );
+  const { data: availableDatesData, isPending: isAvailableDatesPending } =
+    useAvailableDatesQuery(asset?.id, viewOption === "showDeletedItems", {
+      initialData:
+        !isGuest &&
+        viewOption === "recentTransactions" &&
+        asset?.id === initialAvailableDatesAssetId
+          ? initialAvailableDates
+          : undefined,
+    });
   const availableYears = useMemo(
     () =>
       Object.keys(availableDatesData ?? {}).sort((a, b) => b.localeCompare(a)),
@@ -118,37 +147,16 @@ export default function AssetDetailContainer({
       : availableMonths[0] || "Select";
   }, [selectedMonth, availableMonths, isSearchMode]);
 
-  const { from, to } = useMemo(() => {
-    if (isSearchMode) {
-      if (effectiveYear !== "All time") {
-        return {
-          from: new Date(Number(effectiveYear), 0, 1).toISOString(),
-          to: new Date(Number(effectiveYear), 11, 31, 23, 59, 59).toISOString(),
-        };
-      }
-      return { from: undefined, to: undefined };
-    }
-    if (effectiveYear !== "Select") {
-      const year = Number(effectiveYear);
-      if (effectiveMonth !== "Select") {
-        const monthIndex = MONTHS.indexOf(
-          effectiveMonth as (typeof MONTHS)[number],
-        );
-        const lastDay = new Date(year, monthIndex + 1, 0).getDate();
-        return {
-          from: new Date(year, monthIndex, 1).toISOString(),
-          to: new Date(year, monthIndex, lastDay, 23, 59, 59).toISOString(),
-        };
-      }
-      return {
-        from: new Date(year, 0, 1).toISOString(),
-        to: new Date(year, 11, 31, 23, 59, 59).toISOString(),
-      };
-    }
-    return { from: undefined, to: undefined };
-  }, [effectiveYear, effectiveMonth, isSearchMode]);
+  const { from, to } = useMemo(
+    () => getTransactionDateRange(isSearchMode, effectiveYear, effectiveMonth),
+    [effectiveYear, effectiveMonth, isSearchMode],
+  );
 
-  const canFetchTransactions = !isSearchMode || Boolean(debouncedSearchKeyword);
+  const canFetchTransactions = shouldFetchTransactions(
+    isSearchMode,
+    debouncedSearchKeyword,
+    availableDatesData !== undefined,
+  );
 
   const {
     data: transactionsData,
@@ -172,12 +180,15 @@ export default function AssetDetailContainer({
           to,
         }
       : undefined,
-    { enabled: canFetchTransactions },
+    {
+      enabled: canFetchTransactions,
+    },
   );
   const isLoadingTransactions =
-    isTransactionsFetching &&
-    !isFetchingNextPage &&
-    (isTransactionsPending || isSearchMode);
+    (!isSearchMode && isAvailableDatesPending) ||
+    (isTransactionsFetching &&
+      !isFetchingNextPage &&
+      (isTransactionsPending || isSearchMode));
 
   const groupedTransactions = useMemo(() => {
     if (!transactionsData) return [];
@@ -236,7 +247,7 @@ export default function AssetDetailContainer({
   return (
     <>
       {id === null ? (
-        <ManageAssetsContainer />
+        <ManageAssetsContainer initialAssets={assets} />
       ) : (
         <>
           <AssetDetail

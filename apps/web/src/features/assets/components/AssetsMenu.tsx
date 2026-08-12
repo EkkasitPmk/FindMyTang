@@ -117,7 +117,7 @@ export default function AssetsMenu({
                   <Funnel size={16} className="text-secondary-text shrink-0" />
                   <div className="flex flex-col text-left">
                     <span className="text-sm">{t("filter")}</span>
-                    <span className="text-[10px] text-secondary-text leading-2">
+                    <span className="text-[0.625rem] text-secondary-text leading-2">
                       {filterLabel}
                     </span>
                   </div>
@@ -171,7 +171,7 @@ export default function AssetsMenu({
                   />
                   <div className="flex flex-col text-left">
                     <span className="text-sm">{t("sort")}</span>
-                    <span className="text-[10px] text-secondary-text leading-2">
+                    <span className="text-[0.625rem] text-secondary-text leading-2">
                       {sortLabel}
                     </span>
                   </div>

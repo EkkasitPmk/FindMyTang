@@ -38,20 +38,43 @@ import { useTransactionAmount } from "../hooks/useTransactionAmount.hook";
 import { useTransactionMutations } from "../hooks/useTransactionMutations.hook";
 import { useTransactionSelections } from "../hooks/useTransactionSelections.hook";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { useTransactionSheetStore } from "../hooks/transaction-sheet.hook";
+import type { Asset } from "@/shared/lib/types/asset.type";
+import type { Category } from "@/shared/lib/types/category.type";
+import type { TransactionResponse } from "@/shared/lib/types/transaction.type";
 
 export default function TransactionsContainer({
   isDesktopSheet = false,
-}: Readonly<{ isDesktopSheet?: boolean }>) {
+  initialAssets,
+  initialCategories,
+  initialTransaction,
+  desktopTransaction,
+}: Readonly<{
+  isDesktopSheet?: boolean;
+  initialAssets?: Asset[];
+  initialCategories?: Category[];
+  initialTransaction?: TransactionResponse;
+  desktopTransaction?: TransactionResponse | null;
+}>) {
   const router = useRouter();
+  const closeTransactionSheet = useTransactionSheetStore(
+    (state) => state.close,
+  );
   const searchParams = useSearchParams();
-  const editId = searchParams.get("id");
-  const hasAssetId = searchParams.has("assetId");
-  const defaultAssetId = searchParams.get("assetId") || null;
-  const typeParam = searchParams.get("type");
+  const editId = desktopTransaction?.id ?? searchParams.get("id");
+  const hasAssetId =
+    Boolean(desktopTransaction?.assetId) || searchParams.has("assetId");
+  const defaultAssetId =
+    desktopTransaction?.assetId ?? searchParams.get("assetId");
+  const typeParam = desktopTransaction?.type ?? searchParams.get("type");
   const { t, locale, currentLanguage } = useTranslation();
 
   const { data: existingTx, isPending: isTxPending } = useTransactionQuery(
     editId || undefined,
+    {
+      initialData:
+        initialTransaction?.id === editId ? initialTransaction : undefined,
+    },
   );
 
   const isTxLoading = checkIsTxLoading(editId, isTxPending);
@@ -68,6 +91,10 @@ export default function TransactionsContainer({
   const [prevTypeParam, setPrevTypeParam] = useState<string | null>(typeParam);
 
   const [isMoreDetailsOpen, setIsMoreDetailsOpen] = useState(false);
+  const [isUnconfirmedDateModalOpen, setIsUnconfirmedDateModalOpen] =
+    useState(false);
+  const [pendingSubmission, setPendingSubmission] =
+    useState<CreateTransactionFormValues | null>(null);
   const {
     file,
     setFile,
@@ -128,6 +155,7 @@ export default function TransactionsContainer({
   const watchCategoryId = useWatch({ control, name: "categoryId" });
   const watchAssetId = useWatch({ control, name: "assetId" });
   const watchToAssetId = useWatch({ control, name: "toAssetId" });
+  const watchNote = useWatch({ control, name: "note" });
 
   const date = useMemo(
     () => (watchTransactionDate ? new Date(watchTransactionDate) : new Date()),
@@ -138,9 +166,10 @@ export default function TransactionsContainer({
     displayMonth,
     setDisplayMonth,
     tempDate,
-    setTempDate,
+    handleSelectDate,
     isCalendarOpen,
     setIsCalendarOpen,
+    hasUnconfirmedDateSelection,
     handleOpenCalendar,
     handleConfirmDate,
     handlePresetClick,
@@ -165,6 +194,11 @@ export default function TransactionsContainer({
 
   const handleSuccess = useCallback(
     (message: string, shouldRedirect: boolean = false) => {
+      if (isDesktopSheet) {
+        closeTransactionSheet();
+        router.refresh();
+        return;
+      }
       setModalState({
         isOpen: true,
         status: "success",
@@ -178,6 +212,7 @@ export default function TransactionsContainer({
         setRemovedAttachment(false);
         setIsPhotoMenuOpen(false);
       }
+      router.refresh();
     },
     [
       reset,
@@ -187,6 +222,9 @@ export default function TransactionsContainer({
       setFile,
       setRemovedAttachment,
       setIsPhotoMenuOpen,
+      closeTransactionSheet,
+      isDesktopSheet,
+      router,
     ],
   );
 
@@ -237,6 +275,8 @@ export default function TransactionsContainer({
     watchAssetId,
     watchToAssetId,
     setValue,
+    initialAssets,
+    initialCategories,
   });
 
   const handleResetForm = () => {
@@ -250,7 +290,7 @@ export default function TransactionsContainer({
   const displayDate = formatDisplayDate(date, true, locale, t);
   const calendarLocale = currentLanguage === "th" ? th : enUS;
 
-  const onSubmit = (data: CreateTransactionFormValues) => {
+  const submit = (data: CreateTransactionFormValues) => {
     submitTransaction({
       transactionType,
       data,
@@ -263,6 +303,31 @@ export default function TransactionsContainer({
       t,
     });
   };
+
+  const onSubmit = (data: CreateTransactionFormValues) => {
+    if (hasUnconfirmedDateSelection) {
+      setPendingSubmission(data);
+      setIsUnconfirmedDateModalOpen(true);
+      return;
+    }
+    submit(data);
+  };
+
+  const handleConfirmUnconfirmedDate = () => {
+    if (pendingSubmission) submit(pendingSubmission);
+    setPendingSubmission(null);
+    setIsUnconfirmedDateModalOpen(false);
+  };
+
+  const handleCloseUnconfirmedDate = () => {
+    setPendingSubmission(null);
+    setIsUnconfirmedDateModalOpen(false);
+    setIsCalendarOpen(true);
+  };
+
+  const selectedDateTime = tempDate
+    ? formatDisplayDate(tempDate, true, locale, t)
+    : "";
 
   const transactionTypeOptions = useMemo(
     () => getTransactionTypeOptions(editId, existingTx?.type, t),
@@ -293,6 +358,7 @@ export default function TransactionsContainer({
         <TransactionHeader
           hasAssetId={hasAssetId}
           isEditing={Boolean(editId)}
+          hideActions={isDesktopSheet && Boolean(editId)}
           title={editId ? t("editTransaction") : t("addTransaction")}
           deleteLabel={t("delete")}
           onBack={() => router.back()}
@@ -354,11 +420,13 @@ export default function TransactionsContainer({
                 cameraInputRef,
                 handleFileChange,
                 register,
+                noteValue: watchNote || "",
+                onNoteChange: (value) => setValue("note", value),
                 isLoadingTx: isTxLoading,
               }}
               datePicker={{
                 selectedDate: tempDate,
-                onSelectDate: setTempDate,
+                onSelectDate: handleSelectDate,
                 displayMonth,
                 onMonthChange: setDisplayMonth,
                 onConfirm: handleConfirmDate,
@@ -395,6 +463,16 @@ export default function TransactionsContainer({
         deletePermanentlyLabel={t("deletePermanently")}
         loadingModal={loadingModalProps}
         onCloseLoading={handleModalClose}
+        isUnconfirmedDateModalOpen={isUnconfirmedDateModalOpen}
+        onCloseUnconfirmedDate={handleCloseUnconfirmedDate}
+        onConfirmUnconfirmedDate={handleConfirmUnconfirmedDate}
+        unconfirmedDateTitle={t("unconfirmedDateTitle")}
+        unconfirmedDateDescription={t("unconfirmedDateDesc").replace(
+          "{dateTime}",
+          selectedDateTime,
+        )}
+        saveConfirmedDateLabel={t("saveConfirmedDate")}
+        returnToDatePickerLabel={t("returnToDatePicker")}
       />
     </form>
   );

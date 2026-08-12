@@ -49,9 +49,9 @@ export default function SettingsPageFallback() {
         </div>
       </div>
       <div className="lg:hidden space-y-6">
-        <div className="space-y-2">
+        <div className="space-y-3">
           <Skeleton className="ml-1 h-3 w-24" />
-          <div className="flex h-13 items-center justify-between rounded-xl border border-border bg-surface px-3.5">
+          <div className="flex h-12.5 items-center justify-between rounded-xl border border-border bg-surface px-3.5">
             <div className="flex items-center gap-3">
               <Skeleton className="size-8 rounded-lg" />
               <Skeleton className="h-3 w-16" />
@@ -59,26 +59,26 @@ export default function SettingsPageFallback() {
             <Skeleton className="size-4 rounded" />
           </div>
         </div>
-        <div className="space-y-2">
+        <div className="space-y-3">
           <Skeleton className="ml-1 h-3 w-24" />
           <div className="divide-y divide-border rounded-xl border border-border bg-surface">
             {Array.from({ length: 2 }, (_, index) => (
               <div
                 key={`settings-preference-skeleton-${index}`}
-                className="flex h-14 items-center justify-between px-3.5"
+                className="flex h-13 items-center justify-between px-3.5"
               >
                 <div className="flex items-center gap-3">
                   <Skeleton className="size-8 rounded-lg" />
                   <Skeleton className="h-3 w-16" />
                 </div>
-                <Skeleton className="h-7 w-20 rounded-lg" />
+                <Skeleton className="h-7 w-32 rounded-lg" />
               </div>
             ))}
           </div>
         </div>
         {Array.from({ length: 2 }, (_, sectionIndex) => (
           <div
-            className="space-y-2"
+            className="space-y-3"
             key={`settings-menu-skeleton-${sectionIndex}`}
           >
             <Skeleton className="ml-1 h-3 w-24" />
@@ -86,7 +86,7 @@ export default function SettingsPageFallback() {
               {Array.from({ length: 2 }, (_, itemIndex) => (
                 <div
                   key={`settings-menu-item-skeleton-${sectionIndex}-${itemIndex}`}
-                  className="flex h-14 items-center justify-between px-3.5"
+                  className="flex h-12 items-center justify-between px-3.5"
                 >
                   <div className="flex items-center gap-3">
                     <Skeleton className="size-8 rounded-lg" />

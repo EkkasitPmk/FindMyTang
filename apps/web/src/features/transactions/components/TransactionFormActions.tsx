@@ -29,7 +29,7 @@ export default function TransactionFormActions({
       {isLoading ? (
         <>
           <Skeleton className="h-12 w-full rounded-xl" />
-          <Skeleton className="h-12 w-full rounded-xl" />
+          <Skeleton className="hidden h-12 w-full rounded-xl lg:mt-2 lg:block" />
         </>
       ) : (
         <>

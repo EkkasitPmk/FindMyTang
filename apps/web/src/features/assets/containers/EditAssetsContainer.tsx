@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  createAssetSchema,
+  editAssetSchema,
   CreateAssetFormValues,
 } from "../schemas/assets.form.schema";
 import { useUpdateAssetMutation } from "../hooks/assets.hook";
@@ -12,6 +12,7 @@ import AssetForm from "../components/AssetForm";
 import LoadingModal from "@/shared/components/customs/LoadingModal";
 import { handleFormError } from "@/shared/lib/helpers/form.helper";
 import { useModalState } from "@/shared/lib/hooks/useModalState.hook";
+import { useRouter } from "next/navigation";
 
 interface EditAssetsContainerProps {
   asset: Asset;
@@ -22,6 +23,7 @@ export default function EditAssetsContainer({
   asset,
   onClose,
 }: Readonly<EditAssetsContainerProps>) {
+  const router = useRouter();
   const [isSelectOpen, setIsSelectOpen] = useState(false);
   const { modalState, setModalState, resetModalState } = useModalState<{
     updatedName?: string;
@@ -38,7 +40,7 @@ export default function EditAssetsContainer({
     getValues,
     formState: { errors },
   } = useForm<CreateAssetFormValues>({
-    resolver: zodResolver(createAssetSchema),
+    resolver: zodResolver(editAssetSchema),
     defaultValues: {
       name: asset.name,
       type: asset.type,
@@ -66,6 +68,7 @@ export default function EditAssetsContainer({
 
   const { mutate: updateAsset, isPending } = useUpdateAssetMutation({
     onSuccess: (data) => {
+      router.refresh();
       setModalState({
         isOpen: true,
         status: "success",
@@ -107,7 +110,6 @@ export default function EditAssetsContainer({
         name: values.name,
         type: values.type,
         color: values.color,
-        balance: Number(values.balance),
       },
     });
   };

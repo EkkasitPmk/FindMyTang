@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import {
   Globe,
   Lightbulb,
@@ -19,11 +18,11 @@ import SettingsLanguageClient from "../components/SettingsLanguageClient";
 import SettingsLegalClient from "../components/SettingsLegalClient";
 import SettingsThemeClient from "../components/SettingsThemeClient";
 
-export default async function SettingsMobileContainer() {
-  const languageCookie = (await cookies()).get("findmytang-language")?.value;
-  const language: Language = languageCookie === "th" ? "th" : "en";
-  const t = (key: keyof typeof translations.en) =>
-    translations[language][key] ?? translations.en[key] ?? key;
+export default function SettingsMobileContainer({
+  language,
+}: Readonly<{ language: Language }>) {
+  const t = (key: keyof (typeof translations)["en"]) =>
+    translations[language][key] ?? translations.en[key];
 
   return (
     <div className="lg:hidden space-y-6 px-4 py-3 animate-in fade-in duration-300">

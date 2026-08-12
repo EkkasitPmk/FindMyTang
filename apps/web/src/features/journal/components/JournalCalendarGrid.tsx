@@ -101,22 +101,22 @@ export default function JournalCalendarGrid({
                   {day.summary && (
                     <div className="flex flex-col items-end mt-auto gap-px">
                       {day.summary.adjustment !== 0 && (
-                        <span className="text-[9px] leading-2 text-info font-medium">
+                        <span className="text-[0.5625rem] leading-2 text-info font-medium">
                           {formatCompactAmount(day.summary.adjustment, locale)}
                         </span>
                       )}
                       {day.summary.transfer !== 0 && (
-                        <span className="text-[9px] leading-2 text-transfer font-medium">
+                        <span className="text-[0.5625rem] leading-2 text-transfer font-medium">
                           {formatCompactAmount(day.summary.transfer, locale)}
                         </span>
                       )}
                       {day.summary.income !== 0 && (
-                        <span className="text-[9px] leading-2 text-income font-medium">
+                        <span className="text-[0.5625rem] leading-2 text-income font-medium">
                           {formatCompactAmount(day.summary.income, locale)}
                         </span>
                       )}
                       {day.summary.expense !== 0 && (
-                        <span className="text-[9px] leading-2 text-expense font-medium">
+                        <span className="text-[0.5625rem] leading-2 text-expense font-medium">
                           {formatCompactAmount(day.summary.expense, locale)}
                         </span>
                       )}

@@ -16,10 +16,18 @@ export function useTransactionDate(
   );
   const [tempDate, setTempDate] = useState<Date | undefined>(date);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [hasPendingDateSelection, setHasPendingDateSelection] = useState(false);
+
+  const hasUnconfirmedDateSelection = Boolean(
+    hasPendingDateSelection &&
+    tempDate &&
+    tempDate.getTime() !== date.getTime(),
+  );
 
   const handleOpenCalendar = () => {
     setTempDate(date);
     setDisplayMonth(date);
+    setHasPendingDateSelection(false);
   };
 
   const handleConfirmDate = () => {
@@ -29,21 +37,29 @@ export function useTransactionDate(
       });
     }
     setIsCalendarOpen(false);
+    setHasPendingDateSelection(false);
+  };
+
+  const handleSelectDate = (newDate: Date | undefined) => {
+    setTempDate(newDate);
+    setHasPendingDateSelection(newDate?.getTime() !== date.getTime());
   };
 
   const handlePresetClick = (daysToAdd: number) => {
     const newDate = updatePresetDate(daysToAdd, tempDate);
     setTempDate(newDate);
     setDisplayMonth(newDate);
+    setHasPendingDateSelection(newDate.getTime() !== date.getTime());
   };
 
   return {
     displayMonth,
     setDisplayMonth,
     tempDate,
-    setTempDate,
+    handleSelectDate,
     isCalendarOpen,
     setIsCalendarOpen,
+    hasUnconfirmedDateSelection,
     handleOpenCalendar,
     handleConfirmDate,
     handlePresetClick,

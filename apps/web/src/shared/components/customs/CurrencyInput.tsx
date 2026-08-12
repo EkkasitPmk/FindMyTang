@@ -17,7 +17,9 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
           className,
         )}
       >
-        <p className="text-4xl font-bold text-left w-[85%]">{symbol}</p>
+        <p className="text-4xl font-bold text-left w-[85%] lg:w-[95%]">
+          {symbol}
+        </p>
         <div className="absolute left-1/2 -translate-x-1/2">
           <input
             ref={ref}
