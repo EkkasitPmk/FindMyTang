@@ -11,7 +11,7 @@ export default function SettingsSection({
 }: Readonly<SettingsSectionProps>) {
   return (
     <section className="space-y-2">
-      <h5 className="text-[11px] font-semibold text-secondary-text uppercase tracking-wider px-1">
+      <h5 className="text-[0.6875rem] font-semibold text-secondary-text uppercase tracking-wider px-1">
         {title}
       </h5>
       {children}

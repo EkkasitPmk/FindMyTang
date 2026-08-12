@@ -152,7 +152,7 @@ export default function CategoryGrid({
                   {category.name}
                 </span>
                 {isDeletedTab && (
-                  <span className="text-[10px] font-medium px-1.5 py-0.5 rounded text-secondary-text/80 bg-surface-variant/20 mt-0.5">
+                  <span className="text-[0.625rem] font-medium px-1.5 py-0.5 rounded text-secondary-text/80 bg-surface-variant/20 mt-0.5">
                     {category.type === "EXPENSE" ? t("expenses") : t("income")}
                   </span>
                 )}

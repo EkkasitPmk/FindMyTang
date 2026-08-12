@@ -77,11 +77,11 @@ export const DrilldownTransactionList = ({
                       }
                     />
                     <div className="flex flex-col gap-1">
-                      <p className="text-[14px] font-medium text-primary-text leading-none">
+                      <p className="text-[0.875rem] font-medium text-primary-text leading-none">
                         {tx.note || t("noNote")}
                       </p>
                       <span
-                        className="inline-flex items-center w-fit px-1.5 py-0.5 rounded-md text-[10px] font-semibold tracking-wide"
+                        className="inline-flex items-center w-fit px-1.5 py-0.5 rounded-md text-[0.625rem] font-semibold tracking-wide"
                         style={{
                           color: assetColor,
                           backgroundColor: assetColor.startsWith("#")

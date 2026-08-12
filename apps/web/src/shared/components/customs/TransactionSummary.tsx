@@ -30,12 +30,12 @@ export function TransactionSummary({
     >
       {/* Net Amount - Always visible first */}
       <div className="flex flex-col shrink-0">
-        <span className="text-[11px] font-medium text-secondary-text uppercase tracking-wider">
+        <span className="text-[0.6875rem] font-medium text-secondary-text uppercase tracking-wider">
           {t("net")}
         </span>
         <span
           className={cn(
-            "text-[15px] font-bold",
+            "text-[0.9375rem] font-bold",
             net >= 0 ? "text-income" : "text-expense",
           )}
         >
@@ -48,7 +48,7 @@ export function TransactionSummary({
 
       {/* Income */}
       <div className="flex flex-col shrink-0">
-        <span className="text-[11px] font-medium text-secondary-text uppercase tracking-wider">
+        <span className="text-[0.6875rem] font-medium text-secondary-text uppercase tracking-wider">
           {t("income")}
         </span>
         <span className="text-sm font-semibold text-income">
@@ -58,7 +58,7 @@ export function TransactionSummary({
 
       {/* Expense */}
       <div className="flex flex-col shrink-0">
-        <span className="text-[11px] font-medium text-secondary-text uppercase tracking-wider">
+        <span className="text-[0.6875rem] font-medium text-secondary-text uppercase tracking-wider">
           {t("expense")}
         </span>
         <span className="text-sm font-semibold text-expense">
@@ -68,7 +68,7 @@ export function TransactionSummary({
 
       {/* Transfer */}
       <div className="flex flex-col shrink-0">
-        <span className="text-[11px] font-medium text-secondary-text uppercase tracking-wider">
+        <span className="text-[0.6875rem] font-medium text-secondary-text uppercase tracking-wider">
           {t("transfer")}
         </span>
         <span className="text-sm font-semibold text-transfer">
@@ -78,7 +78,7 @@ export function TransactionSummary({
 
       {/* Adjustment */}
       <div className="flex flex-col shrink-0">
-        <span className="text-[11px] font-medium text-secondary-text uppercase tracking-wider">
+        <span className="text-[0.6875rem] font-medium text-secondary-text uppercase tracking-wider">
           {t("adjustment")}
         </span>
         <span className="text-sm font-semibold text-info">

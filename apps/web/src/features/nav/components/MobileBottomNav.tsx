@@ -75,7 +75,7 @@ export default function MobileBottomNav({
                   onClick={onNavigate}
                   aria-label={displayLabel}
                   aria-current={isActive ? "page" : undefined}
-                  className={`relative z-10 flex min-h-10 flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-1 text-[9px] font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 ${
+                  className={`relative z-10 flex min-h-10 flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-1 text-[0.5625rem] font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 ${
                     isActive
                       ? "text-primary"
                       : "text-secondary-text hover:text-primary-text"
@@ -100,7 +100,7 @@ export default function MobileBottomNav({
               variant="unstyled"
               onClick={onMenuOpen}
               aria-label={t("navMore")}
-              className={`relative z-10 flex min-h-10 flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-1 text-[9px] font-semibold transition-colors duration-150 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary/50 ${
+              className={`relative z-10 flex min-h-10 flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-1 text-[0.5625rem] font-semibold transition-colors duration-150 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary/50 ${
                 isMoreActive
                   ? "text-primary"
                   : "text-secondary-text hover:text-primary-text"

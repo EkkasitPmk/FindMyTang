@@ -479,7 +479,7 @@ export default function ManageAssetsContainer({
                   {hasActiveSelected && (
                     <Button
                       variant="unstyled"
-                      className="flex min-h-10 flex-col items-center justify-center gap-0.5 rounded-xl px-3 py-1 text-[9px] font-semibold text-investment transition-colors hover:bg-investment-light focus-visible:ring-2 focus-visible:ring-primary/50"
+                      className="flex min-h-10 flex-col items-center justify-center gap-0.5 rounded-xl px-3 py-1 text-[0.5625rem] font-semibold text-investment transition-colors hover:bg-investment-light focus-visible:ring-2 focus-visible:ring-primary/50"
                       disabled={selectedIds.size === 0}
                       onClick={openBulkArchiveModal}
                     >
@@ -490,7 +490,7 @@ export default function ManageAssetsContainer({
                   {hasDeletedSelected && (
                     <Button
                       variant="unstyled"
-                      className="flex min-h-10 flex-col items-center justify-center gap-0.5 rounded-xl px-3 py-1 text-[9px] font-semibold text-income transition-colors hover:bg-income-light focus-visible:ring-2 focus-visible:ring-primary/50"
+                      className="flex min-h-10 flex-col items-center justify-center gap-0.5 rounded-xl px-3 py-1 text-[0.5625rem] font-semibold text-income transition-colors hover:bg-income-light focus-visible:ring-2 focus-visible:ring-primary/50"
                       disabled={selectedIds.size === 0}
                       onClick={openBulkRestoreModal}
                     >
@@ -500,7 +500,7 @@ export default function ManageAssetsContainer({
                   )}
                   <Button
                     variant="unstyled"
-                    className="flex min-h-10 flex-col items-center justify-center gap-0.5 rounded-xl px-3 py-1 text-[9px] font-semibold text-expense transition-colors hover:bg-expense-light focus-visible:ring-2 focus-visible:ring-expense/50"
+                    className="flex min-h-10 flex-col items-center justify-center gap-0.5 rounded-xl px-3 py-1 text-[0.5625rem] font-semibold text-expense transition-colors hover:bg-expense-light focus-visible:ring-2 focus-visible:ring-expense/50"
                     disabled={selectedIds.size === 0}
                     onClick={openBulkDeleteModal}
                   >

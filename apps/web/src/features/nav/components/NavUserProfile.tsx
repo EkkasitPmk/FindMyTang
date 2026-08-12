@@ -56,7 +56,7 @@ export default function NavUserProfile({
           <p className="text-xs font-semibold text-primary-text truncate leading-tight">
             {user.displayName}
           </p>
-          <p className="text-[10px] text-secondary-text/80 truncate leading-tight">
+          <p className="text-[0.625rem] text-secondary-text/80 truncate leading-tight">
             {user.email || "Guest"}
           </p>
         </>

@@ -42,7 +42,7 @@ export const CategoryBreakdownChartLabel = (
         fill={fill}
         textAnchor={textAnchor}
         dominantBaseline="central"
-        className="text-[10px] font-medium"
+        className="text-[0.625rem] font-medium"
       >
         <tspan x={textX} dy="-0em">
           • {payload?.categoryName || ""} {(percent * 100).toFixed(0)}%

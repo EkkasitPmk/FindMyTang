@@ -58,17 +58,17 @@ export const CategoryList = ({
                 }
               />
               <div>
-                <p className="text-[15px] font-medium text-primary-text">
+                <p className="text-[0.9375rem] font-medium text-primary-text">
                   {item.categoryName}
                 </p>
-                <p className="text-[12px] text-secondary-text">
+                <p className="text-[0.75rem] text-secondary-text">
                   {item.percentage.toFixed(1)}% • {item.transactionCount}{" "}
                   {t("items")}
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <span className="font-semibold text-[15px] text-primary-text">
+              <span className="font-semibold text-[0.9375rem] text-primary-text">
                 {formatCurrency(item.totalAmount)}
               </span>
               <ChevronRight className="w-4 h-4 text-disabled-text" />

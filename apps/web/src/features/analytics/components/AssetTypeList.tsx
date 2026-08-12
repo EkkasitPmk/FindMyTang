@@ -52,17 +52,17 @@ export const AssetTypeList = ({
                     )}
                   </AssetIconWrapper>
                   <div className="text-left">
-                    <p className="text-[15px] font-medium text-primary-text">
+                    <p className="text-[0.9375rem] font-medium text-primary-text">
                       {t(`assetType${group.assetType}` as TranslationKey) ||
                         group.assetType}
                     </p>
-                    <p className="text-[12px] text-secondary-text">
+                    <p className="text-[0.75rem] text-secondary-text">
                       {group.percentage.toFixed(1)}%
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="font-semibold text-[15px] text-primary-text">
+                  <span className="font-semibold text-[0.9375rem] text-primary-text">
                     {formatCurrency(group.totalBalance)}
                   </span>
                   <ChevronDown className="w-4 h-4 text-disabled-text transition-transform duration-300 group-data-[state=open]/collapsible:-rotate-180" />

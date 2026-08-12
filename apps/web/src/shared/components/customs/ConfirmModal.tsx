@@ -148,7 +148,7 @@ export default function ConfirmModal({
 
             {isHardDelete && expectedInputToConfirm && (
               <div className="flex flex-col gap-1.5 animate-subtle-pop">
-                <span className="text-[11px] text-secondary-text">
+                <span className="text-[0.6875rem] text-secondary-text">
                   {t("typeToConfirm").replace(
                     "{value}",
                     expectedInputToConfirm,
