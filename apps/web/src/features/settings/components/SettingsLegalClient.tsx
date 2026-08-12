@@ -21,7 +21,7 @@ export default function SettingsLegalClient({
             <HelpCircle className="w-4 h-4 text-info" strokeWidth={1.75} />
             <span className="font-semibold text-primary-text">FindMyTang</span>
           </div>
-          <span className="px-2.5 py-0.5 rounded-full bg-primary-light text-primary text-[11px] font-semibold">
+          <span className="px-2.5 py-0.5 rounded-full bg-primary-light text-primary text-[0.6875rem] font-semibold">
             v{version}
           </span>
         </div>
@@ -44,7 +44,7 @@ export default function SettingsLegalClient({
           </Button>
         </div>
 
-        <p className="text-[10px] text-secondary-text/70">
+        <p className="text-[0.625rem] text-secondary-text/70">
           {t("copyrightNotice")}
         </p>
       </div>

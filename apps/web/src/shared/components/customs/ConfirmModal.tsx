@@ -1,6 +1,7 @@
 import { LucideIcon } from "lucide-react";
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { Checkbox } from "@/shared/components/animate-ui/components/radix/checkbox";
+import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -38,7 +39,7 @@ export default function ConfirmModal({
   title,
   des,
   confirmLabel = "Sign out",
-  cancelLabel = "Cancel",
+  cancelLabel,
   showCancelButton = true,
   withHardDeleteOption,
   hardDeleteCheckboxLabel = "Delete permanently",
@@ -49,6 +50,7 @@ export default function ConfirmModal({
   inputValue = "",
   onInputChange,
 }: Readonly<ConfirmModalProps>) {
+  const { t } = useTranslation();
   const isConfirmDisabled =
     withHardDeleteOption &&
     isHardDelete &&
@@ -146,8 +148,11 @@ export default function ConfirmModal({
 
             {isHardDelete && expectedInputToConfirm && (
               <div className="flex flex-col gap-1.5 animate-subtle-pop">
-                <span className="text-[11px] text-secondary-text">
-                  Type <strong>{expectedInputToConfirm}</strong> to confirm
+                <span className="text-[0.6875rem] text-secondary-text">
+                  {t("typeToConfirm").replace(
+                    "{value}",
+                    expectedInputToConfirm,
+                  )}
                 </span>
                 <input
                   type="text"
@@ -169,7 +174,7 @@ export default function ConfirmModal({
               onClick={onClose}
               className="flex-1 py-2.5 px-4 rounded-md border border-border hover:bg-surface-secondary text-secondary-text text-xs font-semibold transition-colors cursor-pointer"
             >
-              {cancelLabel}
+              {cancelLabel || t("cancelBtn")}
             </Button>
           )}
           <Button

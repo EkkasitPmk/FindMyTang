@@ -197,6 +197,7 @@ export default function JournalCalendarContainer() {
           }
           page="journal"
           disableOwnScroll
+          transactionListRef={transactionListRef}
         />
       </div>
     </div>

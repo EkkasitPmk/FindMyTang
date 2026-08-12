@@ -21,7 +21,7 @@ export default function ManageAssetDetails({
     <motion.div layout className="flex flex-col items-start">
       <span className={cn("text-base font-semibold", titleClass)}>{name}</span>
       {isInactive && (
-        <span className="text-[11px] text-secondary-text font-medium">
+        <span className="text-[0.6875rem] text-secondary-text font-medium">
           {isDeleted ? t("deleted") : t("archived")}
         </span>
       )}

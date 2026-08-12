@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLoginMutation } from "../hooks/login.hook";
@@ -25,6 +26,7 @@ interface LoginContainerProps {
 export default function LoginContainer({
   initialShowRegistrationUnavailable = false,
 }: Readonly<LoginContainerProps>) {
+  const router = useRouter();
   const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
@@ -77,7 +79,7 @@ export default function LoginContainer({
     resetModalState();
     if (shouldRedirect) {
       setIsRedirecting(true);
-      window.location.href = "/dashboard";
+      router.push("/dashboard");
     }
   };
 
@@ -108,7 +110,7 @@ export default function LoginContainer({
   const handleGuestLogin = () => {
     setIsRedirecting(true);
     setGuestMode(true);
-    window.location.href = "/dashboard";
+    router.push("/dashboard");
   };
 
   return (

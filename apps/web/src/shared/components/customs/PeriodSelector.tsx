@@ -35,7 +35,7 @@ export const PeriodSelector = ({
       >
         <ChevronLeft className="h-4 w-4" />
       </Button>
-      <span className="font-semibold text-[15px]">
+      <span className="font-semibold text-[0.9375rem]">
         {mode === "month"
           ? format(date, "MMMM yyyy", { locale: dateLocale })
           : `${t("yearLabel")} ${year}`}

@@ -1,4 +1,6 @@
-import CategoryContainer from "@/features/category/containers/CategoryContainer";
+import { Suspense } from "react";
+import CategoriesPageSkeleton from "@/features/category/components/CategoriesPageSkeleton";
+import CategoriesRouteContainer from "@/features/category/containers/CategoriesRouteContainer";
 
 export const metadata = {
   title: "Categories - FindMyTang",
@@ -6,5 +8,9 @@ export const metadata = {
 };
 
 export default function CategoriesPage() {
-  return <CategoryContainer />;
+  return (
+    <Suspense fallback={<CategoriesPageSkeleton />}>
+      <CategoriesRouteContainer />
+    </Suspense>
+  );
 }

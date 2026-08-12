@@ -83,7 +83,7 @@ export const MonthlyTrendsTable = ({ data, year }: MonthlyTrendsTableProps) => {
             </div>
 
             {/* Desktop View */}
-            <div className="hidden sm:grid grid-cols-6 gap-2 p-3 text-[13px] items-center hover:bg-surface-secondary/30 transition-colors">
+            <div className="hidden sm:grid grid-cols-6 gap-2 p-3 text-[0.8125rem] items-center hover:bg-surface-secondary/30 transition-colors">
               <div className="font-medium">
                 {format(new Date(year, item.month - 1), "MMM yy", {
                   locale: dateLocale,

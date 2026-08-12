@@ -178,7 +178,7 @@ export default function JournalContainer({
 
                   {/* 3. แสดง ui tabs switch และ sort */}
                   <div className="flex items-center gap-2 pb-1">
-                    <div className="flex-1 flex overflow-x-auto gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none">
+                    <div className="flex-1 flex overflow-x-auto gap-2">
                       {JOURNAL_TRANSACTION_TYPES.map((type) => {
                         let typeLabel = t(type.value as TranslationKey);
                         if (type.value === "all") typeLabel = t("all");
@@ -189,7 +189,7 @@ export default function JournalContainer({
                         return (
                           <div
                             key={type.value}
-                            className="flex items-center gap-2"
+                            className="flex shrink-0 items-center gap-2"
                           >
                             {type.value === "deleted" && (
                               <span
@@ -203,7 +203,7 @@ export default function JournalContainer({
                               variant={"unstyled"}
                               onClick={() => setSelectedType(type.value)}
                               className={cn(
-                                "flex-none px-4 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer",
+                                "shrink-0 whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer",
                                 selectedType === type.value
                                   ? type.activeColorClass
                                   : "bg-surface border border-border text-secondary-text hover:bg-surface-secondary",
