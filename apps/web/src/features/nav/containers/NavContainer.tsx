@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback, useRef } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { LogOut } from "lucide-react";
 import { useLogoutMutation, useSyncUserMutation } from "../hooks/auth.hook";
@@ -34,6 +34,7 @@ export default function NavContainer({
   initialUser,
 }: Readonly<{ initialUser: UserProfile | null }>) {
   const pathname = usePathname();
+  const router = useRouter();
   const { data: user, isLoading, isError } = useMeQuery({ initialUser });
   const queryClient = useQueryClient();
   const { isGuest, setGuestMode, clearGuestData } = useGuestStore();
@@ -214,7 +215,7 @@ export default function NavContainer({
   const { mutateAsync: logoutUserAsync, isPending: isLogoutPending } =
     useLogoutMutation({
       onSuccess: () => {
-        window.location.href = "/dashboard";
+        router.push("/dashboard");
       },
       onError: () => {
         setIsLoggingOutLocal(false);
@@ -368,7 +369,7 @@ export default function NavContainer({
       setGuestMode(false);
       queryClient.clear();
       toast.success(t("guestSessionCleared"));
-      window.location.href = "/login";
+      router.push("/login");
     } else {
       setIsLoggingOutLocal(true);
       try {

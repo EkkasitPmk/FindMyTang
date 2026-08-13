@@ -41,7 +41,7 @@ export default function MainLayoutClientIsland({
     ) : null;
 
   return (
-    <SidebarProvider defaultOpen className="h-svh min-h-0 overflow-hidden">
+    <SidebarProvider defaultOpen className="h-dvh min-h-0 overflow-hidden">
       <div className="text-primary-text flex flex-col relative flex-1 min-w-0 min-h-0">
         <div className="flex flex-1 relative z-10 min-w-0 min-h-0">
           {nav}
