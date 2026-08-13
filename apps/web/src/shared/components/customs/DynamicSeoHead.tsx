@@ -1,3 +1,4 @@
+"use client";
 import { useEffect } from "react";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 

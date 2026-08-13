@@ -1,5 +1,5 @@
 "use client";
-import { useSyncExternalStore } from "react";
+import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import { queryClient } from "@/shared/lib/api/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -14,11 +14,7 @@ type ProvidersProps = {
 };
 
 export default function Providers({ children }: Readonly<ProvidersProps>) {
-  const isMounted = useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false,
-  );
+  const isMounted = useMounted();
 
   return (
     <QueryClientProvider client={queryClient}>

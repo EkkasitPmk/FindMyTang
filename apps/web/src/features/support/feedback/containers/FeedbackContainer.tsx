@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import type { ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { AlertTriangle } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -17,7 +18,9 @@ import { feedbackFormSchema } from "../schemas/feedback.form.schema";
 import { submitSupportRequest } from "../../services/support.service";
 import type { FeedbackFormValues } from "../types/feedback.type";
 
-export default function FeedbackContainer() {
+export default function FeedbackContainer({
+  header,
+}: Readonly<{ header?: ReactNode }>) {
   const { t, currentLanguage } = useTranslation();
   const isGuest = useIsGuest();
   const router = useRouter();
@@ -111,12 +114,7 @@ export default function FeedbackContainer() {
 
   return (
     <>
-      <div className="flex shrink-0 flex-col gap-1.5 border-b border-border px-4 py-4 text-left">
-        <h1 className="text-base font-semibold text-primary-text">
-          {t("feedbackTitle")}
-        </h1>
-        <p className="text-sm text-secondary-text">{t("feedbackDesc")}</p>
-      </div>
+      {header}
       <FeedbackForm
         register={register}
         labels={labels}

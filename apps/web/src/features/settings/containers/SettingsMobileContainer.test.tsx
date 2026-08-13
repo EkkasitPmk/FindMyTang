@@ -10,7 +10,7 @@ vi.mock("../components/SettingsLanguageClient", () => ({
 vi.mock("../components/SettingsThemeClient", () => ({
   default: () => null,
 }));
-vi.mock("../components/SettingsLegalClient", () => ({
+vi.mock("../components/SettingsLegalActionsClient", () => ({
   default: () => null,
 }));
 
@@ -25,5 +25,6 @@ describe("SettingsMobileContainer", () => {
     expect(markup).toContain("ข้อมูลส่วนตัว");
     expect(markup).toContain("การตั้งค่า");
     expect(markup).toContain("จัดการหมวดหมู่");
+    expect(markup).toContain("© 2026 FindMyTang. All rights reserved.");
   });
 });

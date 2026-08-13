@@ -321,7 +321,7 @@ export default function ManageAssetsContainer({
     <>
       <section
         className={cn(
-          "px-4 space-y-4",
+          "px-4 sm:p-0 space-y-4",
           localActiveAssets.length === 0 &&
             archivedAssets.length === 0 &&
             deletedAssets.length === 0 &&
@@ -331,7 +331,7 @@ export default function ManageAssetsContainer({
       >
         {/* Active Assets */}
         {localActiveAssets.length > 0 && (
-          <motion.div layout className="space-y-1 pt-2">
+          <motion.div layout className="space-y-1 pt-2 sm:p-0">
             {localActiveAssets.map((asset, index) => (
               <ManageAssetItem
                 key={asset.id}

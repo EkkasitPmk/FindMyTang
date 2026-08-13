@@ -1,12 +1,13 @@
 "use client";
 import Link from "next/link";
 import { ChevronRight, User } from "lucide-react";
-import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { useIsGuest } from "@/shared/lib/storages/guest.storage";
 import { useFeatureLockModal } from "@/shared/lib/hooks/useFeatureLockModal.hook";
 
-export default function SettingsAccountLinkClient() {
-  const { t } = useTranslation();
+export default function SettingsAccountLinkClient({
+  label,
+  lockMessage,
+}: Readonly<{ label: string; lockMessage: string }>) {
   const isGuest = useIsGuest();
   const openLockModal = useFeatureLockModal((state) => state.openModal);
 
@@ -16,7 +17,7 @@ export default function SettingsAccountLinkClient() {
       onClick={(event) => {
         if (isGuest) {
           event.preventDefault();
-          openLockModal(t("accountSettingsBackup"));
+          openLockModal(lockMessage);
         }
       }}
       className="block bg-surface border border-border rounded-xl hover:bg-surface-secondary transition-colors cursor-pointer shadow-xs"
@@ -27,7 +28,7 @@ export default function SettingsAccountLinkClient() {
             <User className="w-4 h-4" strokeWidth={1.5} />
           </div>
           <span className="text-xs font-semibold text-primary-text">
-            {t("account")}
+            {label}
           </span>
         </div>
         <ChevronRight
