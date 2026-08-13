@@ -5,18 +5,14 @@ import { AssetDistributionBar } from "../components/AssetDistributionBar";
 import { AssetTypeList } from "../components/AssetTypeList";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { EmptyAssetList } from "@/shared/components/customs/EmptyAssetList";
+import CreateAssetsContainer from "@/features/assets/containers/CreateAssetsContainer";
 
-interface AssetDistributionContainerProps {
-  onAddAsset?: () => void;
-}
-
-export const AssetDistributionContainer = ({
-  onAddAsset,
-}: AssetDistributionContainerProps) => {
+export const AssetDistributionContainer = () => {
   const { data, isLoading } = useAssetDistribution();
   const [expandedTypes, setExpandedTypes] = useState<Record<string, boolean>>(
     {},
   );
+  const [isCreateAssetOpen, setIsCreateAssetOpen] = useState(false);
 
   const handleToggleExpand = (type: string) => {
     setExpandedTypes((prev) => ({ ...prev, [type]: !prev[type] }));
@@ -24,9 +20,14 @@ export const AssetDistributionContainer = ({
 
   if (data?.distribution.length === 0) {
     return (
-      <div className="px-4">
-        <EmptyAssetList onAddAsset={onAddAsset} />
-      </div>
+      <>
+        <div className="px-4">
+          <EmptyAssetList onAddAsset={() => setIsCreateAssetOpen(true)} />
+        </div>
+        {isCreateAssetOpen && (
+          <CreateAssetsContainer onClose={() => setIsCreateAssetOpen(false)} />
+        )}
+      </>
     );
   }
 
