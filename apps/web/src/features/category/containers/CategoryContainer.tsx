@@ -361,7 +361,7 @@ export default function CategoryContainer({
     Boolean(categoryToDelete?.deletedAt) || activeTab === "DELETED";
 
   return (
-    <div className="space-y-2 px-4 py-2">
+    <div className="space-y-2 px-4 py-2 sm:p-0">
       <div className="mb-2">
         <h2 className="text-xl font-bold">{t("categoryManagement")}</h2>
         <p className="text-sm">{t("categoryManagementDesc")}</p>
