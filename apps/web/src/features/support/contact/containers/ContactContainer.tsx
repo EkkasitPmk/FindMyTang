@@ -1,10 +1,11 @@
 "use client";
 import { useState } from "react";
+import type { ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import { AlertTriangle, Mail } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import ConfirmModal from "@/shared/components/customs/ConfirmModal";
 import { useIsGuest } from "@/shared/lib/storages/guest.storage";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
@@ -15,7 +16,10 @@ import { contactFormSchema } from "../schemas/contact.form.schema";
 import { submitSupportRequest } from "../../services/support.service";
 import type { ContactFormValues } from "../types/contact.type";
 
-export default function ContactContainer() {
+export default function ContactContainer({
+  header,
+  contactInfo,
+}: Readonly<{ header?: ReactNode; contactInfo?: ReactNode }>) {
   const { t, currentLanguage } = useTranslation();
   const isGuest = useIsGuest();
   const router = useRouter();
@@ -95,26 +99,10 @@ export default function ContactContainer() {
 
   return (
     <>
-      <div className="flex shrink-0 flex-col gap-1.5 border-b border-border px-4 py-4 text-left">
-        <h1 className="text-base font-semibold text-primary-text">
-          {t("contactUsTitle")}
-        </h1>
-        <p className="text-sm text-secondary-text">{t("contactUsDesc")}</p>
-      </div>
+      {header}
 
       <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2">
-        <div className="h-fit rounded-md border border-border px-4 py-4">
-          <Mail className="mb-3 text-primary" />
-          <span className="block text-sm font-semibold text-primary-text">
-            Email
-          </span>
-          <a
-            href="mailto:ekkasit.phumiket@gmail.com"
-            className="break-all text-sm text-secondary-text hover:text-primary"
-          >
-            ekkasit.phumiket@gmail.com
-          </a>
-        </div>
+        {contactInfo}
 
         <ContactForm
           labels={labels}
