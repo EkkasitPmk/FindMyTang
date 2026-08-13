@@ -11,7 +11,6 @@ import { CategoryBreakdownContainer } from "./CategoryBreakdownContainer";
 import { MonthlyTrendsContainer } from "./MonthlyTrendsContainer";
 import { AssetDistributionContainer } from "./AssetDistributionContainer";
 import { PieChart, TrendingUp, Wallet } from "lucide-react";
-import CreateAssetsContainer from "@/features/assets/containers/CreateAssetsContainer";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import type { CategoryBreakdownResponse } from "../schemas/analytics.response.schema";
 
@@ -28,7 +27,6 @@ export default function AnalyticsContainer({
   const [activeTab, setActiveTab] = useState<"category" | "trends" | "assets">(
     "category",
   );
-  const [isCreateAssetOpen, setIsCreateAssetOpen] = useState(false);
 
   const handleTabChange = (value: string) => {
     setActiveTab(value as "category" | "trends" | "assets");
@@ -86,16 +84,10 @@ export default function AnalyticsContainer({
             <MonthlyTrendsContainer />
           </TabsContent>
           <TabsContent value="assets" className="h-full flex flex-col min-h-0">
-            <AssetDistributionContainer
-              onAddAsset={() => setIsCreateAssetOpen(true)}
-            />
+            <AssetDistributionContainer />
           </TabsContent>
         </TabsContents>
       </Tabs>
-
-      {isCreateAssetOpen && (
-        <CreateAssetsContainer onClose={() => setIsCreateAssetOpen(false)} />
-      )}
     </div>
   );
 }

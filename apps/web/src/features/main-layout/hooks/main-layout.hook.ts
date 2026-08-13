@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useMemo, useEffect, useRef } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCategories } from "@/shared/lib/hooks/useCategories.hook";
 import { useCategoryUIStore } from "@/features/category/hooks/category.hook";
@@ -7,12 +7,11 @@ import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { useAssetUIStore } from "@/features/assets/hooks/assets.hook";
 import { useAssets } from "@/shared/lib/hooks/useAssets.hook";
 import {
-  isMainTabRoute,
   extractCategoryId,
   isSyntheticCategoryId,
   getSyntheticCategory,
-  getMainContentClassNames,
   getMainLayoutRoute,
+  isMainTabRoute,
 } from "../helpers/main-layout.helper";
 import type { Asset } from "@/shared/lib/types/asset.type";
 
@@ -79,27 +78,8 @@ export function useMainLayout({
     (state) => state.toggleEditingList,
   );
   const hasAssets = useAssetUIStore((state) => state.hasAssets);
-  const isSearchMode = useAssetUIStore((state) => state.isSearchMode);
   const setSearchMode = useAssetUIStore((state) => state.setSearchMode);
-  const searchKeyword = useAssetUIStore((state) => state.searchKeyword);
   const setSearchKeyword = useAssetUIStore((state) => state.setSearchKeyword);
-
-  const [isCreateAssetModalOpen, setIsCreateAssetModalOpen] = useState(false);
-
-  // Tab & Header Conditions
-  const isMainTab = isMainTabRoute(pathname);
-  const shouldShowTopAppBar = !isMainTab;
-
-  const { mainContentClassName, mainOverflowClassName } = useMemo(
-    () =>
-      getMainContentClassNames({
-        isMainTab,
-        shouldShowTopAppBar,
-        isSearchMode,
-        pathname,
-      }),
-    [isMainTab, shouldShowTopAppBar, isSearchMode, pathname],
-  );
 
   const handleBack = () => {
     if (routeName === "supportFeedback" || routeName === "supportContact") {
@@ -120,11 +100,6 @@ export function useMainLayout({
     router.back();
   };
 
-  const handleCloseSearch = () => {
-    setSearchMode(false);
-    setSearchKeyword("");
-  };
-
   useEffect(() => {
     if (pathname !== "/settings") shouldUseHomeFallback.current = false;
   }, [pathname]);
@@ -142,8 +117,7 @@ export function useMainLayout({
     route: {
       pathname,
       name: routeName,
-      isMainTab,
-      shouldShowTopAppBar,
+      shouldShowTopAppBar: !isMainTabRoute(pathname),
     },
     translation: t,
     navigation: {
@@ -160,21 +134,6 @@ export function useMainLayout({
       isEditingAssets,
       toggleEditingAssets,
       hasAssets,
-    },
-    search: {
-      isSearchMode,
-      searchKeyword,
-      setSearchKeyword,
-      handleCloseSearch,
-    },
-    dialog: {
-      isCreateAssetModalOpen,
-      openCreateAssetModal: () => setIsCreateAssetModalOpen(true),
-      closeCreateAssetModal: () => setIsCreateAssetModalOpen(false),
-    },
-    content: {
-      mainContentClassName,
-      mainOverflowClassName,
     },
   };
 }

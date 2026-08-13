@@ -15,7 +15,7 @@ import SettingsMenuItem from "../components/SettingsMenuItem";
 import SettingsSection from "../components/SettingsSection";
 import SettingsAccountLinkClient from "../components/SettingsAccountLinkClient";
 import SettingsLanguageClient from "../components/SettingsLanguageClient";
-import SettingsLegalClient from "../components/SettingsLegalClient";
+import SettingsLegal from "../components/SettingsLegal";
 import SettingsThemeClient from "../components/SettingsThemeClient";
 
 export default function SettingsMobileContainer({
@@ -25,9 +25,12 @@ export default function SettingsMobileContainer({
     translations[language][key] ?? translations.en[key];
 
   return (
-    <div className="lg:hidden space-y-6 px-4 py-3 animate-in fade-in duration-300">
+    <div className="lg:hidden space-y-6 px-4 py-3 sm:p-0 animate-in fade-in duration-300">
       <SettingsSection title={t("personalInfo")}>
-        <SettingsAccountLinkClient />
+        <SettingsAccountLinkClient
+          label={t("account")}
+          lockMessage={t("accountSettingsBackup")}
+        />
       </SettingsSection>
 
       <SettingsSection title={t("preferences")}>
@@ -95,7 +98,12 @@ export default function SettingsMobileContainer({
         </div>
       </SettingsSection>
 
-      <SettingsLegalClient version={APP_VERSION} />
+      <SettingsLegal
+        version={APP_VERSION}
+        termsLabel={t("termsOfService")}
+        privacyLabel={t("privacyPolicy")}
+        copyrightNotice={t("copyrightNotice")}
+      />
     </div>
   );
 }
