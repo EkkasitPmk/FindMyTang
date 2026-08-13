@@ -1,4 +1,3 @@
-"use client";
 import { useI18nStore } from "../storages/i18n.storage";
 import {
   translations,
