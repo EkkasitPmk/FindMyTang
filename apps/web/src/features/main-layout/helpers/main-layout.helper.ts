@@ -33,6 +33,16 @@ export function isMainTabRoute(pathname: string): boolean {
   return MAIN_TAB_ROUTES.has(getMainLayoutRoute(pathname));
 }
 
+export function getBackFallbackHref(route: MainLayoutRoute): string {
+  if (route === "assetsNew") return "/assets";
+  if (route === "settingsAccount") return "/dashboard";
+  if (route === "supportContact" || route === "supportFeedback") {
+    return "/settings";
+  }
+  if (route === "analyticsCategory") return "/analytics";
+  return "/dashboard";
+}
+
 export function shouldShowProfile(route: MainLayoutRoute): boolean {
   return route === "dashboard";
 }
