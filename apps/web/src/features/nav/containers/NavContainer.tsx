@@ -215,7 +215,7 @@ export default function NavContainer({
   const { mutateAsync: logoutUserAsync, isPending: isLogoutPending } =
     useLogoutMutation({
       onSuccess: () => {
-        router.push("/dashboard");
+        window.location.replace("/dashboard");
       },
       onError: () => {
         setIsLoggingOutLocal(false);
@@ -365,23 +365,22 @@ export default function NavContainer({
     closeLogoutConfirm();
     if (isGuest) {
       setIsLoggingOutLocal(true);
+      await queryClient.cancelQueries();
+      queryClient.clear();
       await clearGuestData();
       setGuestMode(false);
-      queryClient.clear();
       toast.success(t("guestSessionCleared"));
       router.push("/login");
     } else {
       setIsLoggingOutLocal(true);
       try {
-        // Clear local data and cache BEFORE switching to guest mode to prevent UI flash
-        await clearGuestData();
+        await queryClient.cancelQueries();
         queryClient.clear();
 
-        // Set guest mode and seed default data
         setGuestMode(true);
+        await clearGuestData();
         await useGuestStore.getState().seedDefaultGuestData();
 
-        // Logout from server, which will trigger a hard reload to /dashboard
         await logoutUserAsync();
       } catch (error) {
         console.error("Logout failed", error);
