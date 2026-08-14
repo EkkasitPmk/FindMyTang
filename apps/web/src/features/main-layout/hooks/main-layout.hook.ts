@@ -10,6 +10,7 @@ import {
   extractCategoryId,
   isSyntheticCategoryId,
   getSyntheticCategory,
+  getBackFallbackHref,
   getMainLayoutRoute,
   isMainTabRoute,
 } from "../helpers/main-layout.helper";
@@ -81,6 +82,16 @@ export function useMainLayout({
   const setSearchMode = useAssetUIStore((state) => state.setSearchMode);
   const setSearchKeyword = useAssetUIStore((state) => state.setSearchKeyword);
 
+  function goBackOrFallback() {
+    const currentUrl = window.location.href;
+    window.setTimeout(() => {
+      if (window.location.href === currentUrl) {
+        router.replace(getBackFallbackHref(routeName));
+      }
+    }, 300);
+    router.back();
+  }
+
   const handleBack = () => {
     if (routeName === "supportFeedback" || routeName === "supportContact") {
       const event = new CustomEvent<{ handled: boolean }>(
@@ -97,7 +108,11 @@ export function useMainLayout({
       router.replace("/dashboard");
       return;
     }
-    router.back();
+    if (routeName === "settingsAccount") {
+      router.replace("/dashboard");
+      return;
+    }
+    goBackOrFallback();
   };
 
   useEffect(() => {
@@ -110,7 +125,7 @@ export function useMainLayout({
       return;
     }
 
-    router.back();
+    goBackOrFallback();
   };
 
   return {

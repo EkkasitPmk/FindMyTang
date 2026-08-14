@@ -5,7 +5,6 @@ import { User, CategoryType } from "@prisma/client";
 export interface CreateUserData {
   email?: string;
   password?: string;
-  isGuest?: boolean;
   displayName?: string;
   avatarUrl?: string;
   language?: string;
@@ -22,7 +21,6 @@ export interface CreateUserData {
 export interface UpdateUserData {
   email?: string;
   password?: string;
-  isGuest?: boolean;
   displayName?: string;
   avatarUrl?: string;
   language?: string;

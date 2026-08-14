@@ -6,6 +6,7 @@ import {
   isSyntheticCategoryId,
   getSyntheticCategory,
   getMainContentClassNames,
+  getBackFallbackHref,
   getMainLayoutRoute,
   getMainLayoutDescription,
   shouldShowProfile,
@@ -59,6 +60,14 @@ describe("main-layout.helper", () => {
     expect(isMainTabRoute("/transaction")).toBe(true);
     expect(isMainTabRoute("/categories")).toBe(false);
     expect(isMainTabRoute("/settings")).toBe(false);
+  });
+
+  it("returns an in-app fallback when browser history has no previous page", () => {
+    expect(getBackFallbackHref("assetsNew")).toBe("/assets");
+    expect(getBackFallbackHref("settingsAccount")).toBe("/dashboard");
+    expect(getBackFallbackHref("supportContact")).toBe("/settings");
+    expect(getBackFallbackHref("analyticsCategory")).toBe("/analytics");
+    expect(getBackFallbackHref("categories")).toBe("/dashboard");
   });
 
   it("extracts category ID from analytics category path", () => {

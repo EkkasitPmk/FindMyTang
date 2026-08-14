@@ -20,7 +20,6 @@ async function main() {
     update: {},
     create: {
       email: systemEmail,
-      isGuest: false,
       displayName: "System",
       language: "th",
     },
