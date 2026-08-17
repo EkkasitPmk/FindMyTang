@@ -1,52 +1,81 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, type UIEvent } from "react";
 
 interface UseInfiniteTransactionScrollParams {
-  useVirtualization: boolean;
   isLoadingTransactions: boolean;
+  isFetchingPreviousPage: boolean;
   isFetchingNextPage: boolean;
+  hasPreviousPage: boolean;
   hasNextPage: boolean;
+  fetchPreviousPage?: () => void;
   fetchNextPage?: () => void;
 }
 
 export function useInfiniteTransactionScroll({
-  useVirtualization,
   isLoadingTransactions,
+  isFetchingPreviousPage,
   isFetchingNextPage,
+  hasPreviousPage,
   hasNextPage,
+  fetchPreviousPage,
   fetchNextPage,
 }: UseInfiniteTransactionScrollParams) {
-  const observer = useRef<IntersectionObserver | null>(null);
+  const previousScrollTop = useRef(0);
+  const wasNearTop = useRef(false);
+  const wasNearBottom = useRef(false);
+  const previousPageRequested = useRef(false);
+  const nextPageRequested = useRef(false);
+  const onScroll = useCallback(
+    (event: UIEvent<HTMLDivElement>) => {
+      const { clientHeight, scrollHeight, scrollTop } = event.currentTarget;
+      const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+      const scrollDelta = scrollTop - previousScrollTop.current;
+      previousScrollTop.current = scrollTop;
+      const isNearTop = scrollTop < 160;
+      const isNearBottom = distanceFromBottom < 200;
+      const enteredTop = isNearTop && !wasNearTop.current;
+      const enteredBottom = isNearBottom && !wasNearBottom.current;
+      wasNearTop.current = isNearTop;
+      wasNearBottom.current = isNearBottom;
 
-  const observerTarget = useCallback(
-    (node: HTMLDivElement | null) => {
-      observer.current?.disconnect();
+      if (!isNearTop) previousPageRequested.current = false;
+      if (!isNearBottom) nextPageRequested.current = false;
+
+      if (isLoadingTransactions) return;
+
       if (
-        !node ||
-        useVirtualization ||
-        isLoadingTransactions ||
-        isFetchingNextPage
+        scrollDelta < 0 &&
+        enteredTop &&
+        !previousPageRequested.current &&
+        !isFetchingPreviousPage &&
+        hasPreviousPage &&
+        fetchPreviousPage
       ) {
-        return;
+        previousPageRequested.current = true;
+        fetchPreviousPage();
       }
 
-      observer.current = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting && hasNextPage && fetchNextPage) {
-            fetchNextPage();
-          }
-        },
-        { rootMargin: "800px 0px" },
-      );
-      observer.current.observe(node);
+      if (
+        scrollDelta > 0 &&
+        enteredBottom &&
+        !nextPageRequested.current &&
+        !isFetchingNextPage &&
+        hasNextPage &&
+        fetchNextPage
+      ) {
+        nextPageRequested.current = true;
+        fetchNextPage();
+      }
     },
     [
-      useVirtualization,
       isLoadingTransactions,
+      isFetchingPreviousPage,
       isFetchingNextPage,
+      hasPreviousPage,
       hasNextPage,
+      fetchPreviousPage,
       fetchNextPage,
     ],
   );
 
-  return observerTarget;
+  return onScroll;
 }

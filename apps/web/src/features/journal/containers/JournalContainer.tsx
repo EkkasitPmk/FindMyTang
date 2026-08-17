@@ -75,10 +75,12 @@ export default function JournalContainer({
   const {
     data: transactionsData,
     isLoading: isLoadingTransactions,
-    isFetching: isFetchingTransactions,
     fetchNextPage,
+    fetchPreviousPage,
     hasNextPage,
+    hasPreviousPage,
     isFetchingNextPage,
+    isFetchingPreviousPage,
   } = useInfiniteTransactionsQuery(
     {
       limit: 30,
@@ -93,6 +95,7 @@ export default function JournalContainer({
     },
     {
       initialData: canUseInitialTransactions ? initialTransactions : undefined,
+      maxPages: 3,
     },
   );
 
@@ -304,15 +307,15 @@ export default function JournalContainer({
                     isLoadingTransactions={
                       !transactionsData && isLoadingTransactions
                     }
-                    isFetchingTransactions={isFetchingTransactions}
                     isFetchingNextPage={isFetchingNextPage}
+                    isFetchingPreviousPage={isFetchingPreviousPage}
                     hasNextPage={hasNextPage}
+                    hasPreviousPage={hasPreviousPage}
                     fetchNextPage={fetchNextPage}
+                    fetchPreviousPage={fetchPreviousPage}
                     isSearchMode={searchKeyword.length > 0}
                     searchKeyword={searchKeyword}
                     page="journal"
-                    useVirtualization
-                    paginationKey={`${selectedType}:${sortType}:${debouncedSearchKeyword}`}
                   />
                 </div>
               </div>
