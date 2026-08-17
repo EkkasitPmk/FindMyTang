@@ -43,6 +43,7 @@ export const paginatedTransactionResponseSchema = z.object({
     total: z.number(),
     totalPages: z.number(),
     nextCursor: z.string().nullable().optional(),
+    previousCursor: z.string().nullable().optional(),
   }),
 });
 

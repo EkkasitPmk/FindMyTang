@@ -69,6 +69,7 @@ export interface TransactionQuery {
   limit?: number;
   pagination?: "page" | "cursor";
   cursor?: string;
+  cursorDirection?: "next" | "previous";
   type?: string;
   assetId?: string;
   categoryId?: string;
