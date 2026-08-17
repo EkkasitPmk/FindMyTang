@@ -321,7 +321,7 @@ export default function ManageAssetsContainer({
     <>
       <section
         className={cn(
-          "px-4 sm:p-0 space-y-4",
+          "px-4 py-2 space-y-4",
           localActiveAssets.length === 0 &&
             archivedAssets.length === 0 &&
             deletedAssets.length === 0 &&
