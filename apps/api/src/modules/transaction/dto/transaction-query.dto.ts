@@ -58,6 +58,16 @@ export class TransactionQueryDto {
   cursor?: string;
 
   @ApiProperty({
+    description: "Direction to read from the cursor",
+    enum: ["next", "previous"],
+    required: false,
+    default: "next",
+  })
+  @IsOptional()
+  @IsIn(["next", "previous"])
+  cursorDirection?: "next" | "previous" = "next";
+
+  @ApiProperty({
     description:
       "Filter by transaction type (INCOME, EXPENSE, TRANSFER, ADJUSTMENT)",
     enum: TransactionType,
