@@ -23,6 +23,7 @@ import {
   SheetFooter,
   SheetClose,
 } from "@/shared/components/animate-ui/components/radix/sheet";
+import { useIsMobile } from "@/shared/lib/hooks/use-mobile";
 
 interface AssetFormProps {
   register: UseFormRegister<CreateAssetFormValues>;
@@ -71,6 +72,8 @@ export default function AssetForm({
     submitButtonText = t("saveChanges");
   }
 
+  const isMobile = useIsMobile();
+
   return (
     <Sheet
       open={true}
@@ -79,7 +82,7 @@ export default function AssetForm({
       }}
     >
       <SheetContent
-        side="bottom"
+        side={isMobile ? "bottom" : "right"}
         className="sm:mx-auto sm:max-w-lg"
         onOpenAutoFocus={(event) => event.preventDefault()}
       >
@@ -96,7 +99,7 @@ export default function AssetForm({
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-4 flex-1 flex flex-col min-h-0"
         >
-          <div className="space-y-4 overflow-y-auto custom-scrollbar p-4 m-0">
+          <div className="space-y-4 overflow-y-auto sm:overflow-y-visible custom-scrollbar p-4 m-0">
             {/* Type */}
             <div className="flex flex-col gap-1.5 relative">
               <label

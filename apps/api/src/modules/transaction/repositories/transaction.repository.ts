@@ -45,14 +45,22 @@ export class TransactionRepository {
     items: Transaction[];
     total: number;
     nextCursor?: string | null;
+    previousCursor?: string | null;
   }> {
-    const { page = 1, limit = 20, pagination = "page", cursor } = query;
+    const {
+      page = 1,
+      limit = 20,
+      pagination = "page",
+      cursor,
+      cursorDirection = "next",
+    } = query;
     const useCursor = this.supportsCursor(pagination, query.sortType);
     const where = await this.buildWhere(userId, query);
     this.applyCursorFilter(
       where,
       useCursor ? cursor : undefined,
       query.sortType,
+      cursorDirection,
     );
 
     const items = await this.prisma.transaction.findMany({
@@ -62,17 +70,32 @@ export class TransactionRepository {
         toAsset: true,
         category: true,
       },
-      orderBy: this.getOrderBy(query.sortType),
+      orderBy: this.getOrderBy(
+        query.sortType,
+        useCursor && cursorDirection === "previous",
+      ),
       skip: useCursor ? undefined : (page - 1) * limit,
       take: useCursor ? limit + 1 : limit,
     });
-    const pageItems = useCursor ? items.slice(0, limit) : items;
+    let pageItems = items;
+    if (useCursor) {
+      pageItems = items.slice(0, limit);
+      if (cursorDirection === "previous") pageItems.reverse();
+    }
     const nextCursor = this.getNextCursor(items, pageItems, limit, useCursor);
+    const previousCursor = this.getPreviousCursor(
+      items,
+      pageItems,
+      limit,
+      useCursor,
+      cursor,
+      cursorDirection,
+    );
     const total = useCursor
       ? 0
       : await this.prisma.transaction.count({ where });
 
-    return { items: pageItems, total, nextCursor };
+    return { items: pageItems, total, nextCursor, previousCursor };
   }
 
   private async buildWhere(
@@ -162,20 +185,24 @@ export class TransactionRepository {
 
   private getOrderBy(
     sortType?: string,
+    reverse: boolean = false,
   ):
     | Prisma.TransactionOrderByWithRelationInput
     | Prisma.TransactionOrderByWithRelationInput[] {
     switch (sortType) {
       case "DATE_OLDEST":
-        return [{ date: "asc" }, { createdAt: "asc" }, { id: "asc" }];
+        return reverse
+          ? [{ date: "desc" }, { createdAt: "desc" }, { id: "desc" }]
+          : [{ date: "asc" }, { createdAt: "asc" }, { id: "asc" }];
       case "AMOUNT_HIGHEST":
         return { amount: "desc" };
       case "AMOUNT_LOWEST":
         return { amount: "asc" };
       case "DATE_NEWEST":
-        return [{ date: "desc" }, { createdAt: "desc" }, { id: "desc" }];
       default:
-        return [{ date: "desc" }, { createdAt: "desc" }];
+        return reverse
+          ? [{ date: "asc" }, { createdAt: "asc" }, { id: "asc" }]
+          : [{ date: "desc" }, { createdAt: "desc" }, { id: "desc" }];
     }
   }
 
@@ -183,11 +210,16 @@ export class TransactionRepository {
     where: Prisma.TransactionWhereInput,
     cursor: string | undefined,
     sortType?: string,
+    cursorDirection: "next" | "previous" = "next",
   ): void {
     if (!cursor) return;
 
     const decoded = this.decodeCursor(cursor);
-    const direction = sortType === "DATE_OLDEST" ? "gt" : "lt";
+    const isOldestFirst = sortType === "DATE_OLDEST";
+    let direction: "lt" | "gt" = isOldestFirst ? "gt" : "lt";
+    if (cursorDirection === "previous") {
+      direction = isOldestFirst ? "lt" : "gt";
+    }
     const cursorFilter: Prisma.TransactionWhereInput = {
       OR: [
         { date: { [direction]: new Date(decoded.date) } },
@@ -249,6 +281,34 @@ export class TransactionRepository {
     ).toString("base64url");
   }
 
+  private getPreviousCursor(
+    items: Transaction[],
+    pageItems: Transaction[],
+    limit: number,
+    useCursor: boolean,
+    cursor: string | undefined,
+    cursorDirection: "next" | "previous",
+  ): string | null {
+    const first = pageItems[0];
+    if (!useCursor || !first) return null;
+
+    if (cursorDirection === "next" && cursor) return this.encodeCursor(first);
+    if (cursorDirection === "previous" && items.length > limit) {
+      return this.encodeCursor(first);
+    }
+    return null;
+  }
+
+  private encodeCursor(transaction: Transaction): string {
+    return Buffer.from(
+      JSON.stringify({
+        date: transaction.date.toISOString(),
+        createdAt: transaction.createdAt.toISOString(),
+        id: transaction.id,
+      }),
+    ).toString("base64url");
+  }
+
   async update(
     id: string,
     userId: string,
@@ -292,8 +352,6 @@ export class TransactionRepository {
     return Array.from(years);
   }
 
-  // ponytail: Use Prisma raw query if performance is an issue later.
-  // Currently fetching dates and doing memory map since dataset per user is small enough.
   async getAvailableDates(
     userId: string,
     assetId?: string,

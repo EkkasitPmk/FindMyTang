@@ -213,6 +213,9 @@ export class TransactionPaginationMetaDto {
 
   @ApiProperty({ required: false, nullable: true })
   nextCursor?: string | null;
+
+  @ApiProperty({ required: false, nullable: true })
+  previousCursor?: string | null;
 }
 
 export class PaginatedTransactionResponseDto {

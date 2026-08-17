@@ -242,10 +242,8 @@ export class TransactionController {
     @CurrentUser() user: User,
     @Query() query: TransactionQueryDto,
   ): Promise<PaginatedTransactionResponseDto> {
-    const { items, total, nextCursor } = await this.transactionService.findAll(
-      user.id,
-      query,
-    );
+    const { items, total, nextCursor, previousCursor } =
+      await this.transactionService.findAll(user.id, query);
     const limit = query.limit || 20;
     const page = query.page || 1;
 
@@ -257,6 +255,7 @@ export class TransactionController {
         total,
         totalPages: Math.ceil(total / limit),
         nextCursor,
+        previousCursor,
       },
     };
   }

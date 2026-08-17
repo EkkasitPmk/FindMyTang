@@ -25,7 +25,7 @@ export default function SettingsMobileContainer({
     translations[language][key] ?? translations.en[key];
 
   return (
-    <div className="lg:hidden space-y-6 px-4 py-3 sm:p-0 animate-in fade-in duration-300">
+    <div className="lg:hidden space-y-6 px-4 py-3 animate-in fade-in duration-300">
       <SettingsSection title={t("personalInfo")}>
         <SettingsAccountLinkClient
           label={t("account")}

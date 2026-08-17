@@ -350,7 +350,7 @@ export default function TransactionsContainer({
       onSubmit={handleSubmit(onSubmit)}
       onReset={handleResetForm}
       className={cn(
-        "grid grid-cols-1 grid-rows-[79dvh_auto]",
+        "grid grid-cols-1 grid-rows-[79dvh_auto] sm:grid-rows-[87dvh_auto]",
         editId ? "lg:grid-rows-[80dvh_auto]" : "lg:grid-rows-[86dvh_auto]",
       )}
     >

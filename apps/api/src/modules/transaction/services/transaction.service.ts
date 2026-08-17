@@ -324,6 +324,7 @@ export class TransactionService implements OnModuleInit, OnModuleDestroy {
     items: Transaction[];
     total: number;
     nextCursor?: string | null;
+    previousCursor?: string | null;
   }> {
     const result = await this.transactionRepository.findAllByUserId(
       userId,

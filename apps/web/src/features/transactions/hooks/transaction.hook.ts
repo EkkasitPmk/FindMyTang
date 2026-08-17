@@ -27,6 +27,13 @@ import { AxiosError } from "axios";
 import { ApiErrorResponse } from "@/shared/lib/types/api.type";
 import { useGuestStore } from "@/shared/lib/storages/guest.storage";
 
+type CursorPageParam = {
+  cursor?: string;
+  cursorDirection: "next" | "previous";
+};
+
+type InfiniteTransactionPageParam = number | CursorPageParam;
+
 const invalidateQueries = async (queryClient: QueryClient) => {
   await Promise.all([
     queryClient.invalidateQueries({ queryKey: ["assets"] }),
@@ -176,6 +183,7 @@ export const useInfiniteTransactionsQuery = (
   options?: {
     enabled?: boolean;
     initialData?: PaginatedTransactionResponse;
+    maxPages?: number;
   },
 ) => {
   const isGuest = useGuestStore((state) => state.isGuest);
@@ -187,16 +195,18 @@ export const useInfiniteTransactionsQuery = (
     AxiosError<ApiErrorResponse>,
     InfiniteData<PaginatedTransactionResponse>,
     readonly unknown[],
-    number | string | undefined
+    InfiniteTransactionPageParam
   >({
     queryKey: ["transactions", "infinite", { isGuest, ...params }],
     enabled: options?.enabled ?? true,
-    queryFn: async ({ pageParam = 1, signal }) => {
+    queryFn: async ({ pageParam, signal }) => {
       if (queryParams?.pagination === "cursor") {
+        const cursorPageParam = pageParam as CursorPageParam;
         return getTransactionsApi(
           {
             ...queryParams,
-            cursor: pageParam === 1 ? undefined : (pageParam as string),
+            cursor: cursorPageParam.cursor,
+            cursorDirection: cursorPageParam.cursorDirection,
           },
           signal,
         );
@@ -209,7 +219,9 @@ export const useInfiniteTransactionsQuery = (
     },
     getNextPageParam: (lastPage: PaginatedTransactionResponse) => {
       if (queryParams?.pagination === "cursor") {
-        return lastPage.meta.nextCursor ?? undefined;
+        return lastPage.meta.nextCursor
+          ? { cursor: lastPage.meta.nextCursor, cursorDirection: "next" }
+          : undefined;
       }
 
       if (lastPage.meta.page < lastPage.meta.totalPages) {
@@ -217,13 +229,31 @@ export const useInfiniteTransactionsQuery = (
       }
       return undefined;
     },
-    initialPageParam: queryParams?.pagination === "cursor" ? undefined : 1,
+    getPreviousPageParam: (firstPage: PaginatedTransactionResponse) => {
+      if (queryParams?.pagination === "cursor") {
+        return firstPage.meta.previousCursor
+          ? {
+              cursor: firstPage.meta.previousCursor,
+              cursorDirection: "previous",
+            }
+          : undefined;
+      }
+
+      return firstPage.meta.page > 1 ? firstPage.meta.page - 1 : undefined;
+    },
+    maxPages: options?.maxPages,
+    initialPageParam:
+      queryParams?.pagination === "cursor" ? { cursorDirection: "next" } : 1,
     initialData:
       isGuest || !options?.initialData
         ? undefined
         : {
             pages: [options.initialData],
-            pageParams: [queryParams?.pagination === "cursor" ? undefined : 1],
+            pageParams: [
+              queryParams?.pagination === "cursor"
+                ? { cursorDirection: "next" }
+                : 1,
+            ],
           },
     staleTime: !isGuest && options?.initialData ? 30_000 : 0,
   });

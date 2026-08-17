@@ -1,5 +1,5 @@
 import { Skeleton } from "@/shared/components/ui/skeleton";
-import { RefObject, useCallback, useEffect, useMemo, useRef } from "react";
+import { RefObject } from "react";
 import {
   GroupedTransaction,
   TransactionResponse,
@@ -9,87 +9,12 @@ import { TransactionGroupHeader } from "./TransactionGroupHeader";
 import { cn } from "@/shared/lib/utils/core.util";
 import TransactionListSkeleton from "../skeletons/TransactionListSkeleton";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
-import { Virtuoso } from "react-virtuoso";
 
 const SKELETON_GROUPS = Array.from({ length: 3 }, (_, i) => i);
-
-interface TransactionListVirtuosoContext {
-  isFetchingNextPage: boolean;
-  hasNextPage: boolean;
-  t: ReturnType<typeof useTranslation>["t"];
-  locale: string;
-  assetId?: string;
-  expandedTransactionId: string | null;
-  setExpandedTransactionId: (id: string | null) => void;
-  onTransactionItemClick: (transaction: TransactionResponse) => void;
-  onRestoreClick?: (transaction: TransactionResponse) => void;
-  onDeleteClick?: (transaction: TransactionResponse) => void;
-  onAttachmentClick?: (url: string) => void;
-}
-
-type VirtualTransactionRow =
-  | { kind: "group"; key: string; group: GroupedTransaction }
-  | {
-      kind: "item";
-      key: string;
-      transaction: TransactionResponse;
-      isLastItem: boolean;
-    };
-
-function renderVirtualTransactionRow(
-  _index: number,
-  row: VirtualTransactionRow,
-  context: TransactionListVirtuosoContext,
-) {
-  if (row.kind === "group") {
-    return (
-      <TransactionGroupHeader
-        group={row.group}
-        t={context.t}
-        locale={context.locale}
-        className="bg-surface py-1.5 px-4 pb-2"
-      />
-    );
-  }
-
-  return (
-    <div className={cn(row.isLastItem && "pb-4")}>
-      <TransactionItem
-        transaction={row.transaction}
-        isLastItem={row.isLastItem}
-        currentAssetId={context.assetId}
-        expandedTransactionId={context.expandedTransactionId}
-        setExpandedTransactionId={context.setExpandedTransactionId}
-        onTransactionItemClick={context.onTransactionItemClick}
-        onRestoreClick={context.onRestoreClick}
-        onDeleteClick={context.onDeleteClick}
-        onAttachmentClick={context.onAttachmentClick}
-      />
-    </div>
-  );
-}
-
-function TransactionListFooter({
-  context,
-}: Readonly<{
-  context?: TransactionListVirtuosoContext;
-}>) {
-  if (context?.hasNextPage) {
-    return (
-      <div className="h-30 overflow-hidden py-4" aria-live="polite">
-        {context.isFetchingNextPage && <TransactionListSkeleton />}
-      </div>
-    );
-  }
-
-  return <div className="h-18" aria-hidden="true" />;
-}
 
 interface TransactionListProps {
   groupedTransactions: GroupedTransaction[];
   isLoadingTransactions: boolean;
-  isFetchingTransactions?: boolean;
-  isFetchingNextPage?: boolean;
   hasNextPage?: boolean;
   assetId?: string;
   onTransactionItemClick: (transaction: TransactionResponse) => void;
@@ -101,17 +26,12 @@ interface TransactionListProps {
   expandedTransactionId: string | null;
   setExpandedTransactionId: (id: string | null) => void;
   onAttachmentClick: (url: string) => void;
-  useVirtualization?: boolean;
-  onEndReached?: () => void;
-  paginationKey?: string;
   transactionListRef?: RefObject<HTMLDivElement | null>;
 }
 
 export function TransactionList({
   groupedTransactions,
   isLoadingTransactions,
-  isFetchingTransactions = false,
-  isFetchingNextPage = false,
   hasNextPage = false,
   assetId,
   onTransactionItemClick,
@@ -123,79 +43,12 @@ export function TransactionList({
   expandedTransactionId,
   setExpandedTransactionId,
   onAttachmentClick,
-  useVirtualization = false,
-  onEndReached,
-  paginationKey,
   transactionListRef,
 }: Readonly<TransactionListProps>) {
   const { t, locale } = useTranslation();
-  const fetchLock = useRef(false);
-  const lastRequestedLength = useRef(0);
-  const flatItems = useMemo(
-    () => groupedTransactions.flatMap((group) => group.items),
-    [groupedTransactions],
-  );
-  const virtualRows = useMemo(
-    () =>
-      groupedTransactions.flatMap((group) => [
-        { kind: "group" as const, key: `group-${group.dateStr}`, group },
-        ...group.items.map((transaction, index) => ({
-          kind: "item" as const,
-          key: transaction.id,
-          transaction,
-          isLastItem: index === group.items.length - 1,
-        })),
-      ]),
-    [groupedTransactions],
-  );
-  const virtuosoContext: TransactionListVirtuosoContext = {
-    isFetchingNextPage,
-    hasNextPage,
-    t,
-    locale,
-    assetId,
-    expandedTransactionId,
-    setExpandedTransactionId,
-    onTransactionItemClick,
-    onRestoreClick,
-    onDeleteClick,
-    onAttachmentClick,
-  };
   const emptyMessage = t(
     isSearchMode ? "noMatchingTransactionsFound" : "noTransactionsFound",
   );
-
-  useEffect(() => {
-    if (!isFetchingNextPage) fetchLock.current = false;
-  }, [isFetchingNextPage]);
-
-  useEffect(() => {
-    fetchLock.current = false;
-    lastRequestedLength.current = 0;
-  }, [paginationKey]);
-
-  const requestNextPage = useCallback(() => {
-    if (
-      !onEndReached ||
-      !hasNextPage ||
-      isFetchingTransactions ||
-      isFetchingNextPage ||
-      fetchLock.current ||
-      lastRequestedLength.current === flatItems.length
-    ) {
-      return;
-    }
-
-    fetchLock.current = true;
-    lastRequestedLength.current = flatItems.length;
-    onEndReached();
-  }, [
-    flatItems.length,
-    hasNextPage,
-    isFetchingTransactions,
-    isFetchingNextPage,
-    onEndReached,
-  ]);
 
   if (isSearchMode && !searchKeyword) {
     return (
@@ -243,36 +96,6 @@ export function TransactionList({
     );
   }
 
-  if (useVirtualization) {
-    if (!groupedTransactions.length) {
-      return (
-        <div className="text-secondary-text h-100 flex items-center justify-center">
-          {emptyMessage}
-        </div>
-      );
-    }
-
-    return (
-      <section className="h-full">
-        <Virtuoso
-          key={paginationKey}
-          className="h-full w-full"
-          data={virtualRows}
-          computeItemKey={(_index, row) => row.key}
-          itemContent={renderVirtualTransactionRow}
-          increaseViewportBy={{ top: 400, bottom: 1000 }}
-          rangeChanged={({ endIndex }) => {
-            if (endIndex >= virtualRows.length - 8) requestNextPage();
-          }}
-          context={virtuosoContext}
-          components={{
-            Footer: TransactionListFooter,
-          }}
-        />
-      </section>
-    );
-  }
-
   if (!groupedTransactions?.length) {
     return (
       <div
@@ -304,18 +127,19 @@ export function TransactionList({
           />
           {group.items.map(
             (transaction: TransactionResponse, txIndex: number) => (
-              <TransactionItem
-                key={transaction.id}
-                transaction={transaction}
-                isLastItem={txIndex === group.items.length - 1}
-                currentAssetId={assetId}
-                expandedTransactionId={expandedTransactionId}
-                setExpandedTransactionId={setExpandedTransactionId}
-                onTransactionItemClick={onTransactionItemClick}
-                onRestoreClick={onRestoreClick}
-                onDeleteClick={onDeleteClick}
-                onAttachmentClick={onAttachmentClick}
-              />
+              <div key={transaction.id} data-transaction-id={transaction.id}>
+                <TransactionItem
+                  transaction={transaction}
+                  isLastItem={txIndex === group.items.length - 1}
+                  currentAssetId={assetId}
+                  expandedTransactionId={expandedTransactionId}
+                  setExpandedTransactionId={setExpandedTransactionId}
+                  onTransactionItemClick={onTransactionItemClick}
+                  onRestoreClick={onRestoreClick}
+                  onDeleteClick={onDeleteClick}
+                  onAttachmentClick={onAttachmentClick}
+                />
+              </div>
             ),
           )}
         </div>

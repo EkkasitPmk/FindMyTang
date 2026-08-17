@@ -1,5 +1,11 @@
 "use client";
-import { RefObject, useState } from "react";
+import {
+  RefObject,
+  useCallback,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { useRouter } from "next/navigation";
 import { TransactionList } from "@/shared/components/customs/TransactionList";
 import TransactionListSkeleton from "@/shared/components/skeletons/TransactionListSkeleton";
@@ -16,37 +22,39 @@ import {
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { cn } from "@/shared/lib/utils/core.util";
 
+const MIN_PAGE_REQUEST_INTERVAL_MS = 1_000;
+
 interface TransactionListContainerProps {
   groupedTransactions: GroupedTransaction[];
   isLoadingTransactions: boolean;
-  isFetchingTransactions?: boolean;
   isFetchingNextPage?: boolean;
+  isFetchingPreviousPage?: boolean;
   hasNextPage?: boolean;
+  hasPreviousPage?: boolean;
   fetchNextPage?: () => void;
+  fetchPreviousPage?: () => void;
   isSearchMode?: boolean;
   searchKeyword?: string;
   assetId?: string;
   page?: "asset" | "journal" | "recent";
-  useVirtualization?: boolean;
   disableOwnScroll?: boolean;
-  paginationKey?: string;
   transactionListRef?: RefObject<HTMLDivElement | null>;
 }
 
 export function TransactionListContainer({
   groupedTransactions,
   isLoadingTransactions,
-  isFetchingTransactions = false,
   isFetchingNextPage = false,
+  isFetchingPreviousPage = false,
   hasNextPage = false,
+  hasPreviousPage = false,
   fetchNextPage,
+  fetchPreviousPage,
   isSearchMode,
   searchKeyword,
   assetId,
   page,
-  useVirtualization = false,
   disableOwnScroll = false,
-  paginationKey,
   transactionListRef,
 }: Readonly<TransactionListContainerProps>) {
   const { t } = useTranslation();
@@ -57,6 +65,11 @@ export function TransactionListContainer({
   >(null);
   const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
   const { modalState, setModalState, resetModalState } = useModalState();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const scrollAnchor = useRef<
+    { id: string; top: number; started: boolean } | undefined
+  >(undefined);
+  const lastPageRequestAt = useRef(0);
 
   const {
     isOpen: isDeleteModalOpen,
@@ -90,16 +103,74 @@ export function TransactionListContainer({
     },
   );
 
-  const observerTarget = useInfiniteTransactionScroll({
-    useVirtualization,
+  const captureScrollAnchor = useCallback(() => {
+    const scrollElement = scrollRef.current;
+    if (!scrollElement) return;
+
+    const containerTop = scrollElement.getBoundingClientRect().top;
+    const item = Array.from(
+      scrollElement.querySelectorAll<HTMLElement>("[data-transaction-id]"),
+    ).find((element) => element.getBoundingClientRect().bottom > containerTop);
+    if (item) {
+      scrollAnchor.current = {
+        id: item.dataset.transactionId!,
+        top: item.getBoundingClientRect().top,
+        started: false,
+      };
+    }
+  }, []);
+
+  const handleFetchNextPage = useCallback(() => {
+    const now = Date.now();
+    if (now - lastPageRequestAt.current < MIN_PAGE_REQUEST_INTERVAL_MS) return;
+    lastPageRequestAt.current = now;
+    captureScrollAnchor();
+    fetchNextPage?.();
+  }, [captureScrollAnchor, fetchNextPage]);
+
+  const handleFetchPreviousPage = useCallback(() => {
+    const now = Date.now();
+    if (now - lastPageRequestAt.current < MIN_PAGE_REQUEST_INTERVAL_MS) return;
+    lastPageRequestAt.current = now;
+    captureScrollAnchor();
+    fetchPreviousPage?.();
+  }, [captureScrollAnchor, fetchPreviousPage]);
+
+  useLayoutEffect(() => {
+    const anchor = scrollAnchor.current;
+    if (!anchor) return;
+
+    if (isFetchingNextPage || isFetchingPreviousPage) {
+      anchor.started = true;
+      return;
+    }
+    if (!anchor.started) return;
+
+    const scrollElement = scrollRef.current;
+    const retainedItem = scrollElement?.querySelector<HTMLElement>(
+      `[data-transaction-id="${anchor.id}"]`,
+    );
+    if (scrollElement && retainedItem) {
+      scrollElement.scrollTop +=
+        retainedItem.getBoundingClientRect().top - anchor.top;
+    }
+    scrollAnchor.current = undefined;
+  }, [groupedTransactions, isFetchingNextPage, isFetchingPreviousPage]);
+
+  const onScroll = useInfiniteTransactionScroll({
     isLoadingTransactions,
+    isFetchingPreviousPage,
     isFetchingNextPage,
+    hasPreviousPage,
     hasNextPage,
-    fetchNextPage,
+    fetchPreviousPage: handleFetchPreviousPage,
+    fetchNextPage: handleFetchNextPage,
   });
 
   return (
     <div
+      ref={scrollRef}
+      onScroll={onScroll}
       className={cn(
         "flex flex-col h-full min-h-0 overflow-y-auto overscroll-contain",
         disableOwnScroll && "h-auto min-h-0 overflow-visible overscroll-auto",
@@ -115,12 +186,18 @@ export function TransactionListContainer({
         </p>
       )}
 
-      <div className={cn(useVirtualization && "flex-1 min-h-0")}>
+      {hasPreviousPage && fetchPreviousPage && (
+        <div
+          className={cn("shrink-0", isFetchingPreviousPage ? "my-4" : "h-px")}
+        >
+          {isFetchingPreviousPage && <TransactionListSkeleton />}
+        </div>
+      )}
+
+      <div>
         <TransactionList
           groupedTransactions={groupedTransactions}
           isLoadingTransactions={isLoadingTransactions}
-          isFetchingTransactions={isFetchingTransactions}
-          isFetchingNextPage={isFetchingNextPage}
           hasNextPage={hasNextPage}
           onTransactionItemClick={handleTransactionItemClick}
           onRestoreClick={handleRestoreClick}
@@ -132,27 +209,12 @@ export function TransactionListContainer({
           expandedTransactionId={expandedTransactionId}
           setExpandedTransactionId={setExpandedTransactionId}
           onAttachmentClick={setPreviewImageUrl}
-          useVirtualization={useVirtualization}
-          paginationKey={paginationKey}
-          onEndReached={() => {
-            if (
-              hasNextPage &&
-              !isFetchingTransactions &&
-              !isFetchingNextPage &&
-              fetchNextPage
-            ) {
-              fetchNextPage();
-            }
-          }}
           transactionListRef={transactionListRef}
         />
       </div>
 
-      {!useVirtualization && hasNextPage && fetchNextPage && (
-        <div
-          ref={observerTarget}
-          className={cn("my-4 shrink-0", page === "asset" && "pb-20")}
-        >
+      {hasNextPage && fetchNextPage && (
+        <div className={cn("my-4 shrink-0", page === "asset" && "pb-20")}>
           {isFetchingNextPage && <TransactionListSkeleton />}
         </div>
       )}
