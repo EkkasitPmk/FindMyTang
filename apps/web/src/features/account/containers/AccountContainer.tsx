@@ -14,7 +14,7 @@ export default async function AccountContainer({
   return (
     <>
       <AvatarClientIsland user={initialUser} />
-      <section className="space-y-10 md:space-y-4 px-4 sm:p-0 pb-18">
+      <section className="space-y-10 md:space-y-4 px-4 sm:py-0 pb-18">
         <ProfileFormClientIsland user={initialUser} />
         <SecurityClientIsland />
         <DangerZoneClientIsland />
