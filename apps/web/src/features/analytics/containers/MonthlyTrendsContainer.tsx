@@ -117,7 +117,9 @@ export const MonthlyTrendsContainer = () => {
           year={data.year}
           activeTypes={activeTypes}
         />
-        <MonthlyTrendsTable data={validMonths} year={data.year} />
+        <div className="sm:px-4">
+          <MonthlyTrendsTable data={validMonths} year={data.year} />
+        </div>
       </div>
     );
   };

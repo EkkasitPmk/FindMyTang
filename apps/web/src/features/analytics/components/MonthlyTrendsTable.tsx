@@ -18,9 +18,9 @@ export const MonthlyTrendsTable = ({ data, year }: MonthlyTrendsTableProps) => {
   if (validData.length === 0) return null;
 
   return (
-    <div className="bg-transparent sm:bg-surface sm:rounded-xl sm:border sm:overflow-hidden">
+    <div className="bg-transparent sm:bg-surface sm:rounded-xl sm:border sm:border-border sm:overflow-hidden">
       {/* Desktop Header */}
-      <div className="hidden sm:grid grid-cols-6 gap-2 p-3 bg-surface-secondary border-b text-xs font-semibold text-secondary-text">
+      <div className="hidden sm:grid grid-cols-6 gap-2 p-3 bg-surface-secondary border-border border-b text-xs font-semibold text-secondary-text">
         <div>{t("monthLabel")}</div>
         <div className="text-right text-income">{t("income")}</div>
         <div className="text-right text-expense">{t("expense")}</div>
@@ -33,7 +33,7 @@ export const MonthlyTrendsTable = ({ data, year }: MonthlyTrendsTableProps) => {
         <div className="text-right">{t("netFlow")}</div>
       </div>
 
-      <div className="flex flex-col gap-3 px-4 pb-18 sm:gap-0 sm:divide-y sm:divide-border">
+      <div className="flex flex-col gap-3 px-4 sm:px-0 pb-18 sm:pb-0 sm:gap-0 sm:divide-y sm:divide-border">
         {validData.map((item) => (
           <div
             key={item.month}
