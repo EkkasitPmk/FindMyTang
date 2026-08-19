@@ -22,6 +22,7 @@ import { cn } from "@/shared/lib/utils/core.util";
 import { Input } from "@/shared/components/customs/Input";
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { useIsMobile } from "@/shared/lib/hooks/use-mobile";
 import {
   Sheet,
   SheetContent,
@@ -86,6 +87,8 @@ export default function CUCategoryModal({
     setValue("color", color);
   };
 
+  const isMobile = useIsMobile();
+
   return (
     <Sheet
       open={isOpen}
@@ -94,7 +97,7 @@ export default function CUCategoryModal({
       }}
     >
       <SheetContent
-        side="bottom"
+        side={isMobile ? "bottom" : "right"}
         className="sm:mx-auto sm:max-w-lg"
         onOpenAutoFocus={(event) => event.preventDefault()}
       >
@@ -194,7 +197,7 @@ export default function CUCategoryModal({
               <p className="text-xs text-muted-foreground font-semibold">
                 {t("icon")}
               </p>
-              <div className="grid grid-cols-6 place-items-center max-h-[16dvh] overflow-auto border border-border rounded-md p-1 bg-background">
+              <div className="grid grid-cols-6 place-items-center max-h-[16dvh] sm:max-h-[26dvh] overflow-auto border border-border rounded-md p-1 bg-background">
                 {SELECTABLE_ICONS.map((iconName) => {
                   const Icon = getCategoryIcon(iconName);
                   const isSelected = selectedIconName === iconName;
@@ -253,7 +256,7 @@ export default function CUCategoryModal({
                   {t("accentColor")}
                 </p>
               </div>
-              <div className="grid grid-cols-7 gap-2 p-3 max-h-[16dvh] overflow-auto bg-surface-secondary/50 rounded-lg border border-border">
+              <div className="grid grid-cols-7 gap-2 p-3 max-h-[16dvh] sm:max-h-dvh overflow-auto bg-surface-secondary/50 rounded-lg border border-border">
                 {PREMIUM_COLORS.map((color) => {
                   const isSelected = selectedColor === color;
                   return (
