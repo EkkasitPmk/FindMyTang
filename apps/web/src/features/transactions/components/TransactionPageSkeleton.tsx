@@ -4,7 +4,7 @@ export default function TransactionPageSkeleton() {
   return (
     <div
       aria-label="Loading transaction"
-      className="grid grid-cols-1 grid-rows-[79dvh_auto] animate-pulse lg:grid-rows-[86dvh_auto]"
+      className="grid grid-cols-1 grid-rows-[79dvh_auto] sm:grid-rows-[87dvh_auto] animate-pulse lg:grid-rows-[86dvh_auto]"
     >
       <div className="mb-2 min-h-0 overflow-y-auto lg:m-0">
         <div className="mb-2 flex justify-center px-4">
