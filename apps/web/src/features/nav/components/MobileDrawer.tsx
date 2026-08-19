@@ -66,21 +66,22 @@ export default function MobileDrawer({
           isOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <div className="space-y-6">
+        <div className="space-y-4">
           {/* Header */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="bg-primary/10 w-8 h-8 rounded-md flex items-center justify-center">
-                <Wallet className="w-4 h-4 text-primary" />
+          <div className="-mx-4 -mt-4 flex items-center justify-between border-b border-border/50 p-3">
+            <div className="flex items-center gap-2.5 overflow-hidden">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary shadow-xs">
+                <Wallet className="h-4.5 w-4.5 text-white" strokeWidth={2} />
               </div>
-              <span className="text-base font-bold tracking-tight text-primary-text">
+              <span className="truncate text-base font-bold tracking-tight text-primary-text">
                 FindMyTang
               </span>
             </div>
             <Button
               variant="unstyled"
+              type="button"
               onClick={onClose}
-              className="p-1.5 rounded-md hover:bg-surface-secondary text-secondary-text transition-colors"
+              className="shrink-0 rounded-md p-1.5 text-secondary-text transition-colors hover:bg-surface-secondary hover:text-primary-text"
             >
               <X className="w-5 h-5" strokeWidth={1.5} />
             </Button>
@@ -93,7 +94,6 @@ export default function MobileDrawer({
               onNavigate?.(e, href);
               onClose();
             }}
-            itemClassName="py-2"
           />
         </div>
 
