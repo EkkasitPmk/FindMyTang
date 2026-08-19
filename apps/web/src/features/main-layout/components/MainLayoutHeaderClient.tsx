@@ -71,19 +71,35 @@ export default function MainLayoutHeaderClient({
 
       <div
         className={cn(
-          "hidden md:block bg-surface sm:px-6 py-4",
+          "hidden md:flex items-center justify-between bg-surface sm:px-6 py-4",
           "border-b border-border",
         )}
       >
-        <MainLayoutTitle
-          route={route.name}
-          assetName={header.assetName}
-          currentCategory={header.currentCategory}
-          t={t}
-        />
-        <p className="text-sm text-muted-foreground">
-          {getMainLayoutDescription(route.name, t)}
-        </p>
+        <div>
+          <MainLayoutTitle
+            route={route.name}
+            assetName={header.assetName}
+            currentCategory={header.currentCategory}
+            t={t}
+          />
+          <p className="text-sm text-muted-foreground">
+            {getMainLayoutDescription(route.name, t)}
+          </p>
+        </div>
+        <div className="lg:hidden">
+          <MainLayoutRightAction
+            route={route.name}
+            isEditingList={actions.isEditingList}
+            onToggleEditingList={actions.toggleEditingList}
+            onBack={navigation.handleClosePage}
+            hasAssets={actions.hasAssets}
+            isEditingAssets={actions.isEditingAssets}
+            onToggleEditingAssets={actions.toggleEditingAssets}
+            onOpenCreateAssetModal={() => setIsCreateAssetModalOpen(true)}
+            assetMenu={assetMenu}
+            t={t}
+          />
+        </div>
       </div>
 
       {isCreateAssetModalOpen && (
