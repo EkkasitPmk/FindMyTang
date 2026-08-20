@@ -60,7 +60,7 @@ export default function DesktopSidebar({
             FindMyTang
           </span>
         </div>
-        <SidebarTrigger className="text-secondary-text hover:text-primary-text hover:bg-surface-secondary shrink-0" />
+        <SidebarTrigger className="hidden shrink-0 text-secondary-text hover:text-primary-text hover:bg-surface-secondary lg:flex" />
       </SidebarHeader>
 
       <SidebarContent className="px-2 py-4 sm:py-2 group-data-[collapsible=icon]:px-0 items-center justify-between">
@@ -92,7 +92,7 @@ export default function DesktopSidebar({
                         className={cn(
                           "rounded-xl border border-transparent transition-colors duration-200 cursor-pointer font-medium text-sm",
                           isActive
-                            ? "bg-primary-light text-primary font-semibold border-primary-light/80 shadow-xs"
+                            ? "bg-primary-light text-primary font-semibold border-primary-light/80 shadow-xs data-[active=true]:bg-primary-light data-[active=true]:text-primary data-[active=true]:font-semibold"
                             : "text-secondary-text hover:text-primary-text",
                         )}
                       >
@@ -147,7 +147,14 @@ export default function DesktopSidebar({
           user={user}
           isLoading={isLoading}
           onLogout={onLogout}
-          className="border-t-0"
+          flatMenu
+          className="border-t-0 lg:hidden"
+        />
+        <NavUserProfile
+          user={user}
+          isLoading={isLoading}
+          onLogout={onLogout}
+          className="hidden border-t-0 lg:block"
         />
       </SidebarFooter>
     </Sidebar>

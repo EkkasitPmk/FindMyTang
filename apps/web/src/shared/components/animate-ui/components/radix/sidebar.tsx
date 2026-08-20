@@ -323,6 +323,7 @@ function SidebarRail({ className, ...props }: SidebarRailProps) {
 
   return (
     <button
+      type="button"
       data-sidebar="rail"
       data-slot="sidebar-rail"
       aria-label="Toggle Sidebar"
@@ -602,7 +603,11 @@ function SidebarMenuButton({
 
   const button = (
     <HighlightItem
-      activeClassName={sidebarMenuButtonActiveVariants({ variant })}
+      activeClassName={
+        isActive
+          ? "bg-primary-light text-primary rounded-xl"
+          : sidebarMenuButtonActiveVariants({ variant })
+      }
     >
       <Comp
         data-slot="sidebar-menu-button"

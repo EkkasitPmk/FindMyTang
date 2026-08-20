@@ -319,200 +319,204 @@ export default function ManageAssetsContainer({
 
   return (
     <>
-      <section
-        className={cn(
-          "px-4 py-2 space-y-4",
-          localActiveAssets.length === 0 &&
-            archivedAssets.length === 0 &&
-            deletedAssets.length === 0 &&
-            "my-2 pb-4",
-          isEditingList ? "pb-20" : "pb-4",
-        )}
-      >
-        {/* Active Assets */}
-        {localActiveAssets.length > 0 && (
-          <motion.div layout className="space-y-1 pt-2 sm:p-0">
-            {localActiveAssets.map((asset, index) => (
-              <ManageAssetItem
-                key={asset.id}
-                asset={asset}
-                isExpanded={expandedId === asset.id}
-                onToggle={() => handleToggle(asset.id)}
-                onEdit={() => setEditingAsset(asset)}
-                onArchive={() => {
-                  setAssetToArchive(asset);
-                  openArchiveModal();
-                }}
-                onUnarchive={() => {
-                  updateAsset({ id: asset.id, data: { isArchived: false } });
-                }}
-                onRestore={() => {}}
-                onDelete={() => {
-                  setAssetToDelete(asset);
-                  openDeleteModal();
-                }}
-                isEditingList={isEditingList}
-                isSelected={selectedIds.has(asset.id)}
-                onToggleSelect={() => toggleSelect(asset.id)}
-                index={index}
-                draggedIndex={draggedIndex}
-                draggable={false}
-                onDragStart={handleDragStart}
-                onDragOver={handleDragOver}
-                onDragEnd={handleDragEnd}
-                onTouchStart={handleTouchStart}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleTouchEnd}
-              />
-            ))}
-          </motion.div>
-        )}
-
-        {/* Archived Assets Section */}
-        {archivedAssets.length > 0 && (
-          <motion.div
-            layout
-            className={cn(
-              "space-y-1",
-              (localActiveAssets.length !== 0 || deletedAssets.length !== 0) &&
-                "pt-2 border-t border-border",
-            )}
-          >
-            <span className="text-xs font-medium text-disabled-text uppercase tracking-wider px-1">
-              {t("archived")}
-            </span>
-            {archivedAssets.map((asset) => (
-              <ManageAssetItem
-                key={asset.id}
-                asset={asset}
-                isExpanded={expandedId === asset.id}
-                onToggle={() => handleToggle(asset.id)}
-                onEdit={() => {}}
-                onArchive={() => {}}
-                onUnarchive={() => {
-                  updateAsset({ id: asset.id, data: { isArchived: false } });
-                }}
-                onRestore={() => {
-                  setAssetToRestore(asset);
-                }}
-                onDelete={() => {
-                  setAssetToDelete(asset);
-                  openDeleteModal();
-                }}
-                isEditingList={isEditingList}
-                isSelected={selectedIds.has(asset.id)}
-                onToggleSelect={() => toggleSelect(asset.id)}
-                draggable={false}
-              />
-            ))}
-          </motion.div>
-        )}
-
-        {/* Deleted Assets Section */}
-        {deletedAssets.length > 0 && (
-          <motion.div
-            layout
-            className={cn(
-              "space-y-1",
-              (localActiveAssets.length !== 0 || archivedAssets.length !== 0) &&
-                "pt-2 border-t border-border",
-            )}
-          >
-            <span className="text-xs font-medium text-disabled-text uppercase tracking-wider px-1">
-              {t("deleted")}
-            </span>
-            <p className="px-1 text-xs text-secondary-text">
-              {t("deletedItemsDesc")}
-            </p>
-            {deletedAssets.map((asset) => (
-              <ManageAssetItem
-                key={asset.id}
-                asset={asset}
-                isExpanded={expandedId === asset.id}
-                onToggle={() => handleToggle(asset.id)}
-                onEdit={() => {}}
-                onArchive={() => {}}
-                onUnarchive={() => {
-                  updateAsset({ id: asset.id, data: { isArchived: false } });
-                }}
-                onRestore={() => {
-                  setAssetToRestore(asset);
-                }}
-                onDelete={() => {
-                  setAssetToDelete(asset);
-                  openDeleteModal();
-                }}
-                isEditingList={isEditingList}
-                isSelected={selectedIds.has(asset.id)}
-                onToggleSelect={() => toggleSelect(asset.id)}
-                draggable={false}
-              />
-            ))}
-          </motion.div>
-        )}
-
-        {/* Empty state */}
-        {localActiveAssets.length === 0 &&
-          archivedAssets.length === 0 &&
-          deletedAssets.length === 0 && (
-            <div className="flex flex-col items-center justify-center h-[70vh] text-secondary-text text-base">
-              {t("noAssetsFound")}
-            </div>
+      <div className="relative flex h-full min-h-0 flex-col">
+        <section
+          className={cn(
+            "min-h-0 flex-1 overflow-y-auto px-4 py-2 space-y-4 md:pt-0",
+            localActiveAssets.length === 0 &&
+              archivedAssets.length === 0 &&
+              deletedAssets.length === 0 &&
+              "my-2 pb-4",
+            isEditingList ? "pb-20" : "pb-4",
           )}
-      </section>
+        >
+          {/* Active Assets */}
+          {localActiveAssets.length > 0 && (
+            <motion.div layout className="space-y-1 pt-2 sm:p-0">
+              {localActiveAssets.map((asset, index) => (
+                <ManageAssetItem
+                  key={asset.id}
+                  asset={asset}
+                  isExpanded={expandedId === asset.id}
+                  onToggle={() => handleToggle(asset.id)}
+                  onEdit={() => setEditingAsset(asset)}
+                  onArchive={() => {
+                    setAssetToArchive(asset);
+                    openArchiveModal();
+                  }}
+                  onUnarchive={() => {
+                    updateAsset({ id: asset.id, data: { isArchived: false } });
+                  }}
+                  onRestore={() => {}}
+                  onDelete={() => {
+                    setAssetToDelete(asset);
+                    openDeleteModal();
+                  }}
+                  isEditingList={isEditingList}
+                  isSelected={selectedIds.has(asset.id)}
+                  onToggleSelect={() => toggleSelect(asset.id)}
+                  index={index}
+                  draggedIndex={draggedIndex}
+                  draggable={false}
+                  onDragStart={handleDragStart}
+                  onDragOver={handleDragOver}
+                  onDragEnd={handleDragEnd}
+                  onTouchStart={handleTouchStart}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEnd}
+                />
+              ))}
+            </motion.div>
+          )}
 
-      {/* Bulk Bottom Bar */}
-      <AnimatePresence>
-        {isEditingList && (
-          <Slide
-            asChild
-            direction="up"
-            offset={96}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          >
-            <div className="fixed bottom-4 left-3 right-3 z-50 rounded-[1.5rem] border border-border/70 bg-surface/95 px-1.5 py-1.5 backdrop-blur-xl">
-              <div className="flex items-center gap-1.5 overflow-x-auto">
-                <span className="flex min-h-10 shrink-0 items-center justify-center rounded-xl px-3 text-sm font-semibold text-secondary-text">
-                  {selectedIds.size} {t("selected")}
-                </span>
-                <div className="flex min-w-max flex-1 items-center justify-end gap-0.5">
-                  {hasActiveSelected && (
+          {/* Archived Assets Section */}
+          {archivedAssets.length > 0 && (
+            <motion.div
+              layout
+              className={cn(
+                "space-y-1",
+                (localActiveAssets.length !== 0 ||
+                  deletedAssets.length !== 0) &&
+                  "pt-2 border-t border-border",
+              )}
+            >
+              <span className="text-xs font-medium text-disabled-text uppercase tracking-wider px-1">
+                {t("archived")}
+              </span>
+              {archivedAssets.map((asset) => (
+                <ManageAssetItem
+                  key={asset.id}
+                  asset={asset}
+                  isExpanded={expandedId === asset.id}
+                  onToggle={() => handleToggle(asset.id)}
+                  onEdit={() => {}}
+                  onArchive={() => {}}
+                  onUnarchive={() => {
+                    updateAsset({ id: asset.id, data: { isArchived: false } });
+                  }}
+                  onRestore={() => {
+                    setAssetToRestore(asset);
+                  }}
+                  onDelete={() => {
+                    setAssetToDelete(asset);
+                    openDeleteModal();
+                  }}
+                  isEditingList={isEditingList}
+                  isSelected={selectedIds.has(asset.id)}
+                  onToggleSelect={() => toggleSelect(asset.id)}
+                  draggable={false}
+                />
+              ))}
+            </motion.div>
+          )}
+
+          {/* Deleted Assets Section */}
+          {deletedAssets.length > 0 && (
+            <motion.div
+              layout
+              className={cn(
+                "space-y-1",
+                (localActiveAssets.length !== 0 ||
+                  archivedAssets.length !== 0) &&
+                  "pt-2 border-t border-border",
+              )}
+            >
+              <span className="text-xs font-medium text-disabled-text uppercase tracking-wider px-1">
+                {t("deleted")}
+              </span>
+              <p className="px-1 text-xs text-secondary-text">
+                {t("deletedItemsDesc")}
+              </p>
+              {deletedAssets.map((asset) => (
+                <ManageAssetItem
+                  key={asset.id}
+                  asset={asset}
+                  isExpanded={expandedId === asset.id}
+                  onToggle={() => handleToggle(asset.id)}
+                  onEdit={() => {}}
+                  onArchive={() => {}}
+                  onUnarchive={() => {
+                    updateAsset({ id: asset.id, data: { isArchived: false } });
+                  }}
+                  onRestore={() => {
+                    setAssetToRestore(asset);
+                  }}
+                  onDelete={() => {
+                    setAssetToDelete(asset);
+                    openDeleteModal();
+                  }}
+                  isEditingList={isEditingList}
+                  isSelected={selectedIds.has(asset.id)}
+                  onToggleSelect={() => toggleSelect(asset.id)}
+                  draggable={false}
+                />
+              ))}
+            </motion.div>
+          )}
+
+          {/* Empty state */}
+          {localActiveAssets.length === 0 &&
+            archivedAssets.length === 0 &&
+            deletedAssets.length === 0 && (
+              <div className="flex flex-col items-center justify-center h-[70vh] text-secondary-text text-base">
+                {t("noAssetsFound")}
+              </div>
+            )}
+        </section>
+
+        {/* Bulk Bottom Bar */}
+        <AnimatePresence>
+          {isEditingList && (
+            <Slide
+              asChild
+              direction="up"
+              offset={96}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            >
+              <div className="absolute bottom-4 left-3 right-3 z-50 rounded-[1.5rem] border border-border/70 bg-surface/95 px-1.5 py-1.5 backdrop-blur-xl">
+                <div className="flex items-center gap-1.5 overflow-x-auto">
+                  <span className="flex min-h-10 shrink-0 items-center justify-center rounded-xl px-3 text-sm font-semibold text-secondary-text">
+                    {selectedIds.size} {t("selected")}
+                  </span>
+                  <div className="flex min-w-max flex-1 items-center justify-end gap-0.5">
+                    {hasActiveSelected && (
+                      <Button
+                        variant="unstyled"
+                        className="flex min-h-10 flex-col items-center justify-center gap-0.5 rounded-xl px-3 py-1 text-[0.5625rem] font-semibold text-investment transition-colors hover:bg-investment-light focus-visible:ring-2 focus-visible:ring-primary/50"
+                        disabled={selectedIds.size === 0}
+                        onClick={openBulkArchiveModal}
+                      >
+                        <Archive className="h-4.5 w-4.5" strokeWidth={2} />
+                        {t("archive")}
+                      </Button>
+                    )}
+                    {hasDeletedSelected && (
+                      <Button
+                        variant="unstyled"
+                        className="flex min-h-10 flex-col items-center justify-center gap-0.5 rounded-xl px-3 py-1 text-[0.5625rem] font-semibold text-income transition-colors hover:bg-income-light focus-visible:ring-2 focus-visible:ring-primary/50"
+                        disabled={selectedIds.size === 0}
+                        onClick={openBulkRestoreModal}
+                      >
+                        <RotateCcw className="h-4.5 w-4.5" strokeWidth={2} />
+                        {t("restore")}
+                      </Button>
+                    )}
                     <Button
                       variant="unstyled"
-                      className="flex min-h-10 flex-col items-center justify-center gap-0.5 rounded-xl px-3 py-1 text-[0.5625rem] font-semibold text-investment transition-colors hover:bg-investment-light focus-visible:ring-2 focus-visible:ring-primary/50"
+                      className="flex min-h-10 flex-col items-center justify-center gap-0.5 rounded-xl px-3 py-1 text-[0.5625rem] font-semibold text-expense transition-colors hover:bg-expense-light focus-visible:ring-2 focus-visible:ring-expense/50"
                       disabled={selectedIds.size === 0}
-                      onClick={openBulkArchiveModal}
+                      onClick={openBulkDeleteModal}
                     >
-                      <Archive className="h-4.5 w-4.5" strokeWidth={2} />
-                      {t("archive")}
+                      <Trash2 className="h-4.5 w-4.5" strokeWidth={2} />
+                      {t("delete")}
                     </Button>
-                  )}
-                  {hasDeletedSelected && (
-                    <Button
-                      variant="unstyled"
-                      className="flex min-h-10 flex-col items-center justify-center gap-0.5 rounded-xl px-3 py-1 text-[0.5625rem] font-semibold text-income transition-colors hover:bg-income-light focus-visible:ring-2 focus-visible:ring-primary/50"
-                      disabled={selectedIds.size === 0}
-                      onClick={openBulkRestoreModal}
-                    >
-                      <RotateCcw className="h-4.5 w-4.5" strokeWidth={2} />
-                      {t("restore")}
-                    </Button>
-                  )}
-                  <Button
-                    variant="unstyled"
-                    className="flex min-h-10 flex-col items-center justify-center gap-0.5 rounded-xl px-3 py-1 text-[0.5625rem] font-semibold text-expense transition-colors hover:bg-expense-light focus-visible:ring-2 focus-visible:ring-expense/50"
-                    disabled={selectedIds.size === 0}
-                    onClick={openBulkDeleteModal}
-                  >
-                    <Trash2 className="h-4.5 w-4.5" strokeWidth={2} />
-                    {t("delete")}
-                  </Button>
+                  </div>
                 </div>
               </div>
-            </div>
-          </Slide>
-        )}
-      </AnimatePresence>
+            </Slide>
+          )}
+        </AnimatePresence>
+      </div>
 
       {/* Edit Modal */}
       {editingAsset && (

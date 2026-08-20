@@ -18,9 +18,9 @@ export const MonthlyTrendsTable = ({ data, year }: MonthlyTrendsTableProps) => {
   if (validData.length === 0) return null;
 
   return (
-    <div className="bg-transparent sm:bg-surface sm:rounded-xl sm:border sm:overflow-hidden">
+    <div className="bg-transparent lg:bg-surface lg:rounded-xl lg:border lg:border-border lg:overflow-hidden">
       {/* Desktop Header */}
-      <div className="hidden sm:grid grid-cols-6 gap-2 p-3 bg-surface-secondary border-b text-xs font-semibold text-secondary-text">
+      <div className="hidden lg:grid grid-cols-6 gap-2 p-3 bg-surface-secondary border-border border-b text-xs font-semibold text-secondary-text">
         <div>{t("monthLabel")}</div>
         <div className="text-right text-income">{t("income")}</div>
         <div className="text-right text-expense">{t("expense")}</div>
@@ -33,14 +33,14 @@ export const MonthlyTrendsTable = ({ data, year }: MonthlyTrendsTableProps) => {
         <div className="text-right">{t("netFlow")}</div>
       </div>
 
-      <div className="flex flex-col gap-3 px-4 pb-18 sm:gap-0 sm:divide-y sm:divide-border">
+      <div className="flex flex-col gap-3 px-4 lg:px-0 pb-18 lg:pb-0 lg:gap-0 lg:divide-y lg:divide-border">
         {validData.map((item) => (
           <div
             key={item.month}
-            className="bg-surface border border-border rounded-xl sm:border-0 sm:rounded-none sm:bg-transparent"
+            className="bg-surface border border-border rounded-xl lg:border-0 lg:rounded-none lg:bg-transparent"
           >
             {/* Mobile View */}
-            <div className="sm:hidden p-3.5 flex flex-col gap-3 h-fit">
+            <div className="lg:hidden p-3.5 flex flex-col gap-3 h-fit">
               <div className="flex justify-between items-center pb-3 border-b border-border">
                 <span className="font-semibold text-sm">
                   {format(new Date(year, item.month - 1), "MMMM", {
@@ -83,7 +83,7 @@ export const MonthlyTrendsTable = ({ data, year }: MonthlyTrendsTableProps) => {
             </div>
 
             {/* Desktop View */}
-            <div className="hidden sm:grid grid-cols-6 gap-2 p-3 text-[0.8125rem] items-center hover:bg-surface-secondary/30 transition-colors">
+            <div className="hidden lg:grid grid-cols-6 gap-2 p-3 text-[0.8125rem] items-center hover:bg-surface-secondary/30 transition-colors">
               <div className="font-medium">
                 {format(new Date(year, item.month - 1), "MMM yy", {
                   locale: dateLocale,

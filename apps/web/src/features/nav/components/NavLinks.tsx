@@ -37,21 +37,21 @@ export default function NavLinks({
             href={item.href}
             onClick={(e) => onLinkClick?.(e, item.href)}
             className={cn(
-              "flex items-center gap-3 px-4 rounded-md text-sm font-medium transition-all duration-200",
+              "flex h-12 w-full items-center gap-3 overflow-hidden rounded-xl border border-transparent p-2 text-left text-sm font-medium outline-hidden ring-sidebar-ring transition-colors duration-200 focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground cursor-pointer",
               isActive
-                ? "bg-primary-light/50 text-primary border border-primary-light"
-                : "text-secondary-text hover:text-primary-text hover:bg-surface-secondary border border-transparent",
+                ? "border-primary-light/80 bg-primary-light font-semibold text-primary shadow-xs"
+                : "text-secondary-text hover:bg-sidebar-accent hover:text-primary-text",
               itemClassName,
             )}
           >
             <Icon
               className={cn(
-                "w-4 h-4 transition-transform",
-                isActive ? "text-primary" : "text-secondary-text",
+                "size-5 shrink-0 transition-transform",
+                isActive ? "scale-105 text-primary" : "text-secondary-text",
               )}
-              strokeWidth={isActive ? 2 : 1.5}
+              strokeWidth={isActive ? 2.2 : 1.75}
             />
-            {displayLabel}
+            <span className="truncate">{displayLabel}</span>
           </Link>
         );
       })}

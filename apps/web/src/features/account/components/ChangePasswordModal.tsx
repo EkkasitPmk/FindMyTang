@@ -6,6 +6,7 @@ import {
 } from "react-hook-form";
 import { ChangePasswordFormValues } from "../schemas/account.form.schema";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { useIsMobile } from "@/shared/lib/hooks/use-mobile";
 import { Input } from "@/shared/components/customs/Input";
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import {
@@ -49,6 +50,7 @@ export default function ChangePasswordModal({
   onToggleShowConfirm,
 }: Readonly<ChangePasswordModalProps>) {
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
 
   return (
     <Sheet
@@ -58,7 +60,7 @@ export default function ChangePasswordModal({
       }}
     >
       <SheetContent
-        side="bottom"
+        side={isMobile ? "bottom" : "right"}
         className="sm:mx-auto sm:max-w-lg"
         onOpenAutoFocus={(event) => event.preventDefault()}
       >
