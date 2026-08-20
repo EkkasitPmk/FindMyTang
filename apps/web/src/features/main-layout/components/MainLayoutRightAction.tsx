@@ -33,7 +33,7 @@ export default function MainLayoutRightAction({
         variant="unstyled"
         type="button"
         onClick={onBack}
-        className="p-1 mr-1 cursor-pointer"
+        className="p-1 mr-2 cursor-pointer flex md:hidden"
       >
         <X size={24} />
       </Button>

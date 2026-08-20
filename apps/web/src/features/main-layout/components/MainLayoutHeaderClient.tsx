@@ -11,6 +11,8 @@ import { getMainLayoutDescription } from "../helpers/main-layout.helper";
 import { useMainLayout } from "../hooks/main-layout.hook";
 import MainLayoutRightAction from "./MainLayoutRightAction";
 import MainLayoutTitle from "./MainLayoutTitle";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
+import { ChevronLeft } from "lucide-react";
 
 export default function MainLayoutHeaderClient({
   initialAssets,
@@ -73,18 +75,31 @@ export default function MainLayoutHeaderClient({
         className={cn(
           "hidden md:flex items-center justify-between bg-surface sm:px-6 py-4",
           "border-b border-border",
+          route.shouldShowTopAppBar && route.name !== "settings" && "sm:pl-2",
         )}
       >
-        <div>
-          <MainLayoutTitle
-            route={route.name}
-            assetName={header.assetName}
-            currentCategory={header.currentCategory}
-            t={t}
-          />
-          <p className="text-sm text-muted-foreground">
-            {getMainLayoutDescription(route.name, t)}
-          </p>
+        <div className="flex items-center gap-2">
+          {route.shouldShowTopAppBar && route.name !== "settings" && (
+            <Button
+              variant="unstyled"
+              type="button"
+              onClick={navigation.handleBack}
+              className="p-1 cursor-pointer lg:hidden"
+            >
+              <ChevronLeft size={24} />
+            </Button>
+          )}
+          <div>
+            <MainLayoutTitle
+              route={route.name}
+              assetName={header.assetName}
+              currentCategory={header.currentCategory}
+              t={t}
+            />
+            <p className="text-sm text-muted-foreground">
+              {getMainLayoutDescription(route.name, t)}
+            </p>
+          </div>
         </div>
         <div className="lg:hidden">
           <MainLayoutRightAction
