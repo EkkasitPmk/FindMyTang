@@ -20,9 +20,9 @@ export const MonthlyTrendsContainer = () => {
           <Skeleton className="h-50 w-full rounded-none" />
 
           {/* Table Skeleton */}
-          <div className="bg-transparent sm:bg-surface sm:rounded-xl sm:border sm:overflow-hidden">
+          <div className="bg-transparent lg:bg-surface lg:rounded-xl lg:border lg:overflow-hidden">
             {/* Desktop Header Skeleton */}
-            <div className="hidden sm:grid grid-cols-6 gap-2 p-3 border-b bg-surface-secondary items-center">
+            <div className="hidden lg:grid grid-cols-6 gap-2 p-3 border-b bg-surface-secondary items-center">
               <Skeleton className="h-3 w-10" />
               <div className="flex justify-end">
                 <Skeleton className="h-3 w-12" />
@@ -41,14 +41,14 @@ export const MonthlyTrendsContainer = () => {
               </div>
             </div>
 
-            <div className="flex flex-col gap-3 px-4 sm:gap-0 sm:divide-y sm:divide-border">
+            <div className="flex flex-col gap-3 px-4 lg:gap-0 lg:divide-y lg:divide-border">
               {[1, 2, 3].map((item) => (
                 <div
                   key={item}
-                  className="bg-surface border border-border rounded-xl sm:border-0 sm:rounded-none sm:bg-transparent"
+                  className="bg-surface border border-border rounded-xl lg:border-0 lg:rounded-none lg:bg-transparent"
                 >
                   {/* Mobile View Skeleton */}
-                  <div className="sm:hidden p-3.5 flex flex-col gap-4 h-fit">
+                  <div className="lg:hidden p-3.5 flex flex-col gap-4 h-fit">
                     <div className="flex justify-between items-center pb-3 border-b border-border">
                       <Skeleton className="h-4 w-20" />
                       <Skeleton className="h-6 w-24" />
@@ -67,7 +67,7 @@ export const MonthlyTrendsContainer = () => {
                   </div>
 
                   {/* Desktop View Skeleton */}
-                  <div className="hidden sm:grid grid-cols-6 gap-2 p-3 items-center">
+                  <div className="hidden lg:grid grid-cols-6 gap-2 p-3 items-center">
                     <Skeleton className="h-3 w-12" />
                     <div className="flex justify-end">
                       <Skeleton className="h-3 w-16" />
@@ -117,7 +117,7 @@ export const MonthlyTrendsContainer = () => {
           year={data.year}
           activeTypes={activeTypes}
         />
-        <div className="sm:px-4">
+        <div className="lg:px-4">
           <MonthlyTrendsTable data={validMonths} year={data.year} />
         </div>
       </div>
