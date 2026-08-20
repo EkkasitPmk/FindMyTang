@@ -10,7 +10,7 @@ export default async function FeedbackStaticHeader() {
   const t = translations[language];
 
   return (
-    <div className="flex shrink-0 flex-col gap-1.5 border-b border-border px-4 py-4 text-left">
+    <div className="flex shrink-0 flex-col gap-1.5 border-b border-border px-4 py-4 md:pt-0 text-left">
       <h1 className="text-base font-semibold text-primary-text">
         {t.feedbackTitle}
       </h1>
