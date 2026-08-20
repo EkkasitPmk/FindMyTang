@@ -118,7 +118,7 @@ export default function ConfirmModal({
           </div>
 
           <div className="space-y-1.5">
-            <AlertDialogTitle className="text-base font-bold text-primary-text">
+            <AlertDialogTitle className="text-base text-center font-bold text-primary-text">
               {title}
             </AlertDialogTitle>
             <AlertDialogDescription className="text-xs text-secondary-text/85 leading-relaxed text-center">
