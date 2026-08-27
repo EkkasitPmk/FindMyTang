@@ -1,4 +1,5 @@
 import { useTheme } from "next-themes";
+import { useId } from "react";
 import { Sun, Moon, Monitor } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/shared/lib/utils/core.util";
@@ -23,6 +24,7 @@ export default function ThemeSwitcher({
   mobileMenu = false,
 }: Readonly<ThemeSwitcherProps>) {
   const { theme, resolvedTheme, setTheme } = useTheme();
+  const activePillLayoutId = useId();
 
   const options = [
     { value: "light" as const, icon: Sun, label: "Light" },
@@ -122,7 +124,7 @@ export default function ThemeSwitcher({
                   >
                     {isActive && (
                       <motion.div
-                        layoutId="activeThemePill"
+                        layoutId={activePillLayoutId}
                         className="absolute inset-0 rounded-lg border border-border/50 bg-surface shadow-xs"
                         transition={{
                           type: "spring",

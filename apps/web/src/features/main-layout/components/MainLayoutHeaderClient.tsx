@@ -13,6 +13,8 @@ import MainLayoutRightAction from "./MainLayoutRightAction";
 import MainLayoutTitle from "./MainLayoutTitle";
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { ChevronLeft } from "lucide-react";
+import SettingsLanguageClient from "@/features/settings/components/SettingsLanguageClient";
+import SettingsThemeClient from "@/features/settings/components/SettingsThemeClient";
 
 export default function MainLayoutHeaderClient({
   initialAssets,
@@ -101,6 +103,22 @@ export default function MainLayoutHeaderClient({
             </p>
           </div>
         </div>
+        {route.name === "settings" && (
+          <div className="hidden items-center gap-6 lg:flex">
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-semibold text-secondary-text">
+                {t("language")}
+              </span>
+              <SettingsLanguageClient />
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-semibold text-secondary-text">
+                {t("themeMode")}
+              </span>
+              <SettingsThemeClient />
+            </div>
+          </div>
+        )}
         <div className="lg:hidden">
           <MainLayoutRightAction
             route={route.name}

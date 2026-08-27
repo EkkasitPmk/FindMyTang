@@ -25,7 +25,12 @@ export default async function SettingsContainer() {
   return (
     <>
       {/* desktop ui */}
-      <div className={cn("hidden lg:block", "animate-in fade-in duration-300")}>
+      <div
+        className={cn(
+          "hidden lg:block",
+          "animate-in fade-in duration-300 px-4",
+        )}
+      >
         <div
           className={cn(
             "grid gap-4 lg:gap-6",
