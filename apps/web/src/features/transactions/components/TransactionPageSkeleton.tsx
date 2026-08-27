@@ -22,7 +22,7 @@ export default function TransactionPageSkeleton() {
               <div className="grid max-h-[24dvh] grid-cols-4 gap-y-2 overflow-auto">
                 {Array.from({ length: 12 }, (_, index) => (
                   <div key={index} className="flex flex-col items-center gap-1">
-                    <Skeleton className="h-10.5 w-10.5 rounded-xl" />
+                    <Skeleton className="h-10.5 w-10.5 sm:h-14 sm:w-14 rounded-xl" />
                     <Skeleton className="h-4 w-16 rounded" />
                   </div>
                 ))}
