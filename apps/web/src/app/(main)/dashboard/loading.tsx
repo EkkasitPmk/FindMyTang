@@ -1,6 +1,5 @@
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import TransactionListSkeleton from "@/shared/components/skeletons/TransactionListSkeleton";
-import { ChevronRight } from "lucide-react";
 
 const ASSET_ROWS = [0, 1, 2, 3, 4];
 const RECENT_JOURNAL_GROUPS = [0, 1, 2];
@@ -63,7 +62,7 @@ export default function DashboardLoading() {
               </div>
               <div className="flex items-center gap-1">
                 <Skeleton className="h-5 w-20" />
-                <ChevronRight size={18} className="text-disabled-text" />
+                <Skeleton className="size-4 rounded" />
               </div>
             </div>
           ))}
