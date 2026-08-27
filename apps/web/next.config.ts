@@ -7,7 +7,7 @@ const BACKEND_URL =
 
 const devConfig: Partial<NextConfig> =
   process.env.NODE_ENV === "development"
-    ? { allowedDevOrigins: ["192.168.1.149"] }
+    ? { allowedDevOrigins: ["172.20.10.3"] }
     : {};
 
 const nextConfig: NextConfig = {
