@@ -10,7 +10,7 @@ export default function AccountLoading() {
         </div>
       </div>
 
-      <section className="space-y-10.5 px-4 pb-18 md:space-y-4 md:pb-4">
+      <section className="space-y-8.5 px-4 pb-18 md:space-y-4 md:pb-4">
         <div className="space-y-1">
           <Skeleton className="mb-2 h-4 w-28 xl:border-b xl:border-border xl:pb-1" />
           <div className="xl:flex xl:gap-4">
