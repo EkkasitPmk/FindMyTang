@@ -48,11 +48,16 @@ function TabsList({ className, highlightClassName, ...props }: TabsListProps) {
   );
 }
 
-type TabsTriggerProps = TabsTriggerPrimitiveProps;
+type TabsTriggerProps = TabsTriggerPrimitiveProps & {
+  itemClassName?: string;
+};
 
-function TabsTrigger({ className, ...props }: TabsTriggerProps) {
+function TabsTrigger({ className, itemClassName, ...props }: TabsTriggerProps) {
   return (
-    <TabsHighlightItemPrimitive value={props.value} className="flex-1">
+    <TabsHighlightItemPrimitive
+      value={props.value}
+      className={cn("flex-1", itemClassName)}
+    >
       <TabsTriggerPrimitive
         type="button"
         className={cn(
