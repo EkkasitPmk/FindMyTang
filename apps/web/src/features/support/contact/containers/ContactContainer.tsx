@@ -9,6 +9,7 @@ import { AlertTriangle } from "lucide-react";
 import ConfirmModal from "@/shared/components/customs/ConfirmModal";
 import { useIsGuest } from "@/shared/lib/storages/guest.storage";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { cn } from "@/shared/lib/utils/core.util";
 import { useSupportDiscardGuard } from "../../hooks/useSupportDiscardGuard.hook";
 import type { TranslationKey } from "@/shared/lib/configs/translations.config";
 import ContactForm from "../components/ContactForm";
@@ -19,7 +20,12 @@ import type { ContactFormValues } from "../types/contact.type";
 export default function ContactContainer({
   header,
   contactInfo,
-}: Readonly<{ header?: ReactNode; contactInfo?: ReactNode }>) {
+  contentClassName,
+}: Readonly<{
+  header?: ReactNode;
+  contactInfo?: ReactNode;
+  contentClassName?: string;
+}>) {
   const { t, currentLanguage } = useTranslation();
   const isGuest = useIsGuest();
   const router = useRouter();
@@ -101,7 +107,12 @@ export default function ContactContainer({
     <>
       {header}
 
-      <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2">
+      <div
+        className={cn(
+          "grid grid-cols-1 gap-4 p-4 sm:grid-cols-2",
+          contentClassName,
+        )}
+      >
         {contactInfo}
 
         <ContactForm
