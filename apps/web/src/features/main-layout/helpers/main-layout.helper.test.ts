@@ -9,11 +9,36 @@ import {
   getBackFallbackHref,
   getMainLayoutRoute,
   getMainLayoutDescription,
+  getDesktopSettingsRedirectHref,
   shouldShowProfile,
   shouldLockContentScroll,
 } from "./main-layout.helper";
 
 describe("main-layout.helper", () => {
+  it("redirects mobile-only management routes to desktop settings", () => {
+    expect(getDesktopSettingsRedirectHref("/settings/account", null)).toBe(
+      "/settings",
+    );
+    expect(getDesktopSettingsRedirectHref("/categories", null)).toBe(
+      "/settings",
+    );
+    expect(getDesktopSettingsRedirectHref("/assets", null)).toBe(
+      "/settings",
+    );
+    expect(getDesktopSettingsRedirectHref("/support/feedback", null)).toBe(
+      "/settings",
+    );
+    expect(getDesktopSettingsRedirectHref("/support/contact", null)).toBe(
+      "/settings",
+    );
+  });
+
+  it("keeps asset detail and unrelated routes available on desktop", () => {
+    expect(getDesktopSettingsRedirectHref("/assets", "asset-1")).toBeNull();
+    expect(getDesktopSettingsRedirectHref("/assets/new", null)).toBeNull();
+    expect(getDesktopSettingsRedirectHref("/dashboard", null)).toBeNull();
+  });
+
   it("maps supported paths to one route policy", () => {
     expect(getMainLayoutRoute("/dashboard")).toBe("dashboard");
     expect(getMainLayoutRoute("/assets/new")).toBe("assetsNew");

@@ -12,6 +12,13 @@ const MAIN_TAB_ROUTES = new Set<MainLayoutRoute>([
   "transaction",
 ]);
 const ANALYTICS_CATEGORY_ROUTE = /^\/analytics\/category\/([^/]+)$/;
+const DESKTOP_SETTINGS_REDIRECT_PATHS = new Set([
+  "/settings/account",
+  "/categories",
+  "/assets",
+  "/support/feedback",
+  "/support/contact",
+]);
 
 export function getMainLayoutRoute(pathname: string): MainLayoutRoute {
   if (pathname === "/dashboard") return "dashboard";
@@ -31,6 +38,14 @@ export function getMainLayoutRoute(pathname: string): MainLayoutRoute {
 
 export function isMainTabRoute(pathname: string): boolean {
   return MAIN_TAB_ROUTES.has(getMainLayoutRoute(pathname));
+}
+
+export function getDesktopSettingsRedirectHref(
+  pathname: string,
+  assetId: string | null,
+): string | null {
+  if (pathname === "/assets" && assetId) return null;
+  return DESKTOP_SETTINGS_REDIRECT_PATHS.has(pathname) ? "/settings" : null;
 }
 
 export function getBackFallbackHref(route: MainLayoutRoute): string {
