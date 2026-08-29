@@ -14,6 +14,7 @@ interface ManageAssetRightControlsProps {
   onTouchStart?: (index: number) => void;
   onTouchMove?: (e: React.TouchEvent) => void;
   onTouchEnd?: () => void;
+  hideChevronOnDesktop?: boolean;
 }
 
 export default function ManageAssetRightControls({
@@ -27,6 +28,7 @@ export default function ManageAssetRightControls({
   onTouchStart,
   onTouchMove,
   onTouchEnd,
+  hideChevronOnDesktop,
 }: Readonly<ManageAssetRightControlsProps>) {
   return (
     <motion.div layout className="flex items-center gap-2">
@@ -52,6 +54,7 @@ export default function ManageAssetRightControls({
         ) : (
           <motion.div
             key="chevron-down"
+            className={cn(hideChevronOnDesktop && "lg:hidden")}
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.5 }}

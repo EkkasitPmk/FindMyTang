@@ -1,7 +1,9 @@
 import { describe, it, expect, vi } from "vitest";
 import {
+  getListBottomPaddingClass,
   getManageAssetItemClasses,
   processAssetTransactions,
+  toggleSelectedId,
 } from "./asset.helper";
 import {
   TransactionResponse,
@@ -12,6 +14,22 @@ import { formatDisplayDate } from "@/shared/lib/helpers/date.helper";
 vi.mock("react-toastify", () => ({ toast: { error: vi.fn() } }));
 
 describe("asset.helper", () => {
+  it("toggles selected asset IDs without mutating the original set", () => {
+    const selectedIds = new Set(["asset-1"]);
+
+    expect(toggleSelectedId(selectedIds, "asset-1")).toEqual(new Set());
+    expect(toggleSelectedId(selectedIds, "asset-2")).toEqual(
+      new Set(["asset-1", "asset-2"]),
+    );
+    expect(selectedIds).toEqual(new Set(["asset-1"]));
+  });
+
+  it("uses desktop list padding only for embedded edit mode", () => {
+    expect(getListBottomPaddingClass(false, false)).toBe("pb-4");
+    expect(getListBottomPaddingClass(true, false)).toBe("pb-20");
+    expect(getListBottomPaddingClass(true, true)).toBe("pb-20 lg:pb-4");
+  });
+
   it("does not keep expanded highlighting while selecting assets", () => {
     const result = getManageAssetItemClasses({
       isDeleted: false,

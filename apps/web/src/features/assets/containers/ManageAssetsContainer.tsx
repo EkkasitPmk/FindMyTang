@@ -20,18 +20,29 @@ import LoadingModal from "@/shared/components/customs/LoadingModal";
 import { useModalState } from "@/shared/lib/hooks/useModalState.hook";
 import ManageAssetItem from "../components/ManageAssetItem";
 import EditAssetsContainer from "./EditAssetsContainer";
-import { RotateCcw, Trash2, Archive } from "lucide-react";
+import { RotateCcw, Trash2, Archive, Plus, Check } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { Slide } from "@/shared/components/animate-ui/primitives/effects/slide";
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
-import { reorderList } from "../helpers/asset.helper";
+import {
+  getListBottomPaddingClass,
+  reorderList,
+  toggleSelectedId,
+} from "../helpers/asset.helper";
 import { cn } from "@/shared/lib/utils/core.util";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import ManageAssetsSkeleton from "../components/ManageAssetsSkeleton";
+import CreateAssetsContainer from "./CreateAssetsContainer";
 
 export default function ManageAssetsContainer({
   initialAssets,
-}: Readonly<{ initialAssets?: Asset[] }>) {
+  embedded = false,
+  contentClassName,
+}: Readonly<{
+  initialAssets?: Asset[];
+  embedded?: boolean;
+  contentClassName?: string;
+}>) {
   const router = useRouter();
   const { t } = useTranslation();
   const { data: assets, isPending } = useAssets({
@@ -42,6 +53,7 @@ export default function ManageAssetsContainer({
 
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editingAsset, setEditingAsset] = useState<Asset | null>(null);
+  const [isCreateAssetOpen, setIsCreateAssetOpen] = useState(false);
 
   const isEditingList = useAssetUIStore((state) => state.isEditingList);
   const setEditingList = useAssetUIStore((state) => state.setEditingList);
@@ -260,12 +272,7 @@ export default function ManageAssetsContainer({
   };
 
   const toggleSelect = (id: string) => {
-    setSelectedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
+    setSelectedIds((prev) => toggleSelectedId(prev, id));
   };
 
   // Drag handlers
@@ -315,11 +322,122 @@ export default function ManageAssetsContainer({
     reorderAssets(localActiveAssets.map((a) => a.id));
   };
 
-  if (isLoading) return <ManageAssetsSkeleton />;
+  if (isLoading) {
+    return (
+      <div className={contentClassName}>
+        <ManageAssetsSkeleton />
+      </div>
+    );
+  }
+
+  const listBottomPaddingClass = getListBottomPaddingClass(
+    isEditingList,
+    embedded,
+  );
 
   return (
     <>
-      <div className="relative flex h-full min-h-0 flex-col">
+      {embedded && (
+        <div className="flex items-start justify-between gap-4 border-b border-border px-4 py-3">
+          <div>
+            <h2 className="text-sm font-semibold text-primary-text">
+              {t("manageAssets")}
+            </h2>
+            <p className="text-xs text-secondary-text">{t("navAssetsDesc")}</p>
+          </div>
+          <div className="flex shrink-0 items-center gap-2">
+            {!isEditingList && (
+              <Button
+                variant="unstyled"
+                type="button"
+                onClick={() => setIsCreateAssetOpen(true)}
+                className="flex h-9 cursor-pointer items-center gap-1.5 rounded-lg bg-primary px-3 text-xs font-semibold text-white transition-colors hover:bg-primary-dark"
+              >
+                <Plus aria-hidden="true" className="size-4" />
+                {t("addAsset")}
+              </Button>
+            )}
+            {assets && assets.length > 0 && (
+              <Button
+                variant="unstyled"
+                type="button"
+                aria-pressed={isEditingList}
+                onClick={() => setEditingList(!isEditingList)}
+                className="h-9 cursor-pointer rounded-lg border border-border bg-surface-secondary px-3 text-xs font-semibold text-primary transition-colors hover:bg-primary-light"
+              >
+                {isEditingList ? t("done") : t("edit")}
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
+
+      <div
+        className={cn(
+          "relative flex h-full min-h-0 flex-col lg:pt-4",
+          contentClassName,
+        )}
+      >
+        <AnimatePresence initial={false}>
+          {embedded && isEditingList && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.18 }}
+              className="mx-4 mb-2 hidden min-h-12 items-center justify-between gap-4 rounded-lg border border-primary/25 bg-primary/5 px-3 py-2 lg:flex"
+            >
+              <div className="flex min-w-0 items-center gap-2.5">
+                <span
+                  aria-hidden="true"
+                  className="flex size-7 shrink-0 items-center justify-center rounded-md bg-primary text-white"
+                >
+                  <Check className="size-4" strokeWidth={2.5} />
+                </span>
+                <span
+                  aria-live="polite"
+                  className="truncate text-sm font-semibold text-primary-text"
+                >
+                  {selectedIds.size} {t("selected")}
+                </span>
+              </div>
+
+              <div className="flex shrink-0 items-center gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-investment/30 text-investment hover:bg-investment-light"
+                  disabled={!hasActiveSelected}
+                  onClick={openBulkArchiveModal}
+                >
+                  <Archive aria-hidden="true" />
+                  {t("archive")}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-income/30 text-income hover:bg-income-light"
+                  disabled={!hasDeletedSelected}
+                  onClick={openBulkRestoreModal}
+                >
+                  <RotateCcw aria-hidden="true" />
+                  {t("restore")}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-expense/30 text-expense hover:bg-expense-light"
+                  disabled={selectedIds.size === 0}
+                  onClick={openBulkDeleteModal}
+                >
+                  <Trash2 aria-hidden="true" />
+                  {t("delete")}
+                </Button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <section
           className={cn(
             "min-h-0 flex-1 overflow-y-auto px-4 py-2 space-y-4 md:pt-0",
@@ -327,12 +445,12 @@ export default function ManageAssetsContainer({
               archivedAssets.length === 0 &&
               deletedAssets.length === 0 &&
               "my-2 pb-4",
-            isEditingList ? "pb-20" : "pb-4",
+            listBottomPaddingClass,
           )}
         >
           {/* Active Assets */}
           {localActiveAssets.length > 0 && (
-            <motion.div layout className="space-y-1 pt-2 sm:p-0">
+            <motion.div layout className="space-y-1 pt-2 sm:p-0 lg:space-y-2">
               {localActiveAssets.map((asset, index) => (
                 <ManageAssetItem
                   key={asset.id}
@@ -364,6 +482,7 @@ export default function ManageAssetsContainer({
                   onTouchStart={handleTouchStart}
                   onTouchMove={handleTouchMove}
                   onTouchEnd={handleTouchEnd}
+                  inlineActions={embedded}
                 />
               ))}
             </motion.div>
@@ -374,7 +493,7 @@ export default function ManageAssetsContainer({
             <motion.div
               layout
               className={cn(
-                "space-y-1",
+                "space-y-1 lg:space-y-2",
                 (localActiveAssets.length !== 0 ||
                   deletedAssets.length !== 0) &&
                   "pt-2 border-t border-border",
@@ -405,6 +524,7 @@ export default function ManageAssetsContainer({
                   isSelected={selectedIds.has(asset.id)}
                   onToggleSelect={() => toggleSelect(asset.id)}
                   draggable={false}
+                  inlineActions={embedded}
                 />
               ))}
             </motion.div>
@@ -415,7 +535,7 @@ export default function ManageAssetsContainer({
             <motion.div
               layout
               className={cn(
-                "space-y-1",
+                "space-y-1 lg:space-y-2",
                 (localActiveAssets.length !== 0 ||
                   archivedAssets.length !== 0) &&
                   "pt-2 border-t border-border",
@@ -449,6 +569,7 @@ export default function ManageAssetsContainer({
                   isSelected={selectedIds.has(asset.id)}
                   onToggleSelect={() => toggleSelect(asset.id)}
                   draggable={false}
+                  inlineActions={embedded}
                 />
               ))}
             </motion.div>
@@ -458,7 +579,12 @@ export default function ManageAssetsContainer({
           {localActiveAssets.length === 0 &&
             archivedAssets.length === 0 &&
             deletedAssets.length === 0 && (
-              <div className="flex flex-col items-center justify-center h-[70vh] text-secondary-text text-base">
+              <div
+                className={cn(
+                  "flex flex-col items-center justify-center text-secondary-text text-base",
+                  embedded ? "h-48" : "h-[70vh]",
+                )}
+              >
                 {t("noAssetsFound")}
               </div>
             )}
@@ -473,7 +599,12 @@ export default function ManageAssetsContainer({
               offset={96}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
-              <div className="absolute bottom-4 left-3 right-3 z-50 rounded-[1.5rem] border border-border/70 bg-surface/95 px-1.5 py-1.5 backdrop-blur-xl">
+              <div
+                className={cn(
+                  "absolute bottom-4 left-3 right-3 z-50 rounded-[1.5rem] border border-border/70 bg-surface/95 px-1.5 py-1.5 backdrop-blur-xl",
+                  embedded && "lg:hidden",
+                )}
+              >
                 <div className="flex items-center gap-1.5 overflow-x-auto">
                   <span className="flex min-h-10 shrink-0 items-center justify-center rounded-xl px-3 text-sm font-semibold text-secondary-text">
                     {selectedIds.size} {t("selected")}
@@ -524,6 +655,10 @@ export default function ManageAssetsContainer({
           asset={editingAsset}
           onClose={() => setEditingAsset(null)}
         />
+      )}
+
+      {isCreateAssetOpen && (
+        <CreateAssetsContainer onClose={() => setIsCreateAssetOpen(false)} />
       )}
 
       {/* Archive Confirm */}

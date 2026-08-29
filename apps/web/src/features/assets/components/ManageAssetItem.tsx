@@ -39,6 +39,7 @@ interface ManageAssetItemProps {
   onTouchStart?: (index: number) => void;
   onTouchMove?: (e: React.TouchEvent) => void;
   onTouchEnd?: () => void;
+  inlineActions?: boolean;
 }
 
 export default function ManageAssetItem({
@@ -62,6 +63,7 @@ export default function ManageAssetItem({
   onTouchStart,
   onTouchMove,
   onTouchEnd,
+  inlineActions = false,
 }: Readonly<ManageAssetItemProps>) {
   const { locale } = useTranslation();
   const {
@@ -98,7 +100,14 @@ export default function ManageAssetItem({
       tapScale={1}
       hoverScale={1}
       onClick={isEditingList ? onToggleSelect : undefined}
-      className={cn(headerClasses, "w-full")}
+      className={cn(
+        headerClasses,
+        "w-full",
+        inlineActions &&
+          !isEditingList &&
+          "lg:min-w-0 lg:flex-1 lg:cursor-default",
+        inlineActions && isInactive && "lg:opacity-60",
+      )}
     >
       <motion.div layout className="flex items-center justify-between w-full">
         <div className="flex items-center gap-3">
@@ -129,16 +138,41 @@ export default function ManageAssetItem({
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
+          hideChevronOnDesktop={inlineActions}
         />
       </motion.div>
     </Button>
   );
 
+  const collapsibleHeader = isEditingList ? (
+    headerButton
+  ) : (
+    <CollapsibleTrigger asChild>{headerButton}</CollapsibleTrigger>
+  );
+
   return (
     <Collapsible
       open={!isEditingList && isExpanded}
-      onOpenChange={isEditingList ? undefined : () => onToggle()}
-      className={cn(containerClasses, "group/collapsible")}
+      onOpenChange={
+        isEditingList
+          ? undefined
+          : () => {
+              if (
+                inlineActions &&
+                window.matchMedia("(min-width: 1024px)").matches
+              ) {
+                return;
+              }
+              onToggle();
+            }
+      }
+      className={cn(
+        containerClasses,
+        "group/collapsible",
+        inlineActions &&
+          "lg:bg-background/50 lg:ring-1 lg:ring-inset lg:ring-border/80 lg:shadow-xs",
+        inlineActions && isInactive && "lg:opacity-100",
+      )}
       style={{
         ...containerStyle,
         touchAction: "auto",
@@ -146,13 +180,27 @@ export default function ManageAssetItem({
       onDragOver={(e) => index !== undefined && onDragOver?.(e, index)}
       data-index={index}
     >
-      {isEditingList ? (
-        headerButton
+      {inlineActions && !isEditingList ? (
+        <div className="lg:flex lg:items-stretch">
+          <CollapsibleTrigger asChild>{headerButton}</CollapsibleTrigger>
+          <div className="hidden shrink-0 items-center gap-1 border-l border-border px-2 lg:flex">
+            <ManageAssetActions
+              compact
+              isDeleted={isDeleted}
+              isArchived={isArchived}
+              onEdit={onEdit}
+              onArchive={onArchive}
+              onUnarchive={onUnarchive}
+              onRestore={onRestore}
+              onDelete={onDelete}
+            />
+          </div>
+        </div>
       ) : (
-        <CollapsibleTrigger asChild>{headerButton}</CollapsibleTrigger>
+        collapsibleHeader
       )}
 
-      <CollapsibleContent>
+      <CollapsibleContent className={cn(inlineActions && "lg:hidden")}>
         <div className="flex flex-wrap items-center gap-2 px-3 py-2 border-t border-border">
           <ManageAssetActions
             isDeleted={isDeleted}
