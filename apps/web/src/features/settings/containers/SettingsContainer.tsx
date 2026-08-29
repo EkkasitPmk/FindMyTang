@@ -6,9 +6,16 @@ import CategoryContainer from "@/features/category/containers/CategoryContainer"
 import ManageAssetsContainer from "@/features/assets/containers/ManageAssetsContainer";
 import type { Asset } from "@/shared/lib/types/asset.type";
 import type { Category } from "@/shared/lib/types/category.type";
-import type { Language } from "@/shared/lib/configs/translations.config";
-import { cn } from "@/shared/lib/utils/core.util";
+import {
+  translations,
+  type Language,
+} from "@/shared/lib/configs/translations.config";
 import { cookies } from "next/headers";
+import FeedbackContainer from "@/features/support/feedback/containers/FeedbackContainer";
+import ContactContainer from "@/features/support/contact/containers/ContactContainer";
+import { ContactInfo } from "@/features/support/contact/components/ContactStaticHeader";
+import SettingsDesktopTabs from "../components/SettingsDesktopTabs";
+import SettingsLegal from "../components/SettingsLegal";
 import SettingsMobileContainer from "./SettingsMobileContainer";
 
 export default async function SettingsContainer() {
@@ -21,64 +28,93 @@ export default async function SettingsContainer() {
     ]);
   const language: Language =
     cookieStore.get("findmytang-language")?.value === "th" ? "th" : "en";
+  const t = (key: keyof (typeof translations)["en"]) =>
+    translations[language][key] ?? translations.en[key];
 
   return (
     <>
-      {/* desktop ui */}
-      <div className={cn("hidden lg:block", "animate-in fade-in duration-300")}>
-        <div
-          className={cn(
-            "grid gap-4 lg:gap-6",
-            "md:grid-cols-1 md:grid-rows-[auto_auto_auto]",
-            "lg:grid-cols-[minmax(0,1fr)_400px] lg:grid-rows-[auto_auto] xl:grid-cols-[minmax(0,1fr)_500px] 2xl:grid-cols-[minmax(0,1fr)_700px]",
-          )}
-        >
-          <div
-            className={cn(
-              "contents",
-              "lg:col-start-1 lg:row-start-1 lg:row-span-2",
-              "lg:grid lg:grid-rows-[auto_auto] lg:content-start lg:gap-6",
-            )}
-          >
-            <div
-              className={cn(
-                "bg-surface rounded-md border border-border",
-                "md:col-start-1 md:row-start-1",
-                "lg:row-start-1",
-                "xl:h-fit xl:self-start",
-              )}
-            >
-              <AccountContainer initialUser={initialUser} />
-            </div>
-            <div
-              className={cn(
-                "bg-surface rounded-md border border-border",
-                "md:col-start-1 md:row-start-3",
-                "lg:row-start-2",
-              )}
-            >
+      <div className="hidden animate-in fade-in px-6 pb-6 duration-300 lg:block">
+        <SettingsDesktopTabs
+          labels={{
+            account: t("account"),
+            categories: t("manageCategories"),
+            assets: t("manageAssets"),
+            feedback: t("sendFeedback"),
+            contact: t("contactUs"),
+          }}
+          account={
+            <section className="w-full min-w-0 overflow-hidden rounded-xl border border-border bg-surface pb-4 shadow-xs">
+              <div className="w-full min-w-0 lg:max-w-xl">
+                <AccountContainer initialUser={initialUser} />
+              </div>
+            </section>
+          }
+          categories={
+            <section className="w-full min-w-0 overflow-hidden rounded-xl border border-border bg-surface shadow-xs">
+              <CategoryContainer
+                embedded
+                initialCategories={
+                  (initialCategories as Category[] | null) ?? undefined
+                }
+              />
+            </section>
+          }
+          assets={
+            <section className="w-full min-w-0 overflow-hidden rounded-xl border border-border bg-surface shadow-xs">
               <ManageAssetsContainer
+                embedded
+                contentClassName="w-full min-w-0"
                 initialAssets={(initialAssets as Asset[] | null) ?? undefined}
               />
-            </div>
-          </div>
-          <div
-            className={cn(
-              "bg-surface rounded-md border border-border",
-              "md:col-start-1 md:row-start-2",
-              "lg:col-start-2 lg:row-start-1 lg:row-span-2",
-              "lg:self-stretch",
-            )}
-          >
-            <CategoryContainer
-              initialCategories={
-                (initialCategories as Category[] | null) ?? undefined
-              }
-            />
-          </div>
+            </section>
+          }
+          feedback={
+            <section className="w-full min-w-0 overflow-hidden rounded-xl border border-border bg-surface shadow-xs">
+              <FeedbackContainer
+                contentClassName="w-full min-w-0 lg:max-w-xl"
+                header={
+                  <div className="flex flex-col gap-1.5 border-b border-border px-4 py-4 text-left">
+                    <h2 className="text-base font-semibold text-primary-text">
+                      {t("feedbackTitle")}
+                    </h2>
+                    <p className="text-sm text-secondary-text">
+                      {t("feedbackDesc")}
+                    </p>
+                  </div>
+                }
+              />
+            </section>
+          }
+          contact={
+            <section className="w-full min-w-0 overflow-hidden rounded-xl border border-border bg-surface shadow-xs">
+              <ContactContainer
+                contentClassName="w-full min-w-0 lg:max-w-4xl"
+                header={
+                  <div className="flex flex-col gap-1.5 border-b border-border px-4 py-4 text-left">
+                    <h2 className="text-base font-semibold text-primary-text">
+                      {t("contactUsTitle")}
+                    </h2>
+                    <p className="text-sm text-secondary-text">
+                      {t("contactUsDesc")}
+                    </p>
+                  </div>
+                }
+                contactInfo={<ContactInfo />}
+              />
+            </section>
+          }
+        />
+
+        <div className="mx-auto mt-6 max-w-360">
+          <SettingsLegal
+            footer
+            termsLabel={t("termsOfService")}
+            privacyLabel={t("privacyPolicy")}
+            copyrightNotice={t("copyrightNotice")}
+            description={t("appDescription")}
+          />
         </div>
       </div>
-      {/* desktop ui */}
 
       <SettingsMobileContainer language={language} />
     </>

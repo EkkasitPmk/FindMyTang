@@ -20,7 +20,8 @@ import type { FeedbackFormValues } from "../types/feedback.type";
 
 export default function FeedbackContainer({
   header,
-}: Readonly<{ header?: ReactNode }>) {
+  contentClassName,
+}: Readonly<{ header?: ReactNode; contentClassName?: string }>) {
   const { t, currentLanguage } = useTranslation();
   const isGuest = useIsGuest();
   const router = useRouter();
@@ -115,35 +116,37 @@ export default function FeedbackContainer({
   return (
     <>
       {header}
-      <FeedbackForm
-        register={register}
-        labels={labels}
-        typeLabels={typeLabels}
-        errors={formErrors}
-        selectedType={selectedType}
-        onTypeSelect={(value) => {
-          const nextType = value as FeedbackFormValues["type"];
-          setSelectedType(nextType);
-          setValue("type", nextType, {
-            shouldValidate: true,
-            shouldDirty: true,
-          });
-        }}
-        onSubmit={handleSubmit(onSubmit)}
-        typeMenuOpen={typeMenuOpen}
-        onTypeMenuToggle={(value) => setTypeMenuOpen(value ?? !typeMenuOpen)}
-      />
+      <div className={contentClassName}>
+        <FeedbackForm
+          register={register}
+          labels={labels}
+          typeLabels={typeLabels}
+          errors={formErrors}
+          selectedType={selectedType}
+          onTypeSelect={(value) => {
+            const nextType = value as FeedbackFormValues["type"];
+            setSelectedType(nextType);
+            setValue("type", nextType, {
+              shouldValidate: true,
+              shouldDirty: true,
+            });
+          }}
+          onSubmit={handleSubmit(onSubmit)}
+          typeMenuOpen={typeMenuOpen}
+          onTypeMenuToggle={(value) => setTypeMenuOpen(value ?? !typeMenuOpen)}
+        />
 
-      <div className="px-4 py-3 mt-3">
-        <Button
-          type="submit"
-          form="feedback-form"
-          disabled={!canSubmit}
-          isLoading={isSubmitting}
-          className="w-full py-5"
-        >
-          {isSubmitting ? t("feedbackSending") : t("sendFeedback")}
-        </Button>
+        <div className="px-4 py-3 mt-3">
+          <Button
+            type="submit"
+            form="feedback-form"
+            disabled={!canSubmit}
+            isLoading={isSubmitting}
+            className="w-full py-5"
+          >
+            {isSubmitting ? t("feedbackSending") : t("sendFeedback")}
+          </Button>
+        </div>
       </div>
 
       <ConfirmModal

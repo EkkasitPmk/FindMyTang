@@ -5,6 +5,7 @@ import { getCategoryIcon } from "@/shared/lib/configs/category-icons.config";
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { cn } from "@/shared/lib/utils/core.util";
 
 const SKELETON_CATEGORIES = Array.from({ length: 12 }, (_, i) => i);
 
@@ -24,6 +25,8 @@ interface CategoryGridProps {
   onTouchStart: (index: number) => void;
   onTouchMove: (e: React.TouchEvent) => void;
   onTouchEnd: () => void;
+  showNewCategory?: boolean;
+  className?: string;
 }
 
 export default function CategoryGrid({
@@ -42,12 +45,19 @@ export default function CategoryGrid({
   onTouchStart,
   onTouchMove,
   onTouchEnd,
+  showNewCategory = true,
+  className,
 }: Readonly<CategoryGridProps>) {
   const { t } = useTranslation();
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-3 gap-2 overflow-auto max-h-[74dvh]">
+      <div
+        className={cn(
+          "grid grid-cols-3 gap-2 overflow-auto max-h-[74dvh]",
+          className,
+        )}
+      >
         {SKELETON_CATEGORIES.map((id) => (
           <div
             key={`skeleton-${id}`}
@@ -62,9 +72,14 @@ export default function CategoryGrid({
   }
 
   return (
-    <div className="grid grid-cols-3 gap-2 overflow-auto max-h-[74dvh] p-1">
+    <div
+      className={cn(
+        "grid grid-cols-3 gap-2 overflow-auto max-h-[74dvh] p-1",
+        className,
+      )}
+    >
       {/* New Category (Hide on Deleted Tab) */}
-      {!isDeletedTab && (
+      {!isDeletedTab && showNewCategory && (
         <div>
           <Button
             variant="unstyled"
@@ -83,7 +98,7 @@ export default function CategoryGrid({
       )}
 
       {categories.length === 0 && isDeletedTab && (
-        <div className="col-span-3 flex flex-col items-center justify-center h-[50vh] text-secondary-text text-base">
+        <div className="col-span-full flex h-[50vh] flex-col items-center justify-center text-base text-secondary-text">
           <p>{t("noCategoriesFound")}</p>
         </div>
       )}

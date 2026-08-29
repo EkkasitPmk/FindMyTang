@@ -20,7 +20,7 @@ import {
 } from "../hooks/category.hook";
 import { ApiErrorResponse } from "@/shared/lib/types/api.type";
 import { Category } from "@/shared/lib/types/category.type";
-import { CircleX } from "lucide-react";
+import { CircleX, Plus } from "lucide-react";
 import ConfirmModal from "@/shared/components/customs/ConfirmModal";
 import CUCategoryModal from "../components/CUCategoryModal";
 import LoadingModal from "@/shared/components/customs/LoadingModal";
@@ -40,12 +40,14 @@ import {
   TabsContents,
   TabsContent,
 } from "@/shared/components/animate-ui/components/animate/tabs";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 
 type TabType = "EXPENSE" | "INCOME" | "DELETED";
 
 export default function CategoryContainer({
   initialCategories,
-}: Readonly<{ initialCategories?: Category[] }>) {
+  embedded = false,
+}: Readonly<{ initialCategories?: Category[]; embedded?: boolean }>) {
   const { t } = useTranslation();
   const router = useRouter();
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
@@ -359,12 +361,49 @@ export default function CategoryContainer({
 
   const isDeletingSoftDeletedCategory =
     Boolean(categoryToDelete?.deletedAt) || activeTab === "DELETED";
+  const embeddedGridClassName = embedded
+    ? "lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6"
+    : undefined;
 
   return (
-    <div className="space-y-2 px-4 py-2 md:py-0">
-      <div className="mb-2">
-        <h2 className="text-xl font-bold">{t("categoryManagement")}</h2>
-        <p className="text-sm">{t("categoryManagementDesc")}</p>
+    <div
+      className={
+        embedded ? "space-y-2 px-4 py-4" : "space-y-2 px-4 py-2 md:py-0"
+      }
+    >
+      <div className="mb-3 flex items-start justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-bold">{t("categoryManagement")}</h2>
+          <p className="text-sm text-secondary-text">
+            {t("categoryManagementDesc")}
+          </p>
+        </div>
+        {embedded && (
+          <div className="flex shrink-0 items-center gap-2">
+            {!isEditingList && (
+              <Button
+                variant="unstyled"
+                type="button"
+                onClick={openCreateModal}
+                className="flex h-9 cursor-pointer items-center gap-1.5 rounded-lg bg-primary px-3 text-xs font-semibold text-white transition-colors hover:bg-primary-dark"
+              >
+                <Plus aria-hidden="true" className="size-4" />
+                {t("newCategory")}
+              </Button>
+            )}
+            {localCategories.length > 0 && (
+              <Button
+                variant="unstyled"
+                type="button"
+                aria-pressed={isEditingList}
+                onClick={() => setEditingList(!isEditingList)}
+                className="h-9 cursor-pointer rounded-lg border border-border bg-surface-secondary px-3 text-xs font-semibold text-primary transition-colors hover:bg-primary-light"
+              >
+                {isEditingList ? t("done") : t("edit")}
+              </Button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Select Option Tab & Animated Category Grid Contents */}
@@ -405,6 +444,8 @@ export default function CategoryContainer({
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
+              showNewCategory={!embedded}
+              className={embeddedGridClassName}
             />
           </TabsContent>
           <TabsContent value="INCOME" className="w-full">
@@ -424,6 +465,8 @@ export default function CategoryContainer({
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
+              showNewCategory={!embedded}
+              className={embeddedGridClassName}
             />
           </TabsContent>
           <TabsContent value="DELETED" className="w-full">
@@ -445,6 +488,7 @@ export default function CategoryContainer({
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
+              className={embeddedGridClassName}
             />
           </TabsContent>
         </TabsContents>

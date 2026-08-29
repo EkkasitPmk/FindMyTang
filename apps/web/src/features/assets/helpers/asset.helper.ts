@@ -76,6 +76,25 @@ export const reorderList = (
   return result;
 };
 
+export const toggleSelectedId = (
+  selectedIds: ReadonlySet<string>,
+  id: string,
+) => {
+  const next = new Set(selectedIds);
+  if (next.has(id)) next.delete(id);
+  else next.add(id);
+  return next;
+};
+
+export const getListBottomPaddingClass = (
+  isEditingList: boolean,
+  embedded: boolean,
+) => {
+  if (!isEditingList) return "pb-4";
+  if (embedded) return "pb-20 lg:pb-4";
+  return "pb-20";
+};
+
 export const getManageAssetItemClasses = ({
   isDeleted,
   isArchived,

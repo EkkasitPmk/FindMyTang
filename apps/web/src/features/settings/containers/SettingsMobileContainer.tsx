@@ -6,7 +6,6 @@ import {
   Tag,
   Wallet,
 } from "lucide-react";
-import { APP_VERSION } from "@/shared/lib/configs/app.config";
 import {
   translations,
   type Language,
@@ -99,7 +98,6 @@ export default function SettingsMobileContainer({
       </SettingsSection>
 
       <SettingsLegal
-        version={APP_VERSION}
         termsLabel={t("termsOfService")}
         privacyLabel={t("privacyPolicy")}
         copyrightNotice={t("copyrightNotice")}

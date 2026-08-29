@@ -34,7 +34,7 @@ export default function TransactionCategoryList({
         <div className="grid grid-cols-4 gap-y-2 overflow-auto max-h-[24dvh]">
           {SKELETON_CATEGORIES.map((id) => (
             <div key={id} className="flex flex-col items-center gap-1">
-              <Skeleton className="h-10.5 w-10.5 sm:h-14 sm:w-14 rounded-xl" />
+              <Skeleton className="h-10.5 w-10.5 sm:h-14 sm:w-14 lg:h-10.5 lg:w-10.5 rounded-xl" />
               <Skeleton className="h-4 w-16 rounded" />
             </div>
           ))}
@@ -67,14 +67,14 @@ export default function TransactionCategoryList({
                 )}
               >
                 <span
-                  className="p-3 sm:p-4 rounded-xl transition-all border"
+                  className="p-3 sm:p-4 lg:p-3 rounded-xl transition-all border"
                   style={{
                     color: category.color || "inherit",
                     backgroundColor,
                     borderColor,
                   }}
                 >
-                  <Icon size={18} className="sm:size-6" />
+                  <Icon size={18} className="sm:size-6 lg:size-4.5" />
                 </span>
                 <span
                   className={cn(
@@ -94,8 +94,8 @@ export default function TransactionCategoryList({
             onClick={onEditClick}
             className="flex flex-col items-center justify-center gap-1 cursor-pointer"
           >
-            <span className="p-3 sm:p-4 rounded-xl bg-primary-light text-primary">
-              <Plus size={18} className="sm:size-6" />
+            <span className="p-3 sm:p-4 lg:p-3 rounded-xl bg-primary-light text-primary">
+              <Plus size={18} className="sm:size-6 lg:size-4.5" />
             </span>
             <span className="uppercase text-primary text-xs font-medium truncate">
               {t("edit")}

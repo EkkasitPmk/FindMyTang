@@ -26,5 +26,6 @@ describe("SettingsMobileContainer", () => {
     expect(markup).toContain("การตั้งค่า");
     expect(markup).toContain("จัดการหมวดหมู่");
     expect(markup).toContain("© 2026 FindMyTang. All rights reserved.");
+    expect(markup).not.toContain("v1.0.0");
   });
 });

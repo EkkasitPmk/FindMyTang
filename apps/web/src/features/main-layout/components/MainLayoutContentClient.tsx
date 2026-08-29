@@ -1,10 +1,11 @@
 "use client";
-import { useMemo } from "react";
-import { usePathname } from "next/navigation";
+import { useEffect, useMemo } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useAssetUIStore } from "@/features/assets/hooks/assets.hook";
 import { cn } from "@/shared/lib/utils/core.util";
 import {
   getMainContentClassNames,
+  getDesktopSettingsRedirectHref,
   isMainTabRoute,
 } from "../helpers/main-layout.helper";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
@@ -14,6 +15,8 @@ export default function MainLayoutContentClient({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const { t } = useTranslation();
   const isSearchMode = useAssetUIStore((state) => state.isSearchMode);
   const searchKeyword = useAssetUIStore((state) => state.searchKeyword);
@@ -21,6 +24,10 @@ export default function MainLayoutContentClient({
   const setSearchMode = useAssetUIStore((state) => state.setSearchMode);
   const isMainTab = isMainTabRoute(pathname);
   const shouldShowTopAppBar = !isMainTab;
+  const desktopRedirectHref = getDesktopSettingsRedirectHref(
+    pathname,
+    searchParams.get("id"),
+  );
   const { mainContentClassName, mainOverflowClassName } = useMemo(
     () =>
       getMainContentClassNames({
@@ -31,6 +38,19 @@ export default function MainLayoutContentClient({
       }),
     [isMainTab, isSearchMode, pathname, shouldShowTopAppBar],
   );
+
+  useEffect(() => {
+    if (!desktopRedirectHref) return;
+
+    const mediaQuery = window.matchMedia("(min-width: 1024px)");
+    const redirectOnDesktop = () => {
+      if (mediaQuery.matches) router.replace(desktopRedirectHref);
+    };
+
+    redirectOnDesktop();
+    mediaQuery.addEventListener("change", redirectOnDesktop);
+    return () => mediaQuery.removeEventListener("change", redirectOnDesktop);
+  }, [desktopRedirectHref, router]);
 
   return (
     <>
