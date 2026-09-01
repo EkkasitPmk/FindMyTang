@@ -107,10 +107,7 @@ export default function SettingsPageFallback() {
           </div>
         ))}
         <div className="space-y-3 rounded-xl border border-border bg-surface p-4">
-          <div className="flex items-center justify-between">
-            <Skeleton className="h-4 w-28" />
-            <Skeleton className="h-5 w-12 rounded-full" />
-          </div>
+          <Skeleton className="h-4 w-28" />
           <Skeleton className="h-px w-full" />
           <Skeleton className="h-3 w-40" />
           <Skeleton className="h-3 w-48" />
