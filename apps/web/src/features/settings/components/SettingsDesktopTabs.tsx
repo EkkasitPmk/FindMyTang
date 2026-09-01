@@ -1,5 +1,6 @@
 "use client";
-import { useState, type ReactNode } from "react";
+import { useState, useEffect, type ReactNode } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Lightbulb,
   Lock,
@@ -44,12 +45,33 @@ export default function SettingsDesktopTabs({
   contact: ReactNode;
 }>) {
   const isGuest = useIsGuest();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const tabParam = searchParams?.get("tab");
   const openLockModal = useFeatureLockModal((state) => state.openModal);
   const effectiveIsGuest =
     typeof window === "undefined" ? isInitialGuest : isGuest;
-  const [activeTab, setActiveTab] = useState<string>(
-    effectiveIsGuest ? "categories" : "account",
-  );
+
+  const [prevTabParam, setPrevTabParam] = useState(tabParam);
+  const [activeTab, setActiveTab] = useState<string>(() => {
+    if (tabParam && !(tabParam === "account" && effectiveIsGuest)) {
+      return tabParam;
+    }
+    return effectiveIsGuest ? "categories" : "account";
+  });
+
+  if (tabParam !== prevTabParam) {
+    setPrevTabParam(tabParam);
+    if (tabParam && !(tabParam === "account" && effectiveIsGuest)) {
+      setActiveTab(tabParam);
+    }
+  }
+
+  useEffect(() => {
+    if (tabParam === "account" && effectiveIsGuest && lockMessage) {
+      openLockModal(lockMessage);
+    }
+  }, [tabParam, effectiveIsGuest, lockMessage, openLockModal]);
 
   const handleTabChange = (value: string) => {
     if (value === "account" && effectiveIsGuest) {
@@ -57,6 +79,7 @@ export default function SettingsDesktopTabs({
       return;
     }
     setActiveTab(value);
+    router.replace(`/settings?tab=${value}`, { scroll: false });
   };
 
   return (

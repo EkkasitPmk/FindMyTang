@@ -2,6 +2,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 
 vi.mock("next/headers", () => ({ cookies: vi.fn() }));
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn(), refresh: vi.fn() }),
+  useSearchParams: () => new URLSearchParams(),
+}));
 vi.mock("@/features/account/services/account.server", () => ({
   getCurrentUserServer: vi.fn(),
 }));
@@ -90,7 +94,7 @@ describe("SettingsContainer", () => {
     expect(markup).toContain('role="tablist"');
     expect(markup).toContain("gap-7");
     expect(markup).toContain("flex-none");
-    expect(markup).toContain("h-13");
+    expect(markup).toContain("h-fit");
     expect(markup).toContain("lg:max-w-xl");
     expect(markup).toContain("lg:max-w-4xl");
     expect(markup.match(/w-full min-w-0 overflow-hidden/g)).toHaveLength(5);
