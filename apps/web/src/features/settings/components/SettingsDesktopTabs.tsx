@@ -1,7 +1,8 @@
 "use client";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import {
   Lightbulb,
+  Lock,
   MessageSquareText,
   Tags,
   UserRound,
@@ -14,9 +15,13 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/shared/components/animate-ui/components/animate/tabs";
+import { useIsGuest } from "@/shared/lib/storages/guest.storage";
+import { useFeatureLockModal } from "@/shared/lib/hooks/useFeatureLockModal.hook";
 
 export default function SettingsDesktopTabs({
   labels,
+  lockMessage,
+  isInitialGuest = true,
   account,
   categories,
   assets,
@@ -30,14 +35,36 @@ export default function SettingsDesktopTabs({
     feedback: string;
     contact: string;
   };
+  lockMessage?: string;
+  isInitialGuest?: boolean;
   account: ReactNode;
   categories: ReactNode;
   assets: ReactNode;
   feedback: ReactNode;
   contact: ReactNode;
 }>) {
+  const isGuest = useIsGuest();
+  const openLockModal = useFeatureLockModal((state) => state.openModal);
+  const effectiveIsGuest =
+    typeof window === "undefined" ? isInitialGuest : isGuest;
+  const [activeTab, setActiveTab] = useState<string>(
+    effectiveIsGuest ? "categories" : "account",
+  );
+
+  const handleTabChange = (value: string) => {
+    if (value === "account" && effectiveIsGuest) {
+      if (lockMessage) openLockModal(lockMessage);
+      return;
+    }
+    setActiveTab(value);
+  };
+
   return (
-    <Tabs defaultValue="account" className="mx-auto max-w-360 gap-6">
+    <Tabs
+      value={activeTab}
+      onValueChange={handleTabChange}
+      className="mx-auto max-w-360 gap-6"
+    >
       <div className="overflow-x-auto border-b border-border">
         <TabsList
           className="h-13 w-max min-w-0 justify-start gap-7 rounded-none bg-transparent p-0"
@@ -50,6 +77,12 @@ export default function SettingsDesktopTabs({
           >
             <UserRound aria-hidden="true" className="size-4" />
             {labels.account}
+            {effectiveIsGuest && (
+              <Lock
+                aria-hidden="true"
+                className="size-3.5 text-secondary-text ml-0.5 opacity-80"
+              />
+            )}
           </TabsTrigger>
           <TabsTrigger
             value="categories"
