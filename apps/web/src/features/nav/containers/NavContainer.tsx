@@ -368,7 +368,7 @@ export default function NavContainer({
       await queryClient.cancelQueries();
       queryClient.clear();
       await clearGuestData();
-      setGuestMode(false);
+      setGuestMode(true);
       toast.success(t("guestSessionCleared"));
       router.push("/login");
     } else {

@@ -48,7 +48,7 @@ export default function DangerZoneClientIsland() {
     if (!shouldRedirect) return;
     modal.close();
     await clearGuestData();
-    setGuestMode(false);
+    setGuestMode(true);
     queryClient.clear();
     router.replace("/login");
   };

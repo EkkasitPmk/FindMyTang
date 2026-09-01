@@ -51,10 +51,11 @@ const createDefaultCategories = (now: string): LocalCategory[] =>
 
 const seedDefaultGuestData = async (): Promise<void> => {
   const storage = browserStorage();
-  if (storage?.getItem(GUEST_STORAGE_KEYS.seeded) === "true") return;
 
-  if ((await db.categories.count()) > 0) {
-    storage?.setItem(GUEST_STORAGE_KEYS.seeded, "true");
+  if (
+    storage?.getItem(GUEST_STORAGE_KEYS.seeded) === "true" &&
+    (await db.categories.count()) > 0
+  ) {
     return;
   }
 
