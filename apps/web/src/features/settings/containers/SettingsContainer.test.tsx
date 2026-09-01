@@ -76,13 +76,14 @@ describe("SettingsContainer", () => {
     vi.clearAllMocks();
     vi.mocked(cookies).mockResolvedValue({
       get: () => ({ value: "en" }),
+      has: () => false,
     } as never);
     vi.mocked(getCurrentUserServer).mockResolvedValue(null);
     vi.mocked(getAssetsServer).mockResolvedValue([]);
     vi.mocked(getCategoriesServer).mockResolvedValue([]);
   });
 
-  it("keeps desktop management in tabs and mobile settings available", async () => {
+  it("keeps desktop management in tabs and mobile settings available for guests", async () => {
     const markup = renderToStaticMarkup(await SettingsContainer());
 
     expect(getAssetsServer).toHaveBeenCalledWith(true);
@@ -105,5 +106,21 @@ describe("SettingsContainer", () => {
       'data-footer="true" data-description="true">settings-legal',
     );
     expect(markup).toContain("mobile-settings");
+  });
+
+  it("renders desktop tabs for authenticated members without guest lock indicator", async () => {
+    vi.mocked(cookies).mockResolvedValue({
+      get: () => ({ value: "en" }),
+      has: (key: string) => key === "access_token",
+    } as never);
+    vi.mocked(getCurrentUserServer).mockResolvedValue({
+      id: "user-1",
+      email: "user@example.com",
+      displayName: "John",
+    } as never);
+
+    const markup = renderToStaticMarkup(await SettingsContainer());
+    expect(markup).toContain('role="tablist"');
+    expect(markup.match(/role="tab"/g)).toHaveLength(5);
   });
 });
