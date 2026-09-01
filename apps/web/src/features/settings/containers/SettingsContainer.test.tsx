@@ -2,6 +2,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 
 vi.mock("next/headers", () => ({ cookies: vi.fn() }));
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn(), refresh: vi.fn() }),
+  useSearchParams: () => new URLSearchParams(),
+}));
 vi.mock("@/features/account/services/account.server", () => ({
   getCurrentUserServer: vi.fn(),
 }));
@@ -76,20 +80,21 @@ describe("SettingsContainer", () => {
     vi.clearAllMocks();
     vi.mocked(cookies).mockResolvedValue({
       get: () => ({ value: "en" }),
+      has: () => false,
     } as never);
     vi.mocked(getCurrentUserServer).mockResolvedValue(null);
     vi.mocked(getAssetsServer).mockResolvedValue([]);
     vi.mocked(getCategoriesServer).mockResolvedValue([]);
   });
 
-  it("keeps desktop management in tabs and mobile settings available", async () => {
+  it("keeps desktop management in tabs and mobile settings available for guests", async () => {
     const markup = renderToStaticMarkup(await SettingsContainer());
 
     expect(getAssetsServer).toHaveBeenCalledWith(true);
     expect(markup).toContain('role="tablist"');
     expect(markup).toContain("gap-7");
     expect(markup).toContain("flex-none");
-    expect(markup).toContain("h-13");
+    expect(markup).toContain("h-fit");
     expect(markup).toContain("lg:max-w-xl");
     expect(markup).toContain("lg:max-w-4xl");
     expect(markup.match(/w-full min-w-0 overflow-hidden/g)).toHaveLength(5);
@@ -105,5 +110,21 @@ describe("SettingsContainer", () => {
       'data-footer="true" data-description="true">settings-legal',
     );
     expect(markup).toContain("mobile-settings");
+  });
+
+  it("renders desktop tabs for authenticated members without guest lock indicator", async () => {
+    vi.mocked(cookies).mockResolvedValue({
+      get: () => ({ value: "en" }),
+      has: (key: string) => key === "access_token",
+    } as never);
+    vi.mocked(getCurrentUserServer).mockResolvedValue({
+      id: "user-1",
+      email: "user@example.com",
+      displayName: "John",
+    } as never);
+
+    const markup = renderToStaticMarkup(await SettingsContainer());
+    expect(markup).toContain('role="tablist"');
+    expect(markup.match(/role="tab"/g)).toHaveLength(5);
   });
 });

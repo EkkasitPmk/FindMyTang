@@ -53,11 +53,6 @@ const seedDefaultGuestData = async (): Promise<void> => {
   const storage = browserStorage();
   if (storage?.getItem(GUEST_STORAGE_KEYS.seeded) === "true") return;
 
-  if ((await db.categories.count()) > 0) {
-    storage?.setItem(GUEST_STORAGE_KEYS.seeded, "true");
-    return;
-  }
-
   const now = new Date().toISOString();
   await db.transaction("rw", db.categories, async () => {
     // The count check and insert share one transaction to avoid duplicate seeds.

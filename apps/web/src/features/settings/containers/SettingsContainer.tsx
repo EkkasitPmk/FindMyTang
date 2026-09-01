@@ -42,6 +42,8 @@ export default async function SettingsContainer() {
             feedback: t("sendFeedback"),
             contact: t("contactUs"),
           }}
+          lockMessage={t("accountSettingsBackup")}
+          isInitialGuest={!cookieStore.has("access_token")}
           account={
             <section className="w-full min-w-0 overflow-hidden rounded-xl border border-border bg-surface pb-4 shadow-xs">
               <div className="w-full min-w-0 lg:max-w-xl">

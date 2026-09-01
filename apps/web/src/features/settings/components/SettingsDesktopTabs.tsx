@@ -1,7 +1,9 @@
 "use client";
-import type { ReactNode } from "react";
+import { useState, useEffect, type ReactNode } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Lightbulb,
+  Lock,
   MessageSquareText,
   Tags,
   UserRound,
@@ -14,9 +16,13 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/shared/components/animate-ui/components/animate/tabs";
+import { useIsGuest } from "@/shared/lib/storages/guest.storage";
+import { useFeatureLockModal } from "@/shared/lib/hooks/useFeatureLockModal.hook";
 
 export default function SettingsDesktopTabs({
   labels,
+  lockMessage,
+  isInitialGuest = true,
   account,
   categories,
   assets,
@@ -30,17 +36,61 @@ export default function SettingsDesktopTabs({
     feedback: string;
     contact: string;
   };
+  lockMessage?: string;
+  isInitialGuest?: boolean;
   account: ReactNode;
   categories: ReactNode;
   assets: ReactNode;
   feedback: ReactNode;
   contact: ReactNode;
 }>) {
+  const isGuest = useIsGuest();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const tabParam = searchParams?.get("tab");
+  const openLockModal = useFeatureLockModal((state) => state.openModal);
+  const effectiveIsGuest =
+    typeof window === "undefined" ? isInitialGuest : isGuest;
+
+  const [prevTabParam, setPrevTabParam] = useState(tabParam);
+  const [activeTab, setActiveTab] = useState<string>(() => {
+    if (tabParam && !(tabParam === "account" && effectiveIsGuest)) {
+      return tabParam;
+    }
+    return effectiveIsGuest ? "categories" : "account";
+  });
+
+  if (tabParam !== prevTabParam) {
+    setPrevTabParam(tabParam);
+    if (tabParam && !(tabParam === "account" && effectiveIsGuest)) {
+      setActiveTab(tabParam);
+    }
+  }
+
+  useEffect(() => {
+    if (tabParam === "account" && effectiveIsGuest && lockMessage) {
+      openLockModal(lockMessage);
+    }
+  }, [tabParam, effectiveIsGuest, lockMessage, openLockModal]);
+
+  const handleTabChange = (value: string) => {
+    if (value === "account" && effectiveIsGuest) {
+      if (lockMessage) openLockModal(lockMessage);
+      return;
+    }
+    setActiveTab(value);
+    router.replace(`/settings?tab=${value}`, { scroll: false });
+  };
+
   return (
-    <Tabs defaultValue="account" className="mx-auto max-w-360 gap-6">
+    <Tabs
+      value={activeTab}
+      onValueChange={handleTabChange}
+      className="mx-auto max-w-360 gap-6"
+    >
       <div className="overflow-x-auto border-b border-border">
         <TabsList
-          className="h-13 w-max min-w-0 justify-start gap-7 rounded-none bg-transparent p-0"
+          className="h-fit w-max min-w-0 justify-start gap-7 rounded-none bg-transparent p-0"
           highlightClassName="inset-x-0 top-auto bottom-0 h-0.5 rounded-none border-0 bg-primary shadow-none dark:border-0"
         >
           <TabsTrigger
@@ -50,6 +100,12 @@ export default function SettingsDesktopTabs({
           >
             <UserRound aria-hidden="true" className="size-4" />
             {labels.account}
+            {effectiveIsGuest && (
+              <Lock
+                aria-hidden="true"
+                className="size-3.5 text-secondary-text ml-0.5 opacity-80"
+              />
+            )}
           </TabsTrigger>
           <TabsTrigger
             value="categories"

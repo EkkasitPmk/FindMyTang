@@ -97,8 +97,8 @@ export default function CategoryGrid({
         </div>
       )}
 
-      {categories.length === 0 && isDeletedTab && (
-        <div className="col-span-full flex h-[50vh] flex-col items-center justify-center text-base text-secondary-text">
+      {categories.length === 0 && (
+        <div className="col-span-full flex h-[50dvh] lg:h-[45dvh] flex-col items-center justify-center text-base text-secondary-text">
           <p>{t("noCategoriesFound")}</p>
         </div>
       )}

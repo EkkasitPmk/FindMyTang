@@ -582,7 +582,7 @@ export default function ManageAssetsContainer({
               <div
                 className={cn(
                   "flex flex-col items-center justify-center text-secondary-text text-base",
-                  embedded ? "h-48" : "h-[70vh]",
+                  embedded ? "h-[50dvh]" : "h-[70dvh]",
                 )}
               >
                 {t("noAssetsFound")}

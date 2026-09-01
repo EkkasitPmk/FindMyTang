@@ -36,7 +36,7 @@ export default function FeatureLockModal({
           <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-2">
             <Lock className="w-8 h-8 text-primary" strokeWidth={1.5} />
           </div>
-          <DialogTitle className="text-xl font-bold text-primary-text mb-1">
+          <DialogTitle className="text-xl font-bold text-primary-text text-center mb-1">
             {t("unlockFeature").replace("{featureName}", featureName)}
           </DialogTitle>
           <DialogDescription className="text-sm text-secondary-text text-center">
