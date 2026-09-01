@@ -40,6 +40,7 @@ export const getCategoriesApi = async (
   includeDeleted = true,
 ): Promise<CategoryResponse[]> => {
   if (useGuestStore.getState().isGuest) {
+    await useGuestStore.getState().seedDefaultGuestData();
     const categories = includeDeleted
       ? await db.categories.toCollection().sortBy("displayOrder")
       : await db.categories.filter((c) => !c.deletedAt).sortBy("displayOrder");

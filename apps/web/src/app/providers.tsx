@@ -1,4 +1,5 @@
 "use client";
+import { useEffect } from "react";
 import { useMounted } from "@/shared/lib/hooks/useMounted.hook";
 import { queryClient } from "@/shared/lib/api/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -8,6 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { ThemeProvider } from "next-themes";
 import DynamicSeoHead from "@/shared/components/customs/DynamicSeoHead";
 import GlobalFeatureLockModal from "@/shared/components/customs/GlobalFeatureLockModal";
+import { initializeGuestData } from "@/shared/lib/storages/guest.storage";
 
 type ProvidersProps = {
   children: React.ReactNode;
@@ -15,6 +17,10 @@ type ProvidersProps = {
 
 export default function Providers({ children }: Readonly<ProvidersProps>) {
   const isMounted = useMounted();
+
+  useEffect(() => {
+    void initializeGuestData();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
