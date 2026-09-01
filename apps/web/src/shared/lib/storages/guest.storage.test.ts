@@ -104,15 +104,21 @@ describe("Guest Storage Seeding", () => {
     expect(countAfterSecondSeed).toBe(initialCount);
   });
 
-  it("re-seeds default categories if localStorage has stale seeded flag but Dexie is empty", async () => {
-    // Simulate stale flag left from previous session
-    localStorage.setItem(GUEST_STORAGE_KEYS.seeded, "true");
+  it("does not re-seed default categories if guest user intentionally deletes all categories in an active session", async () => {
+    // 1. Initial seed for guest
+    await useGuestStore.getState().seedDefaultGuestData();
+    expect(await db.categories.count()).toBe(DEFAULT_GUEST_CATEGORIES.length);
+    expect(localStorage.getItem(GUEST_STORAGE_KEYS.seeded)).toBe("true");
+
+    // 2. User intentionally deletes all categories (0 items left)
+    await db.categories.clear();
     expect(await db.categories.count()).toBe(0);
 
+    // 3. System tries to seed on page reload/navigation
     await useGuestStore.getState().seedDefaultGuestData();
 
-    // Must re-seed because Dexie count was 0
-    expect(await db.categories.count()).toBe(DEFAULT_GUEST_CATEGORIES.length);
+    // 4. Must NOT re-seed, preserving the user's intentional deletion
+    expect(await db.categories.count()).toBe(0);
   });
 
   it("initializeGuestData triggers seed in guest mode", async () => {
