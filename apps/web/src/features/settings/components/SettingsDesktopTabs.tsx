@@ -67,7 +67,7 @@ export default function SettingsDesktopTabs({
     >
       <div className="overflow-x-auto border-b border-border">
         <TabsList
-          className="h-13 w-max min-w-0 justify-start gap-7 rounded-none bg-transparent p-0"
+          className="h-fit w-max min-w-0 justify-start gap-7 rounded-none bg-transparent p-0"
           highlightClassName="inset-x-0 top-auto bottom-0 h-0.5 rounded-none border-0 bg-primary shadow-none dark:border-0"
         >
           <TabsTrigger
