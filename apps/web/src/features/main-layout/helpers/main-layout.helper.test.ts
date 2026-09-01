@@ -17,14 +17,12 @@ import {
 describe("main-layout.helper", () => {
   it("redirects mobile-only management routes to desktop settings", () => {
     expect(getDesktopSettingsRedirectHref("/settings/account", null)).toBe(
-      "/settings",
+      "/settings?tab=account",
     );
     expect(getDesktopSettingsRedirectHref("/categories", null)).toBe(
       "/settings",
     );
-    expect(getDesktopSettingsRedirectHref("/assets", null)).toBe(
-      "/settings",
-    );
+    expect(getDesktopSettingsRedirectHref("/assets", null)).toBe("/settings");
     expect(getDesktopSettingsRedirectHref("/support/feedback", null)).toBe(
       "/settings",
     );

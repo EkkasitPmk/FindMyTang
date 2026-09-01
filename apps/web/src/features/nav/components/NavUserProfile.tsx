@@ -70,6 +70,18 @@ export default function NavUserProfile({
     );
   })();
 
+  const handleAccountNavigation = () => {
+    onActionClick?.();
+    if (
+      typeof window !== "undefined" &&
+      window.matchMedia("(min-width: 1024px)").matches
+    ) {
+      router.push("/settings?tab=account");
+    } else {
+      router.push("/settings/account");
+    }
+  };
+
   if (flatMenu) {
     return (
       <div className={cn("w-full border-t border-border pt-3", className)}>
@@ -77,10 +89,7 @@ export default function NavUserProfile({
           <Button
             variant="unstyled"
             type="button"
-            onClick={() => {
-              onActionClick?.();
-              router.push("/settings/account");
-            }}
+            onClick={handleAccountNavigation}
             className="w-full flex items-center justify-between gap-2 px-2 py-2 rounded-lg hover:bg-surface-secondary transition-colors text-left cursor-pointer"
           >
             <div className="flex items-center gap-2 min-w-0">
@@ -196,10 +205,7 @@ export default function NavUserProfile({
             </DropdownMenuItem>
             {user ? (
               <DropdownMenuItem
-                onSelect={() => {
-                  onActionClick?.();
-                  router.push("/settings/account");
-                }}
+                onSelect={handleAccountNavigation}
                 className="py-2"
               >
                 <UserRound className="text-secondary-text" strokeWidth={1.75} />
