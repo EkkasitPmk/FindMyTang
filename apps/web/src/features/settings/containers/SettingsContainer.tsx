@@ -33,7 +33,7 @@ export default async function SettingsContainer() {
 
   return (
     <>
-      <div className="hidden animate-in fade-in px-6 pb-6 duration-300 lg:block">
+      <div className="hidden animate-in fade-in pb-6 duration-300 lg:block">
         <SettingsDesktopTabs
           labels={{
             account: t("account"),
@@ -113,7 +113,6 @@ export default async function SettingsContainer() {
             termsLabel={t("termsOfService")}
             privacyLabel={t("privacyPolicy")}
             copyrightNotice={t("copyrightNotice")}
-            description={t("appDescription")}
           />
         </div>
       </div>
