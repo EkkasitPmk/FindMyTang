@@ -7,34 +7,27 @@ import PrivacyPolicyModal from "@/shared/components/customs/PrivacyPolicyModal";
 export default function SettingsLegalActionsClient({
   termsLabel,
   privacyLabel,
-  footer = false,
 }: Readonly<{ termsLabel: string; privacyLabel: string; footer?: boolean }>) {
   const [isTermsOpen, setIsTermsOpen] = useState(false);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
 
   return (
     <>
-      <div
-        className={
-          footer
-            ? "flex items-center gap-3 text-xs"
-            : "flex items-center gap-3 pt-2 mb-2 border-t border-border text-xs"
-        }
-      >
-        <Button
-          variant="unstyled"
-          onClick={() => setIsTermsOpen(true)}
-          className="text-secondary-text hover:text-primary transition-colors cursor-pointer text-xs p-0 font-medium hover:underline"
-        >
-          {termsLabel}
-        </Button>
-        <span className="text-secondary-text/40">•</span>
+      <div className="flex items-center justify-center gap-2 text-xs">
         <Button
           variant="unstyled"
           onClick={() => setIsPrivacyOpen(true)}
           className="text-secondary-text hover:text-primary transition-colors cursor-pointer text-xs p-0 font-medium hover:underline"
         >
           {privacyLabel}
+        </Button>
+        <span className="text-secondary-text/40">|</span>
+        <Button
+          variant="unstyled"
+          onClick={() => setIsTermsOpen(true)}
+          className="text-secondary-text hover:text-primary transition-colors cursor-pointer text-xs p-0 font-medium hover:underline"
+        >
+          {termsLabel}
         </Button>
       </div>
 

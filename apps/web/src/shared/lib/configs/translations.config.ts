@@ -5,7 +5,7 @@ export const translations = {
     appDescription:
       "แอปพลิเคชันบริหารจัดการการเงินและสินทรัพย์ส่วนบุคคลอย่างชาญฉลาด ปลอดภัย และใช้งานง่าย",
     legalAgree: "รับทราบและเข้าใจ",
-    copyrightNotice: "© 2026 FindMyTang. All rights reserved.",
+    copyrightNotice: "Copyright © 2026 FindMyTang. All rights reserved.",
     appVersionLabel: "เวอร์ชันระบบ",
 
     // Navigation / Layout
@@ -473,7 +473,7 @@ export const translations = {
     appDescription:
       "Graceful personal finance tracker designed with modern minimalism.",
     legalAgree: "I Understand",
-    copyrightNotice: "© 2026 FindMyTang. All rights reserved.",
+    copyrightNotice: "Copyright © 2026 FindMyTang. All rights reserved.",
     appVersionLabel: "System Version",
 
     // Navigation / Layout

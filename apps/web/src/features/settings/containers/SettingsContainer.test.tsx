@@ -53,19 +53,8 @@ vi.mock("./SettingsMobileContainer", () => ({
   default: () => <div>mobile-settings</div>,
 }));
 vi.mock("../components/SettingsLegal", () => ({
-  default: ({
-    footer,
-    description,
-  }: {
-    footer?: boolean;
-    description?: string;
-  }) => (
-    <div
-      data-footer={String(footer)}
-      data-description={String(Boolean(description))}
-    >
-      settings-legal
-    </div>
+  default: ({ footer }: { footer?: boolean }) => (
+    <div data-footer={String(footer)}>settings-legal</div>
   ),
 }));
 
@@ -106,9 +95,7 @@ describe("SettingsContainer", () => {
     expect(markup).toContain('data-embedded="true">category-workspace');
     expect(markup).toContain("feedback-workspace");
     expect(markup).toContain("contact-workspace");
-    expect(markup).toContain(
-      'data-footer="true" data-description="true">settings-legal',
-    );
+    expect(markup).toContain('data-footer="true">settings-legal');
     expect(markup).toContain("mobile-settings");
   });
 
