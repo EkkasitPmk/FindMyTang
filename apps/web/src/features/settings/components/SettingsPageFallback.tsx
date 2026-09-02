@@ -42,18 +42,9 @@ export default function SettingsPageFallback() {
           </div>
         </div>
 
-        <div className="mt-6 overflow-hidden rounded-xl border border-border bg-surface">
-          <div className="flex items-start gap-3.5 px-6 py-6">
-            <Skeleton className="size-10 rounded-xl" />
-            <div className="space-y-2">
-              <Skeleton className="h-5 w-36" />
-              <Skeleton className="h-3 w-96 max-w-full" />
-            </div>
-          </div>
-          <div className="flex items-center justify-between gap-6 border-t border-border px-6 py-4">
-            <Skeleton className="h-3 w-56" />
-            <Skeleton className="h-4 w-52" />
-          </div>
+        <div className="mt-6 flex flex-col items-center justify-center gap-1.5 py-4">
+          <Skeleton className="h-3.5 w-64" />
+          <Skeleton className="h-3 w-44" />
         </div>
       </div>
       <div className="lg:hidden space-y-6">
@@ -106,11 +97,9 @@ export default function SettingsPageFallback() {
             </div>
           </div>
         ))}
-        <div className="space-y-3 rounded-xl border border-border bg-surface p-4">
-          <Skeleton className="h-4 w-28" />
-          <Skeleton className="h-px w-full" />
-          <Skeleton className="h-3 w-40" />
-          <Skeleton className="h-3 w-48" />
+        <div className="flex flex-col items-center justify-center gap-1.5 py-4">
+          <Skeleton className="h-3.5 w-64" />
+          <Skeleton className="h-3 w-44" />
         </div>
       </div>
     </div>
