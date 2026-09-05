@@ -124,11 +124,11 @@ describe("App & Auth (e2e)", () => {
         newCookies.some((cookie: string) => cookie.includes("refresh_token")),
       ).toBe(true);
 
-      // Verify that the old refresh token can no longer be used (since it's rotated/invalidated)
+      // Verify that calling refresh with the old refresh token within grace period succeeds (prevents multi-request race condition)
       await request(app.getHttpServer())
         .post("/api/v1/auth/refresh")
         .set("Cookie", cookies)
-        .expect(401);
+        .expect(200);
 
       // 5. Logout
       const logoutRes = await request(app.getHttpServer())

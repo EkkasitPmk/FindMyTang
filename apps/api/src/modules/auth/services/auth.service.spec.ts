@@ -52,4 +52,159 @@ describe("AuthService refresh session cleanup", () => {
       },
     });
   });
+
+  describe("refresh rotation and grace period", () => {
+    const mockJwtPayload = {
+      sub: "user-1",
+      email: "user@example.com",
+      jti: "jti-old",
+    };
+    const mockUser = {
+      id: "user-1",
+      email: "user@example.com",
+      displayName: "Test User",
+    };
+
+    it("rotates refresh token normally when session is active", async () => {
+      const activeSession = {
+        id: "sess-1",
+        userId: "user-1",
+        jti: "jti-old",
+        expiresAt: new Date(Date.now() + 60_000),
+        revokedAt: null,
+        createdAt: new Date(),
+      };
+
+      const verifyAsync = jest.fn().mockResolvedValue(mockJwtPayload);
+      const signAsync = jest
+        .fn()
+        .mockImplementation((payload) =>
+          Promise.resolve(`signed-${payload.jti || "access"}`),
+        );
+      const findFirst = jest.fn().mockResolvedValue(activeSession);
+      const update = jest.fn().mockResolvedValue({});
+      const create = jest.fn().mockResolvedValue({});
+      const transaction = jest.fn().mockResolvedValue([{}, {}]);
+      const findById = jest.fn().mockResolvedValue(mockUser);
+
+      const service = Object.create(AuthService.prototype) as AuthService;
+      Object.assign(service, {
+        jwtService: { verifyAsync, signAsync },
+        configService: { get: jest.fn().mockReturnValue("secret") },
+        prisma: {
+          refreshSession: { findFirst, update, create },
+          $transaction: transaction,
+        },
+        userRepository: { findById },
+      });
+
+      const result = await service.refresh("valid-refresh-token");
+
+      expect(result.user).toEqual(mockUser);
+      expect(result.accessToken).toBeDefined();
+      expect(result.refreshToken).toBeDefined();
+      expect(transaction).toHaveBeenCalledTimes(1);
+    });
+
+    it("returns active successor session when token was rotated within grace period", async () => {
+      const recentlyRevokedSession = {
+        id: "sess-1",
+        userId: "user-1",
+        jti: "jti-old",
+        expiresAt: new Date(Date.now() + 60_000),
+        revokedAt: new Date(Date.now() - 5_000), // revoked 5 seconds ago (< 30s)
+        createdAt: new Date(Date.now() - 6_000),
+      };
+
+      const activeSuccessorSession = {
+        id: "sess-2",
+        userId: "user-1",
+        jti: "jti-new",
+        expiresAt: new Date(Date.now() + 60_000),
+        revokedAt: null,
+        createdAt: new Date(Date.now() - 5_000),
+      };
+
+      const verifyAsync = jest.fn().mockResolvedValue(mockJwtPayload);
+      const signAsync = jest
+        .fn()
+        .mockImplementation((payload) =>
+          Promise.resolve(`signed-${payload.jti || "access"}`),
+        );
+      const findFirst = jest
+        .fn()
+        .mockResolvedValueOnce(recentlyRevokedSession)
+        .mockResolvedValueOnce(activeSuccessorSession);
+      const findById = jest.fn().mockResolvedValue(mockUser);
+
+      const service = Object.create(AuthService.prototype) as AuthService;
+      Object.assign(service, {
+        jwtService: { verifyAsync, signAsync },
+        configService: { get: jest.fn().mockReturnValue("secret") },
+        prisma: {
+          refreshSession: { findFirst },
+        },
+        userRepository: { findById },
+      });
+
+      const result = await service.refresh("valid-old-token-in-grace-period");
+
+      expect(result.user).toEqual(mockUser);
+      expect(result.refreshToken).toBe("signed-jti-new");
+      expect(findFirst).toHaveBeenCalledTimes(2);
+    });
+
+    it("throws UnauthorizedException when token was revoked outside grace period (> 30s)", async () => {
+      const oldRevokedSession = {
+        id: "sess-1",
+        userId: "user-1",
+        jti: "jti-old",
+        expiresAt: new Date(Date.now() + 60_000),
+        revokedAt: new Date(Date.now() - 35_000), // revoked 35s ago (> 30s)
+        createdAt: new Date(Date.now() - 40_000),
+      };
+
+      const verifyAsync = jest.fn().mockResolvedValue(mockJwtPayload);
+      const findFirst = jest.fn().mockResolvedValue(oldRevokedSession);
+
+      const service = Object.create(AuthService.prototype) as AuthService;
+      Object.assign(service, {
+        jwtService: { verifyAsync },
+        configService: { get: jest.fn().mockReturnValue("secret") },
+        prisma: { refreshSession: { findFirst } },
+      });
+
+      await expect(
+        service.refresh("expired-grace-period-token"),
+      ).rejects.toThrow("Refresh session is invalid or revoked");
+    });
+
+    it("throws UnauthorizedException when revoked token has no active successor (e.g. user logged out)", async () => {
+      const loggedOutSession = {
+        id: "sess-1",
+        userId: "user-1",
+        jti: "jti-old",
+        expiresAt: new Date(Date.now() + 60_000),
+        revokedAt: new Date(Date.now() - 2_000),
+        createdAt: new Date(Date.now() - 10_000),
+      };
+
+      const verifyAsync = jest.fn().mockResolvedValue(mockJwtPayload);
+      const findFirst = jest
+        .fn()
+        .mockResolvedValueOnce(loggedOutSession)
+        .mockResolvedValueOnce(null); // No active successor session
+
+      const service = Object.create(AuthService.prototype) as AuthService;
+      Object.assign(service, {
+        jwtService: { verifyAsync },
+        configService: { get: jest.fn().mockReturnValue("secret") },
+        prisma: { refreshSession: { findFirst } },
+      });
+
+      await expect(service.refresh("logged-out-token")).rejects.toThrow(
+        "Refresh session is invalid or revoked",
+      );
+    });
+  });
 });
