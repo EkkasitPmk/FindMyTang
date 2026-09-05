@@ -38,6 +38,7 @@ export default function NavContainer({
   const { data: user, isLoading, isError } = useMeQuery({ initialUser });
   const queryClient = useQueryClient();
   const { isGuest, setGuestMode, clearGuestData } = useGuestStore();
+  const { t } = useTranslation();
   const isAuthenticated = Boolean(user);
   const isUserProfileLoading = isLoading || (isError && !isGuest);
   const openLockModal = useFeatureLockModal((state) => state.openModal);
@@ -64,6 +65,21 @@ export default function NavContainer({
     window.addEventListener("bottomnav:show", showBottomNav);
     return () => window.removeEventListener("bottomnav:show", showBottomNav);
   }, []);
+
+  useEffect(() => {
+    const handleSessionExpired = async () => {
+      if (isGuest) return;
+      setGuestMode(true);
+      await clearGuestData();
+      await useGuestStore.getState().seedDefaultGuestData();
+      queryClient.clear();
+      toast.info(t("sessionExpired"));
+    };
+
+    window.addEventListener("auth:session-expired", handleSessionExpired);
+    return () =>
+      window.removeEventListener("auth:session-expired", handleSessionExpired);
+  }, [clearGuestData, isGuest, queryClient, setGuestMode, t]);
 
   useEffect(() => {
     if (!shouldHideBottomNavOnScroll) return;
@@ -203,8 +219,6 @@ export default function NavContainer({
       cloudRevisionRef.current = user.syncRevision;
     }
   }, [user?.syncRevision]);
-
-  const { t } = useTranslation();
 
   const {
     isOpen: logoutConfirmOpen,
