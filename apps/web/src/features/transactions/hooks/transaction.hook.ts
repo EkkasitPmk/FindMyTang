@@ -184,6 +184,7 @@ export const useInfiniteTransactionsQuery = (
     enabled?: boolean;
     initialData?: PaginatedTransactionResponse;
     maxPages?: number;
+    gcTime?: number;
   },
 ) => {
   const isGuest = useGuestStore((state) => state.isGuest);
@@ -256,6 +257,7 @@ export const useInfiniteTransactionsQuery = (
             ],
           },
     staleTime: !isGuest && options?.initialData ? 30_000 : 0,
+    gcTime: options?.gcTime ?? (options?.maxPages ? 0 : undefined),
   });
 };
 
