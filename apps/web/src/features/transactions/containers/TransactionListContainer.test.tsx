@@ -4,6 +4,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const refresh = vi.fn();
 let mutationOptions: { onSuccess: (message: string) => void } | undefined;
 
+let scrollHookOptions:
+  | { fetchNextPage?: () => void; fetchPreviousPage?: () => void }
+  | undefined;
+
 vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh }) }));
 vi.mock("@/shared/lib/hooks/useTranslation.hook", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -18,7 +22,10 @@ vi.mock("../components/TransactionListModals", () => ({
   default: () => <div />,
 }));
 vi.mock("../hooks/useInfiniteTransactionScroll.hook", () => ({
-  useInfiniteTransactionScroll: () => null,
+  useInfiniteTransactionScroll: (options: typeof scrollHookOptions) => {
+    scrollHookOptions = options;
+    return null;
+  },
 }));
 vi.mock("../hooks/useTransactionListMutations.hook", () => ({
   useTransactionListMutations: (options: typeof mutationOptions) => {
@@ -78,5 +85,41 @@ describe("TransactionListContainer", () => {
     mutationOptions?.onSuccess("Transaction updated");
 
     expect(refresh).toHaveBeenCalledOnce();
+  });
+
+  it("invokes fetchNextPage directly without interval throttle", () => {
+    const fetchNextPage = vi.fn();
+    render(
+      <TransactionListContainer
+        groupedTransactions={[]}
+        isLoadingTransactions={false}
+        hasNextPage
+        fetchNextPage={fetchNextPage}
+      />,
+    );
+
+    scrollHookOptions?.fetchNextPage?.();
+    expect(fetchNextPage).toHaveBeenCalledTimes(1);
+
+    scrollHookOptions?.fetchNextPage?.();
+    expect(fetchNextPage).toHaveBeenCalledTimes(2);
+  });
+
+  it("invokes fetchPreviousPage directly without interval throttle", () => {
+    const fetchPreviousPage = vi.fn();
+    render(
+      <TransactionListContainer
+        groupedTransactions={[]}
+        isLoadingTransactions={false}
+        hasPreviousPage
+        fetchPreviousPage={fetchPreviousPage}
+      />,
+    );
+
+    scrollHookOptions?.fetchPreviousPage?.();
+    expect(fetchPreviousPage).toHaveBeenCalledTimes(1);
+
+    scrollHookOptions?.fetchPreviousPage?.();
+    expect(fetchPreviousPage).toHaveBeenCalledTimes(2);
   });
 });

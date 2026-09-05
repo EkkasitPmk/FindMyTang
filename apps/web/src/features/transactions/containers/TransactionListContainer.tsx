@@ -21,8 +21,11 @@ import {
 } from "@/shared/lib/types/transaction.type";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { cn } from "@/shared/lib/utils/core.util";
-
-const MIN_PAGE_REQUEST_INTERVAL_MS = 1_000;
+import {
+  adjustScrollAnchor,
+  hasFilterChanged,
+  recordItemPositions,
+} from "../helpers/transaction-scroll.helper";
 
 interface TransactionListContainerProps {
   groupedTransactions: GroupedTransaction[];
@@ -66,10 +69,9 @@ export function TransactionListContainer({
   const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
   const { modalState, setModalState, resetModalState } = useModalState();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const scrollAnchor = useRef<
-    { id: string; top: number; started: boolean } | undefined
-  >(undefined);
-  const lastPageRequestAt = useRef(0);
+  const prevFirstIdRef = useRef<string | undefined>(undefined);
+  const prevFilterRef = useRef({ searchKeyword, assetId, isSearchMode });
+  const itemPositionsRef = useRef<Map<string, number>>(new Map());
 
   const {
     isOpen: isDeleteModalOpen,
@@ -103,59 +105,43 @@ export function TransactionListContainer({
     },
   );
 
-  const captureScrollAnchor = useCallback(() => {
+  useLayoutEffect(() => {
     const scrollElement = scrollRef.current;
     if (!scrollElement) return;
 
-    const containerTop = scrollElement.getBoundingClientRect().top;
-    const item = Array.from(
-      scrollElement.querySelectorAll<HTMLElement>("[data-transaction-id]"),
-    ).find((element) => element.getBoundingClientRect().bottom > containerTop);
-    if (item) {
-      scrollAnchor.current = {
-        id: item.dataset.transactionId!,
-        top: item.getBoundingClientRect().top,
-        started: false,
-      };
+    const currentFirstId = groupedTransactions[0]?.items[0]?.id;
+    const filterChanged = hasFilterChanged(prevFilterRef.current, {
+      searchKeyword,
+      assetId,
+      isSearchMode,
+    });
+    prevFilterRef.current = { searchKeyword, assetId, isSearchMode };
+
+    const isPageShifted =
+      prevFirstIdRef.current !== undefined &&
+      currentFirstId !== prevFirstIdRef.current;
+
+    if (!filterChanged && isPageShifted && currentFirstId) {
+      const targetId = itemPositionsRef.current.has(currentFirstId)
+        ? currentFirstId
+        : prevFirstIdRef.current;
+
+      if (targetId) {
+        adjustScrollAnchor(scrollElement, targetId, itemPositionsRef.current);
+      }
     }
-  }, []);
+
+    recordItemPositions(scrollElement, itemPositionsRef.current);
+    prevFirstIdRef.current = currentFirstId;
+  }, [groupedTransactions, assetId, isSearchMode, searchKeyword]);
 
   const handleFetchNextPage = useCallback(() => {
-    const now = Date.now();
-    if (now - lastPageRequestAt.current < MIN_PAGE_REQUEST_INTERVAL_MS) return;
-    lastPageRequestAt.current = now;
-    captureScrollAnchor();
     fetchNextPage?.();
-  }, [captureScrollAnchor, fetchNextPage]);
+  }, [fetchNextPage]);
 
   const handleFetchPreviousPage = useCallback(() => {
-    const now = Date.now();
-    if (now - lastPageRequestAt.current < MIN_PAGE_REQUEST_INTERVAL_MS) return;
-    lastPageRequestAt.current = now;
-    captureScrollAnchor();
     fetchPreviousPage?.();
-  }, [captureScrollAnchor, fetchPreviousPage]);
-
-  useLayoutEffect(() => {
-    const anchor = scrollAnchor.current;
-    if (!anchor) return;
-
-    if (isFetchingNextPage || isFetchingPreviousPage) {
-      anchor.started = true;
-      return;
-    }
-    if (!anchor.started) return;
-
-    const scrollElement = scrollRef.current;
-    const retainedItem = scrollElement?.querySelector<HTMLElement>(
-      `[data-transaction-id="${anchor.id}"]`,
-    );
-    if (scrollElement && retainedItem) {
-      scrollElement.scrollTop +=
-        retainedItem.getBoundingClientRect().top - anchor.top;
-    }
-    scrollAnchor.current = undefined;
-  }, [groupedTransactions, isFetchingNextPage, isFetchingPreviousPage]);
+  }, [fetchPreviousPage]);
 
   const onScroll = useInfiniteTransactionScroll({
     isLoadingTransactions,

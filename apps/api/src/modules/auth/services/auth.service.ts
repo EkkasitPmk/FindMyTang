@@ -23,6 +23,7 @@ import { StorageService } from "../../../common/storage/storage.service";
 
 const REFRESH_SESSION_RETENTION_MS = 30 * 24 * 60 * 60 * 1000;
 const REFRESH_SESSION_CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
+const REFRESH_SESSION_ROTATION_GRACE_PERIOD_MS = 30 * 1000;
 
 @Injectable()
 export class AuthService implements OnModuleInit, OnModuleDestroy {
@@ -315,6 +316,69 @@ export class AuthService implements OnModuleInit, OnModuleDestroy {
     });
   }
 
+  private async _resolveGracePeriodSession(
+    session: {
+      id: string;
+      userId: string;
+      revokedAt: Date | null;
+      createdAt: Date;
+    },
+    payload: JwtPayload,
+    refreshSecret: string,
+    refreshExpiresIn: string,
+  ) {
+    const isWithinGracePeriod =
+      session.revokedAt !== null &&
+      Date.now() - session.revokedAt.getTime() <=
+        REFRESH_SESSION_ROTATION_GRACE_PERIOD_MS;
+
+    if (!isWithinGracePeriod) {
+      throw new UnauthorizedException("Refresh session is invalid or revoked");
+    }
+
+    const activeSession = await this.prisma.refreshSession.findFirst({
+      where: {
+        userId: session.userId,
+        revokedAt: null,
+        expiresAt: { gt: new Date() },
+        createdAt: { gte: session.createdAt },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    if (!activeSession) {
+      throw new UnauthorizedException("Refresh session is invalid or revoked");
+    }
+
+    const user = await this.userRepository.findById(session.userId);
+    if (!user) {
+      throw new UnauthorizedException("User not found");
+    }
+
+    const newPayload: JwtPayload = {
+      sub: session.userId,
+      email: payload.email,
+    };
+    const accessToken = await this.jwtService.signAsync(newPayload);
+    const refreshToken = await this.jwtService.signAsync(
+      { ...newPayload, jti: activeSession.jti },
+      {
+        secret: refreshSecret,
+        expiresIn: refreshExpiresIn as unknown as number,
+      },
+    );
+
+    return {
+      accessToken,
+      refreshToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        displayName: user.displayName ?? "User",
+      },
+    };
+  }
+
   async refresh(refreshToken: string): Promise<{
     accessToken: string;
     refreshToken: string;
@@ -345,12 +409,22 @@ export class AuthService implements OnModuleInit, OnModuleDestroy {
       where: {
         userId,
         jti: payload.jti,
-        revokedAt: null,
-        expiresAt: { gt: new Date() },
       },
     });
-    if (!session) {
+    if (!session || session.expiresAt <= new Date()) {
       throw new UnauthorizedException("Refresh session is invalid or revoked");
+    }
+
+    const refreshExpiresIn =
+      this.configService.get<string>("jwt.refreshExpiresIn") || "7d";
+
+    if (session.revokedAt) {
+      return this._resolveGracePeriodSession(
+        session,
+        payload,
+        refreshSecret || "",
+        refreshExpiresIn,
+      );
     }
 
     // 2. Generate new Access Token and Refresh Token (rotation)
@@ -360,8 +434,6 @@ export class AuthService implements OnModuleInit, OnModuleDestroy {
     };
 
     const newAccessToken = await this.jwtService.signAsync(newPayload);
-    const refreshExpiresIn =
-      this.configService.get<string>("jwt.refreshExpiresIn") || "7d";
     const newRefreshJti = crypto.randomUUID();
     const newRefreshToken = await this.jwtService.signAsync(
       { ...newPayload, jti: newRefreshJti },

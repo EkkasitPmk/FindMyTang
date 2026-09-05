@@ -1,13 +1,10 @@
+import { BACKEND_URL } from "@/shared/lib/configs/backend.config";
 import type { NextConfig } from "next";
 import path from "node:path";
 
-const BACKEND_URL =
-  process.env.NEXT_PUBLIC_URL_BACKEND?.replace("/api/v1", "") ??
-  "http://localhost:3001";
-
 const devConfig: Partial<NextConfig> =
   process.env.NODE_ENV === "development"
-    ? { allowedDevOrigins: ["192.168.1.150"] }
+    ? { allowedDevOrigins: ["192.168.1.192"] }
     : {};
 
 const nextConfig: NextConfig = {

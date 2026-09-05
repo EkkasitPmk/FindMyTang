@@ -7,6 +7,7 @@ const backendUrl = process.env.NEXT_PUBLIC_URL_BACKEND;
 type RetryableRequestConfig = InternalAxiosRequestConfig & {
   _retry?: boolean;
   skipAuthRefresh?: boolean;
+  requestSentAt?: number;
 };
 
 const http = axios.create({
@@ -22,11 +23,14 @@ const refreshClient = axios.create({
 });
 
 let refreshPromise: Promise<void> | null = null;
+let lastSuccessfulRefreshAt = 0;
 
 const refreshAccessToken = () => {
   refreshPromise ??= refreshClient
     .post("/auth/refresh")
-    .then(() => undefined)
+    .then(() => {
+      lastSuccessfulRefreshAt = Date.now();
+    })
     .finally(() => {
       refreshPromise = null;
     });
@@ -39,6 +43,11 @@ const shouldSkipAuthRefresh = (config: RetryableRequestConfig) =>
   ["/auth/login", "/auth/register", "/auth/refresh", "/auth/logout"].some(
     (path) => config.url?.includes(path),
   );
+
+http.interceptors.request.use((config) => {
+  (config as RetryableRequestConfig).requestSentAt = Date.now();
+  return config;
+});
 
 http.interceptors.response.use(
   (response) => response,
@@ -61,8 +70,23 @@ http.interceptors.response.use(
       !shouldSkipAuthRefresh(originalRequest)
     ) {
       originalRequest._retry = true;
-      await refreshAccessToken();
-      return http(originalRequest);
+
+      if (
+        originalRequest.requestSentAt &&
+        originalRequest.requestSentAt < lastSuccessfulRefreshAt
+      ) {
+        return http(originalRequest);
+      }
+
+      try {
+        await refreshAccessToken();
+        return http(originalRequest);
+      } catch (refreshError) {
+        if (isBrowser) {
+          window.dispatchEvent(new CustomEvent("auth:session-expired"));
+        }
+        throw refreshError;
+      }
     }
 
     throw error;
