@@ -96,6 +96,7 @@ export default function JournalContainer({
     {
       initialData: canUseInitialTransactions ? initialTransactions : undefined,
       maxPages: 3,
+      gcTime: 0,
     },
   );
 
@@ -303,6 +304,7 @@ export default function JournalContainer({
                 {/* 4. Animated list with cursor pagination and end-of-list loading */}
                 <div className="flex-1 min-h-0">
                   <TransactionListContainer
+                    key={`${selectedType}:${sortType}:${debouncedSearchKeyword}`}
                     groupedTransactions={groupedTransactions}
                     isLoadingTransactions={
                       !transactionsData && isLoadingTransactions
