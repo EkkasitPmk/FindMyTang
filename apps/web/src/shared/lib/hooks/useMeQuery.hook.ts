@@ -25,8 +25,14 @@ export const useMeQuery = (options?: {
     staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,
-    refetchInterval: (query) =>
-      query.state.status === "error" ? AUTH_RECOVERY_POLL_MS : false,
+    refetchInterval: (query) => {
+      if (query.state.status !== "error") return false;
+      const error = query.state.error;
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        return false;
+      }
+      return AUTH_RECOVERY_POLL_MS;
+    },
     initialData: initialUser ?? undefined,
     enabled: enabled !== false && !isGuest,
   });
