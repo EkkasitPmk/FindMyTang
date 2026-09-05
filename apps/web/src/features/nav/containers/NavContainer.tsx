@@ -118,6 +118,11 @@ export default function NavContainer({
 
       const scrollDelta = currentScrollTop - previousScrollTop;
 
+      if (Math.abs(scrollDelta) > 300) {
+        resetUpwardDistance(scrollTarget);
+        return;
+      }
+
       if (currentScrollTop <= 8) {
         setIsMobileBottomNavHidden(false);
         resetUpwardDistance(scrollTarget);
@@ -153,13 +158,20 @@ export default function NavContainer({
     const handleElementScroll = (event: Event) => {
       if (isKeyboardOpen()) return;
 
-      if (!(event.target instanceof Element)) return;
+      if (!(event.target instanceof HTMLElement)) return;
 
-      const currentScrollTop = (event.target as HTMLElement).scrollTop;
+      const target = event.target;
+      const currentScrollTop = target.scrollTop;
+
+      if (target.dataset.programmaticScroll === "true") {
+        previousScrollPositions.set(target, currentScrollTop);
+        return;
+      }
+
       const previousScrollTop =
-        previousScrollPositions.get(event.target) ?? currentScrollTop;
-      updateVisibility(currentScrollTop, previousScrollTop, event.target);
-      previousScrollPositions.set(event.target, currentScrollTop);
+        previousScrollPositions.get(target) ?? currentScrollTop;
+      updateVisibility(currentScrollTop, previousScrollTop, target);
+      previousScrollPositions.set(target, currentScrollTop);
     };
 
     const handleViewportResize = () => {
