@@ -8,6 +8,7 @@ import { updateProfileAction } from "../services/account.actions";
 import { syncProfileCache } from "../helpers/profile-cache.helper";
 import { useModalState } from "@/shared/lib/hooks/useModalState.hook";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { useMeQuery } from "@/shared/lib/hooks/useMeQuery.hook";
 import type { UserProfile } from "@/shared/lib/types/user.type";
 
 export default function AvatarClientIsland({
@@ -15,6 +16,8 @@ export default function AvatarClientIsland({
 }: Readonly<{ user: UserProfile | null }>) {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { data: meUser } = useMeQuery({ initialUser: user });
+  const currentUser = meUser ?? user;
   const { t } = useTranslation();
   const [isPending, startTransition] = useTransition();
   const [isSelectingAvatar, setIsSelectingAvatar] = useState(false);
@@ -35,7 +38,7 @@ export default function AvatarClientIsland({
   return (
     <>
       <AvatarSection
-        user={user}
+        user={currentUser}
         isUpdating={isPending}
         isSelectingAvatar={isSelectingAvatar}
         onToggleSelectingAvatar={() => setIsSelectingAvatar(!isSelectingAvatar)}

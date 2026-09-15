@@ -27,7 +27,7 @@ export default async function SettingsContainer() {
       getCategoriesServer(),
     ]);
   const language: Language =
-    cookieStore.get("findmytang-language")?.value === "th" ? "th" : "en";
+    cookieStore.get?.("findmytang-language")?.value === "th" ? "th" : "en";
   const t = (key: keyof (typeof translations)["en"]) =>
     translations[language][key] ?? translations.en[key];
 
@@ -43,7 +43,10 @@ export default async function SettingsContainer() {
             contact: t("contactUs"),
           }}
           lockMessage={t("accountSettingsBackup")}
-          isInitialGuest={!cookieStore.has("access_token")}
+          isInitialGuest={
+            !cookieStore.has("access_token") &&
+            !cookieStore.has("refresh_token")
+          }
           account={
             <section className="w-full min-w-0 overflow-hidden rounded-xl border border-border bg-surface pb-4 shadow-xs">
               <div className="w-full min-w-0 lg:max-w-xl">

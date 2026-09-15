@@ -5,12 +5,11 @@ import { redirect } from "next/navigation";
 
 export default async function AccountPage() {
   const cookieStore = await cookies();
-  if (!cookieStore.has("access_token")) redirect("/dashboard");
+  if (!cookieStore.has("access_token") && !cookieStore.has("refresh_token")) {
+    redirect("/dashboard");
+  }
 
   const initialUser = await getCurrentUserServer();
-  if (!initialUser) {
-    throw new Error("Failed to load authenticated account data");
-  }
 
   return <AccountContainer initialUser={initialUser} />;
 }
