@@ -52,11 +52,11 @@ describe("AssetsRouteContainer", () => {
     expect(page.props.initialAvailableDates).toEqual({ "2026": ["August"] });
   });
 
-  it("fails when an authenticated asset read is unavailable", async () => {
+  it("falls back to client fetching when authenticated asset read is unavailable", async () => {
     mockGetAssetsServer.mockResolvedValue(null);
 
-    await expect(AssetsRouteContainer({})).rejects.toThrow(
-      "Failed to load authenticated assets",
-    );
+    const page = await AssetsRouteContainer({});
+
+    expect(page.props.initialAssets).toBeUndefined();
   });
 });
