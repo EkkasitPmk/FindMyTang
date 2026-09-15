@@ -59,11 +59,12 @@ describe("TransactionsRouteContainer", () => {
     expect(page.props.initialTransaction).toBe(transaction);
   });
 
-  it("throws when an authenticated initial read fails", async () => {
+  it("falls back to client fetching when an authenticated initial read fails", async () => {
     vi.mocked(getAssetsServer).mockResolvedValue(null);
 
-    await expect(TransactionsRouteContainer({})).rejects.toThrow(
-      "Failed to load authenticated transaction data",
-    );
+    const page = await TransactionsRouteContainer({});
+
+    expect(page.props.initialAssets).toBeUndefined();
+    expect(page.props.initialCategories).toBe(categories);
   });
 });
