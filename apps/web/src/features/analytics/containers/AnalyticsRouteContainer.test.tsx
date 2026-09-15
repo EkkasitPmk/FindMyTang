@@ -43,11 +43,11 @@ describe("AnalyticsRouteContainer", () => {
     expect(page.props.initialCategoryBreakdown).toBe(breakdown);
   });
 
-  it("throws when the authenticated initial read is unavailable", async () => {
+  it("falls back to client fetching when authenticated initial read is unavailable", async () => {
     vi.mocked(getCategoryBreakdownServer).mockResolvedValue(null);
 
-    await expect(AnalyticsRouteContainer()).rejects.toThrow(
-      "Failed to load authenticated analytics data",
-    );
+    const page = await AnalyticsRouteContainer();
+
+    expect(page.props.initialCategoryBreakdown).toBeUndefined();
   });
 });

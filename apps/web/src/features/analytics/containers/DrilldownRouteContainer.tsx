@@ -11,7 +11,7 @@ export default async function DrilldownRouteContainer({
 }: Readonly<{ categoryId: string; month: number; year: number }>) {
   const cookieStore = await cookies();
 
-  if (!cookieStore.has("access_token")) {
+  if (!cookieStore.has("access_token") && !cookieStore.has("refresh_token")) {
     return (
       <DrilldownContainer categoryId={categoryId} month={month} year={year} />
     );
@@ -22,17 +22,13 @@ export default async function DrilldownRouteContainer({
     getAssetsServer(),
   ]);
 
-  if (!initialDrilldown || !initialAssets) {
-    throw new Error("Failed to load authenticated analytics drilldown data");
-  }
-
   return (
     <DrilldownContainer
       categoryId={categoryId}
       month={month}
       year={year}
-      initialDrilldown={initialDrilldown}
-      initialAssets={initialAssets as Asset[]}
+      initialDrilldown={initialDrilldown ?? undefined}
+      initialAssets={(initialAssets as Asset[]) ?? undefined}
     />
   );
 }
