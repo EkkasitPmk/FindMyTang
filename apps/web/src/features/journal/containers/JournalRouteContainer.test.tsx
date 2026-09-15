@@ -44,11 +44,11 @@ describe("JournalRouteContainer", () => {
     expect(page.props.initialTransactions).toBe(transactions);
   });
 
-  it("throws when the authenticated initial read fails", async () => {
+  it("gracefully falls back to client hydration when authenticated initial read fails", async () => {
     vi.mocked(getTransactionsServer).mockResolvedValue(null);
 
-    await expect(JournalRouteContainer()).rejects.toThrow(
-      "Failed to load authenticated journal data",
-    );
+    const page = await JournalRouteContainer();
+    expect(page.type).toBe(JournalContainer);
+    expect(page.props.initialTransactions).toBeUndefined();
   });
 });

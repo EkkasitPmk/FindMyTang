@@ -13,20 +13,22 @@ const INITIAL_JOURNAL_QUERY = {
 export default async function JournalRouteContainer() {
   const cookieStore = await cookies();
 
-  if (!cookieStore.has("access_token")) {
+  const isCandidateAuth =
+    cookieStore.has("access_token") || cookieStore.has("refresh_token");
+
+  if (!isCandidateAuth) {
     return <JournalContainer />;
   }
 
   const initialTransactions = await getTransactionsServer(
     INITIAL_JOURNAL_QUERY,
   );
-  if (!initialTransactions) {
-    throw new Error("Failed to load authenticated journal data");
-  }
 
   return (
     <JournalContainer
-      initialTransactions={initialTransactions as PaginatedTransactionResponse}
+      initialTransactions={
+        (initialTransactions as PaginatedTransactionResponse) ?? undefined
+      }
     />
   );
 }
