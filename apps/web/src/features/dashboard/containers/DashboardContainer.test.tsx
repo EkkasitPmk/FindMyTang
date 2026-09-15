@@ -47,25 +47,17 @@ describe("DashboardContainer", () => {
     expect(mockGetRecentTransactionsServer).not.toHaveBeenCalled();
   });
 
-  it("fails the route when authenticated dashboard data is unavailable", async () => {
-    mockCookies.mockResolvedValue({ has: () => true } as never);
-    mockGetCurrentUserServer.mockResolvedValue({ id: "user-1" } as never);
-    mockGetAssetsServer.mockResolvedValue(null);
-    mockGetThisMonthSummaryServer.mockResolvedValue({
-      income: 0,
-      expense: 0,
-      transfer: 0,
-      adjustment: 0,
-      net: 0,
-      totalNetWorth: 0,
-    });
-    mockGetRecentTransactionsServer.mockResolvedValue({
-      items: [],
-      meta: { page: 1, totalPages: 1, total: 0 },
+  it("gracefully falls back to client hydration when server prefetch is unavailable", async () => {
+    mockCookies.mockResolvedValue({
+      has: () => true,
+      get: () => undefined,
     } as never);
+    mockGetCurrentUserServer.mockResolvedValue(null);
+    mockGetAssetsServer.mockResolvedValue(null);
+    mockGetThisMonthSummaryServer.mockResolvedValue(null);
+    mockGetRecentTransactionsServer.mockResolvedValue(null);
 
-    await expect(DashboardContainer()).rejects.toThrow(
-      "Failed to load authenticated dashboard data",
-    );
+    const dashboard = await DashboardContainer();
+    expect(isValidElement(dashboard)).toBe(true);
   });
 });

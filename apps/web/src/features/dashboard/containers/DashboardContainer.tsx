@@ -14,7 +14,10 @@ import DashboardGuestContainer from "./DashboardGuestContainer";
 export default async function DashboardContainer() {
   const cookieStore = await cookies();
 
-  if (!cookieStore.has("access_token")) {
+  const isCandidateAuth =
+    cookieStore.has("access_token") || cookieStore.has("refresh_token");
+
+  if (!isCandidateAuth) {
     return (
       <>
         <ShowProfileContainer initialUser={null} />
@@ -30,13 +33,9 @@ export default async function DashboardContainer() {
     getRecentTransactionsServer(),
   ]);
 
-  if (!initialUser || !assets || !summary || !recentTransactions) {
-    throw new Error("Failed to load authenticated dashboard data");
-  }
-
-  const languageCookie = cookieStore.get("findmytang-language")?.value;
+  const languageCookie = cookieStore.get?.("findmytang-language")?.value;
   const language = languageCookie === "th" ? "th" : "en";
-  const hasAssets = assets.some((asset) => !asset.isArchived);
+  const hasAssets = assets ? assets.some((asset) => !asset.isArchived) : true;
 
   return (
     <>
@@ -44,8 +43,8 @@ export default async function DashboardContainer() {
       <div className="space-y-4">
         <div className="px-4">
           <FinancialSnapshotClient
-            initialAssets={assets}
-            initialSummary={summary}
+            initialAssets={assets ?? undefined}
+            initialSummary={summary ?? undefined}
           />
         </div>
 
@@ -53,14 +52,19 @@ export default async function DashboardContainer() {
           {hasAssets ? (
             <section className="space-y-4">
               <DashboardAssetHeader language={language} />
-              <DashboardAssetList assets={assets} language={language} />
+              <DashboardAssetList
+                assets={assets ?? undefined}
+                language={language}
+              />
             </section>
           ) : (
-            <DashboardGuestAssets initialAssets={assets} />
+            <DashboardGuestAssets initialAssets={assets ?? undefined} />
           )}
         </div>
 
-        <RecentJournalContainer initialTransactions={recentTransactions} />
+        <RecentJournalContainer
+          initialTransactions={recentTransactions ?? undefined}
+        />
       </div>
     </>
   );
