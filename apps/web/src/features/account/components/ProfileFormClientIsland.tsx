@@ -14,6 +14,7 @@ import {
 } from "../schemas/account.form.schema";
 import { useModalState } from "@/shared/lib/hooks/useModalState.hook";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { useMeQuery } from "@/shared/lib/hooks/useMeQuery.hook";
 import type { UserProfile } from "@/shared/lib/types/user.type";
 
 export default function ProfileFormClientIsland({
@@ -21,6 +22,8 @@ export default function ProfileFormClientIsland({
 }: Readonly<{ user: UserProfile | null }>) {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { data: meUser } = useMeQuery({ initialUser: user });
+  const currentUser = meUser ?? user;
   const { t } = useTranslation();
   const [isPending, startTransition] = useTransition();
   const { modalState, setModalState, resetModalState } = useModalState();
@@ -31,8 +34,8 @@ export default function ProfileFormClientIsland({
     formState: { errors, isDirty },
   } = useForm<UpdateProfileFormValues>({
     resolver: zodResolver(updateProfileSchema),
-    defaultValues: { displayName: user?.displayName || "" },
-    values: { displayName: user?.displayName || "" },
+    defaultValues: { displayName: currentUser?.displayName || "" },
+    values: { displayName: currentUser?.displayName || "" },
   });
 
   const onUpdateProfile = (values: UpdateProfileFormValues) => {
@@ -68,7 +71,7 @@ export default function ProfileFormClientIsland({
   return (
     <>
       <PersonalInfoForm
-        user={user}
+        user={currentUser}
         onUpdateProfile={onUpdateProfile}
         isUpdating={isPending}
         register={register}

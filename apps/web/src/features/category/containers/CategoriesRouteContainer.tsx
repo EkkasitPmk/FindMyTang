@@ -6,16 +6,15 @@ import { getCategoriesServer } from "../services/category.server";
 export default async function CategoriesRouteContainer() {
   const cookieStore = await cookies();
 
-  if (!cookieStore.has("access_token")) {
+  if (!cookieStore.has("access_token") && !cookieStore.has("refresh_token")) {
     return <CategoryContainer />;
   }
 
   const initialCategories = await getCategoriesServer(true);
-  if (!initialCategories) {
-    throw new Error("Failed to load authenticated categories");
-  }
 
   return (
-    <CategoryContainer initialCategories={initialCategories as Category[]} />
+    <CategoryContainer
+      initialCategories={(initialCategories as Category[]) ?? undefined}
+    />
   );
 }

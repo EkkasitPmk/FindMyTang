@@ -36,11 +36,11 @@ describe("CategoriesRouteContainer", () => {
     expect(page.props.initialCategories).toBe(categories);
   });
 
-  it("throws when authenticated initial data is unavailable", async () => {
+  it("falls back to client fetching when authenticated initial data is unavailable", async () => {
     vi.mocked(getCategoriesServer).mockResolvedValue(null);
 
-    await expect(CategoriesRouteContainer()).rejects.toThrow(
-      "Failed to load authenticated categories",
-    );
+    const page = await CategoriesRouteContainer();
+
+    expect(page.props.initialCategories).toBeUndefined();
   });
 });

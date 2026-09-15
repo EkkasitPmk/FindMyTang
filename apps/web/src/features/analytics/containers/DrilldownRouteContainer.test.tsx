@@ -60,15 +60,16 @@ describe("DrilldownRouteContainer", () => {
     expect(page.props.initialDrilldown).toBe(drilldown);
   });
 
-  it("throws when authenticated drilldown data is unavailable", async () => {
+  it("falls back to client fetching when authenticated drilldown data is unavailable", async () => {
     vi.mocked(getDrilldownServer).mockResolvedValue(null);
 
-    await expect(
-      DrilldownRouteContainer({
-        categoryId: "category-1",
-        month: 8,
-        year: 2026,
-      }),
-    ).rejects.toThrow("Failed to load authenticated analytics drilldown data");
+    const page = await DrilldownRouteContainer({
+      categoryId: "category-1",
+      month: 8,
+      year: 2026,
+    });
+
+    expect(page.props.initialDrilldown).toBeUndefined();
+    expect(page.props.initialAssets).toEqual([]);
   });
 });

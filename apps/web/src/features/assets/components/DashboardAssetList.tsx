@@ -11,17 +11,46 @@ import {
   type Language,
   type TranslationKey,
 } from "@/shared/lib/configs/translations.config";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 
 export default function DashboardAssetList({
   assets,
   language,
-}: Readonly<{ assets: Asset[]; language: Language }>) {
-  const { data: currentAssets = assets } = useAssets({
+}: Readonly<{ assets?: Asset[]; language: Language }>) {
+  const { data: currentAssets = assets, isPending } = useAssets({
     initialData: assets,
   });
   const t = (key: TranslationKey) =>
     translations[language][key] ?? translations.en[key];
-  const activeAssets = currentAssets.filter((asset) => !asset.isArchived);
+
+  if (isPending && !currentAssets) {
+    return (
+      <div className="space-y-1">
+        {[0, 1, 2].map((i) => (
+          <div
+            key={`asset-skeleton-${i}`}
+            className="flex items-center justify-between bg-surface px-3 py-2 rounded-lg border-l-4 border-border"
+          >
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-9.5 w-9.5 rounded-full" />
+              <div className="space-y-1">
+                <Skeleton className="h-5 w-24" />
+                <Skeleton className="h-3 w-16" />
+              </div>
+            </div>
+            <div className="flex items-center gap-1">
+              <Skeleton className="h-5 w-20" />
+              <Skeleton className="size-4 rounded" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  const activeAssets = (currentAssets ?? []).filter(
+    (asset) => !asset.isArchived,
+  );
 
   if (activeAssets.length === 0) {
     return (

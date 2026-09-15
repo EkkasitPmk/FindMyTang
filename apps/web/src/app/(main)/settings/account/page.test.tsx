@@ -52,12 +52,13 @@ describe("AccountPage", () => {
     expect(page.props.initialUser).toBe(user);
   });
 
-  it("throws for an unavailable authenticated profile", async () => {
+  it("falls back to client fetching when authenticated profile read is unavailable", async () => {
     mockCookies.mockResolvedValue({ has: () => true } as never);
     mockGetCurrentUserServer.mockResolvedValue(null);
 
-    await expect(AccountPage()).rejects.toThrow(
-      "Failed to load authenticated account data",
-    );
+    const page = await AccountPage();
+
+    expect(page.type).toBe(AccountContainer);
+    expect(page.props.initialUser).toBeNull();
   });
 });

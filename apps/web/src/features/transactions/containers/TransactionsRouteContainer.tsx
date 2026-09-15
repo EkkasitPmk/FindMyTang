@@ -11,7 +11,7 @@ export default async function TransactionsRouteContainer({
 }: Readonly<{ transactionId?: string }>) {
   const cookieStore = await cookies();
 
-  if (!cookieStore.has("access_token")) {
+  if (!cookieStore.has("access_token") && !cookieStore.has("refresh_token")) {
     return <TransactionMobileGuard />;
   }
 
@@ -24,18 +24,10 @@ export default async function TransactionsRouteContainer({
         : Promise.resolve(null),
     ]);
 
-  if (
-    !initialAssets ||
-    !initialCategories ||
-    (transactionId && !initialTransaction)
-  ) {
-    throw new Error("Failed to load authenticated transaction data");
-  }
-
   return (
     <TransactionMobileGuard
-      initialAssets={initialAssets as Asset[]}
-      initialCategories={initialCategories as Category[]}
+      initialAssets={(initialAssets as Asset[]) ?? undefined}
+      initialCategories={(initialCategories as Category[]) ?? undefined}
       initialTransaction={initialTransaction ?? undefined}
     />
   );
