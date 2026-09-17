@@ -51,7 +51,10 @@ export default async function DashboardContainer() {
         <div className="px-4">
           {hasAssets ? (
             <section className="space-y-4">
-              <DashboardAssetHeader language={language} />
+              <DashboardAssetHeader
+                language={language}
+                initialAssets={assets ?? undefined}
+              />
               <DashboardAssetList
                 assets={assets ?? undefined}
                 language={language}
