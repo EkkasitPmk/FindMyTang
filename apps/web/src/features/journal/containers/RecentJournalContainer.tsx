@@ -8,6 +8,7 @@ import Link from "next/link";
 import { motion } from "motion/react";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { cn } from "@/shared/lib/utils/core.util";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 import type { PaginatedTransactionResponse } from "@/shared/lib/types/transaction.type";
 
 export default function RecentJournalContainer({
@@ -59,17 +60,29 @@ export default function RecentJournalContainer({
   return (
     <section className={cn(isEmpty && "pb-18")}>
       <div className="flex items-center justify-between mb-2 px-4">
-        <span className="text-lg font-medium">{t("recentJournal")}</span>
-        {!isEmpty && (
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Link
-              href="/journal"
-              className="flex items-center text-sm text-primary"
-            >
-              {t("seeAll")}
-              <ChevronRight size={16} />
-            </Link>
-          </motion.div>
+        {isLoading ? (
+          <>
+            <Skeleton className="h-6 w-32" />
+            <Skeleton className="h-4 w-16" />
+          </>
+        ) : (
+          <>
+            <span className="text-lg font-medium">{t("recentJournal")}</span>
+            {!isEmpty && (
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Link
+                  href="/journal"
+                  className="flex items-center text-sm text-primary"
+                >
+                  {t("seeAll")}
+                  <ChevronRight size={16} />
+                </Link>
+              </motion.div>
+            )}
+          </>
         )}
       </div>
 
