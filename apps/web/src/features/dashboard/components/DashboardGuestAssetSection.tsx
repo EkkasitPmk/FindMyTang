@@ -14,7 +14,7 @@ export default function DashboardGuestAssetSection() {
 
   return (
     <section className="space-y-4">
-      <DashboardAssetHeader language={currentLanguage} />
+      <DashboardAssetHeader language={currentLanguage} initialAssets={assets} />
       <DashboardAssetList assets={assets ?? []} language={currentLanguage} />
     </section>
   );
