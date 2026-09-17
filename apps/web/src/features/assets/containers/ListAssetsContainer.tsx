@@ -131,30 +131,40 @@ export default function ListAssetsContainer({
         <section className="px-4 my-2">{renderAssetsList()}</section>
       ) : (
         <section className="space-y-4">
-          <div className="flex items-center justify-between mb-2">
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.96 }}>
-              <Link
-                href="/assets"
-                onClick={handleAssetsTitleClick}
-                className="text-lg font-medium hover:text-primary transition-colors cursor-pointer flex items-center gap-1 group"
+          {isLoading ? (
+            <div className="flex items-center justify-between mb-2">
+              <Skeleton className="h-6 w-28" />
+              <Skeleton className="size-6.5 rounded-full" />
+            </div>
+          ) : (
+            <div className="flex items-center justify-between mb-2">
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.96 }}
               >
-                {t("assetsTitle")}
-                <ChevronRight
-                  size={18}
-                  className="text-disabled-text group-hover:text-primary transition-colors"
-                />
-              </Link>
-            </motion.div>
-            <Button
-              variant="unstyled"
-              type="button"
-              className="flex items-center justify-center bg-surface-secondary hover:bg-border transition-colors p-1 rounded-full cursor-pointer"
-              onClick={onAddAsset}
-              aria-label={t("addAsset")}
-            >
-              <Plus size={18} className="text-secondary-text" />
-            </Button>
-          </div>
+                <Link
+                  href="/assets"
+                  onClick={handleAssetsTitleClick}
+                  className="text-lg font-medium hover:text-primary transition-colors cursor-pointer flex items-center gap-1 group"
+                >
+                  {t("assetsTitle")}
+                  <ChevronRight
+                    size={18}
+                    className="text-disabled-text group-hover:text-primary transition-colors"
+                  />
+                </Link>
+              </motion.div>
+              <Button
+                variant="unstyled"
+                type="button"
+                className="flex items-center justify-center bg-surface-secondary hover:bg-border transition-colors p-1 rounded-full cursor-pointer"
+                onClick={onAddAsset}
+                aria-label={t("addAsset")}
+              >
+                <Plus size={18} className="text-secondary-text" />
+              </Button>
+            </div>
+          )}
 
           {renderAssetsList()}
         </section>
