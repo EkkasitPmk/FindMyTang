@@ -2,7 +2,6 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../../prisma/prisma.service";
 import { TransactionType } from "@prisma/client";
 
-// ponytail: raw prisma queries with simple where clauses
 @Injectable()
 export class AnalyticsRepository {
   constructor(private readonly prisma: PrismaService) {}
@@ -16,7 +15,6 @@ export class AnalyticsRepository {
     const startDate = new Date(year, month - 1, 1);
     const endDate = new Date(year, month, 1);
 
-    // ponytail: when type is TRANSFER, include both TRANSFER and ADJUSTMENT in breakdown
     let typeFilter: TransactionType | { in: TransactionType[] } | undefined;
     if (type === "TRANSFER") {
       typeFilter = {
@@ -56,9 +54,6 @@ export class AnalyticsRepository {
           lt: endDate,
         },
         deletedAt: null,
-        type: {
-          in: ["INCOME", "EXPENSE"],
-        },
       },
       select: {
         amount: true,
@@ -93,7 +88,6 @@ export class AnalyticsRepository {
     const startDate = new Date(year, month - 1, 1);
     const endDate = new Date(year, month, 1);
 
-    // ponytail: handle specialized uncategorized categoryId lookups
     let categoryFilter: Record<string, unknown> = { categoryId };
     if (categoryId === "uncategorized_adjustment") {
       categoryFilter = { categoryId: null, type: "ADJUSTMENT" };

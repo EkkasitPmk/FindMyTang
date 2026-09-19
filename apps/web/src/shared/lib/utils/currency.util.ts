@@ -55,3 +55,12 @@ export function formatNet(value: number, locale: string = "en-US"): string {
     maximumFractionDigits: 2,
   })}`;
 }
+
+export const formatCompactCurrency = (value: number): string => {
+  const sign = value < 0 ? "-" : "";
+  const formatted = new Intl.NumberFormat("en-US", {
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(Math.abs(value));
+  return `${sign}฿${formatted}`;
+};

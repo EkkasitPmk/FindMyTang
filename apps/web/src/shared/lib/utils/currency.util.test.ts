@@ -4,9 +4,30 @@ import {
   parseAmountDigits,
   convertDigitsToAmount,
   convertAmountToDigits,
+  formatCompactCurrency,
 } from "./currency.util";
 
 describe("currency.util", () => {
+  describe("formatCompactCurrency", () => {
+    it("formats small amounts without k suffix", () => {
+      expect(formatCompactCurrency(75)).toBe("฿75");
+      expect(formatCompactCurrency(-75)).toBe("-฿75");
+      expect(formatCompactCurrency(0)).toBe("฿0");
+      expect(formatCompactCurrency(500)).toBe("฿500");
+    });
+
+    it("formats thousands with K suffix and proper sign", () => {
+      expect(formatCompactCurrency(1000)).toBe("฿1K");
+      expect(formatCompactCurrency(-1000)).toBe("-฿1K");
+      expect(formatCompactCurrency(7500)).toBe("฿7.5K");
+      expect(formatCompactCurrency(-7500)).toBe("-฿7.5K");
+    });
+
+    it("formats millions with M suffix", () => {
+      expect(formatCompactCurrency(1500000)).toBe("฿1.5M");
+    });
+  });
+
   describe("getFormattedAmount", () => {
     it("returns empty strings if input is empty", () => {
       const result = getFormattedAmount("");
