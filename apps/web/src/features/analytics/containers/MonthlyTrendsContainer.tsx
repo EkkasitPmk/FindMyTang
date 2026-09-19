@@ -100,14 +100,14 @@ export const MonthlyTrendsContainer = () => {
         item.income > 0 ||
         item.expense > 0 ||
         item.transfer > 0 ||
-        item.adjust > 0,
+        item.adjust !== 0,
     );
 
     const activeTypes = {
-      income: validMonths.some((m) => m.income > 0),
       expense: validMonths.some((m) => m.expense > 0),
+      income: validMonths.some((m) => m.income > 0),
       transfer: validMonths.some((m) => m.transfer > 0),
-      adjust: validMonths.some((m) => m.adjust > 0),
+      adjust: validMonths.some((m) => m.adjust !== 0),
     };
 
     return (

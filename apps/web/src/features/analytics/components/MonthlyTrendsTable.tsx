@@ -24,12 +24,8 @@ export const MonthlyTrendsTable = ({ data, year }: MonthlyTrendsTableProps) => {
         <div>{t("monthLabel")}</div>
         <div className="text-right text-income">{t("income")}</div>
         <div className="text-right text-expense">{t("expense")}</div>
-        <div className="text-right text-(--semantic-transfer)">
-          {t("transfer")}
-        </div>
-        <div className="text-right text-(--semantic-highlight)">
-          {t("adjustment")}
-        </div>
+        <div className="text-right text-transfer">{t("transfer")}</div>
+        <div className="text-right text-info">{t("adjustment")}</div>
         <div className="text-right">{t("netFlow")}</div>
       </div>
 
@@ -69,13 +65,13 @@ export const MonthlyTrendsTable = ({ data, year }: MonthlyTrendsTableProps) => {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-secondary-text">{t("transfer")}</span>
-                  <span className="text-(--semantic-transfer) font-medium">
+                  <span className="text-transfer font-medium">
                     {formatCurrency(item.transfer || 0)}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-secondary-text">{t("adjustment")}</span>
-                  <span className="text-(--semantic-highlight) font-medium">
+                  <span className="text-info font-medium">
                     {formatCurrency(item.adjust || 0)}
                   </span>
                 </div>
