@@ -6,7 +6,7 @@ export default function CategoriesPageSkeleton() {
       aria-label="Loading categories"
       className="space-y-1 px-4 py-2 animate-pulse"
     >
-      <div className="mb-1 space-y-1">
+      <div className="mb-2 space-y-1">
         <Skeleton className="h-7 w-58" />
         <Skeleton className="h-5 w-72 max-w-full" />
       </div>
