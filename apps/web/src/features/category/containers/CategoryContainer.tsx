@@ -366,18 +366,15 @@ export default function CategoryContainer({
     : undefined;
 
   return (
-    <div
-      className={
-        embedded ? "space-y-2 px-4 py-4" : "space-y-2 px-4 py-2 md:py-0"
-      }
-    >
-      <div className="mb-3 flex items-start justify-between gap-4">
-        <div>
+    <div className={embedded ? "space-y-2 py-4" : "space-y-2 py-2 md:py-0"}>
+      <div className="mb-3 flex items-start justify-between gap-4 lg:px-4">
+        <div className="px-4 lg:px-0">
           <h2 className="text-xl font-bold">{t("categoryManagement")}</h2>
           <p className="text-sm text-secondary-text">
             {t("categoryManagementDesc")}
           </p>
         </div>
+
         {embedded && (
           <div className="flex shrink-0 items-center gap-2">
             {!isEditingList && (
@@ -412,7 +409,7 @@ export default function CategoryContainer({
         onValueChange={(val) => setActiveTab(val as TabType)}
         className="w-full gap-1"
       >
-        <div className="relative z-10 w-full">
+        <div className="relative z-10 w-full px-4">
           <TabsList className="w-full grid grid-cols-3 h-fit">
             <TabsTrigger value="EXPENSE" className="text-sm truncate">
               {t("expenses")}
@@ -426,7 +423,7 @@ export default function CategoryContainer({
           </TabsList>
         </div>
 
-        <TabsContents className="w-full">
+        <TabsContents className="w-full px-4">
           <TabsContent value="EXPENSE" className="w-full">
             <CategoryGrid
               categories={localCategories.filter(

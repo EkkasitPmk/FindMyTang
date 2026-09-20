@@ -26,7 +26,7 @@ export default function TransactionCategoryList({
   const { t } = useTranslation();
 
   return (
-    <section className="space-y-1">
+    <section className="space-y-1 px-4 lg:px-0">
       <p className="uppercase text-sm text-secondary-text font-medium">
         {t("categoryUppercase")}
       </p>

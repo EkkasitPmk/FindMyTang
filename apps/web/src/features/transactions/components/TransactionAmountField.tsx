@@ -22,7 +22,7 @@ export default function TransactionAmountField({
   errorMessage,
 }: Readonly<TransactionAmountFieldProps>) {
   return (
-    <section className="flex flex-col items-center gap-1 relative min-h-10 justify-center">
+    <section className="flex flex-col items-center gap-1 relative min-h-10 justify-center px-4 lg:px-0">
       {isLoading ? (
         <Skeleton className="w-60 h-10 rounded-lg" />
       ) : (
