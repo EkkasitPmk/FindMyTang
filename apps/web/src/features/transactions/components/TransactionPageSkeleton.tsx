@@ -10,14 +10,16 @@ export default function TransactionPageSkeleton() {
         <div className="mb-2 flex justify-center px-4">
           <Skeleton className="h-8 w-48" />
         </div>
-        <div className="px-4">
-          <Skeleton className="h-10 w-full rounded-lg" />
+        <div>
+          <div className="px-4 lg:px-0">
+            <Skeleton className="h-10 w-full rounded-lg" />
+          </div>
           <div className="mt-3 space-y-4">
             <div className="flex min-h-10 items-center justify-center">
               <Skeleton className="h-10 w-60 rounded-lg" />
             </div>
 
-            <section className="space-y-2">
+            <section className="space-y-2 px-4 lg:px-0">
               <Skeleton className="h-4 w-20" />
               <div className="grid max-h-[24dvh] grid-cols-4 gap-y-2 overflow-auto">
                 {Array.from({ length: 12 }, (_, index) => (
@@ -30,8 +32,10 @@ export default function TransactionPageSkeleton() {
             </section>
 
             <section className="space-y-2">
-              <Skeleton className="h-4 w-14" />
-              <div className="flex gap-2 overflow-hidden py-1">
+              <div className="px-4 lg:px-0">
+                <Skeleton className="h-4 w-14" />
+              </div>
+              <div className="flex gap-2 overflow-hidden py-1 px-4 lg:px-0">
                 {Array.from({ length: 4 }, (_, index) => (
                   <Skeleton
                     key={index}
