@@ -374,77 +374,75 @@ export default function TransactionsContainer({
           onDelete={openDeleteModal}
         />
 
-        <div className="px-4 lg:px-0">
-          <TransactionTypeTabs
-            value={tabsValue}
-            options={transactionTypeOptions}
-            isLoading={isTxLoading}
-            onValueChange={(val) => {
-              if (isTxLoading) return;
-              setTransactionType(val as TransactionType);
-              clearErrors();
+        <TransactionTypeTabs
+          value={tabsValue}
+          options={transactionTypeOptions}
+          isLoading={isTxLoading}
+          onValueChange={(val) => {
+            if (isTxLoading) return;
+            setTransactionType(val as TransactionType);
+            clearErrors();
+          }}
+        >
+          <TransactionTypeContent
+            options={tabsContentOptions}
+            amount={{
+              isLoading: isTxLoading,
+              inputRef: amountInputRef,
+              displayAmount,
+              numericAmount,
+              onChange: handleCurrencyInput,
+              showError: isSubmitted || Boolean(touchedFields.amount),
+              errorMessage: errors.amount?.message,
             }}
-          >
-            <TransactionTypeContent
-              options={tabsContentOptions}
-              amount={{
-                isLoading: isTxLoading,
-                inputRef: amountInputRef,
-                displayAmount,
-                numericAmount,
-                onChange: handleCurrencyInput,
-                showError: isSubmitted || Boolean(touchedFields.amount),
-                errorMessage: errors.amount?.message,
-              }}
-              selection={{
-                showCategoryList,
-                categories: filteredCategories,
-                activeCategoryId: watchCategoryId || null,
-                onSelectCategory: (id) => setValue("categoryId", id),
-                onEditCategory: handleEditCategoryClick,
-                isLoadingCategoryList: showCategorySkeleton,
-                assets: safeAssets,
-                activeAssetId: watchAssetId || null,
-                onSelectAsset: (id) => setValue("assetId", id),
-                activeAssetToId: watchToAssetId || null,
-                onSelectAssetTo: (id) => setValue("toAssetId", id),
-                transactionType,
-                isLoadingAssetList: showAssetSkeleton,
-              }}
-              moreDetails={{
-                isMoreDetailsOpen,
-                setIsMoreDetailsOpen,
-                displayDate,
-                onOpenCalendar: handleOpenCalendar,
-                isCalendarOpen,
-                onCalendarOpenChange: setIsCalendarOpen,
-                isPhotoMenuOpen,
-                setIsPhotoMenuOpen,
-                file,
-                attachmentUrl,
-                onRemoveFile: handleRemoveFile,
-                onTakeAPhoto: handleTakeAPhoto,
-                onSelectAPhoto: handleSelectAPhoto,
-                fileInputRef,
-                cameraInputRef,
-                handleFileChange,
-                register,
-                noteValue: watchNote || "",
-                onNoteChange: (value) => setValue("note", value),
-                isLoadingTx: isTxLoading,
-              }}
-              datePicker={{
-                selectedDate: tempDate,
-                onSelectDate: handleSelectDate,
-                displayMonth,
-                onMonthChange: setDisplayMonth,
-                onConfirm: handleConfirmDate,
-                onPresetClick: handlePresetClick,
-                locale: calendarLocale,
-              }}
-            />
-          </TransactionTypeTabs>
-        </div>
+            selection={{
+              showCategoryList,
+              categories: filteredCategories,
+              activeCategoryId: watchCategoryId || null,
+              onSelectCategory: (id) => setValue("categoryId", id),
+              onEditCategory: handleEditCategoryClick,
+              isLoadingCategoryList: showCategorySkeleton,
+              assets: safeAssets,
+              activeAssetId: watchAssetId || null,
+              onSelectAsset: (id) => setValue("assetId", id),
+              activeAssetToId: watchToAssetId || null,
+              onSelectAssetTo: (id) => setValue("toAssetId", id),
+              transactionType,
+              isLoadingAssetList: showAssetSkeleton,
+            }}
+            moreDetails={{
+              isMoreDetailsOpen,
+              setIsMoreDetailsOpen,
+              displayDate,
+              onOpenCalendar: handleOpenCalendar,
+              isCalendarOpen,
+              onCalendarOpenChange: setIsCalendarOpen,
+              isPhotoMenuOpen,
+              setIsPhotoMenuOpen,
+              file,
+              attachmentUrl,
+              onRemoveFile: handleRemoveFile,
+              onTakeAPhoto: handleTakeAPhoto,
+              onSelectAPhoto: handleSelectAPhoto,
+              fileInputRef,
+              cameraInputRef,
+              handleFileChange,
+              register,
+              noteValue: watchNote || "",
+              onNoteChange: (value) => setValue("note", value),
+              isLoadingTx: isTxLoading,
+            }}
+            datePicker={{
+              selectedDate: tempDate,
+              onSelectDate: handleSelectDate,
+              displayMonth,
+              onMonthChange: setDisplayMonth,
+              onConfirm: handleConfirmDate,
+              onPresetClick: handlePresetClick,
+              locale: calendarLocale,
+            }}
+          />
+        </TransactionTypeTabs>
       </div>
 
       <TransactionFormActions

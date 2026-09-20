@@ -29,7 +29,7 @@ export default function TransactionAssetList({
   const renderAssetList = () => {
     if (isLoadingAssetList) {
       return (
-        <div className="flex gap-2 py-1 overflow-auto">
+        <div className="flex gap-2 py-1 overflow-auto px-4 lg:px-0">
           {SKELETON_ASSETS.map((id) => (
             <div key={id}>
               <Skeleton className="h-14 w-30 rounded-md" />
@@ -48,7 +48,7 @@ export default function TransactionAssetList({
     }
 
     return (
-      <div className="flex gap-2 py-1 overflow-auto">
+      <div className="flex gap-2 py-1 overflow-auto px-4 lg:px-0">
         {assets.map((asset) => (
           <TransactionAssetItem
             key={asset.id}
@@ -64,7 +64,7 @@ export default function TransactionAssetList({
   const renderTransferAssetList = () => {
     if (isLoadingAssetList) {
       return (
-        <div className="flex gap-2 py-1 overflow-auto">
+        <div className="flex gap-2 py-1 overflow-auto px-4 lg:px-0">
           {SKELETON_ASSETS.map((id) => (
             <div key={id}>
               <Skeleton className="h-14 w-30 rounded-md" />
@@ -87,7 +87,7 @@ export default function TransactionAssetList({
     }
 
     return (
-      <div className="flex gap-2 py-1 overflow-auto">
+      <div className="flex gap-2 py-1 overflow-auto px-4 lg:px-0">
         {availableAssets.map((asset) => (
           <TransactionAssetItem
             key={asset.id}
@@ -102,7 +102,7 @@ export default function TransactionAssetList({
 
   return (
     <section className="space-y-1">
-      <p className="uppercase text-sm text-secondary-text font-medium">
+      <p className="uppercase text-sm text-secondary-text font-medium px-4 lg:px-0">
         {transactionType === "TRANSFER" ? t("assetFrom") : t("asset")}
       </p>
 
@@ -111,7 +111,7 @@ export default function TransactionAssetList({
       {transactionType === "TRANSFER" && (
         <>
           <div className="flex items-center gap-2 mt-2">
-            <p className="uppercase text-sm text-secondary-text font-medium">
+            <p className="uppercase text-sm text-secondary-text font-medium px-4 lg:px-0">
               {t("assetTo")}
             </p>
           </div>

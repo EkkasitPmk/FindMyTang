@@ -28,17 +28,19 @@ export default function TransactionTypeTabs({
 }: Readonly<TransactionTypeTabsProps>) {
   return (
     <Tabs value={value} onValueChange={onValueChange} className="gap-3">
-      <TabsList className="w-full">
-        {isLoading ? (
-          <Skeleton className="w-full h-10 rounded-lg" />
-        ) : (
-          options.map((option) => (
-            <TabsTrigger key={option.value} value={option.value}>
-              {option.label}
-            </TabsTrigger>
-          ))
-        )}
-      </TabsList>
+      <div className="px-4 lg:px-0">
+        <TabsList className="w-full">
+          {isLoading ? (
+            <Skeleton className="w-full h-10 rounded-lg" />
+          ) : (
+            options.map((option) => (
+              <TabsTrigger key={option.value} value={option.value}>
+                {option.label}
+              </TabsTrigger>
+            ))
+          )}
+        </TabsList>
+      </div>
       {children}
     </Tabs>
   );

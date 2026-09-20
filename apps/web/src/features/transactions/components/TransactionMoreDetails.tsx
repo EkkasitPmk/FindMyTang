@@ -156,7 +156,7 @@ export default function TransactionMoreDetails({
       </div>
 
       {isMoreDetailsOpen && (
-        <section className="space-y-1">
+        <section className="space-y-1 px-4 lg:px-0">
           <p className="uppercase text-sm text-secondary-text font-medium">
             {t("details")}
           </p>
