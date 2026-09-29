@@ -18,6 +18,9 @@ const DEFAULT_BOUNDS_OFFSET: Bounds = {
   height: 0,
 };
 
+const useIsomorphicLayoutEffect =
+  typeof window !== "undefined" ? React.useLayoutEffect : React.useEffect;
+
 type HighlightContextType<T extends string> = {
   as?: keyof HTMLElementTagNameMap;
   mode: HighlightMode;
@@ -206,39 +209,29 @@ function Highlight<T extends React.ElementType = "div">(
     [value, onValueChange],
   );
 
-  const safeSetBoundsRef = React.useRef<
-    ((bounds: DOMRect) => void) | undefined
-  >(undefined);
-
-  React.useEffect(() => {
-    safeSetBoundsRef.current = (bounds: DOMRect) => {
-      if (!localRef.current) return;
-
-      const containerRect = localRef.current.getBoundingClientRect();
-      const offset = boundsOffsetRef.current;
-      const newBounds: Bounds = {
-        top: bounds.top - containerRect.top + offset.top,
-        left: bounds.left - containerRect.left + offset.left,
-        width: bounds.width + offset.width,
-        height: bounds.height + offset.height,
-      };
-
-      setBoundsState((prev) => {
-        if (
-          prev?.top === newBounds.top &&
-          prev.left === newBounds.left &&
-          prev.width === newBounds.width &&
-          prev.height === newBounds.height
-        ) {
-          return prev;
-        }
-        return newBounds;
-      });
-    };
-  });
-
   const safeSetBounds = React.useCallback((bounds: DOMRect) => {
-    safeSetBoundsRef.current?.(bounds);
+    if (!localRef.current) return;
+
+    const containerRect = localRef.current.getBoundingClientRect();
+    const offset = boundsOffsetRef.current;
+    const newBounds: Bounds = {
+      top: bounds.top - containerRect.top + offset.top,
+      left: bounds.left - containerRect.left + offset.left,
+      width: bounds.width + offset.width,
+      height: bounds.height + offset.height,
+    };
+
+    setBoundsState((prev) => {
+      if (
+        prev?.top === newBounds.top &&
+        prev.left === newBounds.left &&
+        prev.width === newBounds.width &&
+        prev.height === newBounds.height
+      ) {
+        return prev;
+      }
+      return newBounds;
+    });
   }, []);
 
   const clearBounds = React.useCallback(() => {
@@ -247,23 +240,51 @@ function Highlight<T extends React.ElementType = "div">(
 
   const id = React.useId();
 
-  React.useEffect(() => {
+  const updateActiveBounds = React.useCallback(() => {
     if (mode !== "parent") return;
     const container = localRef.current;
     if (!container) return;
 
-    const onScroll = () => {
-      if (!activeValue) return;
-      const activeEl = container.querySelector<HTMLElement>(
-        `[data-value="${activeValue}"][data-highlight="true"]`,
-      );
-      if (activeEl)
-        safeSetBoundsRef.current?.(activeEl.getBoundingClientRect());
+    if (!activeValue) {
+      clearBounds();
+      return;
+    }
+
+    const activeEl = container.querySelector<HTMLElement>(
+      `[data-value="${activeValue}"][data-highlight="true"]`,
+    );
+    if (activeEl) {
+      safeSetBounds(activeEl.getBoundingClientRect());
+    }
+  }, [mode, activeValue, clearBounds, safeSetBounds]);
+
+  useIsomorphicLayoutEffect(() => {
+    if (mode !== "parent") return;
+    const container = localRef.current;
+    if (!container) return;
+
+    updateActiveBounds();
+
+    const onScroll = () => updateActiveBounds();
+    const onResize = () => updateActiveBounds();
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        updateActiveBounds();
+      }
     };
 
     container.addEventListener("scroll", onScroll, { passive: true });
-    return () => container.removeEventListener("scroll", onScroll);
-  }, [mode, activeValue]);
+    window.addEventListener("resize", onResize);
+    window.addEventListener("pageshow", updateActiveBounds);
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    return () => {
+      container.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("pageshow", updateActiveBounds);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
+  }, [mode, updateActiveBounds]);
 
   const contextValue = React.useMemo(
     () => ({
@@ -469,7 +490,7 @@ function HighlightItem<T extends React.ElementType>({
     localRef.current = node as HTMLDivElement;
   }, []);
 
-  React.useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (mode !== "parent") return;
     let rafId: number;
     let previousBounds: Bounds | null = null;

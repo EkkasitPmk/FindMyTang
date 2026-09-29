@@ -32,10 +32,9 @@ export default function ChooseADate({
   const minutes = selectedDate ? selectedDate.getMinutes() : 0;
 
   const applyTime = (h: number, m: number) => {
-    if (!selectedDate) return;
-    const newDate = new Date(selectedDate);
-    newDate.setHours(h, m);
-    onSelectDate(newDate);
+    const base = selectedDate ? new Date(selectedDate) : new Date();
+    base.setHours(h, m);
+    onSelectDate(base);
   };
 
   const handleHourChange = (e: React.ChangeEvent<HTMLInputElement>) => {
