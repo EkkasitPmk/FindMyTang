@@ -3,6 +3,11 @@ import { render, screen, fireEvent } from "@testing-library/react";
 
 const push = vi.fn();
 const closeSheet = vi.fn();
+const mockCreateTransactionMutate = vi.fn();
+const mockUpdateTransactionMutate = vi.fn();
+const mockHandleConfirmDate = vi.fn();
+let mockHasUnconfirmedDateSelection = false;
+let mockTempDate: Date | undefined = undefined;
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push, replace: vi.fn(), refresh: vi.fn() }),
@@ -16,7 +21,10 @@ vi.mock("../hooks/transaction-sheet.hook", () => ({
 }));
 
 vi.mock("../hooks/transaction.hook", () => ({
-  useTransactionQuery: () => ({ data: undefined, isLoading: false }),
+  useTransactionQuery: (_id?: string, options?: { initialData?: unknown }) => ({
+    data: options?.initialData,
+    isLoading: false,
+  }),
 }));
 
 vi.mock("../components/TransactionTypeContent", () => ({
@@ -33,9 +41,31 @@ vi.mock("../components/TransactionTypeTabs", () => ({
     <div>{children}</div>
   ),
 }));
-vi.mock("../components/TransactionModals", () => ({ default: () => <div /> }));
+
+vi.mock("../components/TransactionModals", () => ({
+  default: (props: {
+    isUnconfirmedDateModalOpen: boolean;
+    onConfirmUnconfirmedDate: () => void;
+  }) => (
+    <div data-testid="transaction-modals">
+      {props.isUnconfirmedDateModalOpen && (
+        <button
+          data-testid="confirm-unconfirmed-date-btn"
+          onClick={props.onConfirmUnconfirmedDate}
+        >
+          Confirm Date
+        </button>
+      )}
+    </div>
+  ),
+}));
+
 vi.mock("../components/TransactionFormActions", () => ({
-  default: () => <div />,
+  default: () => (
+    <button type="submit" data-testid="save-tx-btn">
+      Save
+    </button>
+  ),
 }));
 
 vi.mock("../hooks/useTransactionSelections.hook", () => ({
@@ -49,8 +79,14 @@ vi.mock("../hooks/useTransactionSelections.hook", () => ({
 
 vi.mock("../hooks/useTransactionMutations.hook", () => ({
   useTransactionMutations: () => ({
-    createTransaction: { mutate: vi.fn(), isPending: false },
-    updateTransaction: { mutate: vi.fn(), isPending: false },
+    createTransaction: {
+      mutate: mockCreateTransactionMutate,
+      isPending: false,
+    },
+    updateTransaction: {
+      mutate: mockUpdateTransactionMutate,
+      isPending: false,
+    },
     deleteTransaction: { mutate: vi.fn(), isPending: false },
   }),
 }));
@@ -69,6 +105,9 @@ vi.mock("../hooks/useTransactionDate.hook", () => ({
     isCalendarOpen: false,
     handleOpenCalendar: vi.fn(),
     handleSelectDate: vi.fn(),
+    hasUnconfirmedDateSelection: mockHasUnconfirmedDateSelection,
+    tempDate: mockTempDate,
+    handleConfirmDate: mockHandleConfirmDate,
   }),
 }));
 
@@ -98,6 +137,8 @@ import TransactionsContainer from "./TransactionsContainer";
 describe("TransactionsContainer - handleEditCategoryClick", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockHasUnconfirmedDateSelection = false;
+    mockTempDate = undefined;
   });
 
   it("closes the sheet and navigates to /settings?tab=categories when in desktop sheet", () => {
@@ -137,5 +178,48 @@ describe("TransactionsContainer - handleEditCategoryClick", () => {
 
     expect(closeSheet).toHaveBeenCalledOnce();
     expect(push).toHaveBeenCalledWith("/settings?tab=categories");
+  });
+
+  it("submits the changed time when unconfirmed date modal is confirmed", async () => {
+    mockHasUnconfirmedDateSelection = true;
+    mockTempDate = new Date("2026-08-12T15:30:00.000Z");
+
+    const desktopTransaction = {
+      id: "tx-1",
+      type: "EXPENSE" as const,
+      amount: 150,
+      assetId: "asset-1",
+      categoryId: "cat-1",
+      transactionDate: "2026-08-12T10:00:00.000Z",
+      note: "Lunch",
+      createdAt: "2026-08-12T10:00:00.000Z",
+      updatedAt: "2026-08-12T10:00:00.000Z",
+      attachmentUrl: null,
+    };
+
+    render(
+      <TransactionsContainer
+        isDesktopSheet={false}
+        desktopTransaction={desktopTransaction}
+        initialTransaction={desktopTransaction}
+      />,
+    );
+
+    fireEvent.click(screen.getByTestId("save-tx-btn"));
+
+    const confirmModalBtn = await screen.findByTestId(
+      "confirm-unconfirmed-date-btn",
+    );
+    fireEvent.click(confirmModalBtn);
+
+    expect(mockUpdateTransactionMutate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: "tx-1",
+        data: expect.objectContaining({
+          transactionDate: "2026-08-12T15:30:00.000Z",
+        }),
+      }),
+    );
+    expect(mockHandleConfirmDate).toHaveBeenCalled();
   });
 });

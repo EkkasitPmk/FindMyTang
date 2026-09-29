@@ -323,7 +323,17 @@ export default function TransactionsContainer({
   };
 
   const handleConfirmUnconfirmedDate = () => {
-    if (pendingSubmission) submit(pendingSubmission);
+    if (pendingSubmission) {
+      const finalSubmission = tempDate
+        ? {
+            ...pendingSubmission,
+            transactionDate: tempDate.toISOString(),
+          }
+        : pendingSubmission;
+
+      handleConfirmDate();
+      submit(finalSubmission);
+    }
     setPendingSubmission(null);
     setIsUnconfirmedDateModalOpen(false);
   };
