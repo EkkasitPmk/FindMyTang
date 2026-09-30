@@ -46,6 +46,14 @@ export const drilldownTransactionSchema = z.object({
     name: z.string(),
     type: z.string(),
   }),
+  toAsset: z
+    .object({
+      id: z.string(),
+      name: z.string(),
+      type: z.string(),
+    })
+    .nullable()
+    .optional(),
 });
 
 export const drilldownSummarySchema = z.object({

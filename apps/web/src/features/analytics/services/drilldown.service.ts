@@ -115,6 +115,7 @@ export const getDrilldownApi = async (
     const formattedTxs = currentTxs
       .map((t) => {
         const asset = assetMap.get(t.assetId);
+        const toAsset = t.toAssetId ? assetMap.get(t.toAssetId) : undefined;
         return {
           id: t.id,
           type: t.type,
@@ -126,6 +127,13 @@ export const getDrilldownApi = async (
             name: asset?.name || "Unknown",
             type: asset?.type || "OTHER",
           },
+          toAsset: toAsset
+            ? {
+                id: toAsset.id,
+                name: toAsset.name,
+                type: toAsset.type,
+              }
+            : null,
         };
       })
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
