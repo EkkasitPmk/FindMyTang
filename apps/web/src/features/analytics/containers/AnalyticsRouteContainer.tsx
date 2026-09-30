@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { getCurrentPeriod } from "@/shared/lib/helpers/date.helper";
 import AnalyticsContainer from "./AnalyticsContainer";
 import { getCategoryBreakdownServer } from "../services/analytics.server";
 
@@ -10,9 +11,7 @@ export default async function AnalyticsRouteContainer() {
 
   if (!isCandidateAuth) return <AnalyticsContainer />;
 
-  const currentDate = new Date();
-  const month = currentDate.getMonth() + 1;
-  const year = currentDate.getFullYear();
+  const { month, year } = getCurrentPeriod();
   const initialCategoryBreakdown = await getCategoryBreakdownServer(
     month,
     year,

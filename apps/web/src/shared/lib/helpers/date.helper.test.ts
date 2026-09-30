@@ -1,5 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { getDiffDays, formatDisplayDate } from "./date.helper";
+import {
+  getDiffDays,
+  formatDisplayDate,
+  getCurrentPeriod,
+} from "./date.helper";
 
 describe("date.helper", () => {
   beforeEach(() => {
@@ -69,6 +73,22 @@ describe("date.helper", () => {
       // It should end with something like "15:30" or "X:30" depending on timezone,
       // let's just check that it contains a colon and 2 digits for minutes.
       expect(result).toMatch(/\d{2}:\d{2}$/);
+    });
+  });
+
+  describe("getCurrentPeriod", () => {
+    it("returns correct month and year for Bangkok timezone across UTC boundary", () => {
+      // 2026-09-30 19:30 UTC is 2026-10-01 02:30 in Asia/Bangkok
+      const utcDate = new Date("2026-09-30T19:30:00Z");
+      const period = getCurrentPeriod(utcDate, "Asia/Bangkok");
+      expect(period).toEqual({ month: 10, year: 2026 });
+    });
+
+    it("returns correct year rollover across new year boundary", () => {
+      // 2026-12-31 20:00 UTC is 2027-01-01 03:00 in Asia/Bangkok
+      const newYearEve = new Date("2026-12-31T20:00:00Z");
+      const period = getCurrentPeriod(newYearEve, "Asia/Bangkok");
+      expect(period).toEqual({ month: 1, year: 2027 });
     });
   });
 });
