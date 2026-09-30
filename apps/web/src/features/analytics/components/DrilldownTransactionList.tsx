@@ -1,11 +1,10 @@
 import { DrilldownTransaction } from "../schemas/analytics.response.schema";
-import { formatCurrency } from "@/shared/lib/utils/currency.util";
 import { format } from "date-fns";
 import { th, enUS } from "date-fns/locale";
 import { Asset } from "@/shared/lib/types/asset.type";
-import { TransactionIcon } from "@/shared/components/customs/TransactionIcon";
-import { TransactionResponse } from "@/shared/lib/types/transaction.type";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { groupTransactionsByDate } from "../helpers/drilldown.helper";
+import { DrilldownTransactionItem } from "./DrilldownTransactionItem";
 
 interface DrilldownTransactionListProps {
   transactions: DrilldownTransaction[];
@@ -34,76 +33,24 @@ export const DrilldownTransactionList = ({
     );
   }
 
-  // Group by date
-  const grouped = transactions.reduce(
-    (acc, tx) => {
-      const d = tx.date.split("T")[0];
-      if (!acc[d]) acc[d] = [];
-      acc[d].push(tx);
-      return acc;
-    },
-    {} as Record<string, DrilldownTransaction[]>,
-  );
+  const grouped = groupTransactionsByDate(transactions);
 
   return (
     <div className="space-y-3">
-      {Object.entries(grouped).map(([date, txs]) => (
-        <div key={date}>
+      {Object.entries(grouped).map(([dateKey, group]) => (
+        <div key={dateKey}>
           <div className="text-sm font-medium text-secondary-text mb-2 ml-2">
-            {format(new Date(date), "MMM d, yyyy", { locale: dateLocale })}
+            {format(group.dateObj, "MMM d, yyyy", { locale: dateLocale })}
           </div>
           <div className="bg-surface rounded-xl border border-border overflow-hidden divide-y divide-border">
-            {txs.map((tx) => {
-              const asset = assets?.find((a) => a.id === tx.asset.id);
-              const assetColor = asset?.color || "var(--chart-2)";
-
-              return (
-                <div
-                  key={tx.id}
-                  className="px-4 py-3 flex items-center justify-between hover:bg-surface-hover transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <TransactionIcon
-                      transaction={
-                        {
-                          type: tx.type,
-                          category: {
-                            id: category.id,
-                            name: category.name,
-                            icon: category.icon,
-                            color: category.color || "var(--primary-text)",
-                          },
-                        } as TransactionResponse
-                      }
-                    />
-                    <div className="flex flex-col gap-1">
-                      <p className="text-[0.875rem] font-medium text-primary-text leading-none">
-                        {tx.note || t("noNote")}
-                      </p>
-                      <span
-                        className="inline-flex items-center w-fit px-1.5 py-0.5 rounded-md text-[0.625rem] font-semibold tracking-wide"
-                        style={{
-                          color: assetColor,
-                          backgroundColor: assetColor.startsWith("#")
-                            ? `${assetColor}1A`
-                            : "var(--surface-secondary)",
-                        }}
-                      >
-                        {tx.asset.name}
-                      </span>
-                    </div>
-                  </div>
-                  <div
-                    className={`font-semibold text-right ${
-                      tx.type === "INCOME" ? "text-income" : "text-expense"
-                    }`}
-                  >
-                    {tx.type === "INCOME" ? "+" : "-"}
-                    {formatCurrency(tx.amount)}
-                  </div>
-                </div>
-              );
-            })}
+            {group.txs.map((tx) => (
+              <DrilldownTransactionItem
+                key={tx.id}
+                tx={tx}
+                category={category}
+                assets={assets}
+              />
+            ))}
           </div>
         </div>
       ))}
