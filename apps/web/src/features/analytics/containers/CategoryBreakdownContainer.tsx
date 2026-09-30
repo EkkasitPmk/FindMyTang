@@ -14,6 +14,7 @@ import {
   TabsContent,
 } from "@/shared/components/animate-ui/components/animate/tabs";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { getCurrentPeriod } from "@/shared/lib/helpers/date.helper";
 import type { CategoryBreakdownResponse } from "../schemas/analytics.response.schema";
 
 export const CategoryBreakdownContainer = ({
@@ -26,11 +27,9 @@ export const CategoryBreakdownContainer = ({
   initialYear?: number;
 }>) => {
   const { t } = useTranslation();
-  const currentDate = new Date();
-  const [month, setMonth] = useState(
-    initialMonth ?? currentDate.getMonth() + 1,
-  );
-  const [year, setYear] = useState(initialYear ?? currentDate.getFullYear());
+  const currentPeriod = getCurrentPeriod();
+  const [month, setMonth] = useState(initialMonth ?? currentPeriod.month);
+  const [year, setYear] = useState(initialYear ?? currentPeriod.year);
   const [type, setType] = useState<"EXPENSE" | "INCOME" | "TRANSFER">(
     "EXPENSE",
   );
@@ -149,8 +148,7 @@ export const CategoryBreakdownContainer = ({
           onPrev={handlePrev}
           onNext={handleNext}
           disableNext={
-            year === currentDate.getFullYear() &&
-            month === currentDate.getMonth() + 1
+            year === currentPeriod.year && month === currentPeriod.month
           }
         />
       </div>

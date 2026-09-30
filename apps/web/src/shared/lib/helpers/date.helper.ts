@@ -107,3 +107,25 @@ export function updatePresetDate(daysToAdd: number, baseDate?: Date): Date {
   }
   return newDate;
 }
+
+export function getCurrentPeriod(
+  date: Date = new Date(),
+  timeZone: string = "Asia/Bangkok",
+): {
+  month: number;
+  year: number;
+} {
+  const month = Number(
+    new Intl.DateTimeFormat("en-US", {
+      timeZone,
+      month: "numeric",
+    }).format(date),
+  );
+  const year = Number(
+    new Intl.DateTimeFormat("en-US", {
+      timeZone,
+      year: "numeric",
+    }).format(date),
+  );
+  return { month, year };
+}

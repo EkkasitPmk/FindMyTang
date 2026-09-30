@@ -3,6 +3,7 @@ import { formatCurrency } from "@/shared/lib/utils/currency.util";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { format } from "date-fns";
 import { th, enUS } from "date-fns/locale";
+import { getCurrentPeriod } from "@/shared/lib/helpers/date.helper";
 
 interface DrilldownSummaryProps {
   summary: IDrilldownSummary;
@@ -21,27 +22,27 @@ export const DrilldownSummary = ({
   const dateLocale = currentLanguage === "th" ? th : enUS;
   const isUp = summary.percentageChange > 0;
 
-  const now = new Date();
+  const currentPeriod = getCurrentPeriod();
   const isCurrentMonth =
-    (!month || month === now.getMonth() + 1) &&
-    (!year || year === now.getFullYear());
+    (!month || month === currentPeriod.month) &&
+    (!year || year === currentPeriod.year);
 
   const currentLabel = isCurrentMonth
     ? t("totalThisMonth")
     : format(
-        new Date(year ?? now.getFullYear(), (month ?? 1) - 1, 1),
+        new Date(year ?? currentPeriod.year, (month ?? 1) - 1, 1),
         "MMMM yyyy",
         { locale: dateLocale },
       );
 
   const currentBarLabel = isCurrentMonth
     ? t("thisMonth")
-    : format(new Date(year ?? now.getFullYear(), (month ?? 1) - 1, 1), "MMM", {
+    : format(new Date(year ?? currentPeriod.year, (month ?? 1) - 1, 1), "MMM", {
         locale: dateLocale,
       });
 
   const prevMonthDate = new Date(
-    year ?? now.getFullYear(),
+    year ?? currentPeriod.year,
     (month ?? 1) - 2,
     1,
   );

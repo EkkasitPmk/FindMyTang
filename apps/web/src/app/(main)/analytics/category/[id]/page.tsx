@@ -1,4 +1,5 @@
 import DrilldownRouteContainer from "@/features/analytics/containers/DrilldownRouteContainer";
+import { getCurrentPeriod } from "@/shared/lib/helpers/date.helper";
 
 export default async function CategoryDrilldownPage({
   params,
@@ -9,14 +10,15 @@ export default async function CategoryDrilldownPage({
 }>) {
   const { id } = await params;
   const resolvedSearchParams = await searchParams;
+  const currentPeriod = getCurrentPeriod();
 
   const month = resolvedSearchParams?.month
     ? Number(resolvedSearchParams.month)
-    : new Date().getMonth() + 1;
+    : currentPeriod.month;
 
   const year = resolvedSearchParams?.year
     ? Number(resolvedSearchParams.year)
-    : new Date().getFullYear();
+    : currentPeriod.year;
 
   return <DrilldownRouteContainer categoryId={id} month={month} year={year} />;
 }
