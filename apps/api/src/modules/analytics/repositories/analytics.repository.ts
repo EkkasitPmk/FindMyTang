@@ -115,6 +115,13 @@ export class AnalyticsRepository {
             type: true,
           },
         },
+        toAsset: {
+          select: {
+            id: true,
+            name: true,
+            type: true,
+          },
+        },
       },
       orderBy: {
         date: "desc",

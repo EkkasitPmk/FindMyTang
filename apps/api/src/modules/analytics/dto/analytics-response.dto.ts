@@ -308,6 +308,13 @@ export class CategoryTransactionItemDto {
 
   @ApiProperty({ description: "Associated asset info", nullable: true })
   asset!: any;
+
+  @ApiProperty({
+    description: "Associated target asset info (for transfers)",
+    nullable: true,
+    required: false,
+  })
+  toAsset?: any;
 }
 
 export class CategoryTransactionsResponseDto {
