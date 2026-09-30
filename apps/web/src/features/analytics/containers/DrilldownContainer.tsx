@@ -83,6 +83,8 @@ export const DrilldownContainer = ({
         <DrilldownSummary
           summary={data.summary}
           color={data.category?.color || "var(--chart-1)"}
+          month={month}
+          year={year}
         />
         <DrilldownTransactionList
           transactions={data.transactions}

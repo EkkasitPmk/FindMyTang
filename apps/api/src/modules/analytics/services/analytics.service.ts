@@ -285,6 +285,7 @@ export class AnalyticsService {
         note: t.note,
         date: t.date.toISOString(),
         asset: t.asset,
+        toAsset: t.toAsset ?? null,
       })),
     };
   }
