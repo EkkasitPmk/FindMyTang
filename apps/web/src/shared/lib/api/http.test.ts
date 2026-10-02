@@ -91,4 +91,51 @@ describe("http client interceptor", () => {
     );
     dispatchSpy.mockRestore();
   });
+
+  it("dispatches auth:session-expired only once for concurrent requests when refresh fails with 401", async () => {
+    const dispatchSpy = vi.spyOn(window, "dispatchEvent");
+    const error401 = new AxiosError(
+      "Unauthorized",
+      "401",
+      undefined,
+      undefined,
+      {
+        status: 401,
+        data: {},
+        headers: {},
+        statusText: "Unauthorized",
+        config: {} as unknown as InternalAxiosRequestConfig,
+      },
+    );
+    vi.spyOn(refreshClient, "post").mockRejectedValueOnce(error401);
+
+    const responseManager = http.interceptors
+      .response as unknown as InterceptorManagerWithHandlers<unknown>;
+    const errorHandler = responseManager.handlers[0]?.rejected;
+    expect(errorHandler).toBeDefined();
+
+    const createMockError = (url: string) => ({
+      config: {
+        url,
+        requestSentAt: Date.now(),
+      },
+      response: {
+        status: 401,
+      },
+    });
+
+    const results = await Promise.allSettled([
+      errorHandler!(createMockError("/api/v1/auth/me")),
+      errorHandler!(createMockError("/api/v1/assets")),
+      errorHandler!(createMockError("/api/v1/summary/monthly")),
+      errorHandler!(createMockError("/api/v1/transactions")),
+    ]);
+
+    expect(results.every((r) => r.status === "rejected")).toBe(true);
+    const sessionExpiredCalls = dispatchSpy.mock.calls.filter(
+      ([event]) => (event as CustomEvent)?.type === "auth:session-expired",
+    );
+    expect(sessionExpiredCalls).toHaveLength(1);
+    dispatchSpy.mockRestore();
+  });
 });

@@ -68,18 +68,18 @@ export default function NavContainer({
 
   useEffect(() => {
     const handleSessionExpired = async () => {
-      if (isGuest) return;
+      if (useGuestStore.getState().isGuest) return;
       setGuestMode(true);
       await clearGuestData();
       await useGuestStore.getState().seedDefaultGuestData();
       queryClient.clear();
-      toast.info(t("sessionExpired"));
+      toast.info(t("sessionExpired"), { toastId: "session-expired" });
     };
 
     window.addEventListener("auth:session-expired", handleSessionExpired);
     return () =>
       window.removeEventListener("auth:session-expired", handleSessionExpired);
-  }, [clearGuestData, isGuest, queryClient, setGuestMode, t]);
+  }, [clearGuestData, queryClient, setGuestMode, t]);
 
   useEffect(() => {
     if (!shouldHideBottomNavOnScroll) return;
