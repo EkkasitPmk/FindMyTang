@@ -31,6 +31,16 @@ const refreshAccessToken = () => {
     .then(() => {
       lastSuccessfulRefreshAt = Date.now();
     })
+    .catch((refreshError) => {
+      if (
+        isBrowser &&
+        axios.isAxiosError(refreshError) &&
+        refreshError.response?.status === 401
+      ) {
+        window.dispatchEvent(new CustomEvent("auth:session-expired"));
+      }
+      throw refreshError;
+    })
     .finally(() => {
       refreshPromise = null;
     });
@@ -78,19 +88,8 @@ http.interceptors.response.use(
         return http(originalRequest);
       }
 
-      try {
-        await refreshAccessToken();
-        return http(originalRequest);
-      } catch (refreshError) {
-        if (
-          isBrowser &&
-          axios.isAxiosError(refreshError) &&
-          refreshError.response?.status === 401
-        ) {
-          window.dispatchEvent(new CustomEvent("auth:session-expired"));
-        }
-        throw refreshError;
-      }
+      await refreshAccessToken();
+      return http(originalRequest);
     }
 
     throw error;
