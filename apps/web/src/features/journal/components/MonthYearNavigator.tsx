@@ -83,7 +83,7 @@ export default function MonthYearNavigator({
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.96 }}
-            className="max-h-64 overflow-y-auto p-1 rounded-xl shadow-lg border border-border bg-surface z-50"
+            className="max-h-fit overflow-y-auto p-1 rounded-xl shadow-lg border border-border bg-surface z-50"
           >
             <DropdownMenuGroup>
               {months.map((month, index) => {
