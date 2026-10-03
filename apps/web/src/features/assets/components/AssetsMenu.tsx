@@ -82,7 +82,21 @@ export default function AssetsMenu({
   const { t } = useTranslation();
   return (
     <>
-      <div ref={menuRef}>
+      <div ref={menuRef} className="flex items-center gap-1">
+        {onSearch && (
+          <Button
+            variant="unstyled"
+            tapScale={1}
+            hoverScale={1}
+            type="button"
+            onClick={onSearch}
+            aria-label={t("search")}
+            className="p-1 cursor-pointer hover:bg-surface-secondary rounded-lg outline-none transition-colors text-secondary-text hover:text-primary-text"
+          >
+            <Search size={18} />
+          </Button>
+        )}
+
         <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
           <DropdownMenuTrigger asChild>
             <Button
@@ -90,7 +104,8 @@ export default function AssetsMenu({
               tapScale={1}
               hoverScale={1}
               type="button"
-              className="p-1 mr-2 cursor-pointer hover:bg-surface-secondary rounded-lg outline-none transition-colors"
+              aria-label="Menu"
+              className="p-1 mr-2 cursor-pointer hover:bg-surface-secondary rounded-lg outline-none transition-colors text-secondary-text hover:text-primary-text"
             >
               <EllipsisVertical size={18} />
             </Button>
@@ -101,16 +116,6 @@ export default function AssetsMenu({
             sideOffset={4}
             className="w-48 p-1 rounded-xl shadow-lg border border-border bg-surface text-primary-text z-50"
           >
-            <DropdownMenuItem
-              onSelect={() => {
-                onSearch?.();
-              }}
-              className="flex items-center gap-2 cursor-pointer py-2"
-            >
-              <Search size={16} className="text-secondary-text" />
-              <span className="text-sm">{t("search")}</span>
-            </DropdownMenuItem>
-
             <DropdownMenuSub>
               <DropdownMenuSubTrigger className="w-full justify-between cursor-pointer py-2">
                 <div className="flex items-center gap-2">
