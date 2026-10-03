@@ -11,9 +11,14 @@ import {
 } from "../../transactions/hooks/transaction.hook";
 import { groupTransactionsByDate } from "../helpers/asset-transactions.helper";
 import {
+  calculateAssetMonthlySummary,
+  getAvailableMonths,
+  getEffectiveMonth,
+  getEffectiveYear,
   getTransactionDateRange,
   shouldFetchTransactions,
   shouldShowAssetLoading,
+  shouldShowTransactionsLoading,
 } from "../helpers/asset-detail.helper";
 import { MONTHS } from "@/shared/lib/configs/date.config";
 import EditAssetsContainer from "./EditAssetsContainer";
@@ -99,7 +104,6 @@ export default function AssetDetailContainer({
   );
 
   const [isMonthOpen, setIsMonthOpen] = useState(false);
-  const monthRef = useRef<HTMLDivElement>(null);
 
   const [isYearOpen, setIsYearOpen] = useState(false);
   const yearRef = useRef<HTMLDivElement>(null);
@@ -116,36 +120,48 @@ export default function AssetDetailContainer({
     return () => window.clearTimeout(timeoutId);
   }, [id, isSearchMode]);
 
-  const effectiveYear = useMemo(() => {
-    if (isSearchMode)
-      return ["All time", ...availableYears].includes(selectedYear)
-        ? selectedYear
-        : "All time";
-    return availableYears.includes(selectedYear)
-      ? selectedYear
-      : availableYears[0] || "Select";
-  }, [selectedYear, availableYears, isSearchMode]);
+  const currentYearStr = useMemo(() => new Date().getFullYear().toString(), []);
+  const currentMonthStr = useMemo(() => MONTHS[new Date().getMonth()], []);
 
-  const availableMonths = useMemo(() => {
-    if (
-      isSearchMode ||
-      effectiveYear === "Select" ||
-      effectiveYear === "All time"
-    )
-      return [];
-    return (availableDatesData?.[effectiveYear] || []).sort(
-      (a, b) =>
-        MONTHS.indexOf(b as (typeof MONTHS)[number]) -
-        MONTHS.indexOf(a as (typeof MONTHS)[number]),
-    );
-  }, [availableDatesData, effectiveYear, isSearchMode]);
+  const effectiveYear = useMemo(
+    () =>
+      getEffectiveYear(
+        selectedYear,
+        availableYears,
+        isSearchMode,
+        currentYearStr,
+      ),
+    [selectedYear, availableYears, isSearchMode, currentYearStr],
+  );
 
-  const effectiveMonth = useMemo(() => {
-    if (isSearchMode) return "Select";
-    return availableMonths.includes(selectedMonth)
-      ? selectedMonth
-      : availableMonths[0] || "Select";
-  }, [selectedMonth, availableMonths, isSearchMode]);
+  const availableMonths = useMemo(
+    () =>
+      getAvailableMonths(
+        isSearchMode,
+        effectiveYear,
+        availableDatesData,
+        availableYears.length,
+        currentMonthStr,
+      ),
+    [
+      availableDatesData,
+      effectiveYear,
+      isSearchMode,
+      availableYears.length,
+      currentMonthStr,
+    ],
+  );
+
+  const effectiveMonth = useMemo(
+    () =>
+      getEffectiveMonth(
+        selectedMonth,
+        availableMonths,
+        isSearchMode,
+        currentMonthStr,
+      ),
+    [selectedMonth, availableMonths, isSearchMode, currentMonthStr],
+  );
 
   const { from, to } = useMemo(
     () => getTransactionDateRange(isSearchMode, effectiveYear, effectiveMonth),
@@ -178,33 +194,47 @@ export default function AssetDetailContainer({
               : undefined,
           from,
           to,
+          limit: 100,
         }
       : undefined,
     {
       enabled: canFetchTransactions,
     },
   );
-  const isLoadingTransactions =
-    (!isSearchMode && isAvailableDatesPending) ||
-    (isTransactionsFetching &&
-      !isFetchingNextPage &&
-      (isTransactionsPending || isSearchMode));
+  const isLoadingTransactions = shouldShowTransactionsLoading(
+    isSearchMode,
+    isAvailableDatesPending,
+    isTransactionsFetching,
+    isFetchingNextPage,
+    isTransactionsPending,
+  );
 
-  const groupedTransactions = useMemo(() => {
+  const allItems = useMemo(() => {
     if (!transactionsData) return [];
     const seen = new Set<string>();
-    const allItems = transactionsData.pages
+    return transactionsData.pages
       .flatMap((p) => p.items)
       .filter((tx) => {
         if (seen.has(tx.id)) return false;
         seen.add(tx.id);
         return true;
       });
-    return groupTransactionsByDate(allItems);
   }, [transactionsData]);
 
-  const months = availableMonths;
-  const years = isSearchMode ? ["All time", ...availableYears] : availableYears;
+  const groupedTransactions = useMemo(() => {
+    return groupTransactionsByDate(allItems);
+  }, [allItems]);
+
+  const summary = useMemo(
+    () => calculateAssetMonthlySummary(allItems),
+    [allItems],
+  );
+
+  const months =
+    availableMonths.length > 0 ? availableMonths : [currentMonthStr];
+  const defaultYears =
+    availableYears.length > 0 ? availableYears : [currentYearStr];
+  const years = isSearchMode ? ["All time", ...defaultYears] : defaultYears;
 
   const handleSelectMonth = (month: string) => {
     setSelectedMonth(month);
@@ -253,6 +283,7 @@ export default function AssetDetailContainer({
           <AssetDetail
             asset={asset}
             groupedTransactions={groupedTransactions}
+            summary={summary}
             isLoading={isLoading && !isSearchMode}
             isLoadingTransactions={isLoadingTransactions}
             isAddMenuOpen={isAddMenuOpen}
@@ -292,7 +323,6 @@ export default function AssetDetailContainer({
               setViewOption(option);
               setIsViewOptionOpen(false);
             }}
-            monthRef={monthRef}
             yearRef={yearRef}
             isSearchMode={isSearchMode}
             searchKeyword={debouncedSearchKeyword}
