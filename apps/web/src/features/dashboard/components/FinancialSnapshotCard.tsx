@@ -2,15 +2,12 @@
 import {
   Eye,
   EyeOff,
-  ArrowUpRight,
-  ArrowDownRight,
-  ArrowLeftRight,
   Minus,
-  SlidersHorizontal,
   Wallet,
   TrendingUp,
   TrendingDown,
 } from "lucide-react";
+import CashFlowCard from "@/shared/components/customs/CashFlowCard";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
@@ -141,74 +138,6 @@ export default function FinancialSnapshotCard({
     );
   };
 
-  const renderCashFlowCard = (
-    label: string,
-    type: "income" | "expense" | "transfer" | "adjustment",
-    amount: number,
-  ) => {
-    const styles = {
-      income: {
-        Icon: ArrowUpRight,
-        colorClass: "text-income",
-        bgBorderClass: "bg-income/8 border-income/15",
-        prefix: "+฿ ",
-      },
-      expense: {
-        Icon: ArrowDownRight,
-        colorClass: "text-expense",
-        bgBorderClass: "bg-expense/8 border-expense/15",
-        prefix: "-฿ ",
-      },
-      transfer: {
-        Icon: ArrowLeftRight,
-        colorClass: "text-transfer",
-        bgBorderClass: "bg-transfer/8 border-transfer/15",
-        prefix: "฿ ",
-      },
-      adjustment: {
-        Icon: SlidersHorizontal,
-        colorClass: "text-info",
-        bgBorderClass: "bg-info/8 border-info/15",
-        prefix: "฿ ",
-      },
-    }[type];
-    const { Icon, colorClass, bgBorderClass, prefix } = styles;
-
-    return (
-      <div
-        className={cn(
-          "flex w-[42%] shrink-0 flex-col rounded-lg border p-2.5",
-          bgBorderClass,
-        )}
-      >
-        <div
-          className={cn(
-            "flex items-center gap-1 text-[0.6875rem] font-medium",
-            colorClass,
-          )}
-        >
-          <Icon className="size-3.5 shrink-0" />
-          <span>{label}</span>
-        </div>
-        <span
-          className={cn(
-            "text-sm font-semibold tabular-nums truncate",
-            colorClass,
-            isPrivate && "flex items-center gap-0.5",
-          )}
-        >
-          {isPrivate ? (
-            <>
-              ฿<span className="h-4 flex">****</span>
-            </>
-          ) : (
-            `${prefix}${formatCurrency(amount)}`
-          )}
-        </span>
-      </div>
-    );
-  };
-
   const renderNetChangeBadge = () => {
     const isPositive = netChange > 0;
     const isNegative = netChange < 0;
@@ -281,10 +210,30 @@ export default function FinancialSnapshotCard({
 
       {/* Cash Flow Split Cards */}
       <div className="flex gap-2.5 overflow-x-auto hide-scrollbar relative z-10 px-4.5">
-        {renderCashFlowCard(t("income"), "income", income)}
-        {renderCashFlowCard(t("expense"), "expense", expense)}
-        {renderCashFlowCard(t("transfer"), "transfer", transfer)}
-        {renderCashFlowCard(t("adjustment"), "adjustment", adjustment)}
+        <CashFlowCard
+          type="income"
+          label={t("income")}
+          amount={income}
+          isPrivate={isPrivate}
+        />
+        <CashFlowCard
+          type="expense"
+          label={t("expense")}
+          amount={expense}
+          isPrivate={isPrivate}
+        />
+        <CashFlowCard
+          type="transfer"
+          label={t("transfer")}
+          amount={transfer}
+          isPrivate={isPrivate}
+        />
+        <CashFlowCard
+          type="adjustment"
+          label={t("adjustment")}
+          amount={adjustment}
+          isPrivate={isPrivate}
+        />
       </div>
 
       {/* Monthly Net Change Footer Pill */}
