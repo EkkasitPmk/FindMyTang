@@ -17,6 +17,7 @@
     "db:migrate": "prisma migrate deploy",
     "db:seed": "prisma db seed",
     "db:status": "prisma migrate status",
+    "db:merge-prod": "ts-node scripts/sync-supabase.ts",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "test": "jest",
     "test:watch": "jest --watch",
