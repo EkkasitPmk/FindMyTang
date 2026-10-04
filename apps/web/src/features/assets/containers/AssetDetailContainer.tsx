@@ -62,6 +62,10 @@ export default function AssetDetailContainer({
   const filterType = useAssetUIStore((state) => state.filterType);
   const sortType = useAssetUIStore((state) => state.sortType);
   const resetFilters = useAssetUIStore((state) => state.resetFilters);
+  const isEditModalOpen = useAssetUIStore((state) => state.isEditModalOpen);
+  const setIsEditModalOpen = useAssetUIStore(
+    (state) => state.setIsEditModalOpen,
+  );
   const [debouncedSearchKeyword, setDebouncedSearchKeyword] = useState("");
 
   useEffect(() => {
@@ -80,7 +84,6 @@ export default function AssetDetailContainer({
     return () => resetFilters();
   }, [resetFilters]);
 
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
   const [viewOption, setViewOption] = useState("recentTransactions");
   const [isViewOptionOpen, setIsViewOptionOpen] = useState(false);
@@ -217,7 +220,7 @@ export default function AssetDetailContainer({
         router.replace(`/assets?${params.toString()}`);
       }
     },
-    [id, router, searchParams],
+    [id, router, searchParams, setIsEditModalOpen],
   );
 
   const translateDropdownItem = useCallback(
@@ -263,7 +266,6 @@ export default function AssetDetailContainer({
             onAdjustmentClick={() =>
               router.push(`/transaction?type=ADJUSTMENT&assetId=${asset?.id}`)
             }
-            onEditClick={() => setIsEditModalOpen(true)}
             onAddTransactionClick={() =>
               router.push(`/transaction?assetId=${asset?.id}`)
             }

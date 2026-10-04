@@ -207,6 +207,8 @@ interface AssetUIStore {
   setHasAssets: (value: boolean) => void;
   isSearchMode: boolean;
   setSearchMode: (value: boolean) => void;
+  isEditModalOpen: boolean;
+  setIsEditModalOpen: (value: boolean) => void;
   searchKeyword: string;
   setSearchKeyword: (value: string) => void;
   filterType: "ALL" | "INCOME" | "EXPENSE" | "TRANSFER" | "ADJUSTMENT";
@@ -229,6 +231,8 @@ export const useAssetUIStore = create<AssetUIStore>((set) => ({
   setHasAssets: (value) => set({ hasAssets: value }),
   isSearchMode: false,
   setSearchMode: (value) => set({ isSearchMode: value }),
+  isEditModalOpen: false,
+  setIsEditModalOpen: (value) => set({ isEditModalOpen: value }),
   searchKeyword: "",
   setSearchKeyword: (value) => set({ searchKeyword: value }),
   filterType: "ALL",
@@ -238,6 +242,7 @@ export const useAssetUIStore = create<AssetUIStore>((set) => ({
   resetFilters: () =>
     set({
       isSearchMode: false,
+      isEditModalOpen: false,
       searchKeyword: "",
       filterType: "ALL",
       sortType: "DATE_NEWEST",

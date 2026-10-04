@@ -6,9 +6,9 @@ const SKELETON_FLOW_CARDS = Array.from({ length: 3 }, (_, index) => index);
 
 export default function AssetPageSkeleton() {
   return (
-    <div className="relative flex flex-col h-full space-y-4">
+    <div className="relative flex flex-col h-full space-y-3">
       {/* Top Balance Card Skeleton */}
-      <section className="px-4 pt-4">
+      <section className="px-4 pt-3">
         <div className="relative overflow-hidden rounded-2xl border border-border bg-surface py-4.5 sm:py-5 shadow-sm space-y-3.5">
           {/* Row 1: Badge (left) & Month/Year Selectors (right) */}
           <div className="flex items-center justify-between gap-2 px-4.5 sm:px-5">
@@ -42,9 +42,10 @@ export default function AssetPageSkeleton() {
         </div>
       </section>
 
-      {/* Inline View Option ("Recent Transactions ˅") Skeleton */}
-      <section className="px-4">
+      {/* Inline View Option ("Recent Transactions ˅") & Total items Skeleton */}
+      <section className="flex items-center justify-between px-4">
         <Skeleton className="h-6 w-44 rounded-md" />
+        <Skeleton className="h-4 w-14 rounded-md" />
       </section>
 
       {/* Transactions List Skeleton */}

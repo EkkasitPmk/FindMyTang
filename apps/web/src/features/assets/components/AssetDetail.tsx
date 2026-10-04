@@ -1,6 +1,6 @@
 import {
-  ChevronRight,
-  Pencil,
+  Plus,
+  ChevronUp,
   ChevronDown,
   TrendingUp,
   TrendingDown,
@@ -50,7 +50,6 @@ interface AssetDetailProps {
   onAddMenuClose: () => void;
   onTransferClick: () => void;
   onAdjustmentClick: () => void;
-  onEditClick: () => void;
   onAddTransactionClick: () => void;
   onAddExpenseClick: () => void;
   onAddIncomeClick: () => void;
@@ -88,7 +87,6 @@ export default function AssetDetail({
   onAddMenuClose,
   onTransferClick,
   onAdjustmentClick,
-  onEditClick,
   onAddTransactionClick,
   onAddExpenseClick,
   onAddIncomeClick,
@@ -118,6 +116,11 @@ export default function AssetDetail({
   const viewOptionsList = ["recentTransactions", "showDeletedItems"];
 
   const netAmount = summary?.net ?? 0;
+  const totalTransactionsCount =
+    (summary?.incomeCount ?? 0) +
+    (summary?.expenseCount ?? 0) +
+    (summary?.transferCount ?? 0) +
+    (summary?.adjustmentCount ?? 0);
   let NetIcon = Minus;
   let netColorClass = "text-secondary-text";
   let formattedNetAmount = `฿ ${(0).toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -135,11 +138,11 @@ export default function AssetDetail({
   if (isLoading) return <AssetPageSkeleton />;
 
   return (
-    <div className="relative flex flex-col h-full space-y-4">
+    <div className="relative flex flex-col h-full space-y-3">
       {!isSearchMode && (
         <>
           {/* Top Balance Card */}
-          <section className="px-4 pt-4">
+          <section className="px-4 pt-3">
             <div className="relative overflow-hidden rounded-2xl border border-border bg-surface py-4.5 sm:py-5 shadow-sm space-y-2.5">
               {/* Row 1: Badge (left) & Month/Year Selectors (right) */}
               <div className="flex items-center justify-between gap-2 px-4.5 sm:px-5">
@@ -347,8 +350,8 @@ export default function AssetDetail({
             </div>
           </section>
 
-          {/* Inline View Option Dropdown ("Recent Transactions ˅") */}
-          <section className="px-4">
+          {/* Inline View Option Dropdown ("Recent Transactions ˅") & Total count */}
+          <section className="flex items-center justify-between px-4">
             <DropdownMenu
               open={isViewOptionOpen}
               onOpenChange={onViewOptionToggle}
@@ -395,6 +398,14 @@ export default function AssetDetail({
                 </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>
+
+            {isLoadingTransactions ? (
+              <span className="h-4 w-14 rounded bg-surface-secondary animate-pulse" />
+            ) : (
+              <span className="text-xs sm:text-sm font-medium text-secondary-text tabular-nums">
+                {totalTransactionsCount} {t("items")}
+              </span>
+            )}
           </section>
         </>
       )}
@@ -426,109 +437,98 @@ export default function AssetDetail({
           offset={96}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
         >
-          <section className="absolute bottom-4 left-3 right-3 z-50 rounded-xl border border-border/70 bg-surface/95 px-1.5 py-1.5 backdrop-blur-xl">
-            <div className="flex items-center gap-1.5 md:gap-4">
+          <section className="absolute bottom-4 left-3 right-3 z-50 rounded-xl border border-border/70 bg-surface/95 px-1.5 py-1.5 shadow-lg backdrop-blur-xl">
+            <div
+              className={cn(
+                "relative flex w-full items-center rounded-lg bg-primary text-sm font-medium text-white shadow-sm transition-all",
+                isAddMenuOpen ? "rounded-tl-none rounded-tr-none" : "",
+              )}
+              style={{ backgroundColor: asset?.color || undefined }}
+            >
               <Button
                 variant="unstyled"
-                onClick={onEditClick}
-                className="flex min-h-10 w-[25%] flex-col items-center justify-center gap-0.5 rounded-lg px-1 py-1 text-white transition-colors duration-150 hover:bg-primary-light hover:text-primary cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
-                style={{ backgroundColor: asset?.color || undefined }}
-              >
-                <Pencil className="h-4.5 w-4.5" strokeWidth={2} />
-                <span className="text-[0.5625rem] font-semibold">
-                  {t("edit")}
-                </span>
-              </Button>
-              <div
+                onClick={onAddTransactionClick}
                 className={cn(
-                  "relative flex w-[75%] items-center rounded-lg bg-primary text-sm font-medium text-white cursor-pointer",
-                  isAddMenuOpen ? "rounded-tl-none rounded-tr-none" : "",
+                  "flex min-h-10.5 flex-1 items-center justify-center gap-1.5 px-4 font-semibold text-white transition-colors hover:bg-black/10 cursor-pointer",
+                  isAddMenuOpen
+                    ? "rounded-tl-none rounded-tr-none rounded-br-none"
+                    : "rounded-tr-none rounded-br-none",
                 )}
-                style={{ backgroundColor: asset?.color || undefined }}
               >
-                <Button
-                  variant="unstyled"
-                  onClick={onAddTransactionClick}
-                  className={cn(
-                    "min-h-10 w-full truncate rounded-xl px-2 transition-colors hover:bg-black/10",
-                    isAddMenuOpen
-                      ? "rounded-tl-none rounded-tr-none rounded-br-none"
-                      : "rounded-tr-none rounded-br-none",
-                  )}
-                >
-                  {t("addTransaction")}
-                </Button>
+                <Plus size={18} />
+                <span>{t("addTransaction")}</span>
+              </Button>
 
-                <div className="min-h-10 w-px bg-background" />
+              <div className="min-h-10.5 w-px bg-white/20" />
 
-                <Button
-                  variant="unstyled"
-                  onClick={onAddMenuToggle}
+              <Button
+                variant="unstyled"
+                onClick={onAddMenuToggle}
+                aria-label="Toggle transaction types menu"
+                className={cn(
+                  "flex min-h-10.5 w-12 items-center justify-center text-white transition-colors hover:bg-black/10 cursor-pointer",
+                  isAddMenuOpen
+                    ? "rounded-tr-none rounded-tl-none rounded-bl-none"
+                    : "rounded-tl-none rounded-bl-none",
+                )}
+              >
+                <ChevronUp
+                  size={18}
                   className={cn(
-                    "flex min-h-10 w-[20%] items-center justify-center rounded-xl transition-colors hover:bg-black/10",
-                    isAddMenuOpen
-                      ? "rounded-tr-none rounded-tl-none rounded-bl-none"
-                      : "rounded-tl-none rounded-bl-none",
+                    "transition-transform duration-200",
+                    isAddMenuOpen && "rotate-180",
                   )}
-                >
-                  <ChevronRight
-                    size={20}
-                    className={cn(
-                      "transition-transform",
-                      isAddMenuOpen && "-rotate-90",
-                    )}
+                />
+              </Button>
+
+              {isAddMenuOpen && (
+                <>
+                  <Button
+                    variant="unstyled"
+                    type="button"
+                    aria-label="Close add menu"
+                    className="fixed inset-0 z-0 w-full h-full cursor-default focus:outline-none"
+                    onClick={onAddMenuClose}
+                    tabIndex={-1}
                   />
-                </Button>
-
-                {isAddMenuOpen && (
-                  <>
+                  <div
+                    className={cn(
+                      "absolute bottom-full left-1/2 z-10 flex w-full -translate-x-1/2 flex-col overflow-hidden rounded-2xl border border-border bg-primary py-1 text-white shadow-xl",
+                      isAddMenuOpen ? "rounded-bl-none rounded-br-none" : "",
+                    )}
+                    style={{ backgroundColor: asset?.color || undefined }}
+                  >
                     <Button
                       variant="unstyled"
-                      type="button"
-                      aria-label="Close add menu"
-                      className="fixed inset-0 z-0 w-full h-full cursor-default focus:outline-none"
-                      onClick={onAddMenuClose}
-                      tabIndex={-1}
-                    />
-                    <div
-                      className={cn(
-                        "absolute bottom-full left-1/2 z-10 flex w-full -translate-x-1/2 flex-col overflow-hidden rounded-2xl border border-border bg-primary py-1 text-white",
-                        isAddMenuOpen ? "rounded-bl-none rounded-br-none" : "",
-                      )}
-                      style={{ backgroundColor: asset?.color || undefined }}
+                      onClick={onAddExpenseClick}
+                      className="w-full py-2.5 text-sm hover:bg-black/10 border-b border-border/20 font-medium"
                     >
-                      <Button
-                        variant="unstyled"
-                        onClick={onAddExpenseClick}
-                        className="w-full py-2 text-sm hover:bg-black/10 border-b border-border/20 font-medium"
-                      >
-                        {t("expense")}
-                      </Button>
-                      <Button
-                        variant="unstyled"
-                        onClick={onAddIncomeClick}
-                        className="w-full py-2 text-sm hover:bg-black/10 border-b border-border/20 font-medium"
-                      >
-                        {t("income")}
-                      </Button>
-                      <Button
-                        variant="unstyled"
-                        onClick={onTransferClick}
-                        className="w-full py-2 text-sm hover:bg-black/10 border-b border-border/20 font-medium"
-                      >
-                        {t("transfer")}
-                      </Button>
-                      <Button
-                        variant="unstyled"
-                        onClick={onAdjustmentClick}
-                        className="w-full py-2 text-sm hover:bg-black/10 font-medium"
-                      >
-                        {t("adjustment")}
-                      </Button>
-                    </div>
-                  </>
-                )}
-              </div>
+                      {t("expense")}
+                    </Button>
+                    <Button
+                      variant="unstyled"
+                      onClick={onAddIncomeClick}
+                      className="w-full py-2.5 text-sm hover:bg-black/10 border-b border-border/20 font-medium"
+                    >
+                      {t("income")}
+                    </Button>
+                    <Button
+                      variant="unstyled"
+                      onClick={onTransferClick}
+                      className="w-full py-2.5 text-sm hover:bg-black/10 border-b border-border/20 font-medium"
+                    >
+                      {t("transfer")}
+                    </Button>
+                    <Button
+                      variant="unstyled"
+                      onClick={onAdjustmentClick}
+                      className="w-full py-2.5 text-sm hover:bg-black/10 font-medium"
+                    >
+                      {t("adjustment")}
+                    </Button>
+                  </div>
+                </>
+              )}
             </div>
           </section>
         </Slide>

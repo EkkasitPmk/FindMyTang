@@ -74,7 +74,6 @@ describe("AssetDetail", () => {
     onAddMenuClose: vi.fn(),
     onTransferClick: vi.fn(),
     onAdjustmentClick: vi.fn(),
-    onEditClick: vi.fn(),
     onAddTransactionClick: vi.fn(),
     onAddExpenseClick: vi.fn(),
     onAddIncomeClick: vi.fn(),
@@ -124,8 +123,12 @@ describe("AssetDetail", () => {
     expect(screen.getByText("Net Cash Flow")).toBeInTheDocument();
     expect(screen.getByText("+฿ 6.16")).toBeInTheDocument();
 
-    // Inline view option dropdown button
+    // Inline view option dropdown button & total count
     expect(screen.getByText("Recent Transactions")).toBeInTheDocument();
+    expect(screen.getByText("8 items")).toBeInTheDocument();
+
+    // Add transaction primary button
+    expect(screen.getByText("addTransaction")).toBeInTheDocument();
   });
 
   it("hides Balance Card and inline view option in search mode", () => {

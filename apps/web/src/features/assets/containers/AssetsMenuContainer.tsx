@@ -22,6 +22,9 @@ export default function AssetsMenuContainer() {
   >(null);
   const setSearchMode = useAssetUIStore((state) => state.setSearchMode);
   const setSearchKeyword = useAssetUIStore((state) => state.setSearchKeyword);
+  const setIsEditModalOpen = useAssetUIStore(
+    (state) => state.setIsEditModalOpen,
+  );
   const filterType = useAssetUIStore((state) => state.filterType);
   const setFilterType = useAssetUIStore((state) => state.setFilterType);
   const sortType = useAssetUIStore((state) => state.sortType);
@@ -203,6 +206,7 @@ export default function AssetsMenuContainer() {
         assetName={name}
         onDelete={handleDelete}
         onArchive={handleArchive}
+        onEdit={() => setIsEditModalOpen(true)}
         onSearch={() => {
           setSearchKeyword("");
           setSearchMode(true);
