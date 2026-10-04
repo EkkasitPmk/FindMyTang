@@ -10,7 +10,6 @@ import { Asset } from "@/shared/lib/types/asset.type";
 import { GroupedTransaction } from "@/shared/lib/types/transaction.type";
 import { cn } from "@/shared/lib/utils/core.util";
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
-import { DropdownSelect } from "@/shared/components/customs/DropdownSelect";
 import CashFlowCard from "@/shared/components/customs/CashFlowCard";
 import {
   DropdownMenu,
@@ -70,7 +69,6 @@ interface AssetDetailProps {
   viewOptionRef: RefObject<HTMLDivElement | null>;
   onViewOptionToggle: () => void;
   onViewOptionSelect: (option: string) => void;
-  yearRef: RefObject<HTMLDivElement | null>;
   isSearchMode?: boolean;
   searchKeyword?: string;
   fetchNextPage?: () => void;
@@ -109,7 +107,6 @@ export default function AssetDetail({
   viewOptionRef,
   onViewOptionToggle,
   onViewOptionSelect,
-  yearRef,
   isSearchMode,
   searchKeyword,
   fetchNextPage,
@@ -408,26 +405,6 @@ export default function AssetDetail({
           isSearchMode && "pb-6",
         )}
       >
-        {isSearchMode && (
-          <div className="flex items-end justify-end shrink-0 px-4 py-1">
-            <DropdownSelect
-              ref={yearRef}
-              options={years.map(translateDropdownItem)}
-              selected={translateDropdownItem(selectedYear)}
-              isOpen={isYearOpen}
-              onToggle={() => setIsYearOpen(!isYearOpen)}
-              themeColor={asset?.color}
-              onSelect={(translatedYear) => {
-                const originalKey =
-                  years.find(
-                    (opt) => translateDropdownItem(opt) === translatedYear,
-                  ) || years[0];
-                if (originalKey) handleSelectYear(originalKey);
-                setIsYearOpen(false);
-              }}
-            />
-          </div>
-        )}
         <TransactionListContainer
           groupedTransactions={groupedTransactions}
           isLoadingTransactions={isLoadingTransactions}

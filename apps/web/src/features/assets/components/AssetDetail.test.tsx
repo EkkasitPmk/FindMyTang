@@ -93,7 +93,6 @@ describe("AssetDetail", () => {
     viewOptionRef: { current: null },
     onViewOptionToggle: vi.fn(),
     onViewOptionSelect: vi.fn(),
-    yearRef: { current: null },
     translateDropdownItem: (item: string) => item,
   };
 

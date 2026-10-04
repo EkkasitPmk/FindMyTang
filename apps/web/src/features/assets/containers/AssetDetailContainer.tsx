@@ -104,63 +104,33 @@ export default function AssetDetailContainer({
   );
 
   const [isMonthOpen, setIsMonthOpen] = useState(false);
-
   const [isYearOpen, setIsYearOpen] = useState(false);
-  const yearRef = useRef<HTMLDivElement>(null);
 
   const [selectedMonth, setSelectedMonth] = useState("Select");
   const [selectedYear, setSelectedYear] = useState("Select");
-
-  useEffect(() => {
-    if (!isSearchMode) return undefined;
-    const timeoutId = window.setTimeout(() => {
-      setSelectedMonth("Select");
-      setSelectedYear("All time");
-    }, 0);
-    return () => window.clearTimeout(timeoutId);
-  }, [id, isSearchMode]);
 
   const currentYearStr = useMemo(() => new Date().getFullYear().toString(), []);
   const currentMonthStr = useMemo(() => MONTHS[new Date().getMonth()], []);
 
   const effectiveYear = useMemo(
-    () =>
-      getEffectiveYear(
-        selectedYear,
-        availableYears,
-        isSearchMode,
-        currentYearStr,
-      ),
-    [selectedYear, availableYears, isSearchMode, currentYearStr],
+    () => getEffectiveYear(selectedYear, availableYears, currentYearStr),
+    [selectedYear, availableYears, currentYearStr],
   );
 
   const availableMonths = useMemo(
     () =>
       getAvailableMonths(
-        isSearchMode,
         effectiveYear,
         availableDatesData,
         availableYears.length,
         currentMonthStr,
       ),
-    [
-      availableDatesData,
-      effectiveYear,
-      isSearchMode,
-      availableYears.length,
-      currentMonthStr,
-    ],
+    [availableDatesData, effectiveYear, availableYears.length, currentMonthStr],
   );
 
   const effectiveMonth = useMemo(
-    () =>
-      getEffectiveMonth(
-        selectedMonth,
-        availableMonths,
-        isSearchMode,
-        currentMonthStr,
-      ),
-    [selectedMonth, availableMonths, isSearchMode, currentMonthStr],
+    () => getEffectiveMonth(selectedMonth, availableMonths, currentMonthStr),
+    [selectedMonth, availableMonths, currentMonthStr],
   );
 
   const { from, to } = useMemo(
@@ -232,9 +202,7 @@ export default function AssetDetailContainer({
 
   const months =
     availableMonths.length > 0 ? availableMonths : [currentMonthStr];
-  const defaultYears =
-    availableYears.length > 0 ? availableYears : [currentYearStr];
-  const years = isSearchMode ? ["All time", ...defaultYears] : defaultYears;
+  const years = availableYears.length > 0 ? availableYears : [currentYearStr];
 
   const handleSelectMonth = (month: string) => {
     setSelectedMonth(month);
@@ -323,7 +291,6 @@ export default function AssetDetailContainer({
               setViewOption(option);
               setIsViewOptionOpen(false);
             }}
-            yearRef={yearRef}
             isSearchMode={isSearchMode}
             searchKeyword={debouncedSearchKeyword}
             fetchNextPage={canFetchTransactions ? fetchNextPage : undefined}
