@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import AssetDetail from "./AssetDetail";
 import { Asset, AssetType } from "@/shared/lib/types/asset.type";
@@ -17,6 +17,7 @@ vi.mock("@/shared/lib/hooks/useTranslation.hook", () => ({
         adjustment: "Adjustment",
         netCashFlow: "Net Cash Flow",
         items: "items",
+        noFilter: "No filter",
       };
       return dict[key] || key;
     },
@@ -74,7 +75,6 @@ describe("AssetDetail", () => {
     onAddMenuClose: vi.fn(),
     onTransferClick: vi.fn(),
     onAdjustmentClick: vi.fn(),
-    onEditClick: vi.fn(),
     onAddTransactionClick: vi.fn(),
     onAddExpenseClick: vi.fn(),
     onAddIncomeClick: vi.fn(),
@@ -93,7 +93,6 @@ describe("AssetDetail", () => {
     viewOptionRef: { current: null },
     onViewOptionToggle: vi.fn(),
     onViewOptionSelect: vi.fn(),
-    yearRef: { current: null },
     translateDropdownItem: (item: string) => item,
   };
 
@@ -125,8 +124,12 @@ describe("AssetDetail", () => {
     expect(screen.getByText("Net Cash Flow")).toBeInTheDocument();
     expect(screen.getByText("+฿ 6.16")).toBeInTheDocument();
 
-    // Inline view option dropdown button
+    // Inline view option dropdown button & total count
     expect(screen.getByText("Recent Transactions")).toBeInTheDocument();
+    expect(screen.getByText("8 items")).toBeInTheDocument();
+
+    // Add transaction primary button
+    expect(screen.getByText("addTransaction")).toBeInTheDocument();
   });
 
   it("hides Balance Card and inline view option in search mode", () => {
@@ -141,5 +144,57 @@ describe("AssetDetail", () => {
     expect(
       screen.getByTestId("transaction-list-container"),
     ).toBeInTheDocument();
+  });
+
+  it("triggers onFilterSelect when clicking a flow card", () => {
+    const onFilterSelect = vi.fn();
+    render(<AssetDetail {...defaultProps} onFilterSelect={onFilterSelect} />);
+
+    const expenseCard = screen.getByText("Expense").closest('[role="button"]');
+    expect(expenseCard).toBeInTheDocument();
+    fireEvent.click(expenseCard!);
+
+    expect(onFilterSelect).toHaveBeenCalledWith("EXPENSE");
+  });
+
+  it("toggles filter to ALL when clicking the currently active flow card", () => {
+    const onFilterSelect = vi.fn();
+    render(
+      <AssetDetail
+        {...defaultProps}
+        filterType="EXPENSE"
+        onFilterSelect={onFilterSelect}
+      />,
+    );
+
+    const activeCard = screen.getByRole("button", { pressed: true });
+    expect(activeCard).toBeInTheDocument();
+    expect(activeCard).toHaveTextContent("Expense");
+    fireEvent.click(activeCard);
+
+    expect(onFilterSelect).toHaveBeenCalledWith("ALL");
+  });
+
+  it("displays active filter chip and filtered count when filterType is active", () => {
+    const onFilterSelect = vi.fn();
+    render(
+      <AssetDetail
+        {...defaultProps}
+        filterType="EXPENSE"
+        onFilterSelect={onFilterSelect}
+      />,
+    );
+
+    // Shows 4 items in both the expense card and the recent transactions header
+    const itemCounts = screen.getAllByText("4 items");
+    expect(itemCounts).toHaveLength(2);
+
+    // Has clear filter chip
+    const filterChip = screen.getByTitle("No filter");
+    expect(filterChip).toBeInTheDocument();
+    expect(filterChip).toHaveTextContent("Expense");
+
+    fireEvent.click(filterChip);
+    expect(onFilterSelect).toHaveBeenCalledWith("ALL");
   });
 });

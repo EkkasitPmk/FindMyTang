@@ -44,4 +44,15 @@ describe("AssetsMenu", () => {
     fireEvent.click(searchButton);
     expect(defaultProps.onSearch).toHaveBeenCalledTimes(1);
   });
+
+  it("renders edit asset option when menu is open and triggers onEdit when selected", () => {
+    const onEdit = vi.fn();
+    render(<AssetsMenu {...defaultProps} isOpen onEdit={onEdit} />);
+
+    const editItem = screen.getByText("editAsset");
+    expect(editItem).toBeInTheDocument();
+
+    fireEvent.click(editItem);
+    expect(onEdit).toHaveBeenCalledTimes(1);
+  });
 });

@@ -100,8 +100,8 @@ export function TransactionList({
     return (
       <div
         className={cn(
-          "text-secondary-text h-100 flex items-center justify-center",
-          page === "journal" && transactionListRef && "h-40",
+          "text-secondary-text h-60 flex items-center justify-center",
+          page === "journal" && transactionListRef && "h-50",
         )}
       >
         {emptyMessage}

@@ -14,6 +14,8 @@ export interface CashFlowCardProps {
   count?: number;
   isPrivate?: boolean;
   className?: string;
+  isSelected?: boolean;
+  onClick?: () => void;
 }
 
 const FLOW_STYLES = {
@@ -43,6 +45,13 @@ const FLOW_STYLES = {
   },
 } as const;
 
+const ACTIVE_STYLES = {
+  income: "bg-income/18 border-income ring-2 ring-income/50 shadow-xs",
+  expense: "bg-expense/18 border-expense ring-2 ring-expense/50 shadow-xs",
+  transfer: "bg-transfer/18 border-transfer ring-2 ring-transfer/50 shadow-xs",
+  adjustment: "bg-info/18 border-info ring-2 ring-info/50 shadow-xs",
+} as const;
+
 export default function CashFlowCard({
   type,
   label,
@@ -50,9 +59,12 @@ export default function CashFlowCard({
   count,
   isPrivate,
   className,
+  isSelected = false,
+  onClick,
 }: Readonly<CashFlowCardProps>) {
   const { t, locale } = useTranslation();
   const { Icon, colorClass, bgBorderClass, prefix } = FLOW_STYLES[type];
+  const isInteractive = Boolean(onClick);
 
   const formatCurrency = (val: number) => {
     return val.toLocaleString(locale, {
@@ -63,9 +75,23 @@ export default function CashFlowCard({
 
   return (
     <div
+      {...(isInteractive && {
+        role: "button",
+        tabIndex: 0,
+        "aria-pressed": isSelected,
+        onClick,
+        onKeyDown: (e: React.KeyboardEvent<HTMLDivElement>) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onClick?.();
+          }
+        },
+      })}
       className={cn(
-        "flex w-[42%] shrink-0 flex-col rounded-lg border p-2.5",
-        bgBorderClass,
+        "flex w-[42%] shrink-0 flex-col rounded-lg border p-2.5 transition-all select-none outline-none",
+        isSelected ? ACTIVE_STYLES[type] : bgBorderClass,
+        isInteractive &&
+          "cursor-pointer hover:brightness-95 active:scale-[0.98]",
         className,
       )}
     >

@@ -13,49 +13,32 @@ import { TransactionResponse } from "@/shared/lib/types/transaction.type";
 
 describe("asset-detail.helper", () => {
   describe("getEffectiveYear", () => {
-    it("returns selected year if available in search mode", () => {
-      expect(getEffectiveYear("2026", ["2026", "2025"], true, "2026")).toBe(
-        "2026",
-      );
+    it("returns selected year if available", () => {
+      expect(getEffectiveYear("2026", ["2026", "2025"], "2026")).toBe("2026");
     });
 
-    it("defaults to All time in search mode if not available", () => {
-      expect(getEffectiveYear("Select", ["2026"], true, "2026")).toBe(
-        "All time",
-      );
+    it("returns first available year if selected is not available", () => {
+      expect(getEffectiveYear("2024", ["2026", "2025"], "2026")).toBe("2026");
     });
 
     it("returns current year when availableYears is empty", () => {
-      expect(getEffectiveYear("Select", [], false, "2026")).toBe("2026");
-    });
-
-    it("returns selectedYear when it is in availableYears", () => {
-      expect(getEffectiveYear("2025", ["2026", "2025"], false, "2026")).toBe(
-        "2025",
-      );
+      expect(getEffectiveYear("Select", [], "2026")).toBe("2026");
     });
   });
 
   describe("getAvailableMonths", () => {
-    it("returns empty array in search mode or when year is All time", () => {
+    it("returns empty array when year is Select or All time", () => {
       expect(
-        getAvailableMonths(true, "2026", { "2026": ["January"] }, 1, "March"),
+        getAvailableMonths("Select", { "2026": ["January"] }, 1, "March"),
       ).toEqual([]);
       expect(
-        getAvailableMonths(
-          false,
-          "All time",
-          { "2026": ["January"] },
-          1,
-          "March",
-        ),
+        getAvailableMonths("All time", { "2026": ["January"] }, 1, "March"),
       ).toEqual([]);
     });
 
     it("returns sorted months for year", () => {
       expect(
         getAvailableMonths(
-          false,
           "2026",
           { "2026": ["January", "March", "February"] },
           1,
@@ -65,27 +48,25 @@ describe("asset-detail.helper", () => {
     });
 
     it("returns fallback current month if no months and no years exist", () => {
-      expect(getAvailableMonths(false, "2026", {}, 0, "March")).toEqual([
-        "March",
-      ]);
+      expect(getAvailableMonths("2026", {}, 0, "March")).toEqual(["March"]);
     });
   });
 
   describe("getEffectiveMonth", () => {
-    it("returns Select in search mode", () => {
-      expect(getEffectiveMonth("January", ["January"], true, "March")).toBe(
-        "Select",
-      );
-    });
-
     it("returns fallback current month when availableMonths is empty", () => {
-      expect(getEffectiveMonth("Select", [], false, "March")).toBe("March");
+      expect(getEffectiveMonth("Select", [], "March")).toBe("March");
     });
 
     it("returns selectedMonth if present in availableMonths", () => {
       expect(
-        getEffectiveMonth("January", ["February", "January"], false, "March"),
+        getEffectiveMonth("January", ["February", "January"], "March"),
       ).toBe("January");
+    });
+
+    it("returns first available month if selectedMonth is not present", () => {
+      expect(
+        getEffectiveMonth("Select", ["February", "January"], "March"),
+      ).toBe("February");
     });
   });
 
@@ -151,21 +132,15 @@ describe("asset-detail.helper", () => {
   });
 
   describe("getTransactionDateRange", () => {
-    it("returns undefined from/to in search mode with All time", () => {
+    it("returns undefined from/to in search mode regardless of year and month", () => {
+      expect(getTransactionDateRange(true, "2026", "January")).toEqual({
+        from: undefined,
+        to: undefined,
+      });
       expect(getTransactionDateRange(true, "All time", "Select")).toEqual({
         from: undefined,
         to: undefined,
       });
-    });
-
-    it("returns year range in search mode with specific year", () => {
-      const range = getTransactionDateRange(true, "2026", "Select");
-      expect(new Date(range.from!).getTime()).toBe(
-        new Date(2026, 0, 1).getTime(),
-      );
-      expect(new Date(range.to!).getTime()).toBe(
-        new Date(2026, 11, 31, 23, 59, 59).getTime(),
-      );
     });
 
     it("returns undefined from/to when effectiveYear is Select", () => {

@@ -5,6 +5,7 @@ import {
   Funnel,
   Search,
   ArrowUpDown,
+  Pencil,
 } from "lucide-react";
 import ConfirmModal from "@/shared/components/customs/ConfirmModal";
 import { RefObject } from "react";
@@ -33,6 +34,7 @@ interface AssetsMenuProps {
   assetName: string | null;
   onDelete: (isHardDelete?: boolean) => void;
   onArchive: () => void;
+  onEdit?: () => void;
   isHardDelete?: boolean;
   setIsHardDelete?: (value: boolean) => void;
   inputValue?: string;
@@ -78,6 +80,7 @@ export default function AssetsMenu({
   sortType = "DATE_NEWEST",
   sortLabel,
   onSortSelect,
+  onEdit,
 }: Readonly<AssetsMenuProps>) {
   const { t } = useTranslation();
   return (
@@ -116,6 +119,19 @@ export default function AssetsMenu({
             sideOffset={4}
             className="w-48 p-1 rounded-xl shadow-lg border border-border bg-surface text-primary-text z-50"
           >
+            {onEdit && (
+              <>
+                <DropdownMenuItem
+                  onSelect={onEdit}
+                  className="flex items-center gap-2 cursor-pointer text-sm py-2"
+                >
+                  <Pencil size={16} className="text-secondary-text" />
+                  <span>{t("editAsset")}</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+              </>
+            )}
+
             <DropdownMenuSub>
               <DropdownMenuSubTrigger className="w-full justify-between cursor-pointer py-2">
                 <div className="flex items-center gap-2">

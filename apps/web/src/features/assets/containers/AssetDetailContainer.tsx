@@ -60,8 +60,13 @@ export default function AssetDetailContainer({
   const searchKeyword = useAssetUIStore((state) => state.searchKeyword);
   const isSearchMode = useAssetUIStore((state) => state.isSearchMode);
   const filterType = useAssetUIStore((state) => state.filterType);
+  const setFilterType = useAssetUIStore((state) => state.setFilterType);
   const sortType = useAssetUIStore((state) => state.sortType);
   const resetFilters = useAssetUIStore((state) => state.resetFilters);
+  const isEditModalOpen = useAssetUIStore((state) => state.isEditModalOpen);
+  const setIsEditModalOpen = useAssetUIStore(
+    (state) => state.setIsEditModalOpen,
+  );
   const [debouncedSearchKeyword, setDebouncedSearchKeyword] = useState("");
 
   useEffect(() => {
@@ -80,7 +85,6 @@ export default function AssetDetailContainer({
     return () => resetFilters();
   }, [resetFilters]);
 
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
   const [viewOption, setViewOption] = useState("recentTransactions");
   const [isViewOptionOpen, setIsViewOptionOpen] = useState(false);
@@ -104,63 +108,33 @@ export default function AssetDetailContainer({
   );
 
   const [isMonthOpen, setIsMonthOpen] = useState(false);
-
   const [isYearOpen, setIsYearOpen] = useState(false);
-  const yearRef = useRef<HTMLDivElement>(null);
 
   const [selectedMonth, setSelectedMonth] = useState("Select");
   const [selectedYear, setSelectedYear] = useState("Select");
-
-  useEffect(() => {
-    if (!isSearchMode) return undefined;
-    const timeoutId = window.setTimeout(() => {
-      setSelectedMonth("Select");
-      setSelectedYear("All time");
-    }, 0);
-    return () => window.clearTimeout(timeoutId);
-  }, [id, isSearchMode]);
 
   const currentYearStr = useMemo(() => new Date().getFullYear().toString(), []);
   const currentMonthStr = useMemo(() => MONTHS[new Date().getMonth()], []);
 
   const effectiveYear = useMemo(
-    () =>
-      getEffectiveYear(
-        selectedYear,
-        availableYears,
-        isSearchMode,
-        currentYearStr,
-      ),
-    [selectedYear, availableYears, isSearchMode, currentYearStr],
+    () => getEffectiveYear(selectedYear, availableYears, currentYearStr),
+    [selectedYear, availableYears, currentYearStr],
   );
 
   const availableMonths = useMemo(
     () =>
       getAvailableMonths(
-        isSearchMode,
         effectiveYear,
         availableDatesData,
         availableYears.length,
         currentMonthStr,
       ),
-    [
-      availableDatesData,
-      effectiveYear,
-      isSearchMode,
-      availableYears.length,
-      currentMonthStr,
-    ],
+    [availableDatesData, effectiveYear, availableYears.length, currentMonthStr],
   );
 
   const effectiveMonth = useMemo(
-    () =>
-      getEffectiveMonth(
-        selectedMonth,
-        availableMonths,
-        isSearchMode,
-        currentMonthStr,
-      ),
-    [selectedMonth, availableMonths, isSearchMode, currentMonthStr],
+    () => getEffectiveMonth(selectedMonth, availableMonths, currentMonthStr),
+    [selectedMonth, availableMonths, currentMonthStr],
   );
 
   const { from, to } = useMemo(
@@ -232,9 +206,7 @@ export default function AssetDetailContainer({
 
   const months =
     availableMonths.length > 0 ? availableMonths : [currentMonthStr];
-  const defaultYears =
-    availableYears.length > 0 ? availableYears : [currentYearStr];
-  const years = isSearchMode ? ["All time", ...defaultYears] : defaultYears;
+  const years = availableYears.length > 0 ? availableYears : [currentYearStr];
 
   const handleSelectMonth = (month: string) => {
     setSelectedMonth(month);
@@ -249,7 +221,7 @@ export default function AssetDetailContainer({
         router.replace(`/assets?${params.toString()}`);
       }
     },
-    [id, router, searchParams],
+    [id, router, searchParams, setIsEditModalOpen],
   );
 
   const translateDropdownItem = useCallback(
@@ -295,7 +267,6 @@ export default function AssetDetailContainer({
             onAdjustmentClick={() =>
               router.push(`/transaction?type=ADJUSTMENT&assetId=${asset?.id}`)
             }
-            onEditClick={() => setIsEditModalOpen(true)}
             onAddTransactionClick={() =>
               router.push(`/transaction?assetId=${asset?.id}`)
             }
@@ -323,9 +294,10 @@ export default function AssetDetailContainer({
               setViewOption(option);
               setIsViewOptionOpen(false);
             }}
-            yearRef={yearRef}
             isSearchMode={isSearchMode}
             searchKeyword={debouncedSearchKeyword}
+            filterType={filterType}
+            onFilterSelect={setFilterType}
             fetchNextPage={canFetchTransactions ? fetchNextPage : undefined}
             hasNextPage={canFetchTransactions && hasNextPage}
             isFetchingNextPage={canFetchTransactions && isFetchingNextPage}

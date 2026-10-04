@@ -6,16 +6,9 @@ export function getTransactionDateRange(
   effectiveYear: string,
   effectiveMonth: string,
 ) {
-  if (isSearchMode) {
-    if (effectiveYear === "All time") return { from: undefined, to: undefined };
-
-    return {
-      from: new Date(Number(effectiveYear), 0, 1).toISOString(),
-      to: new Date(Number(effectiveYear), 11, 31, 23, 59, 59).toISOString(),
-    };
+  if (isSearchMode || effectiveYear === "Select") {
+    return { from: undefined, to: undefined };
   }
-
-  if (effectiveYear === "Select") return { from: undefined, to: undefined };
 
   const year = Number(effectiveYear);
   if (effectiveMonth === "Select") {
@@ -74,14 +67,8 @@ export function shouldShowTransactionsLoading(
 export function getEffectiveYear(
   selectedYear: string,
   availableYears: string[],
-  isSearchMode: boolean,
   currentYearStr: string,
 ) {
-  if (isSearchMode) {
-    return ["All time", ...availableYears].includes(selectedYear)
-      ? selectedYear
-      : "All time";
-  }
   if (availableYears.length === 0) return currentYearStr;
   return availableYears.includes(selectedYear)
     ? selectedYear
@@ -89,17 +76,12 @@ export function getEffectiveYear(
 }
 
 export function getAvailableMonths(
-  isSearchMode: boolean,
   effectiveYear: string,
   availableDatesData: Record<string, string[]> | undefined,
   availableYearsLength: number,
   currentMonthStr: string,
 ) {
-  if (
-    isSearchMode ||
-    effectiveYear === "Select" ||
-    effectiveYear === "All time"
-  ) {
+  if (effectiveYear === "Select" || effectiveYear === "All time") {
     return [];
   }
   const monthsForYear = availableDatesData?.[effectiveYear] || [];
@@ -116,10 +98,8 @@ export function getAvailableMonths(
 export function getEffectiveMonth(
   selectedMonth: string,
   availableMonths: string[],
-  isSearchMode: boolean,
   currentMonthStr: string,
 ) {
-  if (isSearchMode) return "Select";
   if (availableMonths.length === 0) return currentMonthStr;
   return availableMonths.includes(selectedMonth)
     ? selectedMonth
