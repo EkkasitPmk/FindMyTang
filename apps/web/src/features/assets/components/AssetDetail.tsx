@@ -18,7 +18,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/shared/components/animate-ui/components/radix/dropdown-menu";
-import { Dispatch, SetStateAction, RefObject } from "react";
+import { Dispatch, SetStateAction, RefObject, useMemo } from "react";
 import { TransactionListContainer } from "@/features/transactions/containers/TransactionListContainer";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { TranslationKey } from "@/shared/lib/configs/translations.config";
@@ -68,6 +68,10 @@ interface AssetDetailProps {
   viewOptionRef: RefObject<HTMLDivElement | null>;
   onViewOptionToggle: () => void;
   onViewOptionSelect: (option: string) => void;
+  filterType?: "ALL" | "INCOME" | "EXPENSE" | "TRANSFER" | "ADJUSTMENT";
+  onFilterSelect?: (
+    type: "ALL" | "INCOME" | "EXPENSE" | "TRANSFER" | "ADJUSTMENT",
+  ) => void;
   isSearchMode?: boolean;
   searchKeyword?: string;
   fetchNextPage?: () => void;
@@ -105,6 +109,8 @@ export default function AssetDetail({
   viewOptionRef,
   onViewOptionToggle,
   onViewOptionSelect,
+  filterType = "ALL",
+  onFilterSelect,
   isSearchMode,
   searchKeyword,
   fetchNextPage,
@@ -116,11 +122,25 @@ export default function AssetDetail({
   const viewOptionsList = ["recentTransactions", "showDeletedItems"];
 
   const netAmount = summary?.net ?? 0;
-  const totalTransactionsCount =
-    (summary?.incomeCount ?? 0) +
-    (summary?.expenseCount ?? 0) +
-    (summary?.transferCount ?? 0) +
-    (summary?.adjustmentCount ?? 0);
+  const totalTransactionsCount = useMemo(() => {
+    switch (filterType) {
+      case "INCOME":
+        return summary?.incomeCount ?? 0;
+      case "EXPENSE":
+        return summary?.expenseCount ?? 0;
+      case "TRANSFER":
+        return summary?.transferCount ?? 0;
+      case "ADJUSTMENT":
+        return summary?.adjustmentCount ?? 0;
+      default:
+        return (
+          (summary?.incomeCount ?? 0) +
+          (summary?.expenseCount ?? 0) +
+          (summary?.transferCount ?? 0) +
+          (summary?.adjustmentCount ?? 0)
+        );
+    }
+  }, [filterType, summary]);
   let NetIcon = Minus;
   let netColorClass = "text-secondary-text";
   let formattedNetAmount = `฿ ${(0).toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -311,24 +331,46 @@ export default function AssetDetail({
                   label={t("income")}
                   amount={summary?.income ?? 0}
                   count={summary?.incomeCount ?? 0}
+                  isSelected={filterType === "INCOME"}
+                  onClick={() =>
+                    onFilterSelect?.(filterType === "INCOME" ? "ALL" : "INCOME")
+                  }
                 />
                 <CashFlowCard
                   type="expense"
                   label={t("expense")}
                   amount={summary?.expense ?? 0}
                   count={summary?.expenseCount ?? 0}
+                  isSelected={filterType === "EXPENSE"}
+                  onClick={() =>
+                    onFilterSelect?.(
+                      filterType === "EXPENSE" ? "ALL" : "EXPENSE",
+                    )
+                  }
                 />
                 <CashFlowCard
                   type="transfer"
                   label={t("transfer")}
                   amount={summary?.transfer ?? 0}
                   count={summary?.transferCount ?? 0}
+                  isSelected={filterType === "TRANSFER"}
+                  onClick={() =>
+                    onFilterSelect?.(
+                      filterType === "TRANSFER" ? "ALL" : "TRANSFER",
+                    )
+                  }
                 />
                 <CashFlowCard
                   type="adjustment"
                   label={t("adjustment")}
                   amount={summary?.adjustment ?? 0}
                   count={summary?.adjustmentCount ?? 0}
+                  isSelected={filterType === "ADJUSTMENT"}
+                  onClick={() =>
+                    onFilterSelect?.(
+                      filterType === "ADJUSTMENT" ? "ALL" : "ADJUSTMENT",
+                    )
+                  }
                 />
               </div>
 
@@ -402,9 +444,22 @@ export default function AssetDetail({
             {isLoadingTransactions ? (
               <span className="h-4 w-14 rounded bg-surface-secondary animate-pulse" />
             ) : (
-              <span className="text-xs sm:text-sm font-medium text-secondary-text tabular-nums">
-                {totalTransactionsCount} {t("items")}
-              </span>
+              <div className="flex items-center gap-1.5">
+                {filterType !== "ALL" && (
+                  <button
+                    type="button"
+                    onClick={() => onFilterSelect?.("ALL")}
+                    className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[0.6875rem] font-medium text-secondary-text hover:text-primary-text bg-surface-secondary hover:bg-surface-secondary/80 transition-colors cursor-pointer"
+                    title={t("noFilter")}
+                  >
+                    <span>{t(filterType.toLowerCase() as TranslationKey)}</span>
+                    <span className="text-[0.625rem] opacity-70">✕</span>
+                  </button>
+                )}
+                <span className="text-xs sm:text-sm font-medium text-secondary-text tabular-nums">
+                  {totalTransactionsCount} {t("items")}
+                </span>
+              </div>
             )}
           </section>
         </>

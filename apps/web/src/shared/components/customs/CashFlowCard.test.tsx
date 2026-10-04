@@ -28,4 +28,24 @@ describe("CashFlowCard", () => {
     expect(screen.getByText("****")).toBeInTheDocument();
     expect(screen.queryByText("-฿ 300.00")).not.toBeInTheDocument();
   });
+
+  it("handles click and keyboard activation when onClick is provided", () => {
+    const handleClick = vi.fn();
+    render(
+      <CashFlowCard
+        type="expense"
+        label="Expense"
+        amount={150}
+        onClick={handleClick}
+        isSelected
+      />,
+    );
+
+    const button = screen.getByRole("button", { name: /expense/i });
+    expect(button).toBeInTheDocument();
+    expect(button).toHaveAttribute("aria-pressed", "true");
+
+    button.click();
+    expect(handleClick).toHaveBeenCalledTimes(1);
+  });
 });

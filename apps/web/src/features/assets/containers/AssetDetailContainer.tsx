@@ -60,6 +60,7 @@ export default function AssetDetailContainer({
   const searchKeyword = useAssetUIStore((state) => state.searchKeyword);
   const isSearchMode = useAssetUIStore((state) => state.isSearchMode);
   const filterType = useAssetUIStore((state) => state.filterType);
+  const setFilterType = useAssetUIStore((state) => state.setFilterType);
   const sortType = useAssetUIStore((state) => state.sortType);
   const resetFilters = useAssetUIStore((state) => state.resetFilters);
   const isEditModalOpen = useAssetUIStore((state) => state.isEditModalOpen);
@@ -295,6 +296,8 @@ export default function AssetDetailContainer({
             }}
             isSearchMode={isSearchMode}
             searchKeyword={debouncedSearchKeyword}
+            filterType={filterType}
+            onFilterSelect={setFilterType}
             fetchNextPage={canFetchTransactions ? fetchNextPage : undefined}
             hasNextPage={canFetchTransactions && hasNextPage}
             isFetchingNextPage={canFetchTransactions && isFetchingNextPage}
