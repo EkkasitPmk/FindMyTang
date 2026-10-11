@@ -1,5 +1,5 @@
 import { cn } from "@/shared/lib/utils/core.util";
-import { Coins, Landmark } from "lucide-react";
+import { getAssetIcon } from "@/shared/components/customs/AssetIcon";
 import { Asset } from "@/shared/lib/types/asset.type";
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 
@@ -31,29 +31,13 @@ export default function TransactionAssetItem({
       }}
     >
       <span className="bg-background p-2 rounded-full">
-        {asset.type === "BANK" ? (
-          <Landmark
-            size={18}
-            className={cn(!asset.color && "text-primary")}
-            style={{
-              color: asset.color ? asset.color : undefined,
-            }}
-          />
-        ) : (
-          <Coins
-            size={18}
-            className={cn(!asset.color && "text-primary-text")}
-            style={{
-              color: asset.color ? asset.color : undefined,
-            }}
-          />
-        )}
+        {getAssetIcon(asset.type, asset.color, 18)}
       </span>
       <div className="flex flex-col text-left">
-        <span className="text-sm font-bold text-primary-text truncate max-w-30">
+        <span className="text-sm font-bold text-primary-text whitespace-nowrap">
           {asset.name}
         </span>
-        <span className="text-xs text-secondary-text truncate max-w-20">
+        <span className="text-xs text-secondary-text whitespace-nowrap">
           ฿
           {asset.balance.toLocaleString(undefined, {
             minimumFractionDigits: 2,
