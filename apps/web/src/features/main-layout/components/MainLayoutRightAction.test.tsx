@@ -4,7 +4,7 @@ import MainLayoutRightAction from "./MainLayoutRightAction";
 
 describe("MainLayoutRightAction", () => {
   const defaultProps = {
-    route: "assets",
+    route: "assets" as const,
     isEditingList: false,
     onToggleEditingList: vi.fn(),
     onBack: vi.fn(),
