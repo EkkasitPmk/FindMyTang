@@ -1,8 +1,7 @@
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import TransactionListSkeleton from "@/shared/components/skeletons/TransactionListSkeleton";
+import DashboardAssetSkeleton from "@/features/assets/components/DashboardAssetSkeleton";
 
-// ponytail: matches SKELETON_ASSETS in ListAssetsContainer (3 rows)
-const ASSET_ROWS = [0, 1, 2];
 const RECENT_JOURNAL_GROUPS = [0, 1, 2];
 
 export default function DashboardLoading() {
@@ -35,7 +34,7 @@ export default function DashboardLoading() {
               {Array.from({ length: 4 }, (_, index) => (
                 <Skeleton
                   key={index}
-                  className="h-14.5 w-[42%] shrink-0 rounded-lg"
+                  className="h-15 w-[42%] shrink-0 rounded-lg"
                 />
               ))}
             </div>
@@ -48,30 +47,14 @@ export default function DashboardLoading() {
 
         {/* Asset Section Skeleton - matches DashboardAssetHeader & ListAssetsContainer */}
         <div className="px-4 space-y-4">
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between mb-3">
             <Skeleton className="h-6 w-28" />
-            <Skeleton className="size-6.5 rounded-full" />
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-6 w-14 rounded-lg" />
+              <Skeleton className="h-4 w-16" />
+            </div>
           </div>
-          <div className="space-y-1">
-            {ASSET_ROWS.map((row) => (
-              <div
-                key={row}
-                className="flex items-center justify-between bg-surface px-3 py-2 rounded-lg border-l-4 border-border"
-              >
-                <div className="flex items-center gap-3">
-                  <Skeleton className="h-9.5 w-9.5 rounded-full" />
-                  <div className="space-y-1">
-                    <Skeleton className="h-5 w-24" />
-                    <Skeleton className="h-3 w-16" />
-                  </div>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Skeleton className="h-5 w-20" />
-                  <Skeleton className="size-4 rounded" />
-                </div>
-              </div>
-            ))}
-          </div>
+          <DashboardAssetSkeleton />
         </div>
 
         {/* Recent Journal Section Skeleton - matches RecentJournalContainer */}
