@@ -50,7 +50,7 @@ export default function DashboardLoading() {
         <div className="px-4 space-y-4">
           <div className="flex items-center justify-between mb-2">
             <Skeleton className="h-6 w-28" />
-            <Skeleton className="size-6.5 rounded-full" />
+            <Skeleton className="h-4 w-16" />
           </div>
           <div className="space-y-1">
             {ASSET_ROWS.map((row) => (
