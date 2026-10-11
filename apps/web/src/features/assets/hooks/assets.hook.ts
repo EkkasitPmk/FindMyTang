@@ -4,6 +4,7 @@ import {
   QueryClient,
 } from "@tanstack/react-query";
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 import {
   createAssetApi,
   updateAssetApi,
@@ -21,7 +22,6 @@ import {
   Asset,
 } from "@/shared/lib/types/asset.type";
 import { AxiosError } from "axios";
-
 import { ApiErrorResponse } from "@/shared/lib/types/api.type";
 
 const invalidateQueries = (queryClient: QueryClient) => {
@@ -220,31 +220,68 @@ interface AssetUIStore {
     value: "DATE_NEWEST" | "DATE_OLDEST" | "AMOUNT_HIGHEST" | "AMOUNT_LOWEST",
   ) => void;
   resetFilters: () => void;
+  dashboardAssetView: "list" | "grid";
+  toggleDashboardAssetView: () => void;
+  setDashboardAssetView: (view: "list" | "grid") => void;
 }
 
-export const useAssetUIStore = create<AssetUIStore>((set) => ({
-  isEditingList: false,
-  toggleEditingList: () =>
-    set((state) => ({ isEditingList: !state.isEditingList })),
-  setEditingList: (value) => set({ isEditingList: value }),
-  hasAssets: true,
-  setHasAssets: (value) => set({ hasAssets: value }),
-  isSearchMode: false,
-  setSearchMode: (value) => set({ isSearchMode: value }),
-  isEditModalOpen: false,
-  setIsEditModalOpen: (value) => set({ isEditModalOpen: value }),
-  searchKeyword: "",
-  setSearchKeyword: (value) => set({ searchKeyword: value }),
-  filterType: "ALL",
-  setFilterType: (value) => set({ filterType: value }),
-  sortType: "DATE_NEWEST",
-  setSortType: (value) => set({ sortType: value }),
-  resetFilters: () =>
-    set({
+export const useAssetUIStore = create<AssetUIStore>()(
+  persist(
+    (set) => ({
+      isEditingList: false,
+      toggleEditingList: () =>
+        set((state) => ({ isEditingList: !state.isEditingList })),
+      setEditingList: (value) => set({ isEditingList: value }),
+      hasAssets: true,
+      setHasAssets: (value) => set({ hasAssets: value }),
       isSearchMode: false,
+      setSearchMode: (value) => set({ isSearchMode: value }),
       isEditModalOpen: false,
+      setIsEditModalOpen: (value) => set({ isEditModalOpen: value }),
       searchKeyword: "",
+      setSearchKeyword: (value) => set({ searchKeyword: value }),
       filterType: "ALL",
+      setFilterType: (value) => set({ filterType: value }),
       sortType: "DATE_NEWEST",
+      setSortType: (value) => set({ sortType: value }),
+      dashboardAssetView: "list",
+      toggleDashboardAssetView: () =>
+        set((state) => {
+          const nextView =
+            state.dashboardAssetView === "list" ? "grid" : "list";
+          if (typeof document !== "undefined") {
+            document.cookie = `findmytang-dashboard-asset-view=${nextView}; path=/; max-age=31536000; samesite=lax`;
+          }
+          return { dashboardAssetView: nextView };
+        }),
+      setDashboardAssetView: (view) => {
+        if (typeof document !== "undefined") {
+          document.cookie = `findmytang-dashboard-asset-view=${view}; path=/; max-age=31536000; samesite=lax`;
+        }
+        set({ dashboardAssetView: view });
+      },
+      resetFilters: () =>
+        set({
+          isSearchMode: false,
+          isEditModalOpen: false,
+          searchKeyword: "",
+          filterType: "ALL",
+          sortType: "DATE_NEWEST",
+        }),
     }),
-}));
+    {
+      name: "findmytang-asset-ui-store",
+      storage: createJSONStorage(() =>
+        typeof window !== "undefined"
+          ? window.localStorage
+          : ({
+              getItem: () => null,
+              setItem: () => {},
+              removeItem: () => {},
+            } as unknown as Storage),
+      ),
+      partialize: (state) =>
+        ({ dashboardAssetView: state.dashboardAssetView }) as AssetUIStore,
+    },
+  ),
+);

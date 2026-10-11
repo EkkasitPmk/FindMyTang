@@ -18,11 +18,14 @@ vi.mock("@/shared/lib/hooks/useTranslation.hook", () => ({
   }),
 }));
 
+import { AssetType } from "@/shared/lib/types/asset.type";
+import { useAssetUIStore } from "@/features/assets/hooks/assets.hook";
 import DashboardAssetHeader from "./DashboardAssetHeader";
 
 describe("DashboardAssetHeader", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    useAssetUIStore.setState({ dashboardAssetView: "list" });
   });
 
   it("renders skeleton header when assets are pending", () => {
@@ -35,6 +38,7 @@ describe("DashboardAssetHeader", () => {
 
     expect(container.querySelector(".h-6.w-28")).toBeInTheDocument();
     expect(container.querySelector(".h-4.w-16")).toBeInTheDocument();
+    expect(container.querySelector(".h-6.w-14.rounded-lg")).toBeInTheDocument();
     expect(screen.queryByText("Assets")).not.toBeInTheDocument();
     expect(screen.queryByText("See all")).not.toBeInTheDocument();
   });
@@ -45,7 +49,7 @@ describe("DashboardAssetHeader", () => {
         {
           id: "asset-1",
           name: "Wallet",
-          type: "CASH",
+          type: AssetType.CASH,
           balance: 100,
           isArchived: false,
         },
@@ -70,7 +74,9 @@ describe("DashboardAssetHeader", () => {
 
   it("navigates to /settings?tab=assets on desktop when See all is clicked", () => {
     mockUseAssets.mockReturnValue({
-      data: [{ id: "asset-1", name: "Wallet", type: "CASH", balance: 100 }],
+      data: [
+        { id: "asset-1", name: "Wallet", type: AssetType.CASH, balance: 100 },
+      ],
       isPending: false,
     });
 
@@ -87,5 +93,30 @@ describe("DashboardAssetHeader", () => {
     fireEvent.click(seeAllLink);
 
     expect(mockPush).toHaveBeenCalledWith("/settings?tab=assets");
+  });
+
+  it("toggles dashboard asset view mode between list and grid", () => {
+    mockUseAssets.mockReturnValue({
+      data: [
+        { id: "asset-1", name: "Wallet", type: AssetType.CASH, balance: 100 },
+      ],
+      isPending: false,
+    });
+
+    render(<DashboardAssetHeader language="en" />);
+
+    const listViewButton = screen.getByRole("button", { name: "List view" });
+    const gridViewButton = screen.getByRole("button", { name: "Grid view" });
+
+    expect(listViewButton).toBeInTheDocument();
+    expect(gridViewButton).toBeInTheDocument();
+    expect(listViewButton).toHaveAttribute("aria-pressed", "true");
+    expect(gridViewButton).toHaveAttribute("aria-pressed", "false");
+
+    fireEvent.click(gridViewButton);
+    expect(useAssetUIStore.getState().dashboardAssetView).toBe("grid");
+
+    fireEvent.click(listViewButton);
+    expect(useAssetUIStore.getState().dashboardAssetView).toBe("list");
   });
 });
