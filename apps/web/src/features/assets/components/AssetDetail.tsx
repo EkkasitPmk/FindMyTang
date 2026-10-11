@@ -325,7 +325,7 @@ export default function AssetDetail({
               </div>
 
               {/* Row 3: Split Cards (Income, Expense, Transfer, Adjustment) */}
-              <div className="flex gap-2.5 overflow-x-auto hide-scrollbar px-4.5 sm:px-5">
+              <div className="flex gap-2.5 overflow-x-auto hide-scrollbar px-4.5 py-1 sm:px-5">
                 <CashFlowCard
                   type="income"
                   label={t("income")}

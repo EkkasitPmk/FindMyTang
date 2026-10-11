@@ -37,14 +37,12 @@ export default function ChooseADate({
     onSelectDate(base);
   };
 
-  const handleHourChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const h = Math.min(23, Math.max(0, Number(e.target.value) || 0));
-    applyTime(h, minutes);
-  };
-
-  const handleMinuteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const m = Math.min(59, Math.max(0, Number(e.target.value) || 0));
-    applyTime(hours, m);
+  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.value) return;
+    const [h, m] = e.target.value.split(":").map(Number);
+    if (!Number.isNaN(h) && !Number.isNaN(m)) {
+      applyTime(h, m);
+    }
   };
 
   const handleDateSelect = (date: Date | undefined) => {
@@ -87,29 +85,30 @@ export default function ChooseADate({
         />
 
         <div className="flex items-center justify-between gap-2 w-full pt-3 border-t border-border">
-          <div className="flex items-center gap-1.5 text-xs font-semibold uppercase text-secondary-text tracking-wider">
+          <label
+            htmlFor="transaction-time"
+            className="flex items-center gap-1.5 text-xs font-semibold uppercase text-secondary-text tracking-wider cursor-pointer"
+          >
             <Clock size={16} className="text-secondary-text" />
             <span>{t("time")}</span>
-          </div>
-          <div className="flex items-center gap-1 border border-border rounded-lg px-2.5 py-1 bg-surface-secondary/50 focus-within:ring-2 focus-within:ring-primary/20 transition-colors">
+          </label>
+          <div className="relative flex items-center border border-border rounded-lg px-2.5 py-1 bg-surface-secondary/50 focus-within:ring-2 focus-within:ring-primary/20 transition-colors">
+            <span className="font-semibold text-sm text-primary-text select-none pointer-events-none">
+              {String(hours).padStart(2, "0")}
+              <span className="mx-1 text-secondary-text">:</span>
+              {String(minutes).padStart(2, "0")}
+            </span>
             <input
-              id="time-hour"
-              type="number"
-              min={0}
-              max={23}
-              value={String(hours).padStart(2, "0")}
-              onChange={handleHourChange}
-              className="w-7 text-center bg-transparent outline-none font-semibold text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            />
-            <span className="font-bold text-sm text-secondary-text">:</span>
-            <input
-              id="time-minute"
-              type="number"
-              min={0}
-              max={59}
-              value={String(minutes).padStart(2, "0")}
-              onChange={handleMinuteChange}
-              className="w-7 text-center bg-transparent outline-none font-semibold text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              id="transaction-time"
+              type="time"
+              value={`${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`}
+              onChange={handleTimeChange}
+              onClick={(e) => {
+                try {
+                  e.currentTarget.showPicker();
+                } catch {}
+              }}
+              className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
             />
           </div>
         </div>
