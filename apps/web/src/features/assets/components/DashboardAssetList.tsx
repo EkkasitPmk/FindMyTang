@@ -2,16 +2,17 @@
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { useAssets } from "@/shared/lib/hooks/useAssets.hook";
+import { useAssetUIStore } from "@/features/assets/hooks/assets.hook";
 import { getAssetIcon } from "@/shared/components/customs/AssetIcon";
 import { AssetIconWrapper } from "@/shared/components/customs/AssetIconWrapper";
 import DashboardAssetMotion from "./DashboardAssetMotion";
+import DashboardAssetSkeleton from "./DashboardAssetSkeleton";
 import type { Asset } from "@/shared/lib/types/asset.type";
 import {
   translations,
   type Language,
   type TranslationKey,
 } from "@/shared/lib/configs/translations.config";
-import { Skeleton } from "@/shared/components/ui/skeleton";
 
 export default function DashboardAssetList({
   assets,
@@ -20,33 +21,11 @@ export default function DashboardAssetList({
   const { data: currentAssets = assets, isPending } = useAssets({
     initialData: assets,
   });
+  const viewMode = useAssetUIStore((state) => state.dashboardAssetView);
   const t = (key: TranslationKey) =>
     translations[language][key] ?? translations.en[key];
 
-  if (isPending && !currentAssets) {
-    return (
-      <div className="space-y-1">
-        {[0, 1, 2].map((i) => (
-          <div
-            key={`asset-skeleton-${i}`}
-            className="flex items-center justify-between bg-surface px-3 py-2 rounded-lg border-l-4 border-border"
-          >
-            <div className="flex items-center gap-3">
-              <Skeleton className="h-9.5 w-9.5 rounded-full" />
-              <div className="space-y-1">
-                <Skeleton className="h-5 w-24" />
-                <Skeleton className="h-3 w-16" />
-              </div>
-            </div>
-            <div className="flex items-center gap-1">
-              <Skeleton className="h-5 w-20" />
-              <Skeleton className="size-4 rounded" />
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  }
+  if (isPending && !currentAssets) return <DashboardAssetSkeleton />;
 
   const activeAssets = (currentAssets ?? []).filter(
     (asset) => !asset.isArchived,
@@ -63,6 +42,51 @@ export default function DashboardAssetList({
   }
 
   const locale = language === "th" ? "th-TH" : "en-US";
+
+  if (viewMode === "grid") {
+    return (
+      <div className="grid grid-cols-2 gap-2">
+        {activeAssets.map((asset) => (
+          <DashboardAssetMotion key={asset.id}>
+            <Link
+              href={`/assets?id=${asset.id}&name=${encodeURIComponent(asset.name)}`}
+              className="flex flex-col justify-between bg-surface p-2.5 rounded-xl cursor-pointer hover:bg-surface-secondary transition-all border-t-3 shadow-xs min-h-23 group"
+              style={{ borderTopColor: asset.color || "transparent" }}
+            >
+              <div className="flex items-center justify-between w-full">
+                <div className="scale-85 shrink-0">
+                  <AssetIconWrapper color={asset.color}>
+                    {getAssetIcon(asset.type, asset.color, 16)}
+                  </AssetIconWrapper>
+                </div>
+                <span className="text-[10px] text-secondary-text rounded-full truncate max-w-[70%] shrink-0">
+                  {t(`assetType${asset.type}` as TranslationKey)}
+                </span>
+              </div>
+              <div className="flex flex-col mt-2 min-w-0">
+                <span className="truncate text-sm font-semibold text-primary-text group-hover:text-primary transition-colors">
+                  {asset.name}
+                </span>
+                <span
+                  className={`text-base font-bold truncate mt-0.5 ${
+                    asset.balance === 0
+                      ? "text-secondary-text"
+                      : "text-primary-text"
+                  }`}
+                >
+                  ฿
+                  {asset.balance.toLocaleString(locale, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </span>
+              </div>
+            </Link>
+          </DashboardAssetMotion>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-1">
@@ -87,7 +111,13 @@ export default function DashboardAssetList({
               </div>
             </div>
             <div className="flex shrink-0 items-center gap-1">
-              <span className="font-semibold text-base text-primary-text">
+              <span
+                className={`font-semibold text-base ${
+                  asset.balance === 0
+                    ? "text-secondary-text"
+                    : "text-primary-text"
+                }`}
+              >
                 ฿
                 {asset.balance.toLocaleString(locale, {
                   minimumFractionDigits: 2,
