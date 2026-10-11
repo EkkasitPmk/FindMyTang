@@ -50,31 +50,31 @@ export default function FinancialSnapshotCard({
 
   if (isLoading) {
     return (
-      <div className="relative overflow-hidden rounded-xl border border-border bg-surface p-4.5 sm:p-5 shadow-sm">
+      <div className="relative overflow-hidden rounded-xl border border-border bg-surface py-4.5 sm:py-5 shadow-sm">
         {/* Header Skeleton */}
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-2 px-4.5">
           <Skeleton className="h-4 w-36" />
           <Skeleton className="size-7 rounded-lg" />
         </div>
 
         {/* Net Worth Section Skeleton */}
-        <div className="mb-2">
+        <div className="mb-3 px-4.5">
           <Skeleton className="h-3 w-16 mb-1.5" />
           <Skeleton className="h-9 w-44" />
         </div>
 
         {/* Cash Flow Split Cards Skeleton */}
-        <div className="flex gap-2.5 overflow-x-auto hide-scrollbar">
+        <div className="flex gap-2.5 overflow-x-auto hide-scrollbar px-4.5">
           {Array.from({ length: 4 }, (_, index) => (
             <Skeleton
               key={index}
-              className="h-13.5 w-[42%] shrink-0 rounded-lg"
+              className="h-15 w-[42%] shrink-0 rounded-lg"
             />
           ))}
         </div>
 
         {/* Monthly Net Change Footer Pill Skeleton */}
-        <div className="mt-3 pt-2.5 border-t border-border/50 flex items-center justify-between">
+        <div className="mt-3 pt-2.5 px-4.5 border-t border-border/50 flex items-center justify-between">
           <Skeleton className="h-3.5 w-32" />
           <Skeleton className="h-4 w-24" />
         </div>
