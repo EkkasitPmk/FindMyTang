@@ -26,16 +26,16 @@ describe("DashboardAssetHeader", () => {
 
     const markup = renderToStaticMarkup(<DashboardAssetHeader language="en" />);
 
-    // Skeleton title and action button
+    // Skeleton title
     expect(markup).toContain("h-6 w-28");
-    expect(markup).toContain("size-6.5 rounded-full");
+    expect(markup).not.toContain("size-6.5 rounded-full");
     // Not rendering real text or icon
     expect(markup).not.toContain("assetsTitle");
     expect(markup).not.toContain("lucide-chevron-right");
     expect(markup).not.toContain("lucide-plus");
   });
 
-  it("renders real title and plus button when assets are loaded", () => {
+  it("renders real title without plus button when assets are loaded", () => {
     mockUseAssets.mockReturnValue({
       data: [
         {
@@ -52,6 +52,6 @@ describe("DashboardAssetHeader", () => {
     const markup = renderToStaticMarkup(<DashboardAssetHeader language="en" />);
 
     expect(markup).toContain("Assets");
-    expect(markup).toContain("lucide-plus");
+    expect(markup).not.toContain("lucide-plus");
   });
 });

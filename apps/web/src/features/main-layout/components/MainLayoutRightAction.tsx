@@ -43,28 +43,30 @@ export default function MainLayoutRightAction({
   if (route === "assets") {
     if (assetMenu) return assetMenu;
 
-    if (!hasAssets) {
-      return (
-        <Button
-          variant="unstyled"
-          type="button"
-          onClick={onOpenCreateAssetModal}
-          className="p-1 mr-2 text-primary hover:text-primary-dark cursor-pointer"
-        >
-          <Plus size={20} />
-        </Button>
-      );
-    }
-
     return (
-      <Button
-        variant="unstyled"
-        type="button"
-        onClick={onToggleEditingAssets}
-        className="text-sm mr-4 text-primary hover:text-primary-dark font-medium transition-colors cursor-pointer"
-      >
-        {isEditingAssets ? t("done") : t("edit")}
-      </Button>
+      <div className="flex items-center gap-2 mr-3">
+        {!isEditingAssets && (
+          <Button
+            variant="unstyled"
+            type="button"
+            onClick={onOpenCreateAssetModal}
+            className="flex items-center justify-center p-1 text-primary hover:text-primary-dark cursor-pointer transition-colors"
+            aria-label={t("addAsset")}
+          >
+            <Plus size={20} />
+          </Button>
+        )}
+        {hasAssets && (
+          <Button
+            variant="unstyled"
+            type="button"
+            onClick={onToggleEditingAssets}
+            className="text-sm text-primary hover:text-primary-dark font-medium transition-colors cursor-pointer"
+          >
+            {isEditingAssets ? t("done") : t("edit")}
+          </Button>
+        )}
+      </div>
     );
   }
 
