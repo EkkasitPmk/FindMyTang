@@ -10,6 +10,7 @@ import { PrismaModule } from "./prisma/prisma.module";
 import { AuthModule } from "./modules/auth/auth.module";
 import { SummaryModule } from "./modules/summary/summary.module";
 import { AnalyticsModule } from "./modules/analytics/analytics.module";
+import { RecurringModule } from "./modules/recurring/recurring.module";
 import jwtConfig from "./common/config/jwt.config";
 import cookieConfig from "./common/config/cookie.config";
 import { StorageModule } from "./common/storage/storage.module";
@@ -43,6 +44,7 @@ import { APP_GUARD } from "@nestjs/core";
     AuthModule,
     SummaryModule,
     AnalyticsModule,
+    RecurringModule,
   ],
   controllers: [AppController],
   providers: [
