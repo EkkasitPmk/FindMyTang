@@ -2,6 +2,7 @@ import { Asset } from "@/shared/lib/types/asset.type";
 import TransactionAssetItem from "./TransactionAssetItem";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { cn } from "@/shared/lib/utils/core.util";
 
 const SKELETON_ASSETS = Array.from({ length: 4 }, (_, i) => i);
 
@@ -11,8 +12,10 @@ interface TransactionAssetListProps {
   onSelectAsset: (id: string) => void;
   activeAssetToId?: string | null;
   onSelectAssetTo?: (id: string) => void;
-  transactionType: "EXPENSE" | "INCOME" | "TRANSFER" | "ADJUSTMENT";
-  isLoadingAssetList: boolean;
+  transactionType?: "EXPENSE" | "INCOME" | "TRANSFER" | "ADJUSTMENT";
+  isLoadingAssetList?: boolean;
+  label?: string;
+  containerClassName?: string;
 }
 
 export default function TransactionAssetList({
@@ -21,15 +24,18 @@ export default function TransactionAssetList({
   onSelectAsset,
   activeAssetToId,
   onSelectAssetTo,
-  transactionType,
-  isLoadingAssetList,
+  transactionType = "EXPENSE",
+  isLoadingAssetList = false,
+  label,
+  containerClassName,
 }: Readonly<TransactionAssetListProps>) {
   const { t } = useTranslation();
+  const paddingClass = containerClassName ?? "px-4 lg:px-0";
 
   const renderAssetList = () => {
     if (isLoadingAssetList) {
       return (
-        <div className="flex gap-2 py-1 overflow-auto px-4 lg:px-0">
+        <div className={cn("flex gap-2 py-1 overflow-auto", paddingClass)}>
           {SKELETON_ASSETS.map((id) => (
             <div key={id}>
               <Skeleton className="h-14 w-30 rounded-md" />
@@ -48,7 +54,7 @@ export default function TransactionAssetList({
     }
 
     return (
-      <div className="flex gap-2 py-1 overflow-auto px-4 lg:px-0">
+      <div className={cn("flex gap-2 py-1 overflow-auto", paddingClass)}>
         {assets.map((asset) => (
           <TransactionAssetItem
             key={asset.id}
@@ -64,7 +70,7 @@ export default function TransactionAssetList({
   const renderTransferAssetList = () => {
     if (isLoadingAssetList) {
       return (
-        <div className="flex gap-2 py-1 overflow-auto px-4 lg:px-0">
+        <div className={cn("flex gap-2 py-1 overflow-auto", paddingClass)}>
           {SKELETON_ASSETS.map((id) => (
             <div key={id}>
               <Skeleton className="h-14 w-30 rounded-md" />
@@ -87,7 +93,7 @@ export default function TransactionAssetList({
     }
 
     return (
-      <div className="flex gap-2 py-1 overflow-auto px-4 lg:px-0">
+      <div className={cn("flex gap-2 py-1 overflow-auto", paddingClass)}>
         {availableAssets.map((asset) => (
           <TransactionAssetItem
             key={asset.id}
@@ -102,8 +108,14 @@ export default function TransactionAssetList({
 
   return (
     <section className="space-y-1">
-      <p className="uppercase text-sm text-secondary-text font-medium px-4 lg:px-0">
-        {transactionType === "TRANSFER" ? t("assetFrom") : t("asset")}
+      <p
+        className={cn(
+          "text-sm text-secondary-text font-semibold",
+          paddingClass,
+        )}
+      >
+        {label ??
+          (transactionType === "TRANSFER" ? t("assetFrom") : t("asset"))}
       </p>
 
       {renderAssetList()}
@@ -111,7 +123,12 @@ export default function TransactionAssetList({
       {transactionType === "TRANSFER" && (
         <>
           <div className="flex items-center gap-2 mt-2">
-            <p className="uppercase text-sm text-secondary-text font-medium px-4 lg:px-0">
+            <p
+              className={cn(
+                "text-sm text-secondary-text font-semibold",
+                paddingClass,
+              )}
+            >
               {t("assetTo")}
             </p>
           </div>
