@@ -1,5 +1,6 @@
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { X, Plus } from "lucide-react";
+import { useRecurringSheetStore } from "@/features/recurring/hooks/recurring-sheet.hook";
 import { MainLayoutRightActionProps } from "../types/main-layout.type";
 
 export default function MainLayoutRightAction({
@@ -67,6 +68,20 @@ export default function MainLayoutRightAction({
           </Button>
         )}
       </div>
+    );
+  }
+
+  if (route === "recurring") {
+    return (
+      <Button
+        type="button"
+        size="sm"
+        onClick={() => useRecurringSheetStore.getState().open()}
+        className="mr-2 rounded-xl"
+        leftIcon={<Plus className="size-3.5" />}
+      >
+        {t("recurringAddBtn")}
+      </Button>
     );
   }
 

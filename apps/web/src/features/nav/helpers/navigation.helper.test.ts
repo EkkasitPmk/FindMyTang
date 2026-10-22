@@ -25,7 +25,9 @@ describe("navigation helper", () => {
       "/transaction",
       "/analytics",
     ]);
-    expect(getMobileMoreNavItems().map((item) => item.href)).toEqual([]);
+    expect(getMobileMoreNavItems().map((item) => item.href)).toEqual([
+      "/recurring",
+    ]);
   });
 
   it("blocks only guest-locked routes", () => {

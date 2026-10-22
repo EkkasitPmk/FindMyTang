@@ -8,6 +8,7 @@ const CLOUD_QUERY_ROOTS = new Set([
   "transaction",
   "summary",
   "analytics",
+  "recurring",
 ]);
 
 const isGuestQueryKey = (queryKey: QueryKey): boolean => {
@@ -63,20 +64,18 @@ export const isRetryableSyncError = (error: unknown): boolean => {
 
 export async function withSyncRetry<T>(
   operation: () => Promise<T>,
+  attempt = 0,
 ): Promise<T> {
-  for (let attempt = 0; attempt <= RETRY_DELAYS_MS.length; attempt += 1) {
-    try {
-      return await operation();
-    } catch (error) {
-      const retryDelay = RETRY_DELAYS_MS[attempt];
-      if (retryDelay === undefined || !isRetryableSyncError(error)) {
-        throw error;
-      }
-      await wait(retryDelay);
+  try {
+    return await operation();
+  } catch (error) {
+    const retryDelay = RETRY_DELAYS_MS[attempt];
+    if (retryDelay === undefined || !isRetryableSyncError(error)) {
+      throw error;
     }
+    await wait(retryDelay);
+    return withSyncRetry(operation, attempt + 1);
   }
-
-  throw new Error("Sync retry exhausted");
 }
 
 export const performCloudSync = <T>(operation: () => Promise<T>) =>

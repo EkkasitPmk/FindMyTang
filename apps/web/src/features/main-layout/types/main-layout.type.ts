@@ -68,4 +68,5 @@ export type MainLayoutRoute =
   | "supportContact"
   | "supportFeedback"
   | "analyticsCategory"
+  | "recurring"
   | "other";
