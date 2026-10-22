@@ -32,7 +32,13 @@ export default function ManageAssetRightControls({
 }: Readonly<ManageAssetRightControlsProps>) {
   return (
     <motion.div layout className="flex items-center gap-2">
-      <span className={balanceClass}>฿ {balance.toLocaleString(locale)}</span>
+      <span className={balanceClass}>
+        ฿{" "}
+        {balance.toLocaleString(locale, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}
+      </span>
       <AnimatePresence mode="wait">
         {isEditingList ? (
           <motion.div
