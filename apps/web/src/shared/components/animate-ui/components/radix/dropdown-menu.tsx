@@ -36,7 +36,7 @@ import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react";
 
 type DropdownMenuProps = DropdownMenuPrimitiveProps;
 
-function DropdownMenu(props: DropdownMenuProps) {
+function DropdownMenu(props: Readonly<DropdownMenuProps>) {
   return <DropdownMenuPrimitive {...props} />;
 }
 
@@ -234,7 +234,7 @@ function DropdownMenuShortcut({
 
 type DropdownMenuSubProps = DropdownMenuSubPrimitiveProps;
 
-function DropdownMenuSub(props: DropdownMenuSubProps) {
+function DropdownMenuSub(props: Readonly<DropdownMenuSubProps>) {
   return <DropdownMenuSubPrimitive {...props} />;
 }
 

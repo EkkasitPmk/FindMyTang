@@ -14,6 +14,7 @@ interface ChooseADateProps {
   onConfirm: () => void;
   onPresetClick: (daysToAdd: number) => void;
   locale?: Locale;
+  showTime?: boolean;
 }
 
 export default function ChooseADate({
@@ -24,6 +25,7 @@ export default function ChooseADate({
   onConfirm,
   onPresetClick,
   locale,
+  showTime = true,
 }: Readonly<ChooseADateProps>) {
   const { t } = useTranslation();
   const diffDays = getDiffDays(selectedDate);
@@ -84,34 +86,36 @@ export default function ChooseADate({
           }}
         />
 
-        <div className="flex items-center justify-between gap-2 w-full pt-3 border-t border-border">
-          <label
-            htmlFor="transaction-time"
-            className="flex items-center gap-1.5 text-xs font-semibold uppercase text-secondary-text tracking-wider cursor-pointer"
-          >
-            <Clock size={16} className="text-secondary-text" />
-            <span>{t("time")}</span>
-          </label>
-          <div className="relative flex items-center border border-border rounded-lg px-2.5 py-1 bg-surface-secondary/50 focus-within:ring-2 focus-within:ring-primary/20 transition-colors">
-            <span className="font-semibold text-sm text-primary-text select-none pointer-events-none">
-              {String(hours).padStart(2, "0")}
-              <span className="mx-1 text-secondary-text">:</span>
-              {String(minutes).padStart(2, "0")}
-            </span>
-            <input
-              id="transaction-time"
-              type="time"
-              value={`${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`}
-              onChange={handleTimeChange}
-              onClick={(e) => {
-                try {
-                  e.currentTarget.showPicker();
-                } catch {}
-              }}
-              className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-            />
+        {showTime && (
+          <div className="flex items-center justify-between gap-2 w-full pt-3 border-t border-border">
+            <label
+              htmlFor="transaction-time"
+              className="flex items-center gap-1.5 text-xs font-semibold uppercase text-secondary-text tracking-wider cursor-pointer"
+            >
+              <Clock size={16} className="text-secondary-text" />
+              <span>{t("time")}</span>
+            </label>
+            <div className="relative flex items-center border border-border rounded-lg px-2.5 py-1 bg-surface-secondary/50 focus-within:ring-2 focus-within:ring-primary/20 transition-colors">
+              <span className="font-semibold text-sm text-primary-text select-none pointer-events-none">
+                {String(hours).padStart(2, "0")}
+                <span className="mx-1 text-secondary-text">:</span>
+                {String(minutes).padStart(2, "0")}
+              </span>
+              <input
+                id="transaction-time"
+                type="time"
+                value={`${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`}
+                onChange={handleTimeChange}
+                onClick={(e) => {
+                  try {
+                    e.currentTarget.showPicker();
+                  } catch {}
+                }}
+                className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+              />
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="flex flex-wrap gap-1.5 w-full border-t border-border pt-3">
           {[
