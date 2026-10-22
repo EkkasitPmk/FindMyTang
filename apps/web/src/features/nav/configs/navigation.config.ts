@@ -1,4 +1,4 @@
-import { Home, BookOpen, BarChart3, Plus } from "lucide-react";
+import { Home, BookOpen, BarChart3, Plus, Repeat } from "lucide-react";
 import { NavItem } from "../types/navigation.type";
 
 export const navItems: NavItem[] = [
@@ -29,5 +29,12 @@ export const navItems: NavItem[] = [
     translationKey: "navAnalytics",
     icon: BarChart3,
     mobilePlacement: "primary",
+  },
+  {
+    href: "/recurring",
+    label: "Recurring",
+    translationKey: "navRecurring",
+    icon: Repeat,
+    mobilePlacement: "more",
   },
 ];

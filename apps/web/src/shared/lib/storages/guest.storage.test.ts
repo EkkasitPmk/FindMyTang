@@ -52,6 +52,13 @@ vi.mock("./dexie.storage", async (importOriginal) => {
         }),
         bulkDelete: vi.fn(async () => {}),
       },
+      recurringExpenses: {
+        clear: vi.fn(async () => {}),
+        where: () => ({
+          belowOrEqual: () => ({ primaryKeys: vi.fn(async () => []) }),
+        }),
+        bulkDelete: vi.fn(async () => {}),
+      },
       transaction: vi.fn(
         async (
           _mode: unknown,

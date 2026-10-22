@@ -60,10 +60,42 @@ export interface LocalTransaction {
   syncStatus?: SyncStatus;
 }
 
+export enum RecurringCycle {
+  WEEKLY = "WEEKLY",
+  MONTHLY = "MONTHLY",
+  QUARTERLY = "QUARTERLY",
+  YEARLY = "YEARLY",
+}
+
+export enum RecurringStatus {
+  ACTIVE = "ACTIVE",
+  PAUSED = "PAUSED",
+  CANCELLED = "CANCELLED",
+}
+
+export interface LocalRecurringExpense {
+  id: string;
+  name: string;
+  amount: number;
+  currency?: string;
+  billingCycle: RecurringCycle;
+  firstBillingDate: string;
+  nextBillingDate: string;
+  categoryId?: string | null;
+  assetId?: string | null;
+  status: RecurringStatus;
+  note?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string | null;
+  syncStatus?: SyncStatus;
+}
+
 export class FindMyTangDexie extends Dexie {
   assets!: Table<LocalAsset, string>;
   categories!: Table<LocalCategory, string>;
   transactions!: Table<LocalTransaction, string>;
+  recurringExpenses!: Table<LocalRecurringExpense, string>;
 
   constructor() {
     super("FindMyTangDB");
@@ -73,6 +105,11 @@ export class FindMyTangDexie extends Dexie {
       categories: "id, type, isSystem, displayOrder, deletedAt, syncStatus",
       transactions:
         "id, type, date, assetId, categoryId, toAssetId, deletedAt, syncStatus",
+    });
+
+    this.version(2).stores({
+      recurringExpenses:
+        "id, billingCycle, status, nextBillingDate, assetId, categoryId, deletedAt, syncStatus",
     });
   }
 }

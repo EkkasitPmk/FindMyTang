@@ -21,5 +21,6 @@ export default function MainLayoutTitle({
   if (route === "analyticsCategory") {
     return <CategoryHeaderTitle category={currentCategory} />;
   }
+  if (route === "recurring") return <>{t("navRecurring")}</>;
   return null;
 }

@@ -12,8 +12,10 @@ interface TransactionCategoryListProps {
   categories: Category[];
   activeCategoryId: string | null;
   onSelectCategory: (id: string) => void;
-  onEditClick: () => void;
-  isLoadingCategoryList: boolean;
+  onEditClick?: () => void;
+  isLoadingCategoryList?: boolean;
+  label?: string;
+  containerClassName?: string;
 }
 
 export default function TransactionCategoryList({
@@ -21,14 +23,17 @@ export default function TransactionCategoryList({
   activeCategoryId,
   onSelectCategory,
   onEditClick,
-  isLoadingCategoryList,
+  isLoadingCategoryList = false,
+  label,
+  containerClassName,
 }: Readonly<TransactionCategoryListProps>) {
   const { t } = useTranslation();
+  const paddingClass = containerClassName ?? "px-4 lg:px-0";
 
   return (
-    <section className="space-y-1 px-4 lg:px-0">
-      <p className="uppercase text-sm text-secondary-text font-medium">
-        {t("categoryUppercase")}
+    <section className={cn("space-y-1", paddingClass)}>
+      <p className="text-sm text-secondary-text font-semibold">
+        {label ?? t("categoryUppercase")}
       </p>
       {isLoadingCategoryList ? (
         <div className="grid grid-cols-4 gap-y-2 overflow-auto max-h-[24dvh]">
@@ -88,19 +93,21 @@ export default function TransactionCategoryList({
             );
           })}
           {/* ปุ่มแก้ไข category กดแล้วเรียก Callback ไปที่ Container */}
-          <Button
-            variant="unstyled"
-            type="button"
-            onClick={onEditClick}
-            className="flex flex-col items-center justify-center gap-1 cursor-pointer"
-          >
-            <span className="p-3 sm:p-4 lg:p-3 rounded-xl bg-primary-light text-primary">
-              <Plus size={18} className="sm:size-6 lg:size-4.5" />
-            </span>
-            <span className="uppercase text-primary text-xs font-medium truncate">
-              {t("edit")}
-            </span>
-          </Button>
+          {onEditClick && (
+            <Button
+              variant="unstyled"
+              type="button"
+              onClick={onEditClick}
+              className="flex flex-col items-center justify-center gap-1 cursor-pointer"
+            >
+              <span className="p-3 sm:p-4 lg:p-3 rounded-xl bg-primary-light text-primary">
+                <Plus size={18} className="sm:size-6 lg:size-4.5" />
+              </span>
+              <span className="uppercase text-primary text-xs font-medium truncate">
+                {t("edit")}
+              </span>
+            </Button>
+          )}
         </div>
       )}
     </section>

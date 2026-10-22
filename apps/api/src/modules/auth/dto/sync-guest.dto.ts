@@ -3,6 +3,7 @@ import {
   IsArray,
   IsBoolean,
   IsDateString,
+  IsEnum,
   IsInt,
   IsNotEmpty,
   IsOptional,
@@ -10,6 +11,7 @@ import {
   ValidateNested,
 } from "class-validator";
 import { Type } from "class-transformer";
+import { RecurringCycle, RecurringStatus } from "@prisma/client";
 import { CreateAssetDto } from "../../asset/dto/create-asset.dto";
 import { CreateCategoryDto } from "../../category/dto/create-category.dto";
 import { CreateTransactionDto } from "../../transaction/dto/create-transaction.dto";
@@ -148,6 +150,65 @@ export class SyncTransactionItemDto extends OmitType(CreateTransactionDto, [
   deletedAt?: string | null;
 }
 
+export class SyncRecurringExpenseItemDto {
+  @ApiProperty({
+    description: "Client-side temporary ID for guest recurring expense",
+    example: "temp-rec-1",
+  })
+  @IsString()
+  @IsNotEmpty()
+  localId!: string;
+
+  @ApiProperty({ example: "Netflix Premium" })
+  @IsString()
+  @IsNotEmpty()
+  name!: string;
+
+  @ApiProperty({ example: 419.0 })
+  amount!: number;
+
+  @ApiProperty({ enum: RecurringCycle, example: RecurringCycle.MONTHLY })
+  @IsEnum(RecurringCycle)
+  billingCycle!: RecurringCycle;
+
+  @ApiProperty({ example: "2026-10-22T00:00:00.000Z" })
+  @IsDateString()
+  firstBillingDate!: string;
+
+  @ApiProperty({ example: "2026-10-22T00:00:00.000Z" })
+  @IsDateString()
+  nextBillingDate!: string;
+
+  @ApiProperty({ example: "temp-asset-1", required: false })
+  @IsString()
+  @IsOptional()
+  localAssetId?: string;
+
+  @ApiProperty({ example: "temp-cat-1", required: false })
+  @IsString()
+  @IsOptional()
+  localCategoryId?: string;
+
+  @ApiProperty({
+    enum: RecurringStatus,
+    example: RecurringStatus.ACTIVE,
+    required: false,
+  })
+  @IsEnum(RecurringStatus)
+  @IsOptional()
+  status?: RecurringStatus;
+
+  @ApiProperty({ example: "Family plan", required: false })
+  @IsString()
+  @IsOptional()
+  note?: string;
+
+  @ApiProperty({ required: false, nullable: true })
+  @IsDateString()
+  @IsOptional()
+  deletedAt?: string | null;
+}
+
 export class SyncGuestDto {
   @ApiProperty({
     description: "List of offline guest assets to synchronize",
@@ -175,4 +236,15 @@ export class SyncGuestDto {
   @ValidateNested({ each: true })
   @Type(() => SyncTransactionItemDto)
   transactions!: SyncTransactionItemDto[];
+
+  @ApiProperty({
+    description: "List of offline guest recurring expenses to synchronize",
+    type: [SyncRecurringExpenseItemDto],
+    required: false,
+  })
+  @IsArray()
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => SyncRecurringExpenseItemDto)
+  recurringExpenses?: SyncRecurringExpenseItemDto[];
 }
