@@ -72,25 +72,36 @@ const runAutoDeleteTasks = async (): Promise<void> => {
   const cutoff = new Date(
     Date.now() - GUEST_AUTO_DELETE_AFTER_DAYS * MS_PER_DAY,
   ).toISOString();
-  const [assetIds, categoryIds, transactionIds] = await Promise.all([
-    db.assets.where("deletedAt").belowOrEqual(cutoff).primaryKeys(),
-    db.categories.where("deletedAt").belowOrEqual(cutoff).primaryKeys(),
-    db.transactions.where("deletedAt").belowOrEqual(cutoff).primaryKeys(),
-  ]);
+  const [assetIds, categoryIds, transactionIds, recurringExpenseIds] =
+    await Promise.all([
+      db.assets.where("deletedAt").belowOrEqual(cutoff).primaryKeys(),
+      db.categories.where("deletedAt").belowOrEqual(cutoff).primaryKeys(),
+      db.transactions.where("deletedAt").belowOrEqual(cutoff).primaryKeys(),
+      db.recurringExpenses
+        .where("deletedAt")
+        .belowOrEqual(cutoff)
+        .primaryKeys(),
+    ]);
 
-  if (!assetIds.length && !categoryIds.length && !transactionIds.length) {
+  if (
+    !assetIds.length &&
+    !categoryIds.length &&
+    !transactionIds.length &&
+    !recurringExpenseIds.length
+  ) {
     storage?.setItem(GUEST_STORAGE_KEYS.lastAutodelete, today);
     return;
   }
 
   await db.transaction(
     "rw",
-    [db.assets, db.categories, db.transactions],
+    [db.assets, db.categories, db.transactions, db.recurringExpenses],
     async () => {
       await Promise.all([
         db.assets.bulkDelete(assetIds),
         db.categories.bulkDelete(categoryIds),
         db.transactions.bulkDelete(transactionIds),
+        db.recurringExpenses.bulkDelete(recurringExpenseIds),
       ]);
     },
   );
@@ -108,12 +119,13 @@ export const useGuestStore = create<GuestState>()(
         browserStorage()?.removeItem(GUEST_STORAGE_KEYS.lastAutodelete);
         await db.transaction(
           "rw",
-          [db.assets, db.categories, db.transactions],
+          [db.assets, db.categories, db.transactions, db.recurringExpenses],
           () =>
             Promise.all([
               db.assets.clear(),
               db.categories.clear(),
               db.transactions.clear(),
+              db.recurringExpenses.clear(),
             ]).then(() => undefined),
         );
       },
