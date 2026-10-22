@@ -82,6 +82,7 @@ export default function DesktopSidebar({
                         item.href === "/dashboard" && "lg:order-3",
                         item.href === "/journal" && "lg:order-4",
                         item.href === "/analytics" && "lg:order-5",
+                        item.href === "/recurring" && "lg:order-6",
                       )}
                     >
                       <SidebarMenuButton

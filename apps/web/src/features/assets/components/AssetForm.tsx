@@ -127,6 +127,7 @@ export default function AssetForm({
                     {t(`assetType${selected}` as TranslationKey)}
                   </span>
                   <svg
+                    aria-hidden="true"
                     className={`w-5 h-5 transition-transform duration-200 ${isOpen ? "rotate-0 text-primary" : "-rotate-90 text-disabled-text"}`}
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"

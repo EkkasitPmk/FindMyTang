@@ -45,6 +45,7 @@ describe("main-layout.helper", () => {
     expect(getMainLayoutRoute("/settings/account")).toBe("settingsAccount");
     expect(getMainLayoutRoute("/support/contact")).toBe("supportContact");
     expect(getMainLayoutRoute("/support/feedback")).toBe("supportFeedback");
+    expect(getMainLayoutRoute("/recurring")).toBe("recurring");
     expect(getMainLayoutRoute("/analytics/category/cat-123")).toBe(
       "analyticsCategory",
     );

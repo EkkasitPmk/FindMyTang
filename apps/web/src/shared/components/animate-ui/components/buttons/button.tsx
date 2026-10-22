@@ -49,7 +49,8 @@ const buttonVariants = cva(
 );
 
 export interface ButtonProps
-  extends Omit<ButtonPrimitiveProps, "variant">,
+  extends
+    Omit<ButtonPrimitiveProps, "variant">,
     Omit<VariantProps<typeof buttonVariants>, "variant"> {
   variant?: NonNullable<VariantProps<typeof buttonVariants>["variant"]>;
   isLoading?: boolean;
@@ -114,9 +115,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       >
         {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        {!isLoading && leftIcon && <span className="mr-2">{leftIcon}</span>}
+        {!isLoading && leftIcon && <span className="mr-1">{leftIcon}</span>}
         {children}
-        {!isLoading && rightIcon && <span className="ml-2">{rightIcon}</span>}
+        {!isLoading && rightIcon && <span className="ml-1">{rightIcon}</span>}
       </ButtonPrimitive>
     );
   },

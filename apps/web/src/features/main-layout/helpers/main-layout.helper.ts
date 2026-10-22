@@ -32,6 +32,7 @@ export function getMainLayoutRoute(pathname: string): MainLayoutRoute {
   if (pathname === "/settings/account") return "settingsAccount";
   if (pathname === "/support/contact") return "supportContact";
   if (pathname === "/support/feedback") return "supportFeedback";
+  if (pathname === "/recurring") return "recurring";
   if (ANALYTICS_CATEGORY_ROUTE.test(pathname)) return "analyticsCategory";
   return "other";
 }
@@ -82,6 +83,7 @@ export function getMainLayoutDescription(
     supportContact: "navSupportContactDesc",
     supportFeedback: "navSupportFeedbackDesc",
     analyticsCategory: "navAnalyticsCategoryDesc",
+    recurring: "navRecurringDesc",
   };
 
   return t(descriptionKeys[route] || "appDescription");
