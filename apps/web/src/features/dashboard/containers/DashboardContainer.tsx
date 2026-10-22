@@ -5,10 +5,13 @@ import DashboardAssetList from "@/features/assets/components/DashboardAssetList"
 import DashboardAssetHeader from "@/features/dashboard/components/DashboardAssetHeader";
 import DashboardGuestAssets from "@/features/dashboard/components/DashboardGuestAssets";
 import FinancialSnapshotClient from "@/features/dashboard/components/FinancialSnapshotClient";
+import DashboardRecurringAlert from "@/features/dashboard/components/DashboardRecurringAlert";
 import RecentJournalContainer from "@/features/journal/containers/RecentJournalContainer";
 import { getAssetsServer } from "@/features/assets/services/assets.server";
 import { getRecentTransactionsServer } from "@/features/transactions/services/transactions.server";
 import { getThisMonthSummaryServer } from "@/features/dashboard/services/summary.server";
+import { getRecurringExpensesServer } from "@/features/recurring/services/recurring.server";
+import type { RecurringExpense } from "@/shared/lib/types/recurring.type";
 import DashboardGuestContainer from "./DashboardGuestContainer";
 
 export default async function DashboardContainer() {
@@ -26,12 +29,14 @@ export default async function DashboardContainer() {
     );
   }
 
-  const [initialUser, assets, summary, recentTransactions] = await Promise.all([
-    getCurrentUserServer(),
-    getAssetsServer(),
-    getThisMonthSummaryServer(),
-    getRecentTransactionsServer(),
-  ]);
+  const [initialUser, assets, summary, recentTransactions, initialRecurring] =
+    await Promise.all([
+      getCurrentUserServer(),
+      getAssetsServer(),
+      getThisMonthSummaryServer(),
+      getRecentTransactionsServer(),
+      getRecurringExpensesServer(),
+    ]);
 
   const languageCookie = cookieStore.get?.("findmytang-language")?.value;
   const language = languageCookie === "th" ? "th" : "en";
@@ -47,6 +52,10 @@ export default async function DashboardContainer() {
             initialSummary={summary ?? undefined}
           />
         </div>
+
+        <DashboardRecurringAlert
+          initialItems={(initialRecurring as RecurringExpense[]) ?? undefined}
+        />
 
         <div className="px-4">
           {hasAssets ? (

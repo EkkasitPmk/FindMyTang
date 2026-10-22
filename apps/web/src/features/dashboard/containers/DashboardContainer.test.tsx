@@ -7,6 +7,7 @@ import { getCurrentUserServer } from "@/features/account/services/account.server
 import { getAssetsServer } from "@/features/assets/services/assets.server";
 import { getThisMonthSummaryServer } from "@/features/dashboard/services/summary.server";
 import { getRecentTransactionsServer } from "@/features/transactions/services/transactions.server";
+import { getRecurringExpensesServer } from "@/features/recurring/services/recurring.server";
 
 vi.mock("next/headers", () => ({ cookies: vi.fn() }));
 vi.mock("@/features/account/services/account.server", () => ({
@@ -21,12 +22,16 @@ vi.mock("@/features/dashboard/services/summary.server", () => ({
 vi.mock("@/features/transactions/services/transactions.server", () => ({
   getRecentTransactionsServer: vi.fn(),
 }));
+vi.mock("@/features/recurring/services/recurring.server", () => ({
+  getRecurringExpensesServer: vi.fn(),
+}));
 
 const mockCookies = vi.mocked(cookies);
 const mockGetCurrentUserServer = vi.mocked(getCurrentUserServer);
 const mockGetAssetsServer = vi.mocked(getAssetsServer);
 const mockGetThisMonthSummaryServer = vi.mocked(getThisMonthSummaryServer);
 const mockGetRecentTransactionsServer = vi.mocked(getRecentTransactionsServer);
+const mockGetRecurringExpensesServer = vi.mocked(getRecurringExpensesServer);
 
 describe("DashboardContainer", () => {
   beforeEach(() => {
@@ -45,6 +50,7 @@ describe("DashboardContainer", () => {
     expect(mockGetAssetsServer).not.toHaveBeenCalled();
     expect(mockGetThisMonthSummaryServer).not.toHaveBeenCalled();
     expect(mockGetRecentTransactionsServer).not.toHaveBeenCalled();
+    expect(mockGetRecurringExpensesServer).not.toHaveBeenCalled();
   });
 
   it("gracefully falls back to client hydration when server prefetch is unavailable", async () => {
@@ -56,6 +62,7 @@ describe("DashboardContainer", () => {
     mockGetAssetsServer.mockResolvedValue(null);
     mockGetThisMonthSummaryServer.mockResolvedValue(null);
     mockGetRecentTransactionsServer.mockResolvedValue(null);
+    mockGetRecurringExpensesServer.mockResolvedValue(null);
 
     const dashboard = await DashboardContainer();
     expect(isValidElement(dashboard)).toBe(true);
