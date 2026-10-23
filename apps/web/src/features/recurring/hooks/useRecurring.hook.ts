@@ -100,6 +100,7 @@ export const useLogRecurringExpenseMutation = (options?: {
         assetId: string;
         categoryId?: string;
         note?: string;
+        nextBillingDate?: string;
       };
     }) => logRecurringExpensePaymentApi(item, payload),
     ...options,

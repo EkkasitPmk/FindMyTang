@@ -7,7 +7,7 @@ import {
   RecurringStatus,
 } from "@/shared/lib/types/recurring.type";
 import { getCategoryIcon } from "@/shared/lib/configs/category-icons.config";
-import { getDueStatus } from "../helpers/recurring.helper";
+import { getDueStatus, getPendingBillsInfo } from "../helpers/recurring.helper";
 import { useCategories } from "@/shared/lib/hooks/useCategories.hook";
 import { useAssets } from "@/shared/lib/hooks/useAssets.hook";
 import {
@@ -20,6 +20,7 @@ import {
   Repeat,
   Wallet,
   Calendar,
+  AlertCircle,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -37,7 +38,7 @@ interface RecurringItemCardProps {
   onEdit: (item: RecurringExpense) => void;
   onToggleStatus: (item: RecurringExpense) => void;
   onDelete: (item: RecurringExpense) => void;
-  onLogExpense: (item: RecurringExpense) => void;
+  onLogExpense: (item: RecurringExpense, targetBillingDate?: string) => void;
 }
 
 export default function RecurringItemCard({
@@ -56,8 +57,9 @@ export default function RecurringItemCard({
     item.category || categories.find((c) => c.id === item.categoryId);
   const asset = item.asset || assets.find((a) => a.id === item.assetId);
 
+  const pendingBills = getPendingBillsInfo(item);
   const dueStatus = getDueStatus(
-    item.nextBillingDate,
+    pendingBills.currentCycleDate,
     undefined,
     t,
     calendarLocale,
@@ -83,13 +85,17 @@ export default function RecurringItemCard({
     maximumFractionDigits: 2,
   })}`;
 
-  let nextDateFormatted = "";
+  let currentCycleFormatted = "";
   try {
-    nextDateFormatted = format(parseISO(item.nextBillingDate), "d MMM yyyy", {
-      locale: calendarLocale,
-    });
+    currentCycleFormatted = format(
+      parseISO(pendingBills.currentCycleDate),
+      "d MMM yyyy",
+      {
+        locale: calendarLocale,
+      },
+    );
   } catch {
-    nextDateFormatted = item.nextBillingDate;
+    currentCycleFormatted = pendingBills.currentCycleDate;
   }
 
   let iconContent: React.ReactNode = <Repeat className="size-5 text-white" />;
@@ -160,15 +166,73 @@ export default function RecurringItemCard({
         </div>
       </div>
 
+      {/* Old Unpaid Bills Alert Strips */}
+      {!isPaused &&
+        pendingBills.oldUnpaidCycles.map((oldCycle) => {
+          let oldCycleFormatted = "";
+          try {
+            oldCycleFormatted = format(
+              parseISO(oldCycle.billingDate),
+              "d MMM yyyy",
+              {
+                locale: calendarLocale,
+              },
+            );
+          } catch {
+            oldCycleFormatted = oldCycle.billingDate;
+          }
+
+          return (
+            <div
+              key={oldCycle.billingDate}
+              className="mt-2.5 p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/25 flex items-center justify-between gap-2 text-xs"
+            >
+              <div className="flex items-center gap-2 min-w-0">
+                <AlertCircle className="size-4 text-rose-600 dark:text-rose-400 shrink-0" />
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1 flex-wrap">
+                    <span className="font-semibold text-rose-900 dark:text-rose-200">
+                      {t("recurringOldUnpaidBill")}
+                    </span>
+                    <span className="text-[11px] text-rose-700/80 dark:text-rose-300/80">
+                      ({oldCycleFormatted})
+                    </span>
+                  </div>
+                  <span className="text-[10px] text-rose-600 dark:text-rose-400 font-medium">
+                    {t("recurringDueOverdue").replace(
+                      "{days}",
+                      String(oldCycle.daysOverdue),
+                    )}
+                  </span>
+                </div>
+              </div>
+
+              <Button
+                type="button"
+                size="xs"
+                variant="destructive"
+                onClick={() => onLogExpense(item, oldCycle.billingDate)}
+                className="rounded-lg shadow-xs shrink-0"
+                leftIcon={<Plus className="size-3" />}
+              >
+                {t("recurringLogThisBill")}
+              </Button>
+            </div>
+          );
+        })}
+
       {/* Subline: Due Status & Next Billing Date (Full-width Schedule Bar) */}
       <div className="mt-2.5 px-3 py-1.5 rounded-xl bg-muted/40 border border-border/40 flex items-center justify-between text-xs gap-2">
         <div className="flex items-center gap-1.5 min-w-0 text-muted-foreground">
           <Calendar className="size-3.5 opacity-70 shrink-0" />
           <span className="whitespace-nowrap font-medium">
-            {t("recurringNextBillingLabel")}:
+            {pendingBills.hasMultipleCycles
+              ? t("recurringCurrentCycle")
+              : t("recurringNextBillingLabel")}
+            :
           </span>
           <span className="text-foreground font-semibold whitespace-nowrap">
-            {nextDateFormatted}
+            {currentCycleFormatted}
           </span>
         </div>
 
@@ -245,7 +309,7 @@ export default function RecurringItemCard({
             type="button"
             variant="success"
             size="sm"
-            onClick={() => onLogExpense(item)}
+            onClick={() => onLogExpense(item, pendingBills.currentCycleDate)}
             className="rounded-lg shadow-xs shrink-0"
             leftIcon={<Plus className="size-3.5" />}
           >

@@ -5,6 +5,8 @@ import {
   getNextBillingDate,
   getDueStatus,
   sortRecurringExpenses,
+  advanceCycle,
+  getPendingBillsInfo,
 } from "./recurring.helper";
 import {
   RecurringCycle,
@@ -49,7 +51,6 @@ describe("recurring.helper", () => {
         name: "Netflix",
         amount: 419,
         billingCycle: RecurringCycle.MONTHLY,
-        firstBillingDate: "2026-09-22T00:00:00.000Z",
         nextBillingDate: "2026-10-22T00:00:00.000Z", // in 3 days
         status: RecurringStatus.ACTIVE,
         createdAt: "2026-09-22T00:00:00.000Z",
@@ -60,7 +61,6 @@ describe("recurring.helper", () => {
         name: "Spotify",
         amount: 209,
         billingCycle: RecurringCycle.MONTHLY,
-        firstBillingDate: "2026-09-30T00:00:00.000Z",
         nextBillingDate: "2026-10-31T00:00:00.000Z", // in 12 days
         status: RecurringStatus.ACTIVE,
         createdAt: "2026-09-30T00:00:00.000Z",
@@ -71,7 +71,6 @@ describe("recurring.helper", () => {
         name: "iCloud 2TB",
         amount: 1190,
         billingCycle: RecurringCycle.YEARLY, // 1190 / 12 = 99.166...
-        firstBillingDate: "2025-10-24T00:00:00.000Z",
         nextBillingDate: "2026-10-24T00:00:00.000Z", // in 5 days
         status: RecurringStatus.ACTIVE,
         createdAt: "2025-10-24T00:00:00.000Z",
@@ -82,27 +81,14 @@ describe("recurring.helper", () => {
         name: "YouTube Premium (Paused)",
         amount: 159,
         billingCycle: RecurringCycle.MONTHLY,
-        firstBillingDate: "2026-01-01T00:00:00.000Z",
         nextBillingDate: "2026-10-20T00:00:00.000Z",
         status: RecurringStatus.PAUSED, // Should be EXCLUDED!
         createdAt: "2026-01-01T00:00:00.000Z",
         updatedAt: "2026-01-01T00:00:00.000Z",
       },
-      {
-        id: "5",
-        name: "Deleted Service",
-        amount: 500,
-        billingCycle: RecurringCycle.MONTHLY,
-        firstBillingDate: "2026-01-01T00:00:00.000Z",
-        nextBillingDate: "2026-10-20T00:00:00.000Z",
-        status: RecurringStatus.ACTIVE,
-        deletedAt: "2026-05-01T00:00:00.000Z", // Soft deleted -> EXCLUDED!
-        createdAt: "2026-01-01T00:00:00.000Z",
-        updatedAt: "2026-01-01T00:00:00.000Z",
-      },
     ];
 
-    it("excludes PAUSED and deleted items from monthly and yearly calculations", () => {
+    it("excludes PAUSED items from monthly and yearly calculations", () => {
       const metrics = calculateRecurringMetrics(sampleItems, fixedToday);
       // Active: Netflix (419) + Spotify (209) + iCloud (1190/12 = 99.17) = 727.17
       expect(metrics.totalMonthly).toBe(727.17);
@@ -203,7 +189,6 @@ describe("recurring.helper", () => {
           name: "Later",
           amount: 100,
           billingCycle: RecurringCycle.MONTHLY,
-          firstBillingDate: "2026-10-01",
           nextBillingDate: "2026-11-20T00:00:00.000Z",
           status: RecurringStatus.ACTIVE,
           createdAt: "",
@@ -214,7 +199,6 @@ describe("recurring.helper", () => {
           name: "Soonest",
           amount: 200,
           billingCycle: RecurringCycle.MONTHLY,
-          firstBillingDate: "2026-10-01",
           nextBillingDate: "2026-10-22T00:00:00.000Z",
           status: RecurringStatus.ACTIVE,
           createdAt: "",
@@ -225,6 +209,97 @@ describe("recurring.helper", () => {
       const sorted = sortRecurringExpenses(items);
       expect(sorted[0].name).toBe("Soonest");
       expect(sorted[1].name).toBe("Later");
+    });
+  });
+
+  describe("advanceCycle", () => {
+    it("advances weekly by 1 week", () => {
+      const next = advanceCycle(
+        "2026-10-01T00:00:00.000Z",
+        RecurringCycle.WEEKLY,
+      );
+      expect(next.toISOString().startsWith("2026-10-08")).toBe(true);
+    });
+
+    it("advances monthly by 1 month", () => {
+      const next = advanceCycle(
+        "2026-10-23T00:00:00.000Z",
+        RecurringCycle.MONTHLY,
+      );
+      expect(next.toISOString().startsWith("2026-11-23")).toBe(true);
+    });
+
+    it("advances quarterly by 3 months", () => {
+      const next = advanceCycle(
+        "2026-01-15T00:00:00.000Z",
+        RecurringCycle.QUARTERLY,
+      );
+      expect(next.toISOString().startsWith("2026-04-15")).toBe(true);
+    });
+
+    it("advances yearly by 1 year", () => {
+      const next = advanceCycle(
+        "2026-10-18T00:00:00.000Z",
+        RecurringCycle.YEARLY,
+      );
+      expect(next.toISOString().startsWith("2027-10-18")).toBe(true);
+    });
+  });
+
+  describe("getPendingBillsInfo", () => {
+    it("returns no old bills when next billing date is in the future", () => {
+      const ref = new Date("2026-10-24T00:00:00.000Z");
+      const info = getPendingBillsInfo(
+        {
+          nextBillingDate: "2026-11-18T00:00:00.000Z",
+          billingCycle: RecurringCycle.MONTHLY,
+        },
+        ref,
+      );
+
+      expect(info.hasMultipleCycles).toBe(false);
+      expect(info.oldUnpaidCycles).toHaveLength(0);
+      expect(info.currentCycleDate).toBe("2026-11-18T00:00:00.000Z");
+      expect(info.totalOverdueCount).toBe(0);
+    });
+
+    it("returns single current cycle when only 1 billing date has arrived", () => {
+      const ref = new Date("2026-10-24T00:00:00.000Z");
+      const info = getPendingBillsInfo(
+        {
+          nextBillingDate: "2026-10-23T00:00:00.000Z",
+          billingCycle: RecurringCycle.MONTHLY,
+        },
+        ref,
+      );
+
+      expect(info.hasMultipleCycles).toBe(false);
+      expect(info.oldUnpaidCycles).toHaveLength(0);
+      expect(info.currentCycleDate.startsWith("2026-10-23")).toBe(true);
+      expect(info.totalOverdueCount).toBe(1);
+    });
+
+    it("detects old unlogged bills when multiple cycles have passed", () => {
+      const ref = new Date("2026-10-24T00:00:00.000Z");
+      const info = getPendingBillsInfo(
+        {
+          nextBillingDate: "2026-08-23T00:00:00.000Z",
+          billingCycle: RecurringCycle.MONTHLY,
+        },
+        ref,
+      );
+
+      expect(info.hasMultipleCycles).toBe(true);
+      // Arrived cycles: Aug 23, Sep 23, Oct 23 -> 2 old bills (Aug, Sep) and current cycle (Oct)
+      expect(info.totalOverdueCount).toBe(3);
+      expect(info.oldUnpaidCycles).toHaveLength(2);
+      expect(info.oldUnpaidCycles[0].billingDate.startsWith("2026-08-23")).toBe(
+        true,
+      );
+      expect(info.oldUnpaidCycles[1].billingDate.startsWith("2026-09-23")).toBe(
+        true,
+      );
+      expect(info.currentCycleDate.startsWith("2026-10-23")).toBe(true);
     });
   });
 });

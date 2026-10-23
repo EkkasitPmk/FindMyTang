@@ -18,7 +18,8 @@ export const useRecurringSheetStore = create<RecurringSheetState>((set) => ({
 interface RecurringLogModalState {
   isOpen: boolean;
   itemToLog: RecurringExpense | null;
-  open: (item: RecurringExpense) => void;
+  targetBillingDate?: string;
+  open: (item: RecurringExpense, targetBillingDate?: string) => void;
   close: () => void;
 }
 
@@ -26,7 +27,14 @@ export const useRecurringLogModalStore = create<RecurringLogModalState>(
   (set) => ({
     isOpen: false,
     itemToLog: null,
-    open: (item) => set({ isOpen: true, itemToLog: item }),
-    close: () => set({ isOpen: false, itemToLog: null }),
+    targetBillingDate: undefined,
+    open: (item, targetBillingDate) =>
+      set({ isOpen: true, itemToLog: item, targetBillingDate }),
+    close: () =>
+      set({
+        isOpen: false,
+        itemToLog: null,
+        targetBillingDate: undefined,
+      }),
   }),
 );
