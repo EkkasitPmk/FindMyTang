@@ -28,21 +28,12 @@ export class RecurringService {
   async findAll(
     userId: string,
     status?: RecurringStatus,
-    includeDeleted = false,
   ): Promise<RecurringExpense[]> {
-    return this.recurringRepository.findAll(userId, status, includeDeleted);
+    return this.recurringRepository.findAll(userId, status);
   }
 
-  async findById(
-    id: string,
-    userId: string,
-    includeDeleted = false,
-  ): Promise<RecurringExpense> {
-    const item = await this.recurringRepository.findById(
-      id,
-      userId,
-      includeDeleted,
-    );
+  async findById(id: string, userId: string): Promise<RecurringExpense> {
+    const item = await this.recurringRepository.findById(id, userId);
     if (!item) {
       throw new NotFoundException(`Recurring expense with ID ${id} not found`);
     }
@@ -54,12 +45,12 @@ export class RecurringService {
     userId: string,
     dto: UpdateRecurringDto,
   ): Promise<RecurringExpense> {
-    await this.findById(id, userId, false);
+    await this.findById(id, userId);
     return this.recurringRepository.update(id, userId, dto);
   }
 
   async delete(id: string, userId: string): Promise<RecurringExpense> {
-    await this.findById(id, userId, false);
+    await this.findById(id, userId);
     return this.recurringRepository.delete(id, userId);
   }
 }

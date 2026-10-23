@@ -54,6 +54,9 @@ vi.mock("@/shared/lib/storages/dexie.storage", async (importOriginal) => {
             mockRecurringList.push(item);
           }
         }),
+        delete: vi.fn(async (id: string) => {
+          mockRecurringList = mockRecurringList.filter((i) => i.id !== id);
+        }),
       },
       categories: {
         get: vi.fn(async (id: string) => ({
@@ -91,7 +94,6 @@ describe("recurring.service", () => {
             name: "Netflix",
             amount: "419.00",
             billingCycle: RecurringCycle.MONTHLY,
-            firstBillingDate: "2026-10-01T00:00:00.000Z",
             nextBillingDate: "2026-11-01T00:00:00.000Z",
             status: RecurringStatus.ACTIVE,
           },
@@ -100,7 +102,7 @@ describe("recurring.service", () => {
 
       const res = await getRecurringExpensesApi();
       expect(http.get).toHaveBeenCalledWith("/recurring", {
-        params: { status: undefined, includeDeleted: "false" },
+        params: { status: undefined },
       });
       expect(res).toHaveLength(1);
       expect(res[0].amount).toBe(419);
@@ -113,7 +115,6 @@ describe("recurring.service", () => {
           name: "Spotify",
           amount: "139.00",
           billingCycle: RecurringCycle.MONTHLY,
-          firstBillingDate: "2026-10-01T00:00:00.000Z",
           nextBillingDate: "2026-11-01T00:00:00.000Z",
           status: RecurringStatus.ACTIVE,
         },
@@ -123,7 +124,6 @@ describe("recurring.service", () => {
         name: "Spotify",
         amount: 139,
         billingCycle: RecurringCycle.MONTHLY,
-        firstBillingDate: "2026-10-01T00:00:00.000Z",
         nextBillingDate: "2026-11-01T00:00:00.000Z",
       });
 
@@ -138,7 +138,6 @@ describe("recurring.service", () => {
           name: "Spotify Duo",
           amount: "189.00",
           billingCycle: RecurringCycle.MONTHLY,
-          firstBillingDate: "2026-10-01T00:00:00.000Z",
           nextBillingDate: "2026-11-01T00:00:00.000Z",
           status: RecurringStatus.ACTIVE,
         },
@@ -169,12 +168,11 @@ describe("recurring.service", () => {
       useGuestStore.setState({ isGuest: true });
     });
 
-    it("creates, reads, updates, and soft deletes items in Dexie", async () => {
+    it("creates, reads, updates, and deletes items in Dexie", async () => {
       const created = await createRecurringExpenseApi({
         name: "Netflix",
         amount: 419,
         billingCycle: RecurringCycle.MONTHLY,
-        firstBillingDate: "2026-10-01T00:00:00.000Z",
         nextBillingDate: "2026-11-01T00:00:00.000Z",
       });
 
@@ -192,9 +190,9 @@ describe("recurring.service", () => {
       });
       expect(updated.amount).toBe(449);
 
-      // Soft delete
+      // Delete
       await deleteRecurringExpenseApi(created.id);
-      const listAfterDelete = await getRecurringExpensesApi(undefined, false);
+      const listAfterDelete = await getRecurringExpensesApi();
       expect(listAfterDelete).toHaveLength(0);
     });
   });
@@ -217,7 +215,6 @@ describe("recurring.service", () => {
           name: "Netflix",
           amount: 419,
           billingCycle: RecurringCycle.MONTHLY,
-          firstBillingDate: "2026-09-22T00:00:00.000Z",
           nextBillingDate: "2026-11-22T00:00:00.000Z",
           status: RecurringStatus.ACTIVE,
         },
@@ -229,7 +226,6 @@ describe("recurring.service", () => {
         amount: 419,
         currency: "THB",
         billingCycle: RecurringCycle.MONTHLY,
-        firstBillingDate: "2026-09-22T00:00:00.000Z",
         nextBillingDate: "2026-10-22T00:00:00.000Z",
         status: RecurringStatus.ACTIVE,
         createdAt: "2026-09-22T00:00:00.000Z",

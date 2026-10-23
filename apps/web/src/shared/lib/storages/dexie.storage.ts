@@ -79,7 +79,6 @@ export interface LocalRecurringExpense {
   amount: number;
   currency?: string;
   billingCycle: RecurringCycle;
-  firstBillingDate: string;
   nextBillingDate: string;
   categoryId?: string | null;
   assetId?: string | null;
@@ -87,7 +86,6 @@ export interface LocalRecurringExpense {
   note?: string | null;
   createdAt: string;
   updatedAt: string;
-  deletedAt?: string | null;
   syncStatus?: SyncStatus;
 }
 
@@ -110,6 +108,11 @@ export class FindMyTangDexie extends Dexie {
     this.version(2).stores({
       recurringExpenses:
         "id, billingCycle, status, nextBillingDate, assetId, categoryId, deletedAt, syncStatus",
+    });
+
+    this.version(3).stores({
+      recurringExpenses:
+        "id, billingCycle, status, nextBillingDate, assetId, categoryId, syncStatus",
     });
   }
 }

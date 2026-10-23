@@ -17,7 +17,6 @@ const mockItems = [
     name: "Netflix",
     amount: 419,
     billingCycle: "MONTHLY",
-    firstBillingDate: "2026-09-22T00:00:00.000Z",
     nextBillingDate: "2026-10-22T00:00:00.000Z",
     status: "ACTIVE",
   },
@@ -42,7 +41,7 @@ describe("RecurringRouteContainer", () => {
   it("preloads recurring expenses for authenticated users", async () => {
     const page = await RecurringRouteContainer();
 
-    expect(getRecurringExpensesServer).toHaveBeenCalledWith(false);
+    expect(getRecurringExpensesServer).toHaveBeenCalledWith();
     expect(page.props.initialItems).toBe(mockItems);
   });
 

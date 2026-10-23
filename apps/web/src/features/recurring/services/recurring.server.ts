@@ -4,19 +4,15 @@ import { BACKEND_URL } from "@/shared/lib/configs/backend.config";
 import { recurringExpenseListResponseSchema } from "../schemas/recurring.response.schema";
 
 export const getRecurringExpensesServer = cache(
-  async function getRecurringExpensesServer(includeDeleted = false) {
+  async function getRecurringExpensesServer() {
     try {
       const cookieStore = await cookies();
       if (!cookieStore.has("access_token")) return null;
 
-      const query = includeDeleted ? "?includeDeleted=true" : "";
-      const response = await fetch(
-        `${BACKEND_URL}/api/v1/recurring-expenses${query}`,
-        {
-          headers: { cookie: cookieStore.toString() },
-          cache: "no-store",
-        },
-      );
+      const response = await fetch(`${BACKEND_URL}/api/v1/recurring-expenses`, {
+        headers: { cookie: cookieStore.toString() },
+        cache: "no-store",
+      });
 
       if (!response.ok) return null;
 

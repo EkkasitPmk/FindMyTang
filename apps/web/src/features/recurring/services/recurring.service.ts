@@ -52,14 +52,9 @@ const mapLocalRecurringToResponse = async (
 
 export const getRecurringExpensesApi = async (
   status?: RecurringStatus,
-  includeDeleted = false,
 ): Promise<RecurringExpense[]> => {
   if (useGuestStore.getState().isGuest) {
     let items = await db.recurringExpenses.toArray();
-
-    if (!includeDeleted) {
-      items = items.filter((item) => !item.deletedAt);
-    }
 
     if (status) {
       items = items.filter((item) => item.status === status);
@@ -74,7 +69,6 @@ export const getRecurringExpensesApi = async (
   const response = await http.get<RecurringExpense[]>("/recurring", {
     params: {
       status,
-      includeDeleted: includeDeleted ? "true" : "false",
     },
   });
 
@@ -94,7 +88,6 @@ export const createRecurringExpenseApi = async (
       amount: Number(data.amount),
       currency: data.currency || "THB",
       billingCycle: data.billingCycle,
-      firstBillingDate: data.firstBillingDate,
       nextBillingDate: data.nextBillingDate,
       categoryId: data.categoryId ?? null,
       assetId: data.assetId ?? null,
@@ -102,7 +95,6 @@ export const createRecurringExpenseApi = async (
       note: data.note ?? null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      deletedAt: null,
       syncStatus: "pending",
     };
 
@@ -148,12 +140,7 @@ export const updateRecurringExpenseApi = async (
 
 export const deleteRecurringExpenseApi = async (id: string): Promise<void> => {
   if (useGuestStore.getState().isGuest) {
-    const existing = await db.recurringExpenses.get(id);
-    if (existing) {
-      existing.deletedAt = new Date().toISOString();
-      existing.syncStatus = "pending";
-      await db.recurringExpenses.put(existing);
-    }
+    await db.recurringExpenses.delete(id);
     return;
   }
 
@@ -168,6 +155,7 @@ export const logRecurringExpensePaymentApi = async (
     assetId: string;
     categoryId?: string;
     note?: string;
+    nextBillingDate?: string;
   },
 ) => {
   const effectiveCategoryId =
@@ -185,12 +173,10 @@ export const logRecurringExpensePaymentApi = async (
     "EXPENSE",
   );
 
-  // 2. Advance next billing date using anchor day logic
-  const nextDate = getNextBillingDate(
-    item.nextBillingDate,
-    item.billingCycle,
-    item.firstBillingDate,
-  );
+  // 2. Advance next billing date using anchor day logic or explicit nextBillingDate
+  const nextDate =
+    payload.nextBillingDate ||
+    getNextBillingDate(item.nextBillingDate, item.billingCycle);
 
   // 3. Update the recurring expense
   const updateData: Partial<CreateRecurringExpenseRequest> = {
