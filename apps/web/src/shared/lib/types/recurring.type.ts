@@ -27,7 +27,6 @@ export interface CreateRecurringExpenseRequest {
   amount: number;
   currency?: string;
   billingCycle: RecurringCycle;
-  firstBillingDate: string;
   nextBillingDate: string;
   categoryId?: string | null;
   assetId?: string | null;

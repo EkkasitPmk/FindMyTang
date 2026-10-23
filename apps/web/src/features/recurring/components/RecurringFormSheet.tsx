@@ -35,7 +35,8 @@ import TransactionAssetList from "@/features/transactions/components/Transaction
 import { RecurringBillingCyclePills } from "./RecurringBillingCyclePills";
 import { RecurringDatePicker } from "./RecurringDatePicker";
 import { RecurringAmountField } from "./RecurringAmountField";
-import { Tag, FileText } from "lucide-react";
+import TransactionDescriptionField from "@/features/transactions/components/TransactionDescriptionField";
+import { Tag } from "lucide-react";
 
 interface RecurringFormContentProps {
   itemToEdit: RecurringExpense | null;
@@ -103,10 +104,6 @@ function RecurringFormContent({
       name: name.trim(),
       amount: Number(amount),
       billingCycle,
-      firstBillingDate:
-        isEditing && itemToEdit?.firstBillingDate
-          ? itemToEdit.firstBillingDate
-          : selectedDate.toISOString(),
       nextBillingDate: selectedDate.toISOString(),
       categoryId,
       assetId: finalAssetId,
@@ -263,28 +260,12 @@ function RecurringFormContent({
             calendarLocale={calendarLocale}
           />
 
-          {/* Note Field */}
-          <div className="flex flex-col gap-1.5">
-            <label
-              htmlFor="recurring-form-note"
-              className="text-sm font-semibold text-secondary-text"
-            >
-              {t("recurringNoteLabel")}
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                <FileText size={18} className="text-disabled-text" />
-              </div>
-              <Input
-                id="recurring-form-note"
-                type="text"
-                placeholder={t("recurringNotePlaceholder")}
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-          </div>
+          {/* Description Field - Reusing TransactionDescriptionField from Add Transaction */}
+          <TransactionDescriptionField
+            id="recurring-form-note"
+            value={note}
+            onChange={setNote}
+          />
 
           {/* Status (when editing) */}
           {isEditing && (

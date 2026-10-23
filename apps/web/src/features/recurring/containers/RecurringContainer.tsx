@@ -140,7 +140,9 @@ export default function RecurringContainer({
               onEdit={(it) => openSheet(it)}
               onToggleStatus={handleToggleStatus}
               onDelete={(it) => setItemToDelete(it)}
-              onLogExpense={(it) => openLog(it)}
+              onLogExpense={(it, targetBillingDate) =>
+                openLog(it, targetBillingDate)
+              }
             />
           ))}
 

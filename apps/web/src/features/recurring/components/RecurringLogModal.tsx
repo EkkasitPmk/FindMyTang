@@ -13,23 +13,26 @@ import {
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { useRecurringLogModalStore } from "../hooks/recurring-sheet.hook";
 import { useLogRecurringExpenseMutation } from "../hooks/useRecurring.hook";
-import { getNextBillingDate } from "../helpers/recurring.helper";
+import { advanceCycle } from "../helpers/recurring.helper";
 import { format, parseISO } from "date-fns";
 import { th, enUS } from "date-fns/locale";
 import { toast } from "react-toastify";
 import { CheckCircle2 } from "lucide-react";
 import { RecurringExpense } from "@/shared/lib/types/recurring.type";
 import TransactionAssetList from "@/features/transactions/components/TransactionAssetList";
+import TransactionDescriptionField from "@/features/transactions/components/TransactionDescriptionField";
 import { RecurringDatePicker } from "./RecurringDatePicker";
 import { RecurringAmountField } from "./RecurringAmountField";
 
 interface RecurringLogFormProps {
   itemToLog: RecurringExpense;
+  targetBillingDate?: string;
   close: () => void;
 }
 
 function RecurringLogForm({
   itemToLog,
+  targetBillingDate,
   close,
 }: Readonly<RecurringLogFormProps>) {
   const { t, currentLanguage, locale } = useTranslation();
@@ -37,18 +40,20 @@ function RecurringLogForm({
   const { data: assets = [] } = useAssets();
   const logMutation = useLogRecurringExpenseMutation();
 
+  const targetDate = targetBillingDate || itemToLog.nextBillingDate;
   const [amount, setAmount] = useState<number | "">(itemToLog.amount);
-  const [paymentDate, setPaymentDate] = useState<Date>(new Date());
+  const [paymentDate, setPaymentDate] = useState<Date>(() =>
+    targetBillingDate ? parseISO(targetBillingDate) : new Date(),
+  );
   const [assetId, setAssetId] = useState<string>(itemToLog.assetId || "");
   const selectedAssetId =
     assetId || itemToLog.assetId || (assets.length > 0 ? assets[0].id : "");
-  const note = itemToLog.name;
+  const [note, setNote] = useState<string>(itemToLog.note || "");
 
-  const nextDate = getNextBillingDate(
-    itemToLog.nextBillingDate,
+  const nextDate = advanceCycle(
+    targetDate,
     itemToLog.billingCycle,
-    itemToLog.firstBillingDate,
-  );
+  ).toISOString();
 
   let nextDateFormatted = "";
   try {
@@ -57,6 +62,15 @@ function RecurringLogForm({
     });
   } catch {
     nextDateFormatted = nextDate;
+  }
+
+  let cycleFormattedDate = "";
+  try {
+    cycleFormattedDate = format(parseISO(targetDate), "d MMM yyyy", {
+      locale: calendarLocale,
+    });
+  } catch {
+    cycleFormattedDate = targetDate;
   }
 
   const handleSubmit = (e: React.SyntheticEvent) => {
@@ -71,7 +85,8 @@ function RecurringLogForm({
           paymentDate: paymentDate.toISOString(),
           assetId: effectiveAssetId,
           categoryId: itemToLog.categoryId || undefined,
-          note,
+          note: note.trim() || itemToLog.name,
+          nextBillingDate: nextDate,
         },
       },
       {
@@ -106,13 +121,31 @@ function RecurringLogForm({
       >
         <div className="space-y-4 flex-1 min-h-0 overflow-y-auto p-5">
           {/* Target Service Info */}
-          <div className="p-3 rounded-xl bg-muted/50 border border-border/50 flex items-center justify-between">
-            <span className="font-semibold text-sm text-foreground">
-              {itemToLog.name}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              {t("recurringNextBillingLabel")}: {nextDateFormatted}
-            </span>
+          <div className="p-3.5 rounded-xl bg-muted/40 border border-border/50 flex flex-col gap-2">
+            <div className="flex items-start justify-between gap-2 flex-wrap">
+              <span className="font-semibold text-sm text-foreground wrap-break-word flex-1 min-w-0">
+                {itemToLog.name}
+              </span>
+              {itemToLog.category && (
+                <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-muted text-muted-foreground font-medium shrink-0">
+                  {itemToLog.category.name}
+                </span>
+              )}
+            </div>
+            <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs pt-1.5 border-t border-border/40">
+              <span className="text-muted-foreground">
+                {t("recurringCycleLabelWithDate").replace(
+                  "{date}",
+                  cycleFormattedDate,
+                )}
+              </span>
+              <span className="text-muted-foreground">
+                {t("recurringNextBillingLabel")}:{" "}
+                <span className="text-foreground font-medium">
+                  {nextDateFormatted}
+                </span>
+              </span>
+            </div>
           </div>
 
           {/* Amount Field - Reusing RecurringAmountField from RecurringFormSheet */}
@@ -145,6 +178,13 @@ function RecurringLogForm({
               />
             </div>
           )}
+
+          {/* Description Field - Reusing TransactionDescriptionField from Add Transaction */}
+          <TransactionDescriptionField
+            id="recurring-log-note"
+            value={note}
+            onChange={setNote}
+          />
         </div>
 
         <DialogFooter className="p-4 shrink-0 border-t border-border/60 bg-surface flex flex-row items-center justify-end gap-2">
@@ -176,15 +216,17 @@ function RecurringLogForm({
 }
 
 export default function RecurringLogModal() {
-  const { isOpen, itemToLog, close } = useRecurringLogModalStore();
+  const { isOpen, itemToLog, targetBillingDate, close } =
+    useRecurringLogModalStore();
 
   if (!itemToLog) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && close()}>
       <RecurringLogForm
-        key={itemToLog.id}
+        key={`${itemToLog.id}-${targetBillingDate || "default"}`}
         itemToLog={itemToLog}
+        targetBillingDate={targetBillingDate}
         close={close}
       />
     </Dialog>

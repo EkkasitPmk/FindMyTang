@@ -49,7 +49,7 @@ export const calculateRecurringMetrics = (
   referenceDate: Date = new Date(),
 ): RecurringSummaryMetrics => {
   const activeItems = items.filter(
-    (item) => item.status === RecurringStatus.ACTIVE && !item.deletedAt,
+    (item) => item.status === RecurringStatus.ACTIVE,
   );
 
   const totalMonthly = activeItems.reduce(
@@ -81,6 +81,81 @@ export const calculateRecurringMetrics = (
   };
 };
 
+export const advanceCycle = (
+  dateInput: string | Date,
+  cycle: RecurringCycle,
+): Date => {
+  const date = typeof dateInput === "string" ? parseISO(dateInput) : dateInput;
+  switch (cycle) {
+    case RecurringCycle.WEEKLY:
+      return addWeeks(date, 1);
+    case RecurringCycle.MONTHLY:
+      return addMonths(date, 1);
+    case RecurringCycle.QUARTERLY:
+      return addMonths(date, 3);
+    case RecurringCycle.YEARLY:
+      return addYears(date, 1);
+    default:
+      return addMonths(date, 1);
+  }
+};
+
+export interface OverdueBillCycle {
+  billingDate: string;
+  daysOverdue: number;
+}
+
+export interface RecurringPendingBillsInfo {
+  unpaidCycles: OverdueBillCycle[];
+  hasMultipleCycles: boolean;
+  currentCycleDate: string;
+  oldUnpaidCycles: OverdueBillCycle[];
+  totalOverdueCount: number;
+}
+
+/**
+ * Computes all billing cycles that have arrived on or before referenceDate
+ * and detects whether there are older unlogged bills accumulated.
+ */
+export const getPendingBillsInfo = (
+  item: { nextBillingDate: string; billingCycle: RecurringCycle },
+  referenceDate: Date = new Date(),
+): RecurringPendingBillsInfo => {
+  const today = startOfDay(referenceDate);
+  const cycle = item.billingCycle;
+
+  const arrivedCycles: OverdueBillCycle[] = [];
+  let curr = parseISO(item.nextBillingDate);
+
+  let count = 0;
+  while (differenceInCalendarDays(startOfDay(curr), today) <= 0 && count < 52) {
+    const daysOverdue = Math.max(
+      0,
+      differenceInCalendarDays(today, startOfDay(curr)),
+    );
+    arrivedCycles.push({
+      billingDate: curr.toISOString(),
+      daysOverdue,
+    });
+    curr = advanceCycle(curr, cycle);
+    count++;
+  }
+
+  const hasMultipleCycles = arrivedCycles.length > 1;
+  const currentCycleDate =
+    arrivedCycles.at(-1)?.billingDate ?? item.nextBillingDate;
+  const oldUnpaidCycles =
+    arrivedCycles.length > 1 ? arrivedCycles.slice(0, -1) : [];
+
+  return {
+    unpaidCycles: arrivedCycles,
+    hasMultipleCycles,
+    currentCycleDate,
+    oldUnpaidCycles,
+    totalOverdueCount: arrivedCycles.length,
+  };
+};
+
 /**
  * Advances the next billing date by its cycle, anchoring to the original scheduled day
  * even if the payment was recorded 2-3 days late or after multiple missed cycles.
@@ -100,27 +175,12 @@ export const getNextBillingDate = (
     typeof fromDate === "string" ? parseISO(fromDate) : fromDate,
   );
 
-  const advanceOneCycle = (d: Date): Date => {
-    switch (cycle) {
-      case RecurringCycle.WEEKLY:
-        return addWeeks(d, 1);
-      case RecurringCycle.MONTHLY:
-        return addMonths(d, 1);
-      case RecurringCycle.QUARTERLY:
-        return addMonths(d, 3);
-      case RecurringCycle.YEARLY:
-        return addYears(d, 1);
-      default:
-        return addMonths(d, 1);
-    }
-  };
-
   // Advance at least once
-  date = advanceOneCycle(date);
+  date = advanceCycle(date, cycle);
 
   // If still in the past compared to fromDate, advance until into the future
   while (isBefore(date, targetFloor)) {
-    date = advanceOneCycle(date);
+    date = advanceCycle(date, cycle);
   }
 
   return date.toISOString();

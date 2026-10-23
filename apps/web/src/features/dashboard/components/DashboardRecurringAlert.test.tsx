@@ -49,7 +49,6 @@ describe("DashboardRecurringAlert", () => {
         name: "Netflix",
         amount: 350,
         billingCycle: RecurringCycle.MONTHLY,
-        firstBillingDate: today.toISOString(),
         nextBillingDate: upcomingDate.toISOString(),
         status: RecurringStatus.ACTIVE,
         createdAt: today.toISOString(),

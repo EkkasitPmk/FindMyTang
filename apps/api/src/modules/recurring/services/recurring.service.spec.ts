@@ -39,7 +39,6 @@ describe("RecurringService", () => {
         name: "Netflix",
         amount: 419,
         billingCycle: RecurringCycle.MONTHLY,
-        firstBillingDate: "2026-10-22T00:00:00.000Z",
         nextBillingDate: "2026-10-22T00:00:00.000Z",
       };
       const createdItem = { id: "rec-1", ...dto, userId: "user-1" };
@@ -58,7 +57,6 @@ describe("RecurringService", () => {
         name: "",
         amount: 419,
         billingCycle: RecurringCycle.MONTHLY,
-        firstBillingDate: "2026-10-22T00:00:00.000Z",
         nextBillingDate: "2026-10-22T00:00:00.000Z",
       };
 
@@ -72,7 +70,6 @@ describe("RecurringService", () => {
         name: "Netflix",
         amount: -10,
         billingCycle: RecurringCycle.MONTHLY,
-        firstBillingDate: "2026-10-22T00:00:00.000Z",
         nextBillingDate: "2026-10-22T00:00:00.000Z",
       };
 
@@ -123,13 +120,10 @@ describe("RecurringService", () => {
     it("should delete a recurring expense successfully", async () => {
       const existing = { id: "rec-1", name: "Netflix", userId: "user-1" };
       mockRecurringRepository.findById.mockResolvedValue(existing);
-      mockRecurringRepository.delete.mockResolvedValue({
-        ...existing,
-        deletedAt: new Date(),
-      });
+      mockRecurringRepository.delete.mockResolvedValue(existing);
 
       const result = await service.delete("rec-1", "user-1");
-      expect(result.deletedAt).toBeDefined();
+      expect(result).toEqual(existing);
     });
   });
 });

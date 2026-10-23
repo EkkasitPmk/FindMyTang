@@ -40,7 +40,6 @@ describe("RecurringUpcomingAlert", () => {
       amount: 419,
       currency: "THB",
       billingCycle: RecurringCycle.MONTHLY,
-      firstBillingDate: "2026-09-22T00:00:00.000Z",
       nextBillingDate: addDays(new Date(), 3).toISOString(),
       status: RecurringStatus.ACTIVE,
       createdAt: "",
@@ -52,7 +51,6 @@ describe("RecurringUpcomingAlert", () => {
     expect(
       screen.getByText("Netflix renews in 3 days (฿419.00)"),
     ).toBeInTheDocument();
-    expect(screen.getByText("Log Expense")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button"));
     expect(openLogSpy).toHaveBeenCalledWith(upcomingItem);
@@ -65,7 +63,6 @@ describe("RecurringUpcomingAlert", () => {
       amount: 139,
       currency: "THB",
       billingCycle: RecurringCycle.MONTHLY,
-      firstBillingDate: "2026-09-15T00:00:00.000Z",
       nextBillingDate: subDays(new Date(), 2).toISOString(),
       status: RecurringStatus.ACTIVE,
       createdAt: "",

@@ -10,7 +10,7 @@ export default async function RecurringRouteContainer() {
     return <RecurringContainer />;
   }
 
-  const initialItems = await getRecurringExpensesServer(false);
+  const initialItems = await getRecurringExpensesServer();
 
   return (
     <RecurringContainer

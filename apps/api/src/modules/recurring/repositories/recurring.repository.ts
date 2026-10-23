@@ -18,7 +18,6 @@ export class RecurringRepository {
         amount: new Prisma.Decimal(data.amount),
         currency: data.currency ?? "THB",
         billingCycle: data.billingCycle,
-        firstBillingDate: new Date(data.firstBillingDate),
         nextBillingDate: new Date(data.nextBillingDate),
         assetId: data.assetId ?? null,
         categoryId: data.categoryId ?? null,
@@ -33,16 +32,11 @@ export class RecurringRepository {
     });
   }
 
-  async findById(
-    id: string,
-    userId: string,
-    includeDeleted = false,
-  ): Promise<RecurringExpense | null> {
+  async findById(id: string, userId: string): Promise<RecurringExpense | null> {
     return this.prisma.recurringExpense.findFirst({
       where: {
         id,
         userId,
-        ...(includeDeleted ? {} : { deletedAt: null }),
       },
       include: {
         category: true,
@@ -54,13 +48,11 @@ export class RecurringRepository {
   async findAll(
     userId: string,
     status?: RecurringStatus,
-    includeDeleted = false,
   ): Promise<RecurringExpense[]> {
     return this.prisma.recurringExpense.findMany({
       where: {
         userId,
         ...(status ? { status } : {}),
-        ...(includeDeleted ? {} : { deletedAt: null }),
       },
       include: {
         category: true,
@@ -76,16 +68,10 @@ export class RecurringRepository {
   }
 
   private buildUpdateInput(
-    data: UpdateRecurringDto & { deletedAt?: Date | null },
+    data: UpdateRecurringDto,
   ): Prisma.RecurringExpenseUpdateInput {
-    const {
-      amount,
-      firstBillingDate,
-      nextBillingDate,
-      assetId,
-      categoryId,
-      ...directFields
-    } = data;
+    const { amount, nextBillingDate, assetId, categoryId, ...directFields } =
+      data;
 
     const updateData: Prisma.RecurringExpenseUpdateInput = {
       ...directFields,
@@ -93,9 +79,6 @@ export class RecurringRepository {
 
     if (amount !== undefined) {
       updateData.amount = new Prisma.Decimal(amount);
-    }
-    if (firstBillingDate !== undefined) {
-      updateData.firstBillingDate = new Date(firstBillingDate);
     }
     if (nextBillingDate !== undefined) {
       updateData.nextBillingDate = new Date(nextBillingDate);
@@ -113,7 +96,7 @@ export class RecurringRepository {
   async update(
     id: string,
     userId: string,
-    data: UpdateRecurringDto & { deletedAt?: Date | null },
+    data: UpdateRecurringDto,
   ): Promise<RecurringExpense> {
     const existing = await this.prisma.recurringExpense.findFirst({
       where: { id, userId },
@@ -134,14 +117,13 @@ export class RecurringRepository {
 
   async delete(id: string, userId: string): Promise<RecurringExpense> {
     const existing = await this.prisma.recurringExpense.findFirst({
-      where: { id, userId, deletedAt: null },
+      where: { id, userId },
     });
     if (!existing) {
       throw new Error("Recurring expense not found or access denied");
     }
-    return this.prisma.recurringExpense.update({
+    return this.prisma.recurringExpense.delete({
       where: { id },
-      data: { deletedAt: new Date() },
     });
   }
 }

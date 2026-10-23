@@ -133,14 +133,12 @@ model RecurringExpense {
   amount           Decimal
   currency         String          @default("THB")
   billingCycle     RecurringCycle  @default(MONTHLY)
-  firstBillingDate DateTime
   nextBillingDate  DateTime
   categoryId       String?
   assetId          String?
   status           RecurringStatus @default(ACTIVE)
   note             String?
   userId           String
-  deletedAt        DateTime?
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
 
@@ -151,7 +149,6 @@ model RecurringExpense {
   @@index([userId])
   @@index([userId, status])
   @@index([userId, nextBillingDate])
-  @@index([userId, deletedAt])
 }
 
 enum RecurringCycle {

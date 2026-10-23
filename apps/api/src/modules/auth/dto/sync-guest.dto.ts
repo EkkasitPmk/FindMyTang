@@ -173,10 +173,6 @@ export class SyncRecurringExpenseItemDto {
 
   @ApiProperty({ example: "2026-10-22T00:00:00.000Z" })
   @IsDateString()
-  firstBillingDate!: string;
-
-  @ApiProperty({ example: "2026-10-22T00:00:00.000Z" })
-  @IsDateString()
   nextBillingDate!: string;
 
   @ApiProperty({ example: "temp-asset-1", required: false })
@@ -202,11 +198,6 @@ export class SyncRecurringExpenseItemDto {
   @IsString()
   @IsOptional()
   note?: string;
-
-  @ApiProperty({ required: false, nullable: true })
-  @IsDateString()
-  @IsOptional()
-  deletedAt?: string | null;
 }
 
 export class SyncGuestDto {

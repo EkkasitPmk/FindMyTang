@@ -46,14 +46,11 @@ export class RecurringController {
   @Get()
   @ApiOperation({ summary: "Get all recurring expenses for current user" })
   @ApiQuery({ name: "status", enum: RecurringStatus, required: false })
-  @ApiQuery({ name: "includeDeleted", type: Boolean, required: false })
   async findAll(
     @CurrentUser() user: User,
     @Query("status") status?: RecurringStatus,
-    @Query("includeDeleted") includeDeleted?: string,
   ) {
-    const shouldIncludeDeleted = includeDeleted === "true";
-    return this.recurringService.findAll(user.id, status, shouldIncludeDeleted);
+    return this.recurringService.findAll(user.id, status);
   }
 
   @Get(":id")
@@ -76,7 +73,7 @@ export class RecurringController {
   }
 
   @Delete(":id")
-  @ApiOperation({ summary: "Delete a recurring expense by ID (soft delete)" })
+  @ApiOperation({ summary: "Delete a recurring expense by ID" })
   @ApiParam({ name: "id", type: String })
   async delete(@CurrentUser() user: User, @Param("id") id: string) {
     return this.recurringService.delete(id, user.id);

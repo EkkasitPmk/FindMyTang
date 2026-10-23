@@ -544,6 +544,11 @@ export const translations = {
     recurringDeleteError: "ไม่สามารถลบรายจ่ายประจำได้",
     recurringStatusError: "ไม่สามารถเปลี่ยนสถานะได้",
     recurringLogError: "ไม่สามารถบันทึกรายจ่ายได้",
+    recurringOldUnpaidBill: "บิลเก่าค้างจ่าย",
+    recurringOldUnpaidBills: "บิลเก่าค้างจ่าย ({count} บิล)",
+    recurringLogThisBill: "บันทึกบิลนี้",
+    recurringCurrentCycle: "บิลรอบปัจจุบัน",
+    recurringCycleLabelWithDate: "รอบบิล {date}",
   },
   en: {
     // App SEO & Meta
@@ -1100,6 +1105,11 @@ export const translations = {
     recurringDeleteError: "Failed to delete recurring expense",
     recurringStatusError: "Failed to update status",
     recurringLogError: "Failed to log expense",
+    recurringOldUnpaidBill: "Overdue Unpaid Bill",
+    recurringOldUnpaidBills: "Overdue Unpaid Bills ({count})",
+    recurringLogThisBill: "Log this bill",
+    recurringCurrentCycle: "Current cycle",
+    recurringCycleLabelWithDate: "Billing cycle: {date}",
   },
 } as const;
 

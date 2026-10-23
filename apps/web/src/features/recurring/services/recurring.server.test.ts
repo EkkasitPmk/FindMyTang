@@ -13,10 +13,8 @@ const mockRecurringExpenses = [
     amount: 419,
     currency: "THB",
     billingCycle: "MONTHLY",
-    firstBillingDate: "2026-09-22T00:00:00.000Z",
     nextBillingDate: "2026-10-22T00:00:00.000Z",
     status: "ACTIVE",
-    deletedAt: null,
   },
 ];
 
@@ -29,7 +27,7 @@ describe("recurring.server", () => {
   it("does not read cloud recurring expenses without an access token", async () => {
     mockCookies.mockResolvedValue({ has: () => false } as never);
 
-    await expect(getRecurringExpensesServer(false)).resolves.toBeNull();
+    await expect(getRecurringExpensesServer()).resolves.toBeNull();
     expect(fetch).not.toHaveBeenCalled();
   });
 
@@ -43,7 +41,7 @@ describe("recurring.server", () => {
       json: async () => mockRecurringExpenses,
     } as Response);
 
-    await expect(getRecurringExpensesServer(false)).resolves.toMatchObject(
+    await expect(getRecurringExpensesServer()).resolves.toMatchObject(
       mockRecurringExpenses,
     );
     expect(fetch).toHaveBeenCalledWith(
@@ -62,6 +60,6 @@ describe("recurring.server", () => {
     } as never);
     vi.mocked(fetch).mockResolvedValue({ ok: false } as Response);
 
-    await expect(getRecurringExpensesServer(false)).resolves.toBeNull();
+    await expect(getRecurringExpensesServer()).resolves.toBeNull();
   });
 });
