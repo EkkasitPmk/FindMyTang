@@ -2,7 +2,7 @@
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { RecurringExpense } from "@/shared/lib/types/recurring.type";
 import { getDueStatus } from "../helpers/recurring.helper";
-import { AlertCircle, ChevronRight, Plus } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { useRecurringLogModalStore } from "../hooks/recurring-sheet.hook";
 
 interface RecurringUpcomingAlertProps {
@@ -53,30 +53,17 @@ export default function RecurringUpcomingAlert({
           : "bg-amber-500/10 border-amber-500/30 text-amber-900 dark:text-amber-200 hover:bg-amber-500/15"
       }`}
     >
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3">
-        <div className="flex items-start gap-2.5 min-w-0">
-          <AlertCircle
-            className={`size-4 shrink-0 mt-0.5 ${
-              isOverdue
-                ? "text-rose-600 dark:text-rose-400"
-                : "text-amber-600 dark:text-amber-400"
-            }`}
-          />
-          <p className="text-xs font-medium leading-relaxed wrap-break-word">
-            {alertMessage}
-          </p>
-        </div>
-        <div
-          className={`flex items-center gap-1 shrink-0 text-xs font-semibold self-end sm:self-auto ${
+      <div className="flex items-center gap-2.5 min-w-0">
+        <AlertCircle
+          className={`size-4 shrink-0 ${
             isOverdue
               ? "text-rose-600 dark:text-rose-400"
               : "text-amber-600 dark:text-amber-400"
           }`}
-        >
-          <Plus className="size-3.5" />
-          <span>{t("recurringLogExpense")}</span>
-          <ChevronRight className="size-3.5 opacity-80" />
-        </div>
+        />
+        <p className="text-xs font-medium leading-relaxed wrap-break-word">
+          {alertMessage}
+        </p>
       </div>
     </button>
   );
