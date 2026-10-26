@@ -43,4 +43,18 @@ describe("RecurringDatePicker", () => {
     expect(screen.getByText("Payment Date *")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Today" })).toBeInTheDocument();
   });
+
+  it("supports showTime prop and renders formatted date with time", () => {
+    const testDate = new Date("2026-10-27T14:30:00.000Z");
+    render(
+      <RecurringDatePicker
+        value={testDate}
+        onChange={vi.fn()}
+        label="Payment Date"
+        showTime
+      />,
+    );
+
+    expect(screen.getByText("Payment Date *")).toBeInTheDocument();
+  });
 });

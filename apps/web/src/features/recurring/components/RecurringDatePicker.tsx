@@ -23,6 +23,7 @@ interface RecurringDatePickerProps {
   dueTodayLabel?: string;
   locale?: string;
   calendarLocale?: Locale;
+  showTime?: boolean;
 }
 
 export function RecurringDatePicker({
@@ -32,6 +33,7 @@ export function RecurringDatePicker({
   dueTodayLabel,
   locale = "en-US",
   calendarLocale,
+  showTime = false,
 }: Readonly<RecurringDatePickerProps>) {
   const { t } = useTranslation();
   const [tempDate, setTempDate] = useState<Date | undefined>(value);
@@ -51,7 +53,7 @@ export function RecurringDatePicker({
     }
   }, [isCalendarOpen]);
 
-  const displayDate = formatDisplayDate(value, false, locale, t);
+  const displayDate = formatDisplayDate(value, showTime, locale, t);
 
   const handleOpenCalendar = () => {
     setTempDate(value);
@@ -142,7 +144,7 @@ export function RecurringDatePicker({
               onConfirm={handleConfirmDate}
               onPresetClick={handlePresetClick}
               locale={calendarLocale}
-              showTime={false}
+              showTime={showTime}
             />
           </div>
         </CollapsibleContent>
