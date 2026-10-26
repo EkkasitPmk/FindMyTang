@@ -128,4 +128,32 @@ describe("RecurringLogModal", () => {
       expect.anything(),
     );
   });
+
+  it("initializes paymentDate to the current time when opening modal", () => {
+    vi.useFakeTimers();
+    const mockNow = new Date("2026-10-27T14:35:20.000Z");
+    vi.setSystemTime(mockNow);
+
+    useRecurringLogModalStore.setState({
+      isOpen: true,
+      itemToLog: sampleItem,
+      targetBillingDate: "2026-09-01T00:00:00.000Z",
+    });
+
+    render(<RecurringLogModal />);
+
+    const submitBtn = screen.getByText("Confirm & Log");
+    fireEvent.click(submitBtn);
+
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        payload: expect.objectContaining({
+          paymentDate: mockNow.toISOString(),
+        }),
+      }),
+      expect.anything(),
+    );
+
+    vi.useRealTimers();
+  });
 });

@@ -42,9 +42,8 @@ function RecurringLogForm({
 
   const targetDate = targetBillingDate || itemToLog.nextBillingDate;
   const [amount, setAmount] = useState<number | "">(itemToLog.amount);
-  const [paymentDate, setPaymentDate] = useState<Date>(() =>
-    targetBillingDate ? parseISO(targetBillingDate) : new Date(),
-  );
+
+  const [paymentDate, setPaymentDate] = useState<Date>(() => new Date());
   const [assetId, setAssetId] = useState<string>(itemToLog.assetId || "");
   const selectedAssetId =
     assetId || itemToLog.assetId || (assets.length > 0 ? assets[0].id : "");
@@ -164,6 +163,7 @@ function RecurringLogForm({
             label={t("recurringPaymentDate")}
             locale={locale}
             calendarLocale={calendarLocale}
+            showTime
           />
 
           {/* Payment Account (Asset) Selection - Reusing TransactionAssetList from Transactions */}
