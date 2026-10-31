@@ -23,6 +23,7 @@ export interface LocalAsset {
   color?: string | null;
   displayOrder: number;
   isArchived: boolean;
+  includeInSnapshot?: boolean;
   createdAt: string;
   updatedAt: string;
   deletedAt?: string | null;

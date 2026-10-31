@@ -10,6 +10,7 @@ const mockAsset: Asset = {
   balance: 1500,
   color: "#10B981",
   isArchived: false,
+  includeInSnapshot: true,
 };
 
 describe("TransactionAssetItem", () => {
@@ -100,4 +101,3 @@ describe("TransactionAssetItem", () => {
     expect(balanceEl).not.toHaveClass("truncate");
   });
 });
-

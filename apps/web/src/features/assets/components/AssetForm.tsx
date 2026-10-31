@@ -41,6 +41,8 @@ interface AssetFormProps {
   onSelectColor?: (color: string) => void;
   onBlurBalance?: () => void;
   isEdit?: boolean;
+  includeInSnapshot?: boolean;
+  onToggleIncludeInSnapshot?: (value: boolean) => void;
 }
 
 export default function AssetForm({
@@ -59,6 +61,8 @@ export default function AssetForm({
   onSelectColor,
   onBlurBalance,
   isEdit = false,
+  includeInSnapshot = true,
+  onToggleIncludeInSnapshot,
 }: Readonly<AssetFormProps>) {
   const { t } = useTranslation();
   const nameField = register("name");
@@ -305,6 +309,35 @@ export default function AssetForm({
                 ))}
               </div>
               <input type="hidden" {...register("color")} />
+            </div>
+
+            {/* Include in Financial Snapshot Toggle */}
+            <div className="flex items-center justify-between p-3.5 bg-surface-secondary/40 rounded-xl border border-border">
+              <div className="flex flex-col gap-0.5 pr-3">
+                <span className="text-sm font-semibold text-primary-text">
+                  {t("includeInSnapshot")}
+                </span>
+                <span className="text-xs text-secondary-text leading-relaxed">
+                  {t("includeInSnapshotDesc")}
+                </span>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={includeInSnapshot}
+                onClick={() => onToggleIncludeInSnapshot?.(!includeInSnapshot)}
+                className={cn(
+                  "relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary/20",
+                  includeInSnapshot ? "bg-primary" : "bg-border",
+                )}
+              >
+                <span
+                  className={cn(
+                    "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out",
+                    includeInSnapshot ? "translate-x-5" : "translate-x-0",
+                  )}
+                />
+              </button>
             </div>
           </div>
 

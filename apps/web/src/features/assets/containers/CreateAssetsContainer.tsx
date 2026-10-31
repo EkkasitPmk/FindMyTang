@@ -44,10 +44,13 @@ export default function CreateAssetsContainer({
       type: AssetType.CASH,
       balance: "",
       color: "#2563EB",
+      includeInSnapshot: true,
     },
   });
 
   const currentColor = useWatch({ control, name: "color" });
+  const includeInSnapshot =
+    useWatch({ control, name: "includeInSnapshot" }) ?? true;
 
   const handleSelect = (type: string) => {
     setSelected(type);
@@ -104,6 +107,7 @@ export default function CreateAssetsContainer({
       type: values.type,
       balance: balanceNum,
       color: values.color,
+      includeInSnapshot: values.includeInSnapshot ?? true,
     });
   };
 
@@ -131,6 +135,10 @@ export default function CreateAssetsContainer({
         currentColor={currentColor}
         onSelectColor={(color) => setValue("color", color)}
         onBlurBalance={handleBlurBalance}
+        includeInSnapshot={includeInSnapshot}
+        onToggleIncludeInSnapshot={(val) =>
+          setValue("includeInSnapshot", val, { shouldDirty: true })
+        }
       />
       <LoadingModal
         isOpen={modalState.isOpen || isPending}

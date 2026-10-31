@@ -8,6 +8,7 @@ export const assetResponseSchema = z.object({
   balance: z.number(),
   color: z.string().nullable().optional(),
   isArchived: z.boolean().optional().default(false),
+  includeInSnapshot: z.boolean().optional().default(true),
   deletedAt: z.string().nullable().optional(),
   displayOrder: z.number().optional(),
   createdAt: z.string().optional(),

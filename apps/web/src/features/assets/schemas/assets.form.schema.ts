@@ -37,6 +37,7 @@ export const createAssetSchema = z.object({
     )
     .optional(),
   color: z.string().optional(),
+  includeInSnapshot: z.boolean().default(true).optional(),
 });
 
 export const editAssetSchema = createAssetSchema.extend({

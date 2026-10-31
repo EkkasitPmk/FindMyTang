@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import {
   Eye,
   EyeOff,
@@ -16,6 +17,7 @@ import { cn } from "@/shared/lib/utils/core.util";
 
 interface FinancialSnapshotCardProps {
   netWorth: number;
+  excludedNetWorth?: number;
   income: number;
   expense: number;
   transfer: number;
@@ -29,6 +31,7 @@ interface FinancialSnapshotCardProps {
 
 export default function FinancialSnapshotCard({
   netWorth,
+  excludedNetWorth = 0,
   income,
   expense,
   transfer,
@@ -39,6 +42,7 @@ export default function FinancialSnapshotCard({
   onTogglePrivacy,
   isLoading,
 }: Readonly<FinancialSnapshotCardProps>) {
+  const [showExcluded, setShowExcluded] = useState(false);
   const { t, locale } = useTranslation();
 
   const formatCurrency = (val: number) => {
@@ -206,6 +210,67 @@ export default function FinancialSnapshotCard({
           {t("balance")}
         </span>
         <AnimatePresence mode="wait">{renderNetWorthAmount()}</AnimatePresence>
+
+        {excludedNetWorth > 0 && (
+          <div className="mt-1 flex flex-col gap-1.5">
+            <Button
+              variant="unstyled"
+              type="button"
+              onClick={() => setShowExcluded((prev) => !prev)}
+              aria-expanded={showExcluded}
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-secondary-text hover:text-primary transition-colors cursor-pointer self-start py-0.5 px-2 -ml-2 rounded-md hover:bg-surface-secondary/80"
+            >
+              {showExcluded ? (
+                <>
+                  <EyeOff className="size-3 text-secondary-text" />
+                  <span>{t("hideHiddenBalance")}</span>
+                </>
+              ) : (
+                <>
+                  <Eye className="size-3 text-primary" />
+                  <span>
+                    {t("showHiddenBalance")} (
+                    {isPrivate
+                      ? "******"
+                      : `+฿ ${formatCurrency(excludedNetWorth)}`}
+                    )
+                  </span>
+                </>
+              )}
+            </Button>
+
+            <AnimatePresence>
+              {showExcluded && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="overflow-hidden"
+                >
+                  <div className="flex flex-col gap-1 pt-1.5 pb-0.5 border-t border-border/40 text-xs">
+                    <div className="flex items-center justify-between text-secondary-text">
+                      <span>{t("hiddenBalance")}</span>
+                      <span className="font-semibold tabular-nums text-primary-text">
+                        {isPrivate
+                          ? "฿******"
+                          : `฿ ${formatCurrency(excludedNetWorth)}`}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-secondary-text">
+                      <span>{t("totalWithHidden")}</span>
+                      <span className="font-bold tabular-nums text-primary">
+                        {isPrivate
+                          ? "฿******"
+                          : `฿ ${formatCurrency(netWorth + excludedNetWorth)}`}
+                      </span>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
       </div>
 
       {/* Cash Flow Split Cards */}

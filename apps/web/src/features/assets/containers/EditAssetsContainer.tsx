@@ -46,12 +46,14 @@ export default function EditAssetsContainer({
       type: asset.type,
       balance: asset.balance.toString(),
       color: asset.color || "#2563EB",
+      includeInSnapshot: asset.includeInSnapshot ?? true,
     },
     values: {
       name: asset.name,
       type: asset.type,
       balance: asset.balance.toString(),
       color: asset.color || "#2563EB",
+      includeInSnapshot: asset.includeInSnapshot ?? true,
     },
     resetOptions: {
       keepDirtyValues: true,
@@ -60,6 +62,8 @@ export default function EditAssetsContainer({
 
   const currentColor = useWatch({ control, name: "color" });
   const selected = useWatch({ control, name: "type" }) || AssetType.CASH;
+  const includeInSnapshot =
+    useWatch({ control, name: "includeInSnapshot" }) ?? true;
 
   const handleSelect = (type: string) => {
     setValue("type", type as AssetType);
@@ -110,6 +114,7 @@ export default function EditAssetsContainer({
         name: values.name,
         type: values.type,
         color: values.color,
+        includeInSnapshot: values.includeInSnapshot ?? true,
       },
     });
   };
@@ -139,6 +144,10 @@ export default function EditAssetsContainer({
         currentColor={currentColor}
         onSelectColor={(color) => setValue("color", color)}
         onBlurBalance={handleBlurBalance}
+        includeInSnapshot={includeInSnapshot}
+        onToggleIncludeInSnapshot={(val) =>
+          setValue("includeInSnapshot", val, { shouldDirty: true })
+        }
       />
       <LoadingModal
         isOpen={modalState.isOpen || isPending}

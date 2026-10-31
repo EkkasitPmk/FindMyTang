@@ -25,6 +25,7 @@ export const createAssetApi = async (
       type: data.type as unknown as AssetType,
       balance: data.balance ?? 0,
       isArchived: false,
+      includeInSnapshot: data.includeInSnapshot ?? true,
       displayOrder: (await db.assets.count()) + 1,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -182,16 +183,18 @@ export const reorderAssetsApi = async (
   ids: string[],
 ): Promise<{ success: boolean }> => {
   if (useGuestStore.getState().isGuest) {
+    const now = new Date().toISOString();
+    const orderMap = new Map(ids.map((id, index) => [id, index + 1]));
+
     await db.transaction("rw", db.assets, async () => {
-      for (let i = 0; i < ids.length; i++) {
-        const asset = await db.assets.get(ids[i]);
-        if (asset) {
-          asset.displayOrder = i + 1;
-          asset.updatedAt = new Date().toISOString();
-          asset.syncStatus = "pending";
-          await db.assets.put(asset);
-        }
-      }
+      const assets = await db.assets.where("id").anyOf(ids).toArray();
+      const updatedAssets = assets.map((asset) => ({
+        ...asset,
+        displayOrder: orderMap.get(asset.id) ?? asset.displayOrder,
+        updatedAt: now,
+        syncStatus: "pending" as const,
+      }));
+      await db.assets.bulkPut(updatedAssets);
     });
     return assetMutationResponseSchema.parse({ success: true });
   }

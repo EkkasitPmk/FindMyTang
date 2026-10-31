@@ -37,6 +37,7 @@ const mockAsset: Asset = {
   balance: 6.16,
   color: "#2563EB",
   isArchived: false,
+  includeInSnapshot: true,
   deletedAt: null,
   createdAt: "2026-01-01T00:00:00Z",
   updatedAt: "2026-01-01T00:00:00Z",

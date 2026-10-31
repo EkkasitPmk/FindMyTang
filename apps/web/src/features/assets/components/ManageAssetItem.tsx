@@ -109,15 +109,22 @@ export default function ManageAssetItem({
         inlineActions && isInactive && "lg:opacity-60",
       )}
     >
-      <motion.div layout className="flex items-center justify-between w-full">
-        <div className="flex items-center gap-3">
+      <motion.div
+        layout
+        className="flex items-center justify-between w-full gap-2"
+      >
+        <div className="flex items-center gap-3 min-w-0 flex-1">
           <AnimatePresence>
             <ManageAssetSelectionIndicator
               isEditingList={isEditingList}
               isSelected={isSelected}
             />
           </AnimatePresence>
-          <motion.span layout className={iconBgClass} style={iconStyle}>
+          <motion.span
+            layout
+            className={cn(iconBgClass, "shrink-0")}
+            style={iconStyle}
+          >
             {getAssetIcon(asset.type, isInactive ? null : asset.color)}
           </motion.span>
           <ManageAssetDetails
@@ -125,6 +132,7 @@ export default function ManageAssetItem({
             titleClass={titleClass}
             isInactive={isInactive}
             isDeleted={isDeleted}
+            includeInSnapshot={asset.includeInSnapshot}
           />
         </div>
         <ManageAssetRightControls

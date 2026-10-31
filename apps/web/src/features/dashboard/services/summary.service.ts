@@ -27,11 +27,15 @@ export const getTodaySummaryApi = async (): Promise<TodaySummaryResponse> => {
       if (t.type === "ADJUSTMENT") adjustment += t.amount;
     });
 
-    const assets = await db.assets.filter((a) => !a.deletedAt).toArray();
-    const totalNetWorth = assets.reduce(
-      (sum, asset) => sum + Number(asset.balance),
-      0,
-    );
+    const activeAssets = await db.assets
+      .filter((a) => !a.deletedAt && !a.isArchived)
+      .toArray();
+    const totalNetWorth = activeAssets
+      .filter((a) => a.includeInSnapshot !== false)
+      .reduce((sum, asset) => sum + Number(asset.balance), 0);
+    const excludedNetWorth = activeAssets
+      .filter((a) => a.includeInSnapshot === false)
+      .reduce((sum, asset) => sum + Number(asset.balance), 0);
 
     return todaySummaryResponseSchema.parse({
       income,
@@ -40,6 +44,7 @@ export const getTodaySummaryApi = async (): Promise<TodaySummaryResponse> => {
       adjustment,
       net: income - expense,
       totalNetWorth,
+      excludedNetWorth,
     });
   }
   const response = await http.get<TodaySummaryResponse>("/summary/today");
@@ -70,11 +75,15 @@ export const getThisMonthSummaryApi =
         if (t.type === "ADJUSTMENT") adjustment += t.amount;
       });
 
-      const assets = await db.assets.filter((a) => !a.deletedAt).toArray();
-      const totalNetWorth = assets.reduce(
-        (sum, asset) => sum + Number(asset.balance),
-        0,
-      );
+      const activeAssets = await db.assets
+        .filter((a) => !a.deletedAt && !a.isArchived)
+        .toArray();
+      const totalNetWorth = activeAssets
+        .filter((a) => a.includeInSnapshot !== false)
+        .reduce((sum, asset) => sum + Number(asset.balance), 0);
+      const excludedNetWorth = activeAssets
+        .filter((a) => a.includeInSnapshot === false)
+        .reduce((sum, asset) => sum + Number(asset.balance), 0);
 
       return todaySummaryResponseSchema.parse({
         income,
@@ -83,6 +92,7 @@ export const getThisMonthSummaryApi =
         adjustment,
         net: income - expense,
         totalNetWorth,
+        excludedNetWorth,
       });
     }
     const response = await http.get<TodaySummaryResponse>("/summary/monthly");

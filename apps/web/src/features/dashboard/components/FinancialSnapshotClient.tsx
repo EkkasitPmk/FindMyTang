@@ -20,9 +20,26 @@ export default function FinancialSnapshotClient({
   const { data: summary, isPending: isSummaryPending } =
     useThisMonthSummary(initialSummary);
 
+  const activeAssets = assets?.filter((a) => !a.isArchived && !a.deletedAt);
+  const calculatedTotalNetWorth = activeAssets
+    ? activeAssets
+        .filter((a) => a.includeInSnapshot !== false)
+        .reduce((sum, a) => sum + Number(a.balance), 0)
+    : undefined;
+  const calculatedExcludedNetWorth = activeAssets
+    ? activeAssets
+        .filter((a) => a.includeInSnapshot === false)
+        .reduce((sum, a) => sum + Number(a.balance), 0)
+    : undefined;
+
+  const netWorth = calculatedTotalNetWorth ?? (summary?.totalNetWorth || 0);
+  const excludedNetWorth =
+    calculatedExcludedNetWorth ?? (summary?.excludedNetWorth || 0);
+
   return (
     <FinancialSnapshotCard
-      netWorth={summary?.totalNetWorth || 0}
+      netWorth={netWorth}
+      excludedNetWorth={excludedNetWorth}
       income={summary?.income || 0}
       expense={summary?.expense || 0}
       transfer={summary?.transfer || 0}
@@ -31,7 +48,7 @@ export default function FinancialSnapshotClient({
       hasAssets={Boolean(assets?.some((asset) => !asset.isArchived))}
       isPrivate={isPrivate}
       onTogglePrivacy={togglePrivacy}
-      isLoading={isAssetsPending || isSummaryPending}
+      isLoading={isAssetsPending && isSummaryPending}
     />
   );
 }

@@ -5,6 +5,7 @@ import {
   TrendingUp,
   TrendingDown,
   Minus,
+  EyeOff,
 } from "lucide-react";
 import { Asset } from "@/shared/lib/types/asset.type";
 import { GroupedTransaction } from "@/shared/lib/types/transaction.type";
@@ -167,7 +168,7 @@ export default function AssetDetail({
               {/* Row 1: Badge (left) & Month/Year Selectors (right) */}
               <div className="flex items-center justify-between gap-2 px-4.5 sm:px-5">
                 <div
-                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold select-none"
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold select-none shrink-0"
                   style={{
                     backgroundColor: `${asset?.color || DEFAULT_ASSET_COLOR}1A`,
                     color: asset?.color || DEFAULT_ASSET_COLOR,
@@ -312,16 +313,24 @@ export default function AssetDetail({
               </div>
 
               {/* Row 2: Balance Amount */}
-              <div className="flex items-baseline gap-1.5 px-4.5 sm:px-5">
-                <span className="text-2xl font-bold opacity-70 text-secondary-text">
-                  ฿
-                </span>
-                <p className="text-3xl sm:text-4xl font-extrabold tracking-tight text-primary-text tabular-nums">
-                  {(asset?.balance ?? 0).toLocaleString(locale, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </p>
+              <div className="flex items-baseline justify-between gap-2 px-4.5 sm:px-5 flex-wrap">
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-2xl font-bold opacity-70 text-secondary-text">
+                    ฿
+                  </span>
+                  <p className="text-3xl sm:text-4xl font-extrabold tracking-tight text-primary-text tabular-nums">
+                    {(asset?.balance ?? 0).toLocaleString(locale, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </p>
+                </div>
+                {asset?.includeInSnapshot === false && (
+                  <span className="inline-flex items-center gap-1.5 text-xs text-secondary-text font-medium bg-surface-secondary border border-border/70 px-2.5 py-1 rounded-full self-center">
+                    <EyeOff size={12} className="text-secondary-text" />
+                    <span>{t("excludedFromSnapshotBadge")}</span>
+                  </span>
+                )}
               </div>
 
               {/* Row 3: Split Cards (Income, Expense, Transfer, Adjustment) */}

@@ -160,7 +160,7 @@ export const getManageAssetItemClasses = ({
     headerClasses: [headerBase, headerState, rowBgClass]
       .filter(Boolean)
       .join(" "),
-    balanceClass: `font-semibold text-base ${balanceClass}`,
+    balanceClass: `font-semibold text-base whitespace-nowrap ${balanceClass}`,
   };
 };
 

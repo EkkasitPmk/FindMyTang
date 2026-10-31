@@ -31,8 +31,8 @@ export default function ManageAssetRightControls({
   hideChevronOnDesktop,
 }: Readonly<ManageAssetRightControlsProps>) {
   return (
-    <motion.div layout className="flex items-center gap-2">
-      <span className={balanceClass}>
+    <motion.div layout className="flex items-center gap-2 shrink-0">
+      <span className={cn("whitespace-nowrap tabular-nums", balanceClass)}>
         ฿{" "}
         {balance.toLocaleString(locale, {
           minimumFractionDigits: 2,
