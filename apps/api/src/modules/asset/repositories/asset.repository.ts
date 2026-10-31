@@ -7,6 +7,7 @@ export interface CreateAssetData {
   type: AssetType;
   balance?: number;
   color?: string;
+  includeInSnapshot?: boolean;
 }
 
 @Injectable()
@@ -14,7 +15,6 @@ export class AssetRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(userId: string, data: CreateAssetData): Promise<Asset> {
-    // ponytail: Creates a new asset and its initial adjustment transaction in one go if balance > 0.
     return this.prisma.$transaction(async (tx) => {
       const asset = await tx.asset.create({
         data: {
@@ -22,6 +22,7 @@ export class AssetRepository {
           type: data.type,
           balance: data.balance ?? 0,
           color: data.color,
+          includeInSnapshot: data.includeInSnapshot ?? true,
           userId,
         },
       });
@@ -44,21 +45,18 @@ export class AssetRepository {
   }
 
   async findById(id: string): Promise<Asset | null> {
-    // ponytail: Finds an asset by its unique database ID, ensuring it's not soft-deleted.
     return this.prisma.asset.findFirst({
       where: { id, deletedAt: null },
     });
   }
 
   async findByIdAny(id: string): Promise<Asset | null> {
-    // ponytail: Finds an asset by ID regardless of soft-delete status. Used for restore/hard-delete of trashed assets.
     return this.prisma.asset.findFirst({
       where: { id },
     });
   }
 
   async findAllActiveByUserId(userId: string): Promise<Asset[]> {
-    // ponytail: Fetches active user assets.
     return this.prisma.asset.findMany({
       where: { userId, deletedAt: null },
       orderBy: { displayOrder: "asc" },
@@ -66,7 +64,6 @@ export class AssetRepository {
   }
 
   async findAllIncludingDeletedByUserId(userId: string): Promise<Asset[]> {
-    // ponytail: Fetches all user assets, including soft-deleted.
     return this.prisma.asset.findMany({
       where: { userId },
       orderBy: { displayOrder: "asc" },
@@ -77,7 +74,6 @@ export class AssetRepository {
     id: string,
     userId: string,
   ): Promise<string[]> {
-    // ponytail: Finds all non-null attachment URLs for transactions associated with this asset.
     const transactions = await this.prisma.transaction.findMany({
       where: {
         userId,
@@ -98,7 +94,6 @@ export class AssetRepository {
       CreateAssetData & { isArchived: boolean; deletedAt: Date | null }
     >,
   ): Promise<Asset> {
-    // ponytail: Updates an asset matching id and userId to prevent cross-user updates.
     const asset = await this.prisma.asset.findFirst({
       where: { id, userId },
     });
@@ -138,7 +133,6 @@ export class AssetRepository {
   }
 
   async restore(id: string, userId: string): Promise<Asset> {
-    // ponytail: Restores a soft-deleted asset by clearing deletedAt.
     const asset = await this.prisma.asset.findFirst({
       where: { id, userId, deletedAt: { not: null } },
     });
@@ -156,7 +150,6 @@ export class AssetRepository {
     userId: string,
     amount: number,
   ): Promise<Asset> {
-    // ponytail: atomic increment — Prisma handles it in a single UPDATE, no read-then-write race.
     return this.prisma.asset.update({
       where: { id, userId },
       data: { balance: { increment: amount } },
@@ -168,7 +161,6 @@ export class AssetRepository {
     userId: string,
     amount: number,
   ): Promise<Asset> {
-    // ponytail: atomic decrement — same as above. Negative-balance guard is a service concern, not repo.
     return this.prisma.asset.update({
       where: { id, userId },
       data: { balance: { decrement: amount } },
@@ -176,7 +168,6 @@ export class AssetRepository {
   }
 
   async reorder(userId: string, ids: string[]): Promise<void> {
-    // ponytail: Bulk update displayOrder for assets in a transaction.
     await this.prisma.$transaction(
       ids.map((id, index) =>
         this.prisma.asset.updateMany({

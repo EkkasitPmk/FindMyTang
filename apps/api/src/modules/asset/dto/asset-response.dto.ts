@@ -46,6 +46,13 @@ export class AssetResponseDto {
   isArchived!: boolean;
 
   @ApiProperty({
+    description: "Whether the asset is included in financial snapshot",
+    example: true,
+    type: Boolean,
+  })
+  includeInSnapshot!: boolean;
+
+  @ApiProperty({
     description: "ISO timestamp when soft-deleted, or null if active",
     example: null,
     nullable: true,

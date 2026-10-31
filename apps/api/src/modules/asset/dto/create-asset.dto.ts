@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import {
+  IsBoolean,
   IsEnum,
   IsNotEmpty,
   IsNumber,
@@ -57,4 +58,15 @@ export class CreateAssetDto {
   @IsString()
   @IsOptional()
   color?: string;
+
+  @ApiProperty({
+    description: "Whether the asset is included in financial snapshot balance",
+    example: true,
+    required: false,
+    default: true,
+    type: Boolean,
+  })
+  @IsBoolean()
+  @IsOptional()
+  includeInSnapshot?: boolean;
 }

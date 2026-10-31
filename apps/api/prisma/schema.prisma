@@ -49,6 +49,7 @@ model Asset {
   color                String?
   deletedAt            DateTime?
   isArchived           Boolean       @default(false)
+  includeInSnapshot    Boolean       @default(true)
   displayOrder         Int           @default(0)
   user                 User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   transactions         Transaction[] @relation("AssetToTransaction")

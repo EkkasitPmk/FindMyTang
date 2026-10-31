@@ -11,6 +11,7 @@ export interface TodaySummary {
   adjustment: number;
   net: number;
   totalNetWorth: number;
+  excludedNetWorth: number;
 }
 
 @Injectable()
@@ -40,6 +41,7 @@ export class SummaryService {
       adjustment,
       net: income - expense,
       totalNetWorth: 0,
+      excludedNetWorth: 0,
     };
 
     await this.cacheManager.set(cacheKey, result, 60000); // 1 min TTL
@@ -53,26 +55,30 @@ export class SummaryService {
       return cached;
     }
 
-    const [income, expense, transfer, adjustment, totalNetWorth] =
-      await Promise.all([
-        this.summaryRepository.getThisMonthAmount(
-          userId,
-          TransactionType.INCOME,
-        ),
-        this.summaryRepository.getThisMonthAmount(
-          userId,
-          TransactionType.EXPENSE,
-        ),
-        this.summaryRepository.getThisMonthAmount(
-          userId,
-          TransactionType.TRANSFER,
-        ),
-        this.summaryRepository.getThisMonthAmount(
-          userId,
-          TransactionType.ADJUSTMENT,
-        ),
-        this.summaryRepository.getTotalNetWorth(userId),
-      ]);
+    const [
+      income,
+      expense,
+      transfer,
+      adjustment,
+      totalNetWorth,
+      excludedNetWorth,
+    ] = await Promise.all([
+      this.summaryRepository.getThisMonthAmount(userId, TransactionType.INCOME),
+      this.summaryRepository.getThisMonthAmount(
+        userId,
+        TransactionType.EXPENSE,
+      ),
+      this.summaryRepository.getThisMonthAmount(
+        userId,
+        TransactionType.TRANSFER,
+      ),
+      this.summaryRepository.getThisMonthAmount(
+        userId,
+        TransactionType.ADJUSTMENT,
+      ),
+      this.summaryRepository.getTotalNetWorth(userId),
+      this.summaryRepository.getExcludedNetWorth(userId),
+    ]);
     const result: TodaySummary = {
       income,
       expense,
@@ -80,6 +86,7 @@ export class SummaryService {
       adjustment,
       net: income - expense,
       totalNetWorth,
+      excludedNetWorth,
     };
 
     await this.cacheManager.set(cacheKey, result, 60000); // 1 min TTL

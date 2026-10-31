@@ -42,4 +42,13 @@ export class SummaryResponseDto {
     type: Number,
   })
   totalNetWorth!: number;
+
+  @ApiProperty({
+    description: "Total balance of active assets excluded from snapshot",
+    example: 15000.0,
+    type: Number,
+    required: false,
+    default: 0,
+  })
+  excludedNetWorth?: number;
 }

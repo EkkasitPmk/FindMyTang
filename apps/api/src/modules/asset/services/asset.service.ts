@@ -1,9 +1,12 @@
 import {
   BadRequestException,
   Injectable,
+  Inject,
   NotFoundException,
   ForbiddenException,
 } from "@nestjs/common";
+import { CACHE_MANAGER } from "@nestjs/cache-manager";
+import type { Cache } from "cache-manager";
 import { AssetRepository } from "../repositories/asset.repository";
 import { CreateAssetDto } from "../dto/create-asset.dto";
 import { UpdateAssetDto } from "../dto/update-asset.dto";
@@ -15,10 +18,17 @@ export class AssetService {
   constructor(
     private readonly assetRepository: AssetRepository,
     private readonly storageService: StorageService,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
 
+  private async invalidateSummaryCache(userId: string): Promise<void> {
+    await Promise.all([
+      this.cacheManager.del(`summary_today_${userId}`),
+      this.cacheManager.del(`summary_month_${userId}`),
+    ]);
+  }
+
   async create(userId: string, dto: CreateAssetDto): Promise<Asset> {
-    // ponytail: Trims asset name and validates it is not empty, then creates the asset.
     const trimmedName = dto.name ? dto.name.trim() : "";
     if (!trimmedName) {
       throw new BadRequestException(
@@ -26,12 +36,15 @@ export class AssetService {
       );
     }
 
-    return this.assetRepository.create(userId, {
+    const created = await this.assetRepository.create(userId, {
       name: trimmedName,
       type: dto.type,
       balance: dto.balance,
       color: dto.color,
+      includeInSnapshot: dto.includeInSnapshot,
     });
+    await this.invalidateSummaryCache(userId);
+    return created;
   }
 
   async findAllActive(userId: string): Promise<Asset[]> {
@@ -47,7 +60,6 @@ export class AssetService {
     userId: string,
     dto: UpdateAssetDto,
   ): Promise<Asset> {
-    // ponytail: Business logic to find, check ownership, validate, and update the asset.
     const asset = await this.assetRepository.findByIdAny(id);
     if (!asset) {
       throw new NotFoundException("Asset not found");
@@ -73,10 +85,15 @@ export class AssetService {
       ...(dto.balance !== undefined && { balance: dto.balance }),
       ...(dto.color !== undefined && { color: dto.color }),
       ...(dto.isArchived !== undefined && { isArchived: dto.isArchived }),
+      ...(dto.includeInSnapshot !== undefined && {
+        includeInSnapshot: dto.includeInSnapshot,
+      }),
       deletedAt: null,
     };
 
-    return this.assetRepository.update(id, userId, updateData);
+    const updated = await this.assetRepository.update(id, userId, updateData);
+    await this.invalidateSummaryCache(userId);
+    return updated;
   }
 
   async softDelete(id: string, userId: string): Promise<Asset> {
@@ -87,7 +104,9 @@ export class AssetService {
     if (asset.userId !== userId) {
       throw new ForbiddenException("You do not own this asset");
     }
-    return this.assetRepository.softDelete(id, userId);
+    const deleted = await this.assetRepository.softDelete(id, userId);
+    await this.invalidateSummaryCache(userId);
+    return deleted;
   }
 
   async hardDelete(id: string, userId: string): Promise<Asset> {
@@ -107,11 +126,12 @@ export class AssetService {
       attachments.map((url) => this.storageService.removeFile(url)),
     );
 
-    return this.assetRepository.hardDelete(id, userId);
+    const deleted = await this.assetRepository.hardDelete(id, userId);
+    await this.invalidateSummaryCache(userId);
+    return deleted;
   }
 
   async restore(id: string, userId: string): Promise<Asset> {
-    // ponytail: Restores a soft-deleted asset. Validates ownership.
     const asset = await this.assetRepository.findByIdAny(id);
     if (!asset) {
       throw new NotFoundException("Asset not found");
@@ -122,16 +142,19 @@ export class AssetService {
     if (!asset.deletedAt) {
       throw new BadRequestException("Asset is not deleted");
     }
-    return this.assetRepository.restore(id, userId);
+    const restored = await this.assetRepository.restore(id, userId);
+    await this.invalidateSummaryCache(userId);
+    return restored;
   }
 
   async reorder(userId: string, ids: string[]): Promise<void> {
-    // ponytail: Triggers bulk update for asset ordering.
     await this.assetRepository.reorder(userId, ids);
   }
 
   async bulkSoftDelete(userId: string, ids: string[]): Promise<void> {
-    return this.assetRepository.bulkSoftDelete(userId, ids);
+    const result = await this.assetRepository.bulkSoftDelete(userId, ids);
+    await this.invalidateSummaryCache(userId);
+    return result;
   }
 
   async bulkHardDelete(userId: string, ids: string[]): Promise<void> {
@@ -144,14 +167,20 @@ export class AssetService {
     await Promise.all(
       allAttachments.map((url) => this.storageService.removeFile(url)),
     );
-    return this.assetRepository.bulkHardDelete(userId, ids);
+    const result = await this.assetRepository.bulkHardDelete(userId, ids);
+    await this.invalidateSummaryCache(userId);
+    return result;
   }
 
   async bulkArchive(userId: string, ids: string[]): Promise<void> {
-    return this.assetRepository.bulkArchive(userId, ids);
+    const result = await this.assetRepository.bulkArchive(userId, ids);
+    await this.invalidateSummaryCache(userId);
+    return result;
   }
 
   async bulkRestore(userId: string, ids: string[]): Promise<void> {
-    return this.assetRepository.bulkRestore(userId, ids);
+    const result = await this.assetRepository.bulkRestore(userId, ids);
+    await this.invalidateSummaryCache(userId);
+    return result;
   }
 }

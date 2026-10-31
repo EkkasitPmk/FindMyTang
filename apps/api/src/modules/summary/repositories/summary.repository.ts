@@ -65,6 +65,24 @@ export class SummaryRepository {
       where: {
         userId,
         deletedAt: null,
+        isArchived: false,
+        includeInSnapshot: true,
+      },
+      _sum: {
+        balance: true,
+      },
+    });
+
+    return Number(result._sum.balance || 0);
+  }
+
+  async getExcludedNetWorth(userId: string): Promise<number> {
+    const result = await this.prisma.asset.aggregate({
+      where: {
+        userId,
+        deletedAt: null,
+        isArchived: false,
+        includeInSnapshot: false,
       },
       _sum: {
         balance: true,

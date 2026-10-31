@@ -30,7 +30,6 @@ import { JwtAuthGuard } from "../../auth/guards/jwt-auth.guard";
 import { CurrentUser } from "../../auth/decorators/current-user.decorator";
 import type { Asset, User } from "@prisma/client";
 
-// ponytail: DRY response mapper. Converts Prisma Decimal to number and includes all fields the frontend needs.
 function toResponse(asset: Asset): AssetResponseDto {
   return {
     id: asset.id,
@@ -39,6 +38,7 @@ function toResponse(asset: Asset): AssetResponseDto {
     balance: Number(asset.balance),
     color: asset.color,
     isArchived: asset.isArchived,
+    includeInSnapshot: asset.includeInSnapshot,
     deletedAt: asset.deletedAt?.toISOString() ?? null,
     createdAt: asset.createdAt.toISOString(),
     updatedAt: asset.updatedAt.toISOString(),

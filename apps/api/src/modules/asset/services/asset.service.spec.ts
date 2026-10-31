@@ -10,6 +10,7 @@ import {
 } from "@nestjs/common";
 
 import { StorageService } from "../../../common/storage/storage.service";
+import { CACHE_MANAGER } from "@nestjs/cache-manager";
 
 describe("AssetService", () => {
   let service: AssetService;
@@ -33,6 +34,10 @@ describe("AssetService", () => {
     removeFile: jest.fn(),
   };
 
+  const mockCacheManager = {
+    del: jest.fn().mockResolvedValue(undefined),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -44,6 +49,10 @@ describe("AssetService", () => {
         {
           provide: StorageService,
           useValue: mockStorageService,
+        },
+        {
+          provide: CACHE_MANAGER,
+          useValue: mockCacheManager,
         },
       ],
     }).compile();
@@ -62,6 +71,7 @@ describe("AssetService", () => {
         name: "  Savings Account  ",
         type: AssetType.BANK,
         balance: 1000,
+        includeInSnapshot: false,
       };
 
       const expectedResult = {
@@ -69,6 +79,7 @@ describe("AssetService", () => {
         name: "Savings Account",
         type: AssetType.BANK,
         balance: 1000,
+        includeInSnapshot: false,
         userId: "user-123",
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -83,6 +94,8 @@ describe("AssetService", () => {
         name: "Savings Account",
         type: AssetType.BANK,
         balance: 1000,
+        color: undefined,
+        includeInSnapshot: false,
       });
     });
 
@@ -164,12 +177,14 @@ describe("AssetService", () => {
       const dto = {
         name: "  New Name  ",
         balance: 1500,
+        includeInSnapshot: false,
       };
 
       const expectedUpdated = {
         ...asset,
         name: "New Name",
         balance: 1500,
+        includeInSnapshot: false,
       };
 
       mockAssetRepository.findByIdAny.mockResolvedValue(asset);
@@ -182,6 +197,7 @@ describe("AssetService", () => {
       expect(repository.update).toHaveBeenCalledWith("asset-123", "user-123", {
         name: "New Name",
         balance: 1500,
+        includeInSnapshot: false,
         deletedAt: null,
       });
     });
