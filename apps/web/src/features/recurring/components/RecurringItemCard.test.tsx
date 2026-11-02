@@ -107,4 +107,22 @@ describe("RecurringItemCard", () => {
       expect.stringMatching(/^2026-08-23/),
     );
   });
+
+  it("renders subline with responsive flex layout for mobile and desktop", () => {
+    render(
+      <RecurringItemCard
+        item={baseItem}
+        onEdit={vi.fn()}
+        onToggleStatus={vi.fn()}
+        onDelete={vi.fn()}
+        onLogExpense={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText(/Next Billing/)).toBeInTheDocument();
+    // Subline container should have responsive flex-col sm:flex-row to prevent content overlapping on mobile
+    const billingLabel = screen.getByText(/Next Billing/);
+    const subline = billingLabel.closest(".flex-col.sm\\:flex-row");
+    expect(subline).toBeInTheDocument();
+  });
 });

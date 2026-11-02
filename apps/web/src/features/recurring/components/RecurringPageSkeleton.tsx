@@ -22,7 +22,7 @@ export function RecurringCardSkeleton() {
       </div>
 
       {/* Subline Schedule Bar */}
-      <div className="mt-2.5 px-3 py-1.5 rounded-xl bg-muted/40 border border-border/40 flex items-center justify-between gap-2">
+      <div className="mt-2.5 px-3 py-2 sm:py-1.5 rounded-xl bg-muted/40 border border-border/40 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2">
         <div className="flex items-center gap-1.5">
           <Skeleton className="size-3.5 rounded" />
           <Skeleton className="h-3 w-36 rounded" />
