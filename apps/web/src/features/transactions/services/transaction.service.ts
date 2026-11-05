@@ -133,8 +133,12 @@ const createGuestTransactionApi = async (
     date: data.transactionDate,
     type: type as unknown as DexieTransactionType,
     assetId: data.assetId,
-    categoryId: "categoryId" in data ? data.categoryId : null,
-    toAssetId: "toAssetId" in data ? data.toAssetId : null,
+    categoryId:
+      "categoryId" in data && data.categoryId ? data.categoryId : null,
+    toAssetId:
+      "toAssetId" in data && data.toAssetId !== "EXTERNAL"
+        ? data.toAssetId
+        : null,
     note: data.note || null,
     attachmentUrl,
     createdAt: new Date().toISOString(),
@@ -162,7 +166,9 @@ const createCloudTransactionApi = async (
   if (data.note) payload.note = data.note;
   if ("categoryId" in data && data.categoryId)
     payload.categoryId = data.categoryId;
-  if ("toAssetId" in data && data.toAssetId) payload.toAssetId = data.toAssetId;
+  if ("toAssetId" in data && data.toAssetId && data.toAssetId !== "EXTERNAL") {
+    payload.toAssetId = data.toAssetId;
+  }
 
   if (data.file) {
     const formData = new FormData();
@@ -439,6 +445,12 @@ const updateGuestTransactionApi = async (
     deletedAt = data.deletedAt;
   }
 
+  let toAssetId = existing.toAssetId;
+  if (data.toAssetId !== undefined) {
+    toAssetId =
+      data.toAssetId === "EXTERNAL" || !data.toAssetId ? null : data.toAssetId;
+  }
+
   const updated = {
     ...existing,
     type: (data.type as unknown as DexieTransactionType) ?? existing.type,
@@ -448,10 +460,7 @@ const updateGuestTransactionApi = async (
       data.categoryId !== undefined
         ? data.categoryId || null
         : existing.categoryId,
-    toAssetId:
-      data.toAssetId !== undefined
-        ? data.toAssetId || null
-        : existing.toAssetId,
+    toAssetId,
     date: data.transactionDate ?? existing.date,
     note: data.note ?? existing.note,
     attachmentUrl,
@@ -495,7 +504,9 @@ const updateCloudTransactionApi = async (
   };
 
   if (data.note !== undefined) payload.note = data.note;
-  if (data.toAssetId !== undefined) payload.toAssetId = data.toAssetId;
+  if (data.toAssetId !== undefined) {
+    payload.toAssetId = data.toAssetId === "EXTERNAL" ? "" : data.toAssetId;
+  }
   if (data.categoryId !== undefined) payload.categoryId = data.categoryId;
   if (data.attachmentUrl === null) payload.attachmentUrl = "";
   if (data.deletedAt === null) payload.deletedAt = "null";

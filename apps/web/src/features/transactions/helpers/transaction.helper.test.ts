@@ -72,6 +72,101 @@ describe("transaction.helper", () => {
       expect(mockCreateMutate).not.toHaveBeenCalled();
     });
 
+    it("should allow external TRANSFER when toAssetId is EXTERNAL", () => {
+      submitTransaction({
+        transactionType: "TRANSFER",
+        data: {
+          amount: 500,
+          note: "Paid friend",
+          transactionDate: "2026-07-08T00:00:00.000Z",
+          assetId: "asset-1",
+          toAssetId: "EXTERNAL",
+        },
+        createTransaction: mockCreateTransaction,
+        updateTransaction: mockUpdateTransaction,
+        toast: mockToast,
+        t: mockTranslate,
+      });
+
+      expect(mockToastError).not.toHaveBeenCalled();
+      expect(mockCreateMutate).toHaveBeenCalledWith({
+        type: "TRANSFER",
+        data: {
+          amount: 500,
+          note: "Paid friend",
+          transactionDate: "2026-07-08T00:00:00.000Z",
+          assetId: "asset-1",
+          toAssetId: undefined,
+          categoryId: undefined,
+          file: undefined,
+        },
+      });
+    });
+
+    it("should allow external TRANSFER with optional categoryId", () => {
+      submitTransaction({
+        transactionType: "TRANSFER",
+        data: {
+          amount: 500,
+          note: "Paid friend",
+          transactionDate: "2026-07-08T00:00:00.000Z",
+          assetId: "asset-1",
+          toAssetId: "EXTERNAL",
+          categoryId: "cat-1",
+        },
+        createTransaction: mockCreateTransaction,
+        updateTransaction: mockUpdateTransaction,
+        toast: mockToast,
+        t: mockTranslate,
+      });
+
+      expect(mockToastError).not.toHaveBeenCalled();
+      expect(mockCreateMutate).toHaveBeenCalledWith({
+        type: "TRANSFER",
+        data: {
+          amount: 500,
+          note: "Paid friend",
+          transactionDate: "2026-07-08T00:00:00.000Z",
+          assetId: "asset-1",
+          toAssetId: undefined,
+          categoryId: "cat-1",
+          file: undefined,
+        },
+      });
+    });
+
+    it("should strip categoryId for internal TRANSFER", () => {
+      submitTransaction({
+        transactionType: "TRANSFER",
+        data: {
+          amount: 500,
+          note: "Internal move",
+          transactionDate: "2026-07-08T00:00:00.000Z",
+          assetId: "asset-1",
+          toAssetId: "asset-2",
+          categoryId: "cat-1",
+        },
+        createTransaction: mockCreateTransaction,
+        updateTransaction: mockUpdateTransaction,
+        toast: mockToast,
+        t: mockTranslate,
+      });
+
+      expect(mockToastError).not.toHaveBeenCalled();
+      expect(mockCreateMutate).toHaveBeenCalledWith({
+        type: "TRANSFER",
+        data: {
+          amount: 500,
+          note: "Internal move",
+          transactionDate: "2026-07-08T00:00:00.000Z",
+          assetId: "asset-1",
+          toAssetId: "asset-2",
+          categoryId: undefined,
+          file: undefined,
+        },
+      });
+    });
+
     it("should show error if EXPENSE is missing categoryId", () => {
       submitTransaction({
         transactionType: "EXPENSE",

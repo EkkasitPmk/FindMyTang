@@ -37,6 +37,8 @@ interface TransactionMoreDetailsProps {
   register: UseFormRegister<CreateTransactionFormValues>;
   noteValue: string;
   onNoteChange: (value: string) => void;
+  notePlaceholder?: string;
+  isExternalTransfer?: boolean;
   isLoadingTx?: boolean;
 }
 
@@ -61,6 +63,8 @@ export default function TransactionMoreDetails({
   register,
   noteValue,
   onNoteChange,
+  notePlaceholder,
+  isExternalTransfer,
   isLoadingTx,
 }: Readonly<TransactionMoreDetailsProps>) {
   const { t } = useTranslation();
@@ -138,7 +142,12 @@ export default function TransactionMoreDetails({
 
   return (
     <>
-      <div className="flex items-center justify-center">
+      <div
+        className={cn(
+          "flex items-center justify-center",
+          isExternalTransfer && !isMoreDetailsOpen && "mb-2",
+        )}
+      >
         <Button
           variant="unstyled"
           type="button"
@@ -205,6 +214,7 @@ export default function TransactionMoreDetails({
                 id="note"
                 name={noteField.name}
                 value={noteValue}
+                placeholder={notePlaceholder}
                 onChange={(value) => {
                   void noteField.onChange({
                     target: { value, name: noteField.name },

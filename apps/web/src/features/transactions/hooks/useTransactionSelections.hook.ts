@@ -39,23 +39,45 @@ export function useTransactionSelections({
     isFetching: isAssetFetching,
   } = useAssets({ initialData: initialAssets });
 
+  const targetCategoryType =
+    transactionType === "TRANSFER" ? "EXPENSE" : (transactionType as string);
   const filteredCategories = useMemo(
     () =>
       categories?.filter(
         (category) =>
-          category.type === (transactionType as string) &&
+          category.type === targetCategoryType &&
           (!category.deletedAt || category.id === watchCategoryId),
       ) || [],
-    [categories, transactionType, watchCategoryId],
+    [categories, targetCategoryType, watchCategoryId],
   );
   const safeAssets = useMemo(() => assets ?? [], [assets]);
-  const activeCategoryId = getActiveItemId(watchCategoryId, filteredCategories);
+
+  const activeCategoryId = useMemo(() => {
+    if (transactionType === "TRANSFER") {
+      return filteredCategories.some((c) => c.id === watchCategoryId)
+        ? (watchCategoryId ?? null)
+        : null;
+    }
+    return getActiveItemId(watchCategoryId, filteredCategories);
+  }, [transactionType, watchCategoryId, filteredCategories]);
   const activeAssetId = getActiveItemId(watchAssetId, safeAssets);
   const availableToAssets = useMemo(
     () => safeAssets.filter((asset) => asset.id !== activeAssetId),
     [safeAssets, activeAssetId],
   );
-  const activeAssetToId = getActiveItemId(watchToAssetId, availableToAssets);
+  const activeAssetToId = useMemo(() => {
+    if (watchToAssetId === "EXTERNAL") return "EXTERNAL";
+    if (
+      watchToAssetId &&
+      availableToAssets.some((a) => a.id === watchToAssetId)
+    ) {
+      return watchToAssetId;
+    }
+    if (availableToAssets.length > 0) {
+      return availableToAssets[0].id;
+    }
+    return "EXTERNAL";
+  }, [watchToAssetId, availableToAssets]);
 
   useTransactionFormSync({
     transactionType,

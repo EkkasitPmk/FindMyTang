@@ -40,7 +40,7 @@ function TransactionItemComponent({
   currentAssetId,
   isLastItem,
 }: Readonly<TransactionItemProps>) {
-  const { locale } = useTranslation();
+  const { locale, t } = useTranslation();
   const isAdjustment = transaction.type === "ADJUSTMENT";
   const isTransfer = transaction.type === "TRANSFER";
   const { isTransferIn, isTransferOut } = getTransferDetails(
@@ -55,7 +55,14 @@ function TransactionItemComponent({
       transaction.amount,
     );
 
-  const displayTitle = getDisplayTitle(transaction);
+  const displayTitle = getDisplayTitle(transaction, t);
+
+  let subtitle: string | null = null;
+  if (transaction.note) {
+    subtitle = transaction.note;
+  } else if (isTransfer && !transaction.toAssetId) {
+    subtitle = t("externalAccount");
+  }
 
   const isIncomeOrExpense = isIncome || isExpense;
   const isExpanded = expandedTransactionId === transaction.id;
@@ -94,9 +101,7 @@ function TransactionItemComponent({
                   {displayTitle}
                 </span>
                 <span className="text-xs text-secondary-text truncate flex items-center gap-1">
-                  {transaction.note && (
-                    <span className="truncate">{transaction.note}</span>
-                  )}
+                  {subtitle && <span className="truncate">{subtitle}</span>}
                 </span>
               </div>
             </div>
