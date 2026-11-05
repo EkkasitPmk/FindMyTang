@@ -60,6 +60,59 @@ export class SummaryRepository {
     return Number(result._sum.amount || 0);
   }
 
+  async getTodayExternalTransferAmount(userId: string): Promise<number> {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const result = await this.prisma.transaction.aggregate({
+      where: {
+        userId,
+        deletedAt: null,
+        date: {
+          gte: today,
+          lt: tomorrow,
+        },
+        type: TransactionType.TRANSFER,
+        toAssetId: null,
+      },
+      _sum: {
+        amount: true,
+      },
+    });
+
+    return Number(result._sum.amount || 0);
+  }
+
+  async getThisMonthExternalTransferAmount(userId: string): Promise<number> {
+    const today = new Date();
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const startOfNextMonth = new Date(
+      today.getFullYear(),
+      today.getMonth() + 1,
+      1,
+    );
+
+    const result = await this.prisma.transaction.aggregate({
+      where: {
+        userId,
+        deletedAt: null,
+        date: {
+          gte: startOfMonth,
+          lt: startOfNextMonth,
+        },
+        type: TransactionType.TRANSFER,
+        toAssetId: null,
+      },
+      _sum: {
+        amount: true,
+      },
+    });
+
+    return Number(result._sum.amount || 0);
+  }
+
   async getTotalNetWorth(userId: string): Promise<number> {
     const result = await this.prisma.asset.aggregate({
       where: {

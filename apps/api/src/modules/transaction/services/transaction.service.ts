@@ -41,8 +41,6 @@ export class TransactionService implements OnModuleInit, OnModuleDestroy {
   }
 
   onModuleInit() {
-    // ponytail: using native setInterval instead of @nestjs/schedule to avoid unnecessary dependency.
-    // Run every hour to check for 30-day old soft-deleted transactions and hard delete them.
     this.cleanupTimer = setInterval(
       () => {
         void (async () => {
@@ -63,11 +61,13 @@ export class TransactionService implements OnModuleInit, OnModuleDestroy {
                 `Auto-deleting ${expiredTransactions.length} expired transactions`,
               );
 
-              for (const tx of expiredTransactions) {
-                if (tx.attachmentUrl) {
-                  await this.storageService.removeFile(tx.attachmentUrl);
-                }
-              }
+              await Promise.all(
+                expiredTransactions
+                  .filter((tx) => tx.attachmentUrl)
+                  .map((tx) =>
+                    this.storageService.removeFile(tx.attachmentUrl),
+                  ),
+              );
 
               await this.prisma.transaction.deleteMany({
                 where: {
@@ -141,12 +141,24 @@ export class TransactionService implements OnModuleInit, OnModuleDestroy {
     dto: CreateTransactionDto,
     attachmentUrl?: string | null,
   ): Promise<Transaction> {
-    if (!dto.toAssetId)
-      throw new BadRequestException("Target asset is required for transfer");
-    const toAsset = await this.assetRepository.findById(dto.toAssetId);
-    if (!toAsset) throw new NotFoundException("Target asset not found");
-    if (toAsset.userId !== userId)
-      throw new ForbiddenException("You do not own the target asset");
+    let toAssetId: string | null = null;
+    if (dto.toAssetId) {
+      const toAsset = await this.assetRepository.findById(dto.toAssetId);
+      if (!toAsset) throw new NotFoundException("Target asset not found");
+      if (toAsset.userId !== userId)
+        throw new ForbiddenException("You do not own the target asset");
+      toAssetId = dto.toAssetId;
+    }
+
+    // Optional category for external transfer (e.g. family, food)
+    let categoryId: string | null = null;
+    if (!toAssetId && dto.categoryId) {
+      const category = await this.categoryRepository.findById(dto.categoryId);
+      if (!category) throw new NotFoundException("Category not found");
+      if (category.userId !== userId)
+        throw new ForbiddenException("You do not own this category");
+      categoryId = dto.categoryId;
+    }
 
     const transaction = await tx.transaction.create({
       data: {
@@ -156,7 +168,8 @@ export class TransactionService implements OnModuleInit, OnModuleDestroy {
         date: new Date(dto.date),
         userId,
         assetId: dto.assetId,
-        toAssetId: dto.toAssetId,
+        toAssetId,
+        categoryId,
         attachmentUrl,
       },
     });
@@ -164,10 +177,12 @@ export class TransactionService implements OnModuleInit, OnModuleDestroy {
       where: { id: dto.assetId },
       data: { balance: { decrement: dto.amount } },
     });
-    await tx.asset.update({
-      where: { id: dto.toAssetId },
-      data: { balance: { increment: dto.amount } },
-    });
+    if (toAssetId) {
+      await tx.asset.update({
+        where: { id: toAssetId },
+        data: { balance: { increment: dto.amount } },
+      });
+    }
     return transaction;
   }
 
@@ -332,15 +347,93 @@ export class TransactionService implements OnModuleInit, OnModuleDestroy {
     );
 
     // Map paths to signed URLs
-    for (const item of result.items) {
-      if (item.attachmentUrl) {
-        item.attachmentUrl = await this.storageService.getSignedUrl(
-          item.attachmentUrl,
-        );
+    await Promise.all(
+      result.items.map(async (item) => {
+        if (item.attachmentUrl) {
+          item.attachmentUrl = await this.storageService.getSignedUrl(
+            item.attachmentUrl,
+          );
+        }
+      }),
+    );
+
+    return result;
+  }
+
+  private async handleAttachmentUpdate(
+    currentUrl?: string | null,
+    dtoUrl?: string | null,
+    file?: Express.Multer.File,
+  ): Promise<string | null> {
+    if (currentUrl && (dtoUrl === null || dtoUrl === "")) {
+      await this.storageService.removeFile(currentUrl);
+    }
+
+    let attachmentUrl =
+      dtoUrl === null || dtoUrl === "" ? null : dtoUrl || currentUrl;
+
+    if (file) {
+      const uploadedUrl = await this.storageService.uploadFile(file);
+      if (uploadedUrl) {
+        attachmentUrl = uploadedUrl;
+        if (currentUrl && currentUrl !== attachmentUrl) {
+          await this.storageService.removeFile(currentUrl);
+        }
       }
     }
 
-    return result;
+    return attachmentUrl ?? null;
+  }
+
+  private async resolveToAssetId(
+    userId: string,
+    newType: TransactionType,
+    dtoToAssetId?: string,
+    existingToAssetId?: string | null,
+  ): Promise<string | null> {
+    if (newType !== "TRANSFER" || dtoToAssetId === "") {
+      return null;
+    }
+    const toAssetId = dtoToAssetId ?? existingToAssetId ?? null;
+    if (
+      dtoToAssetId &&
+      dtoToAssetId !== existingToAssetId &&
+      this.assetRepository
+    ) {
+      const toAsset = await this.assetRepository.findById(dtoToAssetId);
+      if (!toAsset) throw new NotFoundException("Target asset not found");
+      if (toAsset.userId !== userId)
+        throw new ForbiddenException("You do not own the target asset");
+    }
+    return toAssetId;
+  }
+
+  private async resolveCategoryId(
+    userId: string,
+    newType: TransactionType,
+    newToAssetId: string | null,
+    dtoCategoryId?: string,
+    existingCategoryId?: string | null,
+  ): Promise<string | null> {
+    if (
+      (newType === "TRANSFER" && newToAssetId) ||
+      newType === "ADJUSTMENT" ||
+      dtoCategoryId === ""
+    ) {
+      return null;
+    }
+    const categoryId = dtoCategoryId ?? existingCategoryId ?? null;
+    if (
+      dtoCategoryId &&
+      dtoCategoryId !== existingCategoryId &&
+      this.categoryRepository
+    ) {
+      const category = await this.categoryRepository.findById(dtoCategoryId);
+      if (!category) throw new NotFoundException("Category not found");
+      if (category.userId !== userId)
+        throw new ForbiddenException("You do not own this category");
+    }
+    return categoryId;
   }
 
   async update(
@@ -354,28 +447,11 @@ export class TransactionService implements OnModuleInit, OnModuleDestroy {
     if (tx.userId !== userId)
       throw new ForbiddenException("You do not own this transaction");
 
-    if (
-      tx.attachmentUrl &&
-      (dto.attachmentUrl === null || dto.attachmentUrl === "")
-    ) {
-      await this.storageService.removeFile(tx.attachmentUrl);
-    }
-
-    let newAttachmentUrl =
-      dto.attachmentUrl === null || dto.attachmentUrl === ""
-        ? null
-        : dto.attachmentUrl || tx.attachmentUrl;
-
-    if (file) {
-      const uploadedUrl = await this.storageService.uploadFile(file);
-      if (uploadedUrl) {
-        newAttachmentUrl = uploadedUrl;
-        // Optionally delete the old file if we just uploaded a new one and didn't already delete it
-        if (tx.attachmentUrl && tx.attachmentUrl !== newAttachmentUrl) {
-          await this.storageService.removeFile(tx.attachmentUrl);
-        }
-      }
-    }
+    const newAttachmentUrl = await this.handleAttachmentUpdate(
+      tx.attachmentUrl,
+      dto.attachmentUrl,
+      file,
+    );
 
     const updatedTx = await this.prisma.$transaction(async (prismaTx) => {
       // Revert old transaction balances
@@ -393,20 +469,19 @@ export class TransactionService implements OnModuleInit, OnModuleDestroy {
       const newType = dto.type ?? tx.type;
       const newAmount = dto.amount ?? tx.amount;
       const newAssetId = dto.assetId ?? tx.assetId;
-
-      let newToAssetId = dto.toAssetId ?? tx.toAssetId;
-      if (newType !== "TRANSFER" || newToAssetId === "") {
-        newToAssetId = null;
-      }
-
-      let newCategoryId = dto.categoryId ?? tx.categoryId;
-      if (
-        newType === "TRANSFER" ||
-        newType === "ADJUSTMENT" ||
-        newCategoryId === ""
-      ) {
-        newCategoryId = null;
-      }
+      const newToAssetId = await this.resolveToAssetId(
+        userId,
+        newType,
+        dto.toAssetId,
+        tx.toAssetId,
+      );
+      const newCategoryId = await this.resolveCategoryId(
+        userId,
+        newType,
+        newToAssetId,
+        dto.categoryId,
+        tx.categoryId,
+      );
 
       // Apply new transaction balances
       await this.updateBalances(
@@ -450,7 +525,6 @@ export class TransactionService implements OnModuleInit, OnModuleDestroy {
     if (tx.userId !== userId)
       throw new ForbiddenException("You do not own this transaction");
 
-    // ponytail: if hard deleting, clean up the storage file too so we don't leak space
     if (isHardDelete && tx.attachmentUrl) {
       await this.storageService.removeFile(tx.attachmentUrl);
     }
@@ -495,7 +569,6 @@ export class TransactionService implements OnModuleInit, OnModuleDestroy {
   }
 
   async findOne(userId: string, id: string) {
-    // ponytail: Repository.findAll doesn't accept an ID directly, so we just use Prisma here for the single fetch.
     const transaction = await this.prisma.transaction.findFirst({
       where: { id, userId },
       include: { asset: true, toAsset: true, category: true },
@@ -510,8 +583,6 @@ export class TransactionService implements OnModuleInit, OnModuleDestroy {
 
     return transaction;
   }
-
-  // ponytail: skeletons — will wire into create/update/delete when POST /transactions is implemented.
 
   async applyIncome(
     userId: string,

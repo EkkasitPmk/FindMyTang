@@ -28,18 +28,23 @@ export class SummaryService {
       return cached;
     }
 
-    const [income, expense, transfer, adjustment] = await Promise.all([
-      this.summaryRepository.getTodayAmount(userId, TransactionType.INCOME),
-      this.summaryRepository.getTodayAmount(userId, TransactionType.EXPENSE),
-      this.summaryRepository.getTodayAmount(userId, TransactionType.TRANSFER),
-      this.summaryRepository.getTodayAmount(userId, TransactionType.ADJUSTMENT),
-    ]);
+    const [income, expense, transfer, adjustment, externalTransfer] =
+      await Promise.all([
+        this.summaryRepository.getTodayAmount(userId, TransactionType.INCOME),
+        this.summaryRepository.getTodayAmount(userId, TransactionType.EXPENSE),
+        this.summaryRepository.getTodayAmount(userId, TransactionType.TRANSFER),
+        this.summaryRepository.getTodayAmount(
+          userId,
+          TransactionType.ADJUSTMENT,
+        ),
+        this.summaryRepository.getTodayExternalTransferAmount(userId),
+      ]);
     const result: TodaySummary = {
       income,
       expense,
       transfer,
       adjustment,
-      net: income - expense,
+      net: income - expense - externalTransfer,
       totalNetWorth: 0,
       excludedNetWorth: 0,
     };
@@ -62,6 +67,7 @@ export class SummaryService {
       adjustment,
       totalNetWorth,
       excludedNetWorth,
+      externalTransfer,
     ] = await Promise.all([
       this.summaryRepository.getThisMonthAmount(userId, TransactionType.INCOME),
       this.summaryRepository.getThisMonthAmount(
@@ -78,13 +84,14 @@ export class SummaryService {
       ),
       this.summaryRepository.getTotalNetWorth(userId),
       this.summaryRepository.getExcludedNetWorth(userId),
+      this.summaryRepository.getThisMonthExternalTransferAmount(userId),
     ]);
     const result: TodaySummary = {
       income,
       expense,
       transfer,
       adjustment,
-      net: income - expense,
+      net: income - expense - externalTransfer,
       totalNetWorth,
       excludedNetWorth,
     };
