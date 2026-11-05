@@ -6,6 +6,7 @@ import TransactionCategoryList from "./TransactionCategoryList";
 
 interface TransactionSelectionFieldsProps {
   showCategoryList: boolean;
+  categoryLabel?: string;
   categories: Category[];
   activeCategoryId: string | null;
   onSelectCategory: (id: string) => void;
@@ -22,6 +23,7 @@ interface TransactionSelectionFieldsProps {
 
 export default function TransactionSelectionFields({
   showCategoryList,
+  categoryLabel,
   categories,
   activeCategoryId,
   onSelectCategory,
@@ -39,6 +41,7 @@ export default function TransactionSelectionFields({
     <>
       {showCategoryList && (
         <TransactionCategoryList
+          label={categoryLabel}
           categories={categories}
           activeCategoryId={activeCategoryId}
           onSelectCategory={onSelectCategory}

@@ -14,12 +14,39 @@ describe("TransactionIcon", () => {
       updatedAt: "2026-10-12T00:00:00.000Z",
     } as TransactionResponse;
 
-    const { container } = render(<TransactionIcon transaction={mockTransferTx} />);
+    const { container } = render(
+      <TransactionIcon transaction={mockTransferTx} />,
+    );
     const span = container.querySelector("span");
 
     expect(span).toHaveClass("bg-transfer/15");
     expect(span).toHaveClass("text-transfer");
-    expect(container.querySelector("svg.lucide-arrow-right-left")).toBeInTheDocument();
+    expect(
+      container.querySelector("svg.lucide-arrow-right-left"),
+    ).toBeInTheDocument();
+  });
+
+  it("renders external TRANSFER icon with bg-expense/15 and text-expense styling", () => {
+    const mockExternalTransferTx = {
+      id: "tx-ext-1",
+      type: "TRANSFER",
+      amount: 500,
+      toAssetId: null,
+      transactionDate: "2026-10-12T00:00:00.000Z",
+      createdAt: "2026-10-12T00:00:00.000Z",
+      updatedAt: "2026-10-12T00:00:00.000Z",
+    } as TransactionResponse;
+
+    const { container } = render(
+      <TransactionIcon transaction={mockExternalTransferTx} />,
+    );
+    const span = container.querySelector("span");
+
+    expect(span).toHaveClass("bg-expense/15");
+    expect(span).toHaveClass("text-expense");
+    expect(
+      container.querySelector("svg.lucide-arrow-up-right"),
+    ).toBeInTheDocument();
   });
 
   it("renders ADJUSTMENT icon with bg-info/15 and text-info styling", () => {
@@ -32,11 +59,15 @@ describe("TransactionIcon", () => {
       updatedAt: "2026-10-12T00:00:00.000Z",
     } as TransactionResponse;
 
-    const { container } = render(<TransactionIcon transaction={mockAdjustmentTx} />);
+    const { container } = render(
+      <TransactionIcon transaction={mockAdjustmentTx} />,
+    );
     const span = container.querySelector("span");
 
     expect(span).toHaveClass("bg-info/15");
     expect(span).toHaveClass("text-info");
-    expect(container.querySelector("svg.lucide-sliders-horizontal")).toBeInTheDocument();
+    expect(
+      container.querySelector("svg.lucide-sliders-horizontal"),
+    ).toBeInTheDocument();
   });
 });

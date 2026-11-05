@@ -62,4 +62,66 @@ describe("TransactionService Last Write Wins", () => {
       }),
     });
   });
+
+  it("handles external transfer by deducting source asset only", async () => {
+    const assetUpdate = jest.fn().mockResolvedValue({});
+    const transactionCreate = jest.fn().mockImplementation(({ data }) =>
+      Promise.resolve({
+        id: "tx-ext-1",
+        ...data,
+      }),
+    );
+    const prismaTransaction = {
+      asset: { update: assetUpdate },
+      transaction: { create: transactionCreate },
+    };
+
+    const service = Object.create(
+      TransactionService.prototype,
+    ) as TransactionService;
+    Object.assign(service, {
+      assetRepository: {
+        findById: jest
+          .fn()
+          .mockResolvedValue({ id: "asset-1", userId: "user-1" }),
+      },
+      categoryRepository: {
+        findById: jest
+          .fn()
+          .mockResolvedValue({ id: "cat-1", userId: "user-1" }),
+      },
+      prisma: {
+        $transaction: jest.fn((callback: (tx: unknown) => unknown) =>
+          callback(prismaTransaction),
+        ),
+      },
+      storageService: { getSignedUrl: jest.fn((url) => Promise.resolve(url)) },
+      cacheManager: { del: jest.fn().mockResolvedValue(undefined) },
+    });
+
+    const result = await service.create("user-1", {
+      type: TransactionType.TRANSFER,
+      amount: 500,
+      assetId: "asset-1",
+      date: "2026-11-06T00:00:00.000Z",
+      note: "Transfer to friend",
+      categoryId: "cat-1",
+    });
+
+    expect(result).toMatchObject({
+      id: "tx-ext-1",
+      type: TransactionType.TRANSFER,
+      amount: 500,
+      assetId: "asset-1",
+      toAssetId: null,
+      categoryId: "cat-1",
+      note: "Transfer to friend",
+    });
+
+    expect(assetUpdate).toHaveBeenCalledTimes(1);
+    expect(assetUpdate).toHaveBeenCalledWith({
+      where: { id: "asset-1" },
+      data: { balance: { decrement: 500 } },
+    });
+  });
 });

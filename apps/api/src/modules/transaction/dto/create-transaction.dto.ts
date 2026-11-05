@@ -70,7 +70,8 @@ export class CreateTransactionDto {
   assetId!: string;
 
   @ApiProperty({
-    description: "Target asset ID (UUID) (required when type is TRANSFER)",
+    description:
+      "Target asset ID (UUID) (optional for TRANSFER; null/omitted for external transfer)",
     required: false,
     example: "b2c3d4e5-f6a7-8901-bcde-f23456789012",
     type: String,

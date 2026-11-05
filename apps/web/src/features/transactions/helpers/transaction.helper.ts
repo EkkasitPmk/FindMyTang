@@ -98,6 +98,53 @@ interface SubmitTransactionParams {
   t: (key: TranslationKey) => string;
 }
 
+function resolveSubmitCategoryId(
+  type: TransactionType,
+  isExternal: boolean,
+  categoryId?: string,
+): string | undefined {
+  if (type !== "TRANSFER") return categoryId;
+
+  return isExternal ? categoryId || undefined : undefined;
+}
+
+function validateSubmission(
+  type: TransactionType,
+  isExternal: boolean,
+  data: CreateTransactionFormValues,
+  toast: { error: (msg: string) => void },
+  t: (key: TranslationKey) => string,
+): boolean {
+  if (type === "TRANSFER" && !isExternal && !data.toAssetId) {
+    toast.error(t("errSelectTargetAsset"));
+    return false;
+  }
+  if (isCategoryType(type) && !data.categoryId) {
+    toast.error(t("errSelectCategory"));
+    return false;
+  }
+  return true;
+}
+
+function buildUpdatePayload(
+  type: TransactionType,
+  finalData: CreateTransactionFormValues,
+  isExternalTransfer: boolean,
+  removedAttachment?: boolean,
+): UpdateTransactionRequest {
+  return {
+    type,
+    assetId: finalData.assetId,
+    amount: finalData.amount,
+    note: finalData.note,
+    transactionDate: finalData.transactionDate,
+    toAssetId: isExternalTransfer ? null : finalData.toAssetId,
+    categoryId: finalData.categoryId || null,
+    attachmentUrl: removedAttachment ? null : undefined,
+    file: finalData.file || null,
+  };
+}
+
 export const submitTransaction = ({
   transactionType,
   data,
@@ -109,40 +156,51 @@ export const submitTransaction = ({
   toast,
   t,
 }: SubmitTransactionParams) => {
-  const finalData = { ...data, file: file || undefined };
+  const isExternalTransfer =
+    transactionType === "TRANSFER" && data.toAssetId === "EXTERNAL";
 
-  if (transactionType === "TRANSFER" && !finalData.toAssetId) {
-    toast.error(t("errSelectTargetAsset"));
-    return;
-  }
+  const categoryId = resolveSubmitCategoryId(
+    transactionType,
+    isExternalTransfer,
+    data.categoryId,
+  );
+
+  const finalData: CreateTransactionFormValues = {
+    ...data,
+    toAssetId: isExternalTransfer ? undefined : data.toAssetId,
+    categoryId,
+    file: file || undefined,
+  };
 
   if (
-    (transactionType === "EXPENSE" || transactionType === "INCOME") &&
-    !finalData.categoryId
+    !validateSubmission(
+      transactionType,
+      isExternalTransfer,
+      finalData,
+      toast,
+      t,
+    )
   ) {
-    toast.error(t("errSelectCategory"));
     return;
   }
 
   if (editId) {
     updateTransaction.mutate({
       id: editId,
-      data: {
-        type: transactionType,
-        assetId: finalData.assetId,
-        amount: finalData.amount,
-        note: finalData.note,
-        transactionDate: finalData.transactionDate,
-        toAssetId: finalData.toAssetId,
-        categoryId: finalData.categoryId,
-        attachmentUrl: removedAttachment ? null : undefined,
-        file: finalData.file || null,
-      },
+      data: buildUpdatePayload(
+        transactionType,
+        finalData,
+        isExternalTransfer,
+        removedAttachment,
+      ),
     });
     return;
   }
 
-  createTransaction.mutate({ type: transactionType, data: finalData });
+  createTransaction.mutate({
+    type: transactionType,
+    data: finalData as unknown as CreateTransactionPayload,
+  });
 };
 
 export const resolveDefaultTransactionType = (
@@ -170,7 +228,10 @@ export const createDefaultFormValues = (
     : new Date().toISOString(),
   assetId: existingTx?.assetId || defaultAssetId || "",
   categoryId: existingTx?.categoryId || "",
-  toAssetId: existingTx?.toAssetId || "",
+  toAssetId:
+    existingTx?.type === "TRANSFER" && !existingTx?.toAssetId
+      ? "EXTERNAL"
+      : existingTx?.toAssetId || "",
 });
 
 export const getActiveItemId = (

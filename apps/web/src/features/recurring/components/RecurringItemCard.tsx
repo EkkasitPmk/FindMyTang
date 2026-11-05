@@ -222,10 +222,10 @@ export default function RecurringItemCard({
         })}
 
       {/* Subline: Due Status & Next Billing Date (Full-width Schedule Bar) */}
-      <div className="mt-2.5 px-3 py-1.5 rounded-xl bg-muted/40 border border-border/40 flex items-center justify-between text-xs gap-2">
-        <div className="flex items-center gap-1.5 min-w-0 text-muted-foreground">
+      <div className="mt-2.5 px-3 py-2 sm:py-1.5 rounded-xl bg-muted/40 border border-border/40 flex flex-col sm:flex-row sm:items-center justify-between text-xs gap-1.5 sm:gap-2">
+        <div className="flex items-center gap-1.5 min-w-0 text-muted-foreground flex-wrap">
           <Calendar className="size-3.5 opacity-70 shrink-0" />
-          <span className="whitespace-nowrap font-medium">
+          <span className="font-medium whitespace-nowrap">
             {pendingBills.hasMultipleCycles
               ? t("recurringCurrentCycle")
               : t("recurringNextBillingLabel")}
@@ -238,7 +238,7 @@ export default function RecurringItemCard({
 
         {!isPaused && (
           <span
-            className={`text-[11px] px-2 py-0.5 rounded-md font-semibold shrink-0 whitespace-nowrap ${dueBadgeColor}`}
+            className={`text-[11px] px-2 py-0.5 rounded-md font-semibold shrink-0 w-fit whitespace-nowrap self-start sm:self-auto ${dueBadgeColor}`}
           >
             {dueStatus.label}
           </span>

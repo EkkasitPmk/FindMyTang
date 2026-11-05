@@ -1,5 +1,5 @@
 import React from "react";
-import { ArrowRightLeft, SlidersHorizontal } from "lucide-react";
+import { ArrowRightLeft, ArrowUpRight, SlidersHorizontal } from "lucide-react";
 import { TransactionResponse } from "@/shared/lib/types/transaction.type";
 import { getCategoryIcon } from "@/shared/lib/configs/category-icons.config";
 
@@ -32,6 +32,13 @@ export function TransactionIcon({
   }
 
   if (transaction.type === "TRANSFER") {
+    if (transaction.toAssetId === null) {
+      return (
+        <span className="bg-expense/15 rounded-lg p-2 text-expense inline-flex items-center justify-center shrink-0">
+          <ArrowUpRight size={18} />
+        </span>
+      );
+    }
     return (
       <span className="bg-transfer/15 rounded-lg p-2 text-transfer inline-flex items-center justify-center shrink-0">
         <ArrowRightLeft size={18} />

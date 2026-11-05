@@ -115,7 +115,7 @@ export function TransactionItemDetails({
                   {t("assetTo")}:
                 </p>
                 <p className="font-medium">
-                  {transaction.toAsset?.name || "-"}
+                  {transaction.toAsset?.name || t("externalAccount")}
                 </p>
               </div>
             </>
@@ -129,8 +129,16 @@ export function TransactionItemDetails({
               <p className="font-medium">
                 {currentAssetId === transaction.toAssetId
                   ? transaction.asset?.name || "-"
-                  : transaction.toAsset?.name || "-"}
+                  : transaction.toAsset?.name || t("externalAccount")}
               </p>
+            </div>
+          )}
+          {transaction.category && (
+            <div className="flex items-center justify-between">
+              <p className="text-secondary-text capitalize">
+                {t("categoryUppercase")}:
+              </p>
+              <p className="font-medium">{transaction.category.name}</p>
             </div>
           )}
           <div className="flex items-center justify-between">

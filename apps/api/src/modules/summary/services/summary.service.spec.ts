@@ -13,6 +13,8 @@ describe("SummaryService", () => {
     getThisMonthAmount: jest.fn(),
     getTotalNetWorth: jest.fn(),
     getExcludedNetWorth: jest.fn(),
+    getTodayExternalTransferAmount: jest.fn(),
+    getThisMonthExternalTransferAmount: jest.fn(),
   };
 
   const mockCacheManager = {
@@ -57,6 +59,9 @@ describe("SummaryService", () => {
       );
       mockSummaryRepository.getTotalNetWorth.mockResolvedValue(50000);
       mockSummaryRepository.getExcludedNetWorth.mockResolvedValue(25000);
+      mockSummaryRepository.getThisMonthExternalTransferAmount.mockResolvedValue(
+        1000,
+      );
 
       const result = await service.getThisMonthSummary("user-1");
 
@@ -65,7 +70,7 @@ describe("SummaryService", () => {
         expense: 4000,
         transfer: 2000,
         adjustment: 500,
-        net: 6000,
+        net: 5000,
         totalNetWorth: 50000,
         excludedNetWorth: 25000,
       });

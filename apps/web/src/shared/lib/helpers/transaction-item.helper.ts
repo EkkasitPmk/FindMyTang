@@ -9,11 +9,16 @@ export function getTransferDetails(
   let isTransferIn = false;
   let isTransferOut = false;
 
-  if (transaction.type === "TRANSFER" && currentAssetId) {
-    if (transaction.toAssetId === currentAssetId) {
-      isTransferIn = true;
-    } else if (transaction.assetId === currentAssetId) {
+  if (transaction.type === "TRANSFER") {
+    if (!transaction.toAssetId) {
+      // External transfer: always an outflow from user's assets
       isTransferOut = true;
+    } else if (currentAssetId) {
+      if (transaction.toAssetId === currentAssetId) {
+        isTransferIn = true;
+      } else if (transaction.assetId === currentAssetId) {
+        isTransferOut = true;
+      }
     }
   }
   return { isTransferIn, isTransferOut };
@@ -43,9 +48,17 @@ export function getAmountDisplayConfig(
   return { amountColorClass, amountPrefix, isIncome, isExpense };
 }
 
-export function getDisplayTitle(transaction: TransactionResponse) {
+export function getDisplayTitle(
+  transaction: TransactionResponse,
+  t?: (key: TranslationKey) => string,
+) {
+  if (transaction.type === "TRANSFER" && !transaction.toAssetId) {
+    return t ? t("transferOut") : "transfer out";
+  }
   if (transaction.type === "ADJUSTMENT" || transaction.type === "TRANSFER") {
-    return transaction.type.toLowerCase();
+    return t
+      ? t(transaction.type.toLowerCase() as TranslationKey)
+      : transaction.type.toLowerCase();
   }
   return transaction.category?.name || transaction.note || transaction.type;
 }

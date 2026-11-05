@@ -354,7 +354,11 @@ export default function TransactionsContainer({
   );
 
   const transactionTypeStr = getTypeLabel(transactionType, t);
-  const showCategoryList = isTxLoading || isCategoryType(transactionType);
+  const isExternalTransfer =
+    transactionType === "TRANSFER" &&
+    (watchToAssetId === "EXTERNAL" || !watchToAssetId);
+  const showCategoryList =
+    isTxLoading || isCategoryType(transactionType) || isExternalTransfer;
   const showCategorySkeleton = isLoadingCategoryList || isTxLoading;
   const showAssetSkeleton = isLoadingAssetList || isTxLoading;
   const tabsValue = isTxLoading ? "LOADING" : transactionType;
@@ -390,8 +394,16 @@ export default function TransactionsContainer({
           isLoading={isTxLoading}
           onValueChange={(val) => {
             if (isTxLoading) return;
-            setTransactionType(val as TransactionType);
+            const nextType = val as TransactionType;
+            setTransactionType(nextType);
             clearErrors();
+            if (nextType === "TRANSFER") {
+              const initialCategory =
+                existingTx?.type === "TRANSFER"
+                  ? (existingTx.categoryId ?? "")
+                  : "";
+              setValue("categoryId", initialCategory);
+            }
           }}
         >
           <TransactionTypeContent
@@ -407,16 +419,30 @@ export default function TransactionsContainer({
             }}
             selection={{
               showCategoryList,
+              categoryLabel: isExternalTransfer
+                ? t("optionalCategory")
+                : undefined,
               categories: filteredCategories,
               activeCategoryId: watchCategoryId || null,
-              onSelectCategory: (id) => setValue("categoryId", id),
+              onSelectCategory: (id) =>
+                setValue(
+                  "categoryId",
+                  transactionType === "TRANSFER" && watchCategoryId === id
+                    ? ""
+                    : id,
+                ),
               onEditCategory: handleEditCategoryClick,
               isLoadingCategoryList: showCategorySkeleton,
               assets: safeAssets,
               activeAssetId: watchAssetId || null,
               onSelectAsset: (id) => setValue("assetId", id),
               activeAssetToId: watchToAssetId || null,
-              onSelectAssetTo: (id) => setValue("toAssetId", id),
+              onSelectAssetTo: (id) => {
+                setValue("toAssetId", id);
+                if (id !== "EXTERNAL") {
+                  setValue("categoryId", "");
+                }
+              },
               transactionType,
               isLoadingAssetList: showAssetSkeleton,
             }}
@@ -440,6 +466,10 @@ export default function TransactionsContainer({
               register,
               noteValue: watchNote || "",
               onNoteChange: (value) => setValue("note", value),
+              notePlaceholder: isExternalTransfer
+                ? t("recipientOrNotePlaceholder")
+                : undefined,
+              isExternalTransfer,
               isLoadingTx: isTxLoading,
             }}
             datePicker={{

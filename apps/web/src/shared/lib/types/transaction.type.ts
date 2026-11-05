@@ -25,7 +25,8 @@ export interface CreateIncomeRequest {
 
 export interface CreateTransferRequest {
   assetId: string;
-  toAssetId: string;
+  toAssetId?: string;
+  categoryId?: string;
   amount: number;
   note?: string;
   transactionDate: string;
@@ -53,8 +54,8 @@ export interface UpdateTransactionRequest {
   amount: number;
   note?: string;
   transactionDate: string;
-  toAssetId?: string;
-  categoryId?: string;
+  toAssetId?: string | null;
+  categoryId?: string | null;
   attachmentUrl?: string | null;
   file?: File | null;
   deletedAt?: string | null;

@@ -19,11 +19,17 @@ export const getTodaySummaryApi = async (): Promise<TodaySummaryResponse> => {
     let income = 0;
     let expense = 0;
     let transfer = 0;
+    let externalTransfer = 0;
     let adjustment = 0;
     transactions.forEach((t) => {
       if (t.type === "INCOME") income += t.amount;
       if (t.type === "EXPENSE") expense += t.amount;
-      if (t.type === "TRANSFER") transfer += t.amount;
+      if (t.type === "TRANSFER") {
+        transfer += t.amount;
+        if (!t.toAssetId) {
+          externalTransfer += t.amount;
+        }
+      }
       if (t.type === "ADJUSTMENT") adjustment += t.amount;
     });
 
@@ -42,7 +48,7 @@ export const getTodaySummaryApi = async (): Promise<TodaySummaryResponse> => {
       expense,
       transfer,
       adjustment,
-      net: income - expense,
+      net: income - expense - externalTransfer,
       totalNetWorth,
       excludedNetWorth,
     });
@@ -67,11 +73,17 @@ export const getThisMonthSummaryApi =
       let income = 0;
       let expense = 0;
       let transfer = 0;
+      let externalTransfer = 0;
       let adjustment = 0;
       transactions.forEach((t) => {
         if (t.type === "INCOME") income += t.amount;
         if (t.type === "EXPENSE") expense += t.amount;
-        if (t.type === "TRANSFER") transfer += t.amount;
+        if (t.type === "TRANSFER") {
+          transfer += t.amount;
+          if (!t.toAssetId) {
+            externalTransfer += t.amount;
+          }
+        }
         if (t.type === "ADJUSTMENT") adjustment += t.amount;
       });
 
@@ -90,7 +102,7 @@ export const getThisMonthSummaryApi =
         expense,
         transfer,
         adjustment,
-        net: income - expense,
+        net: income - expense - externalTransfer,
         totalNetWorth,
         excludedNetWorth,
       });

@@ -3,6 +3,9 @@ import TransactionAssetItem from "./TransactionAssetItem";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { cn } from "@/shared/lib/utils/core.util";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
+import { ArrowUpRight } from "lucide-react";
+export const EXTERNAL_ASSET_ID = "EXTERNAL";
 
 const SKELETON_ASSETS = Array.from({ length: 4 }, (_, i) => i);
 
@@ -84,13 +87,9 @@ export default function TransactionAssetList({
       (asset) => asset.id !== activeAssetId,
     );
 
-    if (availableAssets.length === 0) {
-      return (
-        <p className="text-xs text-expense border border-error text-center py-4 rounded-md">
-          {t("needTwoAssetsForTransfer")}
-        </p>
-      );
-    }
+    const isExternalSelected =
+      activeAssetToId === EXTERNAL_ASSET_ID ||
+      (availableAssets.length === 0 && !activeAssetToId);
 
     return (
       <div className={cn("flex gap-2 py-1 overflow-auto", paddingClass)}>
@@ -102,6 +101,28 @@ export default function TransactionAssetList({
             onClick={(id) => onSelectAssetTo?.(id)}
           />
         ))}
+        <Button
+          variant="unstyled"
+          type="button"
+          onClick={() => onSelectAssetTo?.(EXTERNAL_ASSET_ID)}
+          className={cn(
+            "flex items-center justify-center border gap-2 h-14 w-fit rounded-md px-4 py-2 transition-all shrink-0",
+            isExternalSelected && "border-primary bg-primary-light",
+            !isExternalSelected && "border-border bg-surface-secondary",
+          )}
+        >
+          <span className="bg-background p-2 rounded-full">
+            <ArrowUpRight size={18} className="text-secondary-text" />
+          </span>
+          <div className="flex flex-col text-left">
+            <span className="text-sm font-bold text-primary-text whitespace-nowrap">
+              {t("externalAccount")}
+            </span>
+            <span className="text-xs text-secondary-text whitespace-nowrap">
+              {t("transferToExternal")}
+            </span>
+          </div>
+        </Button>
       </div>
     );
   };
