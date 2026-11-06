@@ -11,6 +11,7 @@ const mockAsset: Asset = {
   color: "#10B981",
   isArchived: false,
   includeInSnapshot: true,
+  savingsAmount: 0,
 };
 
 describe("TransactionAssetItem", () => {

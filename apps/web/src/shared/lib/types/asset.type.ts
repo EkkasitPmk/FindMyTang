@@ -15,6 +15,7 @@ export interface CreateAssetRequest {
   balance?: number;
   color?: string;
   includeInSnapshot?: boolean;
+  savingsAmount?: number;
 }
 
 export interface UpdateAssetRequest extends Partial<CreateAssetRequest> {

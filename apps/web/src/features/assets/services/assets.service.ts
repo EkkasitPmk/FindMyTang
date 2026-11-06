@@ -26,6 +26,7 @@ export const createAssetApi = async (
       balance: data.balance ?? 0,
       isArchived: false,
       includeInSnapshot: data.includeInSnapshot ?? true,
+      savingsAmount: data.savingsAmount ?? 0,
       displayOrder: (await db.assets.count()) + 1,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),

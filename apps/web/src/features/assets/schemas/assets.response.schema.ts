@@ -9,6 +9,7 @@ export const assetResponseSchema = z.object({
   color: z.string().nullable().optional(),
   isArchived: z.boolean().optional().default(false),
   includeInSnapshot: z.boolean().optional().default(true),
+  savingsAmount: z.number().optional().default(0),
   deletedAt: z.string().nullable().optional(),
   displayOrder: z.number().optional(),
   createdAt: z.string().optional(),

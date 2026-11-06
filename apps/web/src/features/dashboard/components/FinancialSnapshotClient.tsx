@@ -21,16 +21,26 @@ export default function FinancialSnapshotClient({
     useThisMonthSummary(initialSummary);
 
   const activeAssets = assets?.filter((a) => !a.isArchived && !a.deletedAt);
-  const calculatedTotalNetWorth = activeAssets
-    ? activeAssets
-        .filter((a) => a.includeInSnapshot !== false)
-        .reduce((sum, a) => sum + Number(a.balance), 0)
-    : undefined;
-  const calculatedExcludedNetWorth = activeAssets
-    ? activeAssets
-        .filter((a) => a.includeInSnapshot === false)
-        .reduce((sum, a) => sum + Number(a.balance), 0)
-    : undefined;
+  let calculatedTotalNetWorth: number | undefined;
+  let calculatedExcludedNetWorth: number | undefined;
+
+  if (activeAssets) {
+    calculatedTotalNetWorth = 0;
+    calculatedExcludedNetWorth = 0;
+    activeAssets.forEach((a) => {
+      const bal = Number(a.balance);
+      if (a.includeInSnapshot === false) {
+        calculatedExcludedNetWorth! += bal;
+      } else {
+        const savings = Math.min(
+          Number(a.savingsAmount || 0),
+          Math.max(0, bal),
+        );
+        calculatedTotalNetWorth! += bal - savings;
+        calculatedExcludedNetWorth! += savings;
+      }
+    });
+  }
 
   const netWorth = calculatedTotalNetWorth ?? (summary?.totalNetWorth || 0);
   const excludedNetWorth =

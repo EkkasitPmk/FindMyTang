@@ -1,6 +1,13 @@
 import * as z from "zod";
 import { AssetType } from "@/shared/lib/types/asset.type";
 
+function parseNumeric(val: unknown): number {
+  if (typeof val === "string") {
+    return Number(val.replaceAll(",", ""));
+  }
+  return Number(val);
+}
+
 export const createAssetSchema = z.object({
   name: z
     .string()
@@ -15,29 +22,51 @@ export const createAssetSchema = z.object({
     .refine(
       (val) => {
         if (val === "" || val === null || val === undefined) return true;
-        const num = Number(val);
-        return !Number.isNaN(num);
+        return !Number.isNaN(parseNumeric(val));
       },
       { message: "Balance must be a number" },
     )
     .refine(
       (val) => {
         if (val === "" || val === null || val === undefined) return true;
-        const num = Number(val);
-        return num >= 1;
+        return parseNumeric(val) >= 1;
       },
       { message: "Balance must be greater than or equal to 1" },
     )
     .refine(
       (val) => {
         if (val === "" || val === null || val === undefined) return true;
-        return Number(val) <= 99999999.99;
+        return parseNumeric(val) <= 99999999.99;
       },
       { message: "Balance must not exceed 99,999,999.99" },
     )
     .optional(),
   color: z.string().optional(),
   includeInSnapshot: z.boolean().default(true).optional(),
+  savingsAmount: z
+    .union([z.number(), z.string(), z.null(), z.undefined()])
+    .refine(
+      (val) => {
+        if (val === "" || val === null || val === undefined) return true;
+        return !Number.isNaN(parseNumeric(val));
+      },
+      { message: "Savings amount must be a number" },
+    )
+    .refine(
+      (val) => {
+        if (val === "" || val === null || val === undefined) return true;
+        return parseNumeric(val) >= 0;
+      },
+      { message: "Savings amount must be greater than or equal to 0" },
+    )
+    .refine(
+      (val) => {
+        if (val === "" || val === null || val === undefined) return true;
+        return parseNumeric(val) <= 99999999.99;
+      },
+      { message: "Savings amount must not exceed 99,999,999.99" },
+    )
+    .optional(),
 });
 
 export const editAssetSchema = createAssetSchema.extend({
