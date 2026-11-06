@@ -44,16 +44,18 @@ export default function EditAssetsContainer({
     defaultValues: {
       name: asset.name,
       type: asset.type,
-      balance: asset.balance.toString(),
+      balance: Number(asset.balance ?? 0).toFixed(2),
       color: asset.color || "#2563EB",
       includeInSnapshot: asset.includeInSnapshot ?? true,
+      savingsAmount: Number(asset.savingsAmount ?? 0).toFixed(2),
     },
     values: {
       name: asset.name,
       type: asset.type,
-      balance: asset.balance.toString(),
+      balance: Number(asset.balance ?? 0).toFixed(2),
       color: asset.color || "#2563EB",
       includeInSnapshot: asset.includeInSnapshot ?? true,
+      savingsAmount: Number(asset.savingsAmount ?? 0).toFixed(2),
     },
     resetOptions: {
       keepDirtyValues: true,
@@ -108,6 +110,13 @@ export default function EditAssetsContainer({
   };
 
   const onSubmit = (values: CreateAssetFormValues) => {
+    const savingsAmountNum =
+      values.savingsAmount === "" ||
+      values.savingsAmount === null ||
+      values.savingsAmount === undefined
+        ? 0
+        : Number(values.savingsAmount);
+
     updateAsset({
       id: asset.id,
       data: {
@@ -115,14 +124,37 @@ export default function EditAssetsContainer({
         type: values.type,
         color: values.color,
         includeInSnapshot: values.includeInSnapshot ?? true,
+        savingsAmount: savingsAmountNum,
       },
     });
   };
 
   const handleBlurBalance = () => {
     const currentVal = getValues("balance");
-    if (currentVal && !Number.isNaN(Number(currentVal))) {
-      setValue("balance", Number(currentVal).toFixed(2));
+    const cleanVal = String(currentVal ?? "").replaceAll(",", "");
+    if (cleanVal && !Number.isNaN(Number(cleanVal))) {
+      setValue("balance", Number(cleanVal).toFixed(2));
+    }
+  };
+
+  const handleBlurSavingsAmount = () => {
+    const currentVal = getValues("savingsAmount");
+    const cleanVal = String(currentVal ?? "").replaceAll(",", "");
+    if (cleanVal && !Number.isNaN(Number(cleanVal))) {
+      setValue("savingsAmount", Number(cleanVal).toFixed(2));
+    } else {
+      setValue("savingsAmount", "0.00");
+    }
+  };
+
+  const handleQuickSetSavings = (type: "half" | "full" | "clear") => {
+    const bal = Number(asset.balance || 0);
+    if (type === "half") {
+      setValue("savingsAmount", (bal / 2).toFixed(2), { shouldDirty: true });
+    } else if (type === "full") {
+      setValue("savingsAmount", bal.toFixed(2), { shouldDirty: true });
+    } else {
+      setValue("savingsAmount", "0.00", { shouldDirty: true });
     }
   };
 
@@ -148,6 +180,8 @@ export default function EditAssetsContainer({
         onToggleIncludeInSnapshot={(val) =>
           setValue("includeInSnapshot", val, { shouldDirty: true })
         }
+        onBlurSavingsAmount={handleBlurSavingsAmount}
+        onQuickSetSavings={handleQuickSetSavings}
       />
       <LoadingModal
         isOpen={modalState.isOpen || isPending}

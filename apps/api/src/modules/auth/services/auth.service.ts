@@ -220,6 +220,8 @@ export class AuthService implements OnApplicationBootstrap, OnModuleDestroy {
             color: asset.color,
             displayOrder: asset.displayOrder ?? 0,
             isArchived: asset.isArchived ?? false,
+            includeInSnapshot: asset.includeInSnapshot ?? true,
+            savingsAmount: new Prisma.Decimal(asset.savingsAmount || 0),
             deletedAt: asset.deletedAt ? new Date(asset.deletedAt) : null,
             userId,
           },

@@ -114,34 +114,56 @@ export class SummaryRepository {
   }
 
   async getTotalNetWorth(userId: string): Promise<number> {
-    const result = await this.prisma.asset.aggregate({
+    const assets = await this.prisma.asset.findMany({
       where: {
         userId,
         deletedAt: null,
         isArchived: false,
-        includeInSnapshot: true,
       },
-      _sum: {
+      select: {
         balance: true,
+        includeInSnapshot: true,
+        savingsAmount: true,
       },
     });
 
-    return Number(result._sum.balance || 0);
+    let total = 0;
+    for (const a of assets) {
+      if (!a.includeInSnapshot) continue;
+      const bal = Number(a.balance);
+      const savings = Math.min(Number(a.savingsAmount || 0), Math.max(0, bal));
+      total += bal - savings;
+    }
+    return total;
   }
 
   async getExcludedNetWorth(userId: string): Promise<number> {
-    const result = await this.prisma.asset.aggregate({
+    const assets = await this.prisma.asset.findMany({
       where: {
         userId,
         deletedAt: null,
         isArchived: false,
-        includeInSnapshot: false,
       },
-      _sum: {
+      select: {
         balance: true,
+        includeInSnapshot: true,
+        savingsAmount: true,
       },
     });
 
-    return Number(result._sum.balance || 0);
+    let excluded = 0;
+    for (const a of assets) {
+      const bal = Number(a.balance);
+      if (!a.includeInSnapshot) {
+        excluded += bal;
+      } else {
+        const savings = Math.min(
+          Number(a.savingsAmount || 0),
+          Math.max(0, bal),
+        );
+        excluded += savings;
+      }
+    }
+    return excluded;
   }
 }

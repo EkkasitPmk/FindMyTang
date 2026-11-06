@@ -45,6 +45,7 @@ export default function CreateAssetsContainer({
       balance: "",
       color: "#2563EB",
       includeInSnapshot: true,
+      savingsAmount: "",
     },
   });
 
@@ -102,19 +103,49 @@ export default function CreateAssetsContainer({
         ? undefined
         : Number(values.balance);
 
+    const savingsAmountNum =
+      values.savingsAmount === "" ||
+      values.savingsAmount === null ||
+      values.savingsAmount === undefined
+        ? 0
+        : Number(values.savingsAmount);
+
     createAsset({
       name: values.name,
       type: values.type,
       balance: balanceNum,
       color: values.color,
       includeInSnapshot: values.includeInSnapshot ?? true,
+      savingsAmount: savingsAmountNum,
     });
   };
 
   const handleBlurBalance = () => {
     const currentVal = getValues("balance");
-    if (currentVal && !Number.isNaN(Number(currentVal))) {
-      setValue("balance", Number(currentVal).toFixed(2));
+    const cleanVal = String(currentVal ?? "").replaceAll(",", "");
+    if (cleanVal && !Number.isNaN(Number(cleanVal))) {
+      setValue("balance", Number(cleanVal).toFixed(2));
+    }
+  };
+
+  const handleBlurSavingsAmount = () => {
+    const currentVal = getValues("savingsAmount");
+    const cleanVal = String(currentVal ?? "").replaceAll(",", "");
+    if (cleanVal && !Number.isNaN(Number(cleanVal))) {
+      setValue("savingsAmount", Number(cleanVal).toFixed(2));
+    } else {
+      setValue("savingsAmount", "0.00");
+    }
+  };
+
+  const handleQuickSetSavings = (type: "half" | "full" | "clear") => {
+    const bal = Number(getValues("balance") || 0);
+    if (type === "half") {
+      setValue("savingsAmount", (bal / 2).toFixed(2), { shouldDirty: true });
+    } else if (type === "full") {
+      setValue("savingsAmount", bal.toFixed(2), { shouldDirty: true });
+    } else {
+      setValue("savingsAmount", "0.00", { shouldDirty: true });
     }
   };
 
@@ -139,6 +170,8 @@ export default function CreateAssetsContainer({
         onToggleIncludeInSnapshot={(val) =>
           setValue("includeInSnapshot", val, { shouldDirty: true })
         }
+        onBlurSavingsAmount={handleBlurSavingsAmount}
+        onQuickSetSavings={handleQuickSetSavings}
       />
       <LoadingModal
         isOpen={modalState.isOpen || isPending}

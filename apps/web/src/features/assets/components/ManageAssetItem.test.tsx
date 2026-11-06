@@ -22,6 +22,7 @@ describe("ManageAssetItem", () => {
       balance: 1_000,
       isArchived: false,
       includeInSnapshot: true,
+      savingsAmount: 0,
     };
     const markup = renderToStaticMarkup(
       <ManageAssetItem
@@ -58,6 +59,7 @@ describe("ManageAssetItem", () => {
       balance: 2_000,
       isArchived: true,
       includeInSnapshot: true,
+      savingsAmount: 0,
     };
     const markup = renderToStaticMarkup(
       <ManageAssetItem

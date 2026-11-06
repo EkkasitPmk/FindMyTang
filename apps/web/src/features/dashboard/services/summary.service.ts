@@ -36,12 +36,21 @@ export const getTodaySummaryApi = async (): Promise<TodaySummaryResponse> => {
     const activeAssets = await db.assets
       .filter((a) => !a.deletedAt && !a.isArchived)
       .toArray();
-    const totalNetWorth = activeAssets
-      .filter((a) => a.includeInSnapshot !== false)
-      .reduce((sum, asset) => sum + Number(asset.balance), 0);
-    const excludedNetWorth = activeAssets
-      .filter((a) => a.includeInSnapshot === false)
-      .reduce((sum, asset) => sum + Number(asset.balance), 0);
+    let totalNetWorth = 0;
+    let excludedNetWorth = 0;
+    activeAssets.forEach((asset) => {
+      const bal = Number(asset.balance);
+      if (asset.includeInSnapshot === false) {
+        excludedNetWorth += bal;
+      } else {
+        const savings = Math.min(
+          Number(asset.savingsAmount || 0),
+          Math.max(0, bal),
+        );
+        totalNetWorth += bal - savings;
+        excludedNetWorth += savings;
+      }
+    });
 
     return todaySummaryResponseSchema.parse({
       income,
@@ -90,12 +99,21 @@ export const getThisMonthSummaryApi =
       const activeAssets = await db.assets
         .filter((a) => !a.deletedAt && !a.isArchived)
         .toArray();
-      const totalNetWorth = activeAssets
-        .filter((a) => a.includeInSnapshot !== false)
-        .reduce((sum, asset) => sum + Number(asset.balance), 0);
-      const excludedNetWorth = activeAssets
-        .filter((a) => a.includeInSnapshot === false)
-        .reduce((sum, asset) => sum + Number(asset.balance), 0);
+      let totalNetWorth = 0;
+      let excludedNetWorth = 0;
+      activeAssets.forEach((asset) => {
+        const bal = Number(asset.balance);
+        if (asset.includeInSnapshot === false) {
+          excludedNetWorth += bal;
+        } else {
+          const savings = Math.min(
+            Number(asset.savingsAmount || 0),
+            Math.max(0, bal),
+          );
+          totalNetWorth += bal - savings;
+          excludedNetWorth += savings;
+        }
+      });
 
       return todaySummaryResponseSchema.parse({
         income,

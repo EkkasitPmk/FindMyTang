@@ -8,6 +8,7 @@ import {
   IsString,
   Max,
   MaxLength,
+  Min,
 } from "class-validator";
 import { AssetType } from "@prisma/client";
 
@@ -69,4 +70,20 @@ export class CreateAssetDto {
   @IsBoolean()
   @IsOptional()
   includeInSnapshot?: boolean;
+
+  @ApiProperty({
+    description: "Portion of the asset balance allocated as savings/hidden",
+    example: 5000,
+    required: false,
+    default: 0,
+    maximum: 99999999.99,
+    type: Number,
+  })
+  @IsNumber()
+  @Min(0, { message: "Savings amount must be greater than or equal to 0" })
+  @Max(99999999.99, {
+    message: "Savings amount must not exceed 99,999,999.99",
+  })
+  @IsOptional()
+  savingsAmount?: number;
 }

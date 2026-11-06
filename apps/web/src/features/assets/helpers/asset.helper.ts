@@ -1,5 +1,6 @@
 import { TransactionResponse } from "@/shared/lib/types/transaction.type";
 import { Asset } from "@/shared/lib/types/asset.type";
+import { AssetFilterType } from "../types/assets.type";
 import {
   getAvailableYears,
   applyTypeFilter,
@@ -14,7 +15,7 @@ interface ProcessTransactionsParams {
   selectedMonth: string;
   searchKeyword?: string;
   isSearchMode?: boolean;
-  filterType?: "ALL" | "INCOME" | "EXPENSE" | "TRANSFER" | "ADJUSTMENT";
+  filterType?: AssetFilterType;
 }
 
 export const processAssetTransactions = ({

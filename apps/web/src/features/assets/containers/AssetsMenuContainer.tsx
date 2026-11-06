@@ -12,6 +12,7 @@ import LoadingModal from "@/shared/components/customs/LoadingModal";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { useAssets } from "@/shared/lib/hooks/useAssets.hook";
 import { useModalState } from "@/shared/lib/hooks/useModalState.hook";
+import { AssetFilterType } from "../types/assets.type";
 
 export default function AssetsMenuContainer() {
   const [isOpen, setIsOpen] = useState(false);
@@ -124,9 +125,7 @@ export default function AssetsMenuContainer() {
     }
   };
 
-  const handleFilterSelect = (
-    type: "ALL" | "INCOME" | "EXPENSE" | "TRANSFER" | "ADJUSTMENT",
-  ) => {
+  const handleFilterSelect = (type: AssetFilterType) => {
     setFilterType(type);
     setIsFilterOpen(false);
     setIsOpen(false);

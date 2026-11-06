@@ -39,6 +39,7 @@ function toResponse(asset: Asset): AssetResponseDto {
     color: asset.color,
     isArchived: asset.isArchived,
     includeInSnapshot: asset.includeInSnapshot,
+    savingsAmount: Number(asset.savingsAmount || 0),
     deletedAt: asset.deletedAt?.toISOString() ?? null,
     createdAt: asset.createdAt.toISOString(),
     updatedAt: asset.updatedAt.toISOString(),

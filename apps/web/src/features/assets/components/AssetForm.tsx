@@ -43,6 +43,8 @@ interface AssetFormProps {
   isEdit?: boolean;
   includeInSnapshot?: boolean;
   onToggleIncludeInSnapshot?: (value: boolean) => void;
+  onBlurSavingsAmount?: () => void;
+  onQuickSetSavings?: (type: "half" | "full" | "clear") => void;
 }
 
 export default function AssetForm({
@@ -63,11 +65,15 @@ export default function AssetForm({
   isEdit = false,
   includeInSnapshot = true,
   onToggleIncludeInSnapshot,
+  onBlurSavingsAmount,
+  onQuickSetSavings,
 }: Readonly<AssetFormProps>) {
   const { t } = useTranslation();
   const nameField = register("name");
   const balanceField = register("balance");
+  const savingsAmountField = register("savingsAmount");
   const previousBalanceRef = useRef("");
+  const previousSavingsAmountRef = useRef("");
 
   let submitButtonText = t("createAsset");
   if (isPending) {
@@ -244,8 +250,14 @@ export default function AssetForm({
                     {...balanceField}
                     onFocus={(e) => {
                       const value = e.currentTarget.value.replaceAll(",", "");
-                      e.currentTarget.value = value;
-                      previousBalanceRef.current = value;
+                      if (Number(value) === 0) {
+                        e.currentTarget.value = "";
+                        previousBalanceRef.current = "";
+                        void balanceField.onChange(e);
+                      } else {
+                        e.currentTarget.value = value;
+                        previousBalanceRef.current = value;
+                      }
                     }}
                     onChange={(e) => {
                       const value = e.currentTarget.value.replaceAll(",", "");
@@ -339,6 +351,99 @@ export default function AssetForm({
                 />
               </button>
             </div>
+
+            {/* Savings Split Section */}
+            {includeInSnapshot && (
+              <div className="flex flex-col gap-2 p-3.5 bg-surface-secondary/40 rounded-xl border border-border">
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-sm font-semibold text-primary-text">
+                    {t("savingsSplit")}
+                  </span>
+                  <span className="text-xs text-secondary-text leading-relaxed">
+                    {t("savingsAmountDesc")}
+                  </span>
+                </div>
+
+                <div className="relative mt-1">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-disabled-text font-medium text-sm">
+                    ฿
+                  </div>
+                  <Input
+                    id="savingsAmount"
+                    type="text"
+                    inputMode="decimal"
+                    placeholder="0.00"
+                    className="pl-8 text-primary-text font-medium text-sm bg-background"
+                    {...savingsAmountField}
+                    onFocus={(e) => {
+                      const value = e.currentTarget.value.replaceAll(",", "");
+                      if (Number(value) === 0) {
+                        e.currentTarget.value = "";
+                        previousSavingsAmountRef.current = "";
+                        void savingsAmountField.onChange(e);
+                      } else {
+                        e.currentTarget.value = value;
+                        previousSavingsAmountRef.current = value;
+                      }
+                    }}
+                    onChange={(e) => {
+                      const value = e.currentTarget.value.replaceAll(",", "");
+                      e.currentTarget.value = value;
+                      if (value && Number(value) > 99999999.99) {
+                        e.currentTarget.value =
+                          previousSavingsAmountRef.current;
+                      } else {
+                        previousSavingsAmountRef.current = value;
+                      }
+                      void savingsAmountField.onChange(e);
+                    }}
+                    onBlur={(e) => {
+                      void savingsAmountField.onBlur(e);
+                      onBlurSavingsAmount?.();
+                      const value = e.currentTarget.value.replaceAll(",", "");
+                      if (value && !Number.isNaN(Number(value))) {
+                        e.currentTarget.value = Number(value).toFixed(2);
+                      } else {
+                        e.currentTarget.value = "0.00";
+                      }
+                    }}
+                  />
+                </div>
+                {errors.savingsAmount && (
+                  <p className="text-xs text-destructive font-medium">
+                    {errors.savingsAmount.message}
+                  </p>
+                )}
+
+                {/* Quick Preset Buttons */}
+                <div className="flex items-center gap-1.5 pt-1">
+                  <Button
+                    variant="unstyled"
+                    type="button"
+                    onClick={() => onQuickSetSavings?.("half")}
+                    className="px-2.5 py-1 text-xs rounded-md border border-border/80 bg-surface hover:bg-surface-secondary text-secondary-text hover:text-primary-text transition-colors cursor-pointer"
+                  >
+                    {t("halfBalance")}
+                  </Button>
+                  <Button
+                    variant="unstyled"
+                    type="button"
+                    onClick={() => onQuickSetSavings?.("full")}
+                    className="px-2.5 py-1 text-xs rounded-md border border-border/80 bg-surface hover:bg-surface-secondary text-secondary-text hover:text-primary-text transition-colors cursor-pointer"
+                  >
+                    {t("fullBalance")}
+                  </Button>
+                  <Button
+                    variant="unstyled"
+                    type="button"
+                    onClick={() => onQuickSetSavings?.("clear")}
+                    className="px-2.5 py-1 text-xs rounded-md border border-border/80 bg-surface hover:bg-surface-secondary text-secondary-text hover:text-primary-text transition-colors cursor-pointer"
+                  >
+                    {t("clearSavings")}
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
 
           <SheetFooter>

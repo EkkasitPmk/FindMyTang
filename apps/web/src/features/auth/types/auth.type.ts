@@ -9,6 +9,8 @@ export interface SyncGuestRequest {
     balance?: number;
     color?: string | null;
     isArchived?: boolean;
+    includeInSnapshot?: boolean;
+    savingsAmount?: number;
     displayOrder?: number;
   }>;
   categories?: Array<{

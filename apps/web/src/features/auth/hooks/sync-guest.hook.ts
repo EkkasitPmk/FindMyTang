@@ -35,6 +35,8 @@ export const useSyncGuestMutation = () => {
           color: asset.color || undefined,
           displayOrder: asset.displayOrder,
           isArchived: asset.isArchived,
+          includeInSnapshot: asset.includeInSnapshot ?? true,
+          savingsAmount: asset.savingsAmount ?? 0,
           deletedAt: asset.deletedAt,
         })),
         categories: categories.map((cat) => ({

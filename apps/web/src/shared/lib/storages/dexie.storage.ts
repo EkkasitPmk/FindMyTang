@@ -24,6 +24,7 @@ export interface LocalAsset {
   displayOrder: number;
   isArchived: boolean;
   includeInSnapshot?: boolean;
+  savingsAmount?: number;
   createdAt: string;
   updatedAt: string;
   deletedAt?: string | null;

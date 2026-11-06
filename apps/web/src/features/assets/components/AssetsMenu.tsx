@@ -11,6 +11,7 @@ import ConfirmModal from "@/shared/components/customs/ConfirmModal";
 import { RefObject } from "react";
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
+import { AssetFilterType, AssetSortType } from "../types/assets.type";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -40,14 +41,12 @@ interface AssetsMenuProps {
   inputValue?: string;
   setInputValue?: (value: string) => void;
   onSearch?: () => void;
-  filterType?: "ALL" | "INCOME" | "EXPENSE" | "TRANSFER" | "ADJUSTMENT";
+  filterType?: AssetFilterType;
   filterLabel: string;
   isFilterOpen?: boolean;
   onFilterToggle?: () => void;
-  onFilterSelect: (
-    type: "ALL" | "INCOME" | "EXPENSE" | "TRANSFER" | "ADJUSTMENT",
-  ) => void;
-  sortType?: "DATE_NEWEST" | "DATE_OLDEST" | "AMOUNT_HIGHEST" | "AMOUNT_LOWEST";
+  onFilterSelect: (type: AssetFilterType) => void;
+  sortType?: AssetSortType;
   sortLabel: string;
   isSortOpen?: boolean;
   openSortSubMenu?: "DATE" | "MONEY" | null;

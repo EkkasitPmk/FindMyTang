@@ -404,6 +404,18 @@ export const translations = {
     includeInSnapshotDesc:
       "นำยอดคงเหลือของสินทรัพย์นี้มารวมคำนวณในภาพรวมการเงินบนแดชบอร์ด (ปิดหากต้องการแยกเป็นเงินเก็บ)",
     excludedFromSnapshotBadge: "ไม่รวมในภาพรวม",
+    savingsSplit: "แบ่งยอดเงินเป็นเงินเก็บ",
+    savingsAmount: "จำนวนเงินเก็บ",
+    savingsAmountDesc:
+      "ยอดส่วนนี้จะแยกไปแสดงเป็นเงินเก็บ และไม่นำไปรวมในยอดพร้อมใช้บนแดชบอร์ด",
+    spendableBalance: "พร้อมใช้",
+    allocatedSavings: "เงินเก็บ",
+    savingsExceedsBalanceWarning:
+      "ยอดเงินคงเหลือในบัญชีน้อยกว่ายอดเงินเก็บที่ตั้งไว้",
+    quickEditSavings: "ปรับยอดเงินเก็บ",
+    clearSavings: "ล้างยอด",
+    halfBalance: "50%",
+    fullBalance: "เต็มจำนวน",
     assetColor: "สีสินทรัพย์",
     themeColor: "สีสัญลักษณ์",
     search: "ค้นหา",
@@ -977,6 +989,18 @@ export const translations = {
     includeInSnapshotDesc:
       "Include this asset's balance in the dashboard financial snapshot (turn off for savings)",
     excludedFromSnapshotBadge: "Excluded from snapshot",
+    savingsSplit: "Savings Split",
+    savingsAmount: "Savings Amount",
+    savingsAmountDesc:
+      "This portion will be separated as savings and excluded from spendable balance",
+    spendableBalance: "Spendable",
+    allocatedSavings: "Savings",
+    savingsExceedsBalanceWarning:
+      "Account balance is lower than allocated savings",
+    quickEditSavings: "Edit Savings",
+    clearSavings: "Clear",
+    halfBalance: "50%",
+    fullBalance: "100%",
     assetColor: "Asset Color",
     themeColor: "Theme Color",
     search: "Search",

@@ -42,6 +42,7 @@ export class AssetService {
       balance: dto.balance,
       color: dto.color,
       includeInSnapshot: dto.includeInSnapshot,
+      savingsAmount: dto.savingsAmount,
     });
     await this.invalidateSummaryCache(userId);
     return created;
@@ -87,6 +88,9 @@ export class AssetService {
       ...(dto.isArchived !== undefined && { isArchived: dto.isArchived }),
       ...(dto.includeInSnapshot !== undefined && {
         includeInSnapshot: dto.includeInSnapshot,
+      }),
+      ...(dto.savingsAmount !== undefined && {
+        savingsAmount: dto.savingsAmount,
       }),
       deletedAt: null,
     };

@@ -1,5 +1,8 @@
+import { TrendingUp, TrendingDown, Minus, LucideIcon } from "lucide-react";
 import { MONTHS } from "@/shared/lib/configs/date.config";
 import { TransactionResponse } from "@/shared/lib/types/transaction.type";
+import { AssetFilterType, AssetMonthlySummary } from "../types/assets.type";
+export type { AssetMonthlySummary };
 
 export function getTransactionDateRange(
   isSearchMode: boolean,
@@ -106,18 +109,6 @@ export function getEffectiveMonth(
     : availableMonths[0] || currentMonthStr;
 }
 
-export interface AssetMonthlySummary {
-  income: number;
-  expense: number;
-  transfer: number;
-  adjustment: number;
-  net: number;
-  incomeCount: number;
-  expenseCount: number;
-  transferCount: number;
-  adjustmentCount: number;
-}
-
 export function calculateAssetMonthlySummary(
   items: TransactionResponse[],
 ): AssetMonthlySummary {
@@ -161,5 +152,53 @@ export function calculateAssetMonthlySummary(
     expenseCount,
     transferCount,
     adjustmentCount,
+  };
+}
+
+export function getFilterTransactionCount(
+  filterType: AssetFilterType,
+  summary?: AssetMonthlySummary,
+): number {
+  if (!summary) return 0;
+  const countMap: Record<string, number | undefined> = {
+    INCOME: summary.incomeCount,
+    EXPENSE: summary.expenseCount,
+    TRANSFER: summary.transferCount,
+    ADJUSTMENT: summary.adjustmentCount,
+  };
+  return (
+    countMap[filterType] ??
+    summary.incomeCount +
+      summary.expenseCount +
+      summary.transferCount +
+      summary.adjustmentCount
+  );
+}
+
+export interface NetFlowMeta {
+  Icon: LucideIcon;
+  colorClass: string;
+  formatted: string;
+}
+
+export function getNetFlowMeta(netAmount: number, locale: string): NetFlowMeta {
+  if (netAmount > 0) {
+    return {
+      Icon: TrendingUp,
+      colorClass: "text-income",
+      formatted: `+฿ ${netAmount.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+    };
+  }
+  if (netAmount < 0) {
+    return {
+      Icon: TrendingDown,
+      colorClass: "text-expense",
+      formatted: `-฿ ${Math.abs(netAmount).toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+    };
+  }
+  return {
+    Icon: Minus,
+    colorClass: "text-secondary-text",
+    formatted: `฿ ${(0).toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
   };
 }
