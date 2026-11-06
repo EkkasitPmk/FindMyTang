@@ -21,6 +21,7 @@ import {
   CreateAssetResponse,
   Asset,
 } from "@/shared/lib/types/asset.type";
+import { AssetFilterType, AssetSortType } from "../types/assets.type";
 import { AxiosError } from "axios";
 import { ApiErrorResponse } from "@/shared/lib/types/api.type";
 
@@ -211,14 +212,10 @@ interface AssetUIStore {
   setIsEditModalOpen: (value: boolean) => void;
   searchKeyword: string;
   setSearchKeyword: (value: string) => void;
-  filterType: "ALL" | "INCOME" | "EXPENSE" | "TRANSFER" | "ADJUSTMENT";
-  setFilterType: (
-    value: "ALL" | "INCOME" | "EXPENSE" | "TRANSFER" | "ADJUSTMENT",
-  ) => void;
-  sortType: "DATE_NEWEST" | "DATE_OLDEST" | "AMOUNT_HIGHEST" | "AMOUNT_LOWEST";
-  setSortType: (
-    value: "DATE_NEWEST" | "DATE_OLDEST" | "AMOUNT_HIGHEST" | "AMOUNT_LOWEST",
-  ) => void;
+  filterType: AssetFilterType;
+  setFilterType: (value: AssetFilterType) => void;
+  sortType: AssetSortType;
+  setSortType: (value: AssetSortType) => void;
   resetFilters: () => void;
   dashboardAssetView: "list" | "grid";
   toggleDashboardAssetView: () => void;

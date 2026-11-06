@@ -4,12 +4,15 @@ import {
   getAvailableMonths,
   getEffectiveMonth,
   getEffectiveYear,
+  getFilterTransactionCount,
+  getNetFlowMeta,
   getTransactionDateRange,
   shouldFetchTransactions,
   shouldShowAssetLoading,
   shouldShowTransactionsLoading,
 } from "./asset-detail.helper";
 import { TransactionResponse } from "@/shared/lib/types/transaction.type";
+import { AssetMonthlySummary } from "../types/assets.type";
 
 describe("asset-detail.helper", () => {
   describe("getEffectiveYear", () => {
@@ -210,6 +213,55 @@ describe("asset-detail.helper", () => {
 
     it("returns false if hasAvailableDates is false", () => {
       expect(shouldFetchTransactions(false, "", false)).toBe(false);
+    });
+  });
+
+  describe("getFilterTransactionCount", () => {
+    const summary: AssetMonthlySummary = {
+      income: 100,
+      expense: 50,
+      transfer: 20,
+      adjustment: 10,
+      net: 50,
+      incomeCount: 5,
+      expenseCount: 3,
+      transferCount: 2,
+      adjustmentCount: 1,
+    };
+
+    it("returns specific count for INCOME, EXPENSE, TRANSFER, ADJUSTMENT", () => {
+      expect(getFilterTransactionCount("INCOME", summary)).toBe(5);
+      expect(getFilterTransactionCount("EXPENSE", summary)).toBe(3);
+      expect(getFilterTransactionCount("TRANSFER", summary)).toBe(2);
+      expect(getFilterTransactionCount("ADJUSTMENT", summary)).toBe(1);
+    });
+
+    it("returns total sum for ALL filter", () => {
+      expect(getFilterTransactionCount("ALL", summary)).toBe(11);
+    });
+
+    it("returns 0 when summary is undefined", () => {
+      expect(getFilterTransactionCount("ALL", undefined)).toBe(0);
+    });
+  });
+
+  describe("getNetFlowMeta", () => {
+    it("returns positive formatting with TrendingUp for net > 0", () => {
+      const meta = getNetFlowMeta(500, "en-US");
+      expect(meta.colorClass).toBe("text-income");
+      expect(meta.formatted).toBe("+฿ 500.00");
+    });
+
+    it("returns negative formatting with TrendingDown for net < 0", () => {
+      const meta = getNetFlowMeta(-250, "en-US");
+      expect(meta.colorClass).toBe("text-expense");
+      expect(meta.formatted).toBe("-฿ 250.00");
+    });
+
+    it("returns neutral formatting with Minus for net === 0", () => {
+      const meta = getNetFlowMeta(0, "en-US");
+      expect(meta.colorClass).toBe("text-secondary-text");
+      expect(meta.formatted).toBe("฿ 0.00");
     });
   });
 });
