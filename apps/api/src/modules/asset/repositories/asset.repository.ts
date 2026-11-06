@@ -8,6 +8,7 @@ export interface CreateAssetData {
   balance?: number;
   color?: string;
   includeInSnapshot?: boolean;
+  savingsAmount?: number;
 }
 
 @Injectable()
@@ -23,6 +24,7 @@ export class AssetRepository {
           balance: data.balance ?? 0,
           color: data.color,
           includeInSnapshot: data.includeInSnapshot ?? true,
+          savingsAmount: data.savingsAmount ?? 0,
           userId,
         },
       });

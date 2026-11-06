@@ -53,6 +53,13 @@ export class AssetResponseDto {
   includeInSnapshot!: boolean;
 
   @ApiProperty({
+    description: "Portion of balance allocated as savings/hidden",
+    example: 5000,
+    type: Number,
+  })
+  savingsAmount!: number;
+
+  @ApiProperty({
     description: "ISO timestamp when soft-deleted, or null if active",
     example: null,
     nullable: true,
