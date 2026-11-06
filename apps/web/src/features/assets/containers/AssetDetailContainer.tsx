@@ -302,6 +302,7 @@ export default function AssetDetailContainer({
             hasNextPage={canFetchTransactions && hasNextPage}
             isFetchingNextPage={canFetchTransactions && isFetchingNextPage}
             translateDropdownItem={translateDropdownItem}
+            onEditSavings={() => setIsEditModalOpen(true)}
           />
           {isEditModalOpen && asset && (
             <EditAssetsContainer

@@ -18,6 +18,12 @@ vi.mock("@/shared/lib/hooks/useTranslation.hook", () => ({
         netCashFlow: "Net Cash Flow",
         items: "items",
         noFilter: "No filter",
+        savingsSplit: "Savings Split",
+        spendableBalance: "Spendable",
+        allocatedSavings: "Savings",
+        quickEditSavings: "Edit Savings",
+        savingsExceedsBalanceWarning:
+          "Account balance is lower than allocated savings",
       };
       return dict[key] || key;
     },
@@ -38,6 +44,7 @@ const mockAsset: Asset = {
   color: "#2563EB",
   isArchived: false,
   includeInSnapshot: true,
+  savingsAmount: 0,
   deletedAt: null,
   createdAt: "2026-01-01T00:00:00Z",
   updatedAt: "2026-01-01T00:00:00Z",
@@ -197,5 +204,49 @@ describe("AssetDetail", () => {
 
     fireEvent.click(filterChip);
     expect(onFilterSelect).toHaveBeenCalledWith("ALL");
+  });
+
+  it("renders spendable and savings breakdown and handles onEditSavings", () => {
+    const onEditSavings = vi.fn();
+    const assetWithSavings: Asset = {
+      ...mockAsset,
+      balance: 50000,
+      savingsAmount: 20000,
+    };
+
+    render(
+      <AssetDetail
+        {...defaultProps}
+        asset={assetWithSavings}
+        onEditSavings={onEditSavings}
+      />,
+    );
+
+    expect(screen.getByText("Spendable")).toBeInTheDocument();
+    expect(screen.getByText("฿ 30,000.00")).toBeInTheDocument();
+    expect(screen.getByText("Savings")).toBeInTheDocument();
+    expect(screen.getByText("฿ 20,000.00")).toBeInTheDocument();
+
+    const editBtn = screen.getByText("Edit Savings");
+    expect(editBtn).toBeInTheDocument();
+    fireEvent.click(editBtn);
+    expect(onEditSavings).toHaveBeenCalledTimes(1);
+  });
+
+  it("renders shortfall warning when balance is less than savings target", () => {
+    const assetWithShortfall: Asset = {
+      ...mockAsset,
+      balance: 10000,
+      savingsAmount: 25000,
+    };
+
+    render(<AssetDetail {...defaultProps} asset={assetWithShortfall} />);
+
+    expect(
+      screen.getByText("⚠️ Account balance is lower than allocated savings"),
+    ).toBeInTheDocument();
+    // Spendable clamped to 0, savings clamped to balance 10,000
+    expect(screen.getAllByText("฿ 0.00").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText("฿ 10,000.00")).toBeInTheDocument();
   });
 });
