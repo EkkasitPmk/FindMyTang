@@ -184,6 +184,12 @@ export const submitTransaction = ({
     return;
   }
 
+  if (finalData.assetId) saveRecentAssetId(finalData.assetId);
+
+  if (transactionType === "TRANSFER" && finalData.toAssetId) {
+    saveRecentAssetId(finalData.toAssetId);
+  }
+
   if (editId) {
     updateTransaction.mutate({
       id: editId,
@@ -270,4 +276,57 @@ export const getTransactionTypeOptions = (
     { label: t("transfer"), value: "TRANSFER" },
     { label: t("adjustment"), value: "ADJUSTMENT" },
   ];
+};
+
+export const RECENT_ASSET_IDS_KEY = "findmytang_recent_asset_ids";
+export const MAX_RECENT_ASSETS = 3;
+
+export const getRecentAssetIds = (): string[] => {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(RECENT_ASSET_IDS_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed)
+      ? parsed.filter((id): id is string => typeof id === "string")
+      : [];
+  } catch {
+    return [];
+  }
+};
+
+export const saveRecentAssetId = (id: string): string[] => {
+  if (!id || id === "EXTERNAL" || typeof window === "undefined") {
+    return getRecentAssetIds();
+  }
+  try {
+    const current = getRecentAssetIds();
+    const updated = [id, ...current.filter((item) => item !== id)].slice(
+      0,
+      MAX_RECENT_ASSETS,
+    );
+    window.localStorage.setItem(RECENT_ASSET_IDS_KEY, JSON.stringify(updated));
+    return updated;
+  } catch {
+    return [];
+  }
+};
+
+export const sortAssetsByRecent = <T extends { id: string }>(
+  assets: T[],
+  recentIds: string[],
+): T[] => {
+  if (!assets.length || !recentIds.length) return assets;
+
+  const recentAssets: T[] = [];
+  for (const id of recentIds) {
+    const found = assets.find((a) => a.id === id);
+    if (found) recentAssets.push(found);
+  }
+
+  const remainingAssets = assets.filter(
+    (asset) => !recentAssets.some((r) => r.id === asset.id),
+  );
+
+  return [...recentAssets, ...remainingAssets];
 };

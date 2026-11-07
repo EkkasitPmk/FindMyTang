@@ -32,6 +32,11 @@ import { cn } from "@/shared/lib/utils/core.util";
 import { th, enUS } from "date-fns/locale";
 import TransactionCategoryList from "@/features/transactions/components/TransactionCategoryList";
 import TransactionAssetList from "@/features/transactions/components/TransactionAssetList";
+import {
+  getRecentAssetIds,
+  saveRecentAssetId,
+  sortAssetsByRecent,
+} from "@/features/transactions/helpers/transaction.helper";
 import { RecurringBillingCyclePills } from "./RecurringBillingCyclePills";
 import { RecurringDatePicker } from "./RecurringDatePicker";
 import { RecurringAmountField } from "./RecurringAmountField";
@@ -80,8 +85,14 @@ function RecurringFormContent({
     itemToEdit?.categoryId ?? "",
   );
   const [assetId, setAssetId] = useState<string>(itemToEdit?.assetId ?? "");
+  const sortedAssets = useMemo(
+    () => sortAssetsByRecent(assets, getRecentAssetIds()),
+    [assets],
+  );
   const selectedAssetId =
-    assetId || itemToEdit?.assetId || (assets.length > 0 ? assets[0].id : "");
+    assetId ||
+    itemToEdit?.assetId ||
+    (sortedAssets.length > 0 ? sortedAssets[0].id : "");
   const [status, setStatus] = useState<RecurringStatus>(
     itemToEdit?.status ?? RecurringStatus.ACTIVE,
   );
@@ -99,6 +110,8 @@ function RecurringFormContent({
       !finalAssetId
     )
       return;
+
+    saveRecentAssetId(finalAssetId);
 
     const payload: CreateRecurringExpenseRequest = {
       name: name.trim(),
@@ -231,7 +244,7 @@ function RecurringFormContent({
           {/* Payment Account (Asset) Selection - Reusing TransactionAssetList from Transactions */}
           <div className="-mx-4 flex flex-col gap-1.5">
             <TransactionAssetList
-              assets={assets}
+              assets={sortedAssets}
               activeAssetId={selectedAssetId}
               onSelectAsset={setAssetId}
               label={`${t("recurringAssetLabel")} *`}

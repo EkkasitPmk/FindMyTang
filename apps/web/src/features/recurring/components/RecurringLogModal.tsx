@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { useAssets } from "@/shared/lib/hooks/useAssets.hook";
 import {
@@ -20,6 +20,11 @@ import { toast } from "react-toastify";
 import { CheckCircle2 } from "lucide-react";
 import { RecurringExpense } from "@/shared/lib/types/recurring.type";
 import TransactionAssetList from "@/features/transactions/components/TransactionAssetList";
+import {
+  getRecentAssetIds,
+  saveRecentAssetId,
+  sortAssetsByRecent,
+} from "@/features/transactions/helpers/transaction.helper";
 import TransactionDescriptionField from "@/features/transactions/components/TransactionDescriptionField";
 import { RecurringDatePicker } from "./RecurringDatePicker";
 import { RecurringAmountField } from "./RecurringAmountField";
@@ -45,8 +50,14 @@ function RecurringLogForm({
 
   const [paymentDate, setPaymentDate] = useState<Date>(() => new Date());
   const [assetId, setAssetId] = useState<string>(itemToLog.assetId || "");
+  const sortedAssets = useMemo(
+    () => sortAssetsByRecent(assets, getRecentAssetIds()),
+    [assets],
+  );
   const selectedAssetId =
-    assetId || itemToLog.assetId || (assets.length > 0 ? assets[0].id : "");
+    assetId ||
+    itemToLog.assetId ||
+    (sortedAssets.length > 0 ? sortedAssets[0].id : "");
   const [note, setNote] = useState<string>(itemToLog.note || "");
 
   const nextDate = advanceCycle(
@@ -75,6 +86,7 @@ function RecurringLogForm({
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
     const effectiveAssetId = selectedAssetId;
+    if (effectiveAssetId) saveRecentAssetId(effectiveAssetId);
 
     logMutation.mutate(
       {
@@ -170,7 +182,7 @@ function RecurringLogForm({
           {assets.length > 0 && (
             <div className="-mx-5">
               <TransactionAssetList
-                assets={assets}
+                assets={sortedAssets}
                 activeAssetId={selectedAssetId}
                 onSelectAsset={setAssetId}
                 label={`${t("recurringAssetLabel")} *`}
