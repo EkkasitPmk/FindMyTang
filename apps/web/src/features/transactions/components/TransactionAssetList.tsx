@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Asset } from "@/shared/lib/types/asset.type";
 import TransactionAssetItem from "./TransactionAssetItem";
 import { Skeleton } from "@/shared/components/ui/skeleton";
@@ -5,6 +6,10 @@ import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { cn } from "@/shared/lib/utils/core.util";
 import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { ArrowUpRight } from "lucide-react";
+import {
+  getRecentAssetIds,
+  sortAssetsByRecent,
+} from "../helpers/transaction.helper";
 export const EXTERNAL_ASSET_ID = "EXTERNAL";
 
 const SKELETON_ASSETS = Array.from({ length: 4 }, (_, i) => i);
@@ -35,6 +40,11 @@ export default function TransactionAssetList({
   const { t } = useTranslation();
   const paddingClass = containerClassName ?? "px-4 lg:px-0";
 
+  const sortedAssets = useMemo(
+    () => sortAssetsByRecent(assets, getRecentAssetIds()),
+    [assets],
+  );
+
   const renderAssetList = () => {
     if (isLoadingAssetList) {
       return (
@@ -58,7 +68,7 @@ export default function TransactionAssetList({
 
     return (
       <div className={cn("flex gap-2 py-1 overflow-auto", paddingClass)}>
-        {assets.map((asset) => (
+        {sortedAssets.map((asset) => (
           <TransactionAssetItem
             key={asset.id}
             asset={asset}
@@ -83,7 +93,7 @@ export default function TransactionAssetList({
       );
     }
 
-    const availableAssets = assets.filter(
+    const availableAssets = sortedAssets.filter(
       (asset) => asset.id !== activeAssetId,
     );
 

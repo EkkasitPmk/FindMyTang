@@ -6,7 +6,12 @@ import type { TransactionType } from "@/shared/lib/types/transaction.type";
 import type { CreateTransactionFormValues } from "../schemas/transaction.form.schema";
 import type { Asset } from "@/shared/lib/types/asset.type";
 import type { Category } from "@/shared/lib/types/category.type";
-import { checkIsLoading, getActiveItemId } from "../helpers/transaction.helper";
+import {
+  checkIsLoading,
+  getActiveItemId,
+  getRecentAssetIds,
+  sortAssetsByRecent,
+} from "../helpers/transaction.helper";
 import { useTransactionFormSync } from "./transaction-form.hook";
 
 interface UseTransactionSelectionsParams {
@@ -50,7 +55,10 @@ export function useTransactionSelections({
       ) || [],
     [categories, targetCategoryType, watchCategoryId],
   );
-  const safeAssets = useMemo(() => assets ?? [], [assets]);
+  const safeAssets = useMemo(() => {
+    const raw = assets ?? [];
+    return sortAssetsByRecent(raw, getRecentAssetIds());
+  }, [assets]);
 
   const activeCategoryId = useMemo(() => {
     if (transactionType === "TRANSFER") {
