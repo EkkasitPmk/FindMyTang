@@ -11,6 +11,11 @@ import {
   checkIsSubmitting,
   isCategoryType,
   getLoadingModalProps,
+  getRecentAssetIds,
+  saveRecentAssetId,
+  sortAssetsByRecent,
+  RECENT_ASSET_IDS_KEY,
+  MAX_RECENT_ASSETS,
 } from "./transaction.helper";
 import { TransactionResponse } from "@/shared/lib/types/transaction.type";
 import { TranslationKey } from "@/shared/lib/configs/translations.config";
@@ -244,6 +249,48 @@ describe("transaction.helper", () => {
         },
       });
     });
+
+    it("should save assetId to recent assets only when saving succeeds", () => {
+      window.localStorage.clear();
+
+      submitTransaction({
+        transactionType: "EXPENSE",
+        data: {
+          amount: 50,
+          note: "Coffee",
+          transactionDate: "2026-07-08T00:00:00.000Z",
+          assetId: "asset-coffee",
+          categoryId: "cat-1",
+        },
+        createTransaction: mockCreateTransaction,
+        updateTransaction: mockUpdateTransaction,
+        toast: mockToast,
+        t: mockTranslate,
+      });
+
+      expect(getRecentAssetIds()).toEqual(["asset-coffee"]);
+    });
+
+    it("should save both assetId and toAssetId for transfer when saving", () => {
+      window.localStorage.clear();
+
+      submitTransaction({
+        transactionType: "TRANSFER",
+        data: {
+          amount: 1000,
+          note: "Transfer",
+          transactionDate: "2026-07-08T00:00:00.000Z",
+          assetId: "asset-from",
+          toAssetId: "asset-to",
+        },
+        createTransaction: mockCreateTransaction,
+        updateTransaction: mockUpdateTransaction,
+        toast: mockToast,
+        t: mockTranslate,
+      });
+
+      expect(getRecentAssetIds()).toEqual(["asset-to", "asset-from"]);
+    });
   });
 
   describe("resolveDefaultTransactionType", () => {
@@ -391,6 +438,107 @@ describe("transaction.helper", () => {
         isOpen: true,
         status: "loading",
         message: undefined,
+      });
+    });
+  });
+
+  describe("recent assets helper", () => {
+    beforeEach(() => {
+      window.localStorage.clear();
+    });
+
+    describe("getRecentAssetIds", () => {
+      it("returns empty array when nothing is stored", () => {
+        expect(getRecentAssetIds()).toEqual([]);
+      });
+
+      it("returns stored array of string IDs", () => {
+        window.localStorage.setItem(
+          RECENT_ASSET_IDS_KEY,
+          JSON.stringify(["asset-1", "asset-2"]),
+        );
+        expect(getRecentAssetIds()).toEqual(["asset-1", "asset-2"]);
+      });
+
+      it("filters out non-string items and handles invalid JSON gracefully", () => {
+        window.localStorage.setItem(
+          RECENT_ASSET_IDS_KEY,
+          JSON.stringify(["asset-1", 123, null, "asset-2"]),
+        );
+        expect(getRecentAssetIds()).toEqual(["asset-1", "asset-2"]);
+
+        window.localStorage.setItem(RECENT_ASSET_IDS_KEY, "invalid-json{");
+        expect(getRecentAssetIds()).toEqual([]);
+      });
+    });
+
+    describe("saveRecentAssetId", () => {
+      it("saves new asset id to front and caps at MAX_RECENT_ASSETS", () => {
+        saveRecentAssetId("asset-1");
+        saveRecentAssetId("asset-2");
+        saveRecentAssetId("asset-3");
+        const res = saveRecentAssetId("asset-4");
+
+        expect(res).toEqual(["asset-4", "asset-3", "asset-2"]);
+        expect(res).toHaveLength(MAX_RECENT_ASSETS);
+      });
+
+      it("moves existing asset id to front without duplicating", () => {
+        saveRecentAssetId("asset-1");
+        saveRecentAssetId("asset-2");
+        saveRecentAssetId("asset-3");
+
+        const updated = saveRecentAssetId("asset-2");
+        expect(updated).toEqual(["asset-2", "asset-3", "asset-1"]);
+      });
+
+      it("ignores empty or EXTERNAL asset ID", () => {
+        saveRecentAssetId("asset-1");
+        const resEmpty = saveRecentAssetId("");
+        const resExternal = saveRecentAssetId("EXTERNAL");
+
+        expect(resEmpty).toEqual(["asset-1"]);
+        expect(resExternal).toEqual(["asset-1"]);
+      });
+    });
+
+    describe("sortAssetsByRecent", () => {
+      const mockAssets = [
+        { id: "asset-1", name: "Cash" },
+        { id: "asset-2", name: "Bank" },
+        { id: "asset-3", name: "Crypto" },
+        { id: "asset-4", name: "Savings" },
+      ];
+
+      it("returns original assets if recentIds is empty", () => {
+        expect(sortAssetsByRecent(mockAssets, [])).toEqual(mockAssets);
+      });
+
+      it("returns empty array if assets list is empty", () => {
+        expect(sortAssetsByRecent([], ["asset-1"])).toEqual([]);
+      });
+
+      it("sorts assets with recent IDs first in order of recency, keeping remaining in original order", () => {
+        const sorted = sortAssetsByRecent(mockAssets, ["asset-3", "asset-1"]);
+        expect(sorted.map((a) => a.id)).toEqual([
+          "asset-3",
+          "asset-1",
+          "asset-2",
+          "asset-4",
+        ]);
+      });
+
+      it("gracefully ignores recent IDs that do not exist in the assets array", () => {
+        const sorted = sortAssetsByRecent(mockAssets, [
+          "deleted-asset",
+          "asset-4",
+        ]);
+        expect(sorted.map((a) => a.id)).toEqual([
+          "asset-4",
+          "asset-1",
+          "asset-2",
+          "asset-3",
+        ]);
       });
     });
   });
