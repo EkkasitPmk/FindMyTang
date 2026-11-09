@@ -50,8 +50,7 @@ export default function CreateAssetsContainer({
   });
 
   const currentColor = useWatch({ control, name: "color" });
-  const includeInSnapshot =
-    useWatch({ control, name: "includeInSnapshot" }) ?? true;
+  const includeInSnapshot = useWatch({ control, name: "includeInSnapshot" });
 
   const handleSelect = (type: string) => {
     setSelected(type);
@@ -96,33 +95,24 @@ export default function CreateAssetsContainer({
   };
 
   const onSubmit = (values: CreateAssetFormValues) => {
-    const balanceNum =
-      values.balance === "" ||
-      values.balance === null ||
-      values.balance === undefined
-        ? undefined
-        : Number(values.balance);
-
-    const savingsAmountNum =
-      values.savingsAmount === "" ||
-      values.savingsAmount === null ||
-      values.savingsAmount === undefined
-        ? 0
-        : Number(values.savingsAmount);
+    const balanceNum = values.balance ? Number(values.balance) : undefined;
+    const savingsAmountNum = values.savingsAmount
+      ? Number(values.savingsAmount)
+      : 0;
 
     createAsset({
       name: values.name,
       type: values.type,
       balance: balanceNum,
       color: values.color,
-      includeInSnapshot: values.includeInSnapshot ?? true,
+      includeInSnapshot: values.includeInSnapshot,
       savingsAmount: savingsAmountNum,
     });
   };
 
   const handleBlurBalance = () => {
     const currentVal = getValues("balance");
-    const cleanVal = String(currentVal ?? "").replaceAll(",", "");
+    const cleanVal = currentVal ? String(currentVal).replaceAll(",", "") : "";
     if (cleanVal && !Number.isNaN(Number(cleanVal))) {
       setValue("balance", Number(cleanVal).toFixed(2));
     }
@@ -130,7 +120,7 @@ export default function CreateAssetsContainer({
 
   const handleBlurSavingsAmount = () => {
     const currentVal = getValues("savingsAmount");
-    const cleanVal = String(currentVal ?? "").replaceAll(",", "");
+    const cleanVal = currentVal ? String(currentVal).replaceAll(",", "") : "";
     if (cleanVal && !Number.isNaN(Number(cleanVal))) {
       setValue("savingsAmount", Number(cleanVal).toFixed(2));
     } else {

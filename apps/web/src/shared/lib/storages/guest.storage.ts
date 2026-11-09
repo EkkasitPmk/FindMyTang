@@ -177,7 +177,7 @@ export function initializeGuestData(): Promise<void> {
       guestDataInitialization = null;
     });
 
-  return guestDataInitialization ?? Promise.resolve();
+  return guestDataInitialization!;
 }
 
 export function useIsGuest() {

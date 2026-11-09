@@ -268,15 +268,7 @@ export const useAssetUIStore = create<AssetUIStore>()(
     }),
     {
       name: "findmytang-asset-ui-store",
-      storage: createJSONStorage(() =>
-        typeof window !== "undefined"
-          ? window.localStorage
-          : ({
-              getItem: () => null,
-              setItem: () => {},
-              removeItem: () => {},
-            } as unknown as Storage),
-      ),
+      storage: createJSONStorage(() => localStorage),
       partialize: (state) =>
         ({ dashboardAssetView: state.dashboardAssetView }) as AssetUIStore,
     },

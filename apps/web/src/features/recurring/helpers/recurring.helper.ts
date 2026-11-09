@@ -13,8 +13,10 @@ import type { TranslationKey } from "@/shared/lib/configs/translations.config";
 import {
   RecurringCycle,
   RecurringStatus,
-  type RecurringExpense,
-  type RecurringSummaryMetrics,
+} from "@/shared/lib/storages/dexie.storage";
+import type {
+  RecurringExpense,
+  RecurringSummaryMetrics,
 } from "@/shared/lib/types/recurring.type";
 
 /**

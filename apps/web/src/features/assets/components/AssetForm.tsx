@@ -85,12 +85,7 @@ export default function AssetForm({
   const isMobile = useIsMobile();
 
   return (
-    <Sheet
-      open={true}
-      onOpenChange={(open) => {
-        if (!open) onClose?.();
-      }}
-    >
+    <Sheet open={true} onOpenChange={(open) => !open && onClose?.()}>
       <SheetContent
         side={isMobile ? "bottom" : "right"}
         className="sm:mx-auto sm:max-w-lg"

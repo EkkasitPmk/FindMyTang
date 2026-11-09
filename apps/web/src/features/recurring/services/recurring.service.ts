@@ -6,7 +6,7 @@ import {
   RecurringStatus,
 } from "@/shared/lib/storages/dexie.storage";
 import { v4 as uuidv4 } from "uuid";
-import {
+import type {
   RecurringExpense,
   CreateRecurringExpenseRequest,
   UpdateRecurringExpenseRequest,

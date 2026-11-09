@@ -1,4 +1,4 @@
-import { RecurringStatus } from "@/shared/lib/types/recurring.type";
+import { RecurringStatus } from "@/shared/lib/storages/dexie.storage";
 
 export type RecurringFilterType =
   | "ALL"

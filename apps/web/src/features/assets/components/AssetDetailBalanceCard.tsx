@@ -56,8 +56,9 @@ export default function AssetDetailBalanceCard({
     formatted: formattedNetAmount,
   } = getNetFlowMeta(netAmount, locale);
 
+  const savingsAmount = asset?.savingsAmount ?? 0;
   const isSavingsSplitActive =
-    asset?.includeInSnapshot !== false && (asset?.savingsAmount ?? 0) > 0;
+    asset?.includeInSnapshot !== false && savingsAmount > 0;
 
   return (
     <section className="px-4 pt-3">
@@ -120,7 +121,7 @@ export default function AssetDetailBalanceCard({
         {isSavingsSplitActive && (
           <AssetSavingsSplitBar
             balance={asset?.balance ?? 0}
-            savingsAmount={asset?.savingsAmount ?? 0}
+            savingsAmount={savingsAmount}
             onEditSavings={onEditSavings}
           />
         )}

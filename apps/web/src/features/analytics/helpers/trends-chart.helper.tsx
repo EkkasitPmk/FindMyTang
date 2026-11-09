@@ -15,7 +15,7 @@ export function calculateTrendsAxisScale(
 
   if (minNegative >= 0) {
     const ticks = getNiceTickValues([0, safeMax], 5);
-    return { ticks, domain: [0, ticks.at(-1) ?? safeMax] };
+    return { ticks, domain: [0, ticks.at(-1)!] };
   }
 
   const positiveTicks = getNiceTickValues([0, safeMax], 5);
@@ -25,12 +25,12 @@ export function calculateTrendsAxisScale(
     const domainMin = Math.min(minNegative * 1.2, -step * 0.12);
     return {
       ticks: positiveTicks,
-      domain: [domainMin, positiveTicks.at(-1) ?? safeMax],
+      domain: [domainMin, positiveTicks.at(-1)!],
     };
   }
 
   const ticks = getNiceTickValues([minNegative, maxPositive], 5);
-  return { ticks, domain: [ticks[0], ticks.at(-1) ?? maxPositive] };
+  return { ticks, domain: [ticks[0], ticks.at(-1)!] };
 }
 
 export const ALL_SERIES = ["expense", "income", "transfer", "adjust"] as const;

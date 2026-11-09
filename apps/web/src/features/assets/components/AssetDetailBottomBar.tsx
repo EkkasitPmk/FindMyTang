@@ -91,10 +91,7 @@ export default function AssetDetailBottomBar({
                 tabIndex={-1}
               />
               <div
-                className={cn(
-                  "absolute bottom-full left-1/2 z-10 flex w-full -translate-x-1/2 flex-col overflow-hidden rounded-2xl border border-border bg-primary py-1 text-white shadow-xl",
-                  isAddMenuOpen ? "rounded-bl-none rounded-br-none" : "",
-                )}
+                className="absolute bottom-full left-1/2 z-10 flex w-full -translate-x-1/2 flex-col overflow-hidden rounded-2xl rounded-bl-none rounded-br-none border border-border bg-primary py-1 text-white shadow-xl"
                 style={{ backgroundColor: assetColor || undefined }}
               >
                 <Button

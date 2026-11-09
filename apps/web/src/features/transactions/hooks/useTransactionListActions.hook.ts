@@ -19,38 +19,14 @@ export function useTransactionListActions(openDeleteModal: () => void) {
         openTransactionSheet(transaction);
         return;
       }
-      const url = new URL(
-        isDesktop ? globalThis.location.href : "/transaction",
-        globalThis.location.origin,
-      );
-      if (isDesktop) {
-        url.searchParams.set("transactionType", transaction.type);
-        url.searchParams.set("transactionId", transaction.id);
-        if (transaction.assetId) {
-          url.searchParams.set("transactionAssetId", transaction.assetId);
-        } else {
-          url.searchParams.delete("transactionAssetId");
-        }
-        if (transaction.deletedAt) {
-          url.searchParams.set("transactionDeleted", "true");
-        } else {
-          url.searchParams.delete("transactionDeleted");
-        }
-      } else {
-        url.searchParams.set("type", transaction.type);
-        url.searchParams.set("id", transaction.id);
-        if (transaction.assetId) {
-          url.searchParams.set("assetId", transaction.assetId);
-        }
-        if (transaction.deletedAt) {
-          url.searchParams.set("isDeleted", "true");
-        }
+      const url = new URL("/transaction", globalThis.location.origin);
+      url.searchParams.set("type", transaction.type);
+      url.searchParams.set("id", transaction.id);
+      if (transaction.assetId) {
+        url.searchParams.set("assetId", transaction.assetId);
       }
-
-      if (isDesktop) {
-        router.push(url.pathname + url.search, { scroll: false });
-        openTransactionSheet();
-        return;
+      if (transaction.deletedAt) {
+        url.searchParams.set("isDeleted", "true");
       }
       router.push(url.pathname + url.search);
     },
