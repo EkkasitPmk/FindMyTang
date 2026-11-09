@@ -1,5 +1,6 @@
 import { AnalyticsService } from "./analytics.service";
 import { AnalyticsRepository } from "../repositories/analytics.repository";
+import { PrismaService } from "../../../prisma/prisma.service";
 
 describe("AnalyticsService & AnalyticsRepository", () => {
   describe("AnalyticsRepository.getTransactionsForYear", () => {
@@ -7,7 +8,7 @@ describe("AnalyticsService & AnalyticsRepository", () => {
       const findMany = jest.fn().mockResolvedValue([]);
       const repository = new AnalyticsRepository({
         transaction: { findMany },
-      } as any);
+      } as unknown as PrismaService);
 
       await repository.getTransactionsForYear("user-1", 2026);
 
@@ -40,7 +41,9 @@ describe("AnalyticsService & AnalyticsRepository", () => {
         ]),
       };
 
-      const service = new AnalyticsService(mockRepo as any);
+      const service = new AnalyticsService(
+        mockRepo as unknown as AnalyticsRepository,
+      );
       const result = await service.getMonthlyTrends("user-1", 2026);
 
       expect(result.year).toBe(2026);
