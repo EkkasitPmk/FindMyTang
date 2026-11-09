@@ -21,6 +21,12 @@ describe("transaction-scroll.helper", () => {
   });
 
   it("adjusts scroll anchor when position changed significantly", () => {
+    let capturedCb: ((time: number) => void) | undefined;
+    vi.spyOn(globalThis, "requestAnimationFrame").mockImplementation((cb) => {
+      capturedCb = cb;
+      return 1;
+    });
+
     const positions = new Map<string, number>([["tx-1", 500]]);
     const targetElement = {
       getBoundingClientRect: () => ({ top: 200 }),
@@ -38,6 +44,28 @@ describe("transaction-scroll.helper", () => {
     // newTop is 200 - 0 + 200 = 400. delta is 400 - 500 = -100.
     expect(scrollElement.dataset.programmaticScroll).toBe("true");
     expect(scrollElement.scrollTop).toBe(100);
+
+    const runRaf = () => capturedCb?.(0);
+    runRaf();
+    expect(scrollElement.dataset.programmaticScroll).toBe("false");
+  });
+
+  it("does not adjust scroll anchor when targetId is not in positions or element not found", () => {
+    const positions = new Map<string, number>([["tx-1", 500]]);
+    const scrollElement = {
+      getBoundingClientRect: () => ({ top: 0 }),
+      scrollTop: 200,
+      dataset: {} as Record<string, string>,
+      querySelector: vi.fn().mockReturnValue(null),
+    } as unknown as HTMLElement;
+
+    // targetId not in positions
+    adjustScrollAnchor(scrollElement, "unknown", positions);
+    expect(scrollElement.dataset.programmaticScroll).toBeUndefined();
+
+    // target element not found in DOM
+    adjustScrollAnchor(scrollElement, "tx-1", positions);
+    expect(scrollElement.dataset.programmaticScroll).toBeUndefined();
   });
 
   it("does not adjust scroll anchor when delta is within 1px threshold", () => {
@@ -69,11 +97,15 @@ describe("transaction-scroll.helper", () => {
       dataset: { transactionId: "tx-2" },
       getBoundingClientRect: () => ({ top: 250 }),
     } as unknown as HTMLElement;
+    const el3 = {
+      dataset: { transactionId: "" },
+      getBoundingClientRect: () => ({ top: 350 }),
+    } as unknown as HTMLElement;
 
     const scrollElement = {
       getBoundingClientRect: () => ({ top: 50 }),
       scrollTop: 100,
-      querySelectorAll: vi.fn().mockReturnValue([el1, el2]),
+      querySelectorAll: vi.fn().mockReturnValue([el1, el2, el3]),
     } as unknown as HTMLElement;
 
     const map = new Map<string, number>();
@@ -81,6 +113,7 @@ describe("transaction-scroll.helper", () => {
 
     expect(map.get("tx-1")).toBe(200);
     expect(map.get("tx-2")).toBe(300);
+    expect(map.has("")).toBe(false);
   });
 
   it("detects filter changes correctly", () => {

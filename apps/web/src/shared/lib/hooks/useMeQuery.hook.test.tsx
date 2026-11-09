@@ -58,4 +58,53 @@ describe("useMeQuery", () => {
 
     await waitFor(() => expect(useGuestStore.getState().isGuest).toBe(true));
   });
+
+  it("configures retry and refetchInterval correctly for errors", async () => {
+    mockedGetMeApi.mockRejectedValue(new Error("network error"));
+    const queryClient = new QueryClient();
+    const wrapper = ({ children }: PropsWithChildren) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    );
+
+    renderHook(() => useMeQuery(), { wrapper });
+
+    const query = queryClient
+      .getQueryCache()
+      .find({ queryKey: ["auth", "me"] });
+    expect(query).toBeDefined();
+
+    const retryFn = query?.options.retry as (
+      count: number,
+      err: unknown,
+    ) => boolean;
+    const refetchIntervalFn = (
+      query?.options as unknown as {
+        refetchInterval: (q: unknown) => number | false;
+      }
+    ).refetchInterval;
+
+    // Retry logic
+    expect(retryFn(0, { isAxiosError: true, response: { status: 401 } })).toBe(
+      false,
+    );
+    expect(retryFn(0, new Error("server error"))).toBe(true);
+    expect(retryFn(1, new Error("server error"))).toBe(true);
+    expect(retryFn(2, new Error("server error"))).toBe(false);
+
+    // Refetch interval logic
+    expect(refetchIntervalFn({ state: { status: "success" } })).toBe(false);
+    expect(
+      refetchIntervalFn({
+        state: {
+          status: "error",
+          error: { isAxiosError: true, response: { status: 401 } },
+        },
+      }),
+    ).toBe(false);
+    expect(
+      refetchIntervalFn({
+        state: { status: "error", error: new Error("500") },
+      }),
+    ).toBe(10_000);
+  });
 });

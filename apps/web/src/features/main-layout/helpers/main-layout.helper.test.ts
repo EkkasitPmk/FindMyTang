@@ -111,18 +111,39 @@ describe("main-layout.helper", () => {
 
   it("returns correct synthetic category object", () => {
     const mockT = (key: TranslationKey) => key.toUpperCase();
-    const synth = getSyntheticCategory("uncategorized_transfer", mockT);
-    expect(synth).toEqual({
+    const synthTransfer = getSyntheticCategory("uncategorized_transfer", mockT);
+    expect(synthTransfer).toEqual({
       id: "uncategorized_transfer",
       name: "TRANSFER",
       color: "#3B82F6",
       type: "TRANSFER",
     });
 
+    const synthAdjustment = getSyntheticCategory(
+      "uncategorized_adjustment",
+      mockT,
+    );
+    expect(synthAdjustment).toEqual({
+      id: "uncategorized_adjustment",
+      name: "ADJUSTMENT",
+      color: "#6B7280",
+      type: "ADJUSTMENT",
+    });
+
+    const synthUncategorized = getSyntheticCategory("uncategorized", mockT);
+    expect(synthUncategorized).toEqual({
+      id: "uncategorized",
+      name: "Uncategorized",
+      color: "#9CA3AF",
+      type: "EXPENSE",
+    });
+
+    expect(getSyntheticCategory("unknown_category", mockT)).toBeNull();
     expect(getSyntheticCategory(null, mockT)).toBeNull();
   });
 
   it("calculates content class names based on route and header conditions", () => {
+    // 1. isMainTab with locked content scroll
     const mainTabRes = getMainContentClassNames({
       isMainTab: true,
       shouldShowTopAppBar: false,
@@ -132,6 +153,17 @@ describe("main-layout.helper", () => {
     expect(mainTabRes.mainContentClassName).toBe("pt-3");
     expect(mainTabRes.mainOverflowClassName).toBe("overflow-hidden");
 
+    // 2. isMainTab without locked content scroll
+    const dashboardTabRes = getMainContentClassNames({
+      isMainTab: true,
+      shouldShowTopAppBar: false,
+      isSearchMode: false,
+      pathname: "/dashboard",
+    });
+    expect(dashboardTabRes.mainContentClassName).toBe("pt-15 md:py-4");
+    expect(dashboardTabRes.mainOverflowClassName).toBe("overflow-y-auto");
+
+    // 3. shouldShowTopAppBar with assets search mode
     const assetSearchRes = getMainContentClassNames({
       isMainTab: false,
       shouldShowTopAppBar: true,
@@ -139,5 +171,24 @@ describe("main-layout.helper", () => {
       pathname: "/assets",
     });
     expect(assetSearchRes.mainContentClassName).toBe("");
+
+    // 4. shouldShowTopAppBar standard route
+    const standardHeaderRes = getMainContentClassNames({
+      isMainTab: false,
+      shouldShowTopAppBar: true,
+      isSearchMode: false,
+      pathname: "/assets",
+    });
+    expect(standardHeaderRes.mainContentClassName).toBe("pt-12 md:py-4");
+
+    // 5. neither isMainTab nor shouldShowTopAppBar
+    const defaultRes = getMainContentClassNames({
+      isMainTab: false,
+      shouldShowTopAppBar: false,
+      isSearchMode: false,
+      pathname: "/other",
+    });
+    expect(defaultRes.mainContentClassName).toBe("px-0 py-3");
+    expect(defaultRes.mainOverflowClassName).toBe("overflow-y-auto");
   });
 });

@@ -5,9 +5,52 @@ import {
   convertDigitsToAmount,
   convertAmountToDigits,
   formatCompactCurrency,
+  formatCurrency,
+  formatAmount,
+  formatNet,
 } from "./currency.util";
 
 describe("currency.util", () => {
+  describe("formatCurrency", () => {
+    it("formats amounts in THB currency format", () => {
+      const formatted = formatCurrency(1250.5);
+      expect(formatted).toContain("1,250.5");
+      expect(formatted).toMatch(/฿|THB/);
+    });
+  });
+
+  describe("formatAmount", () => {
+    it("formats positive amount with currency prefix and 2 decimals", () => {
+      expect(formatAmount(1250.5)).toBe("฿1,250.50");
+    });
+
+    it("formats negative amount as absolute with currency prefix", () => {
+      expect(formatAmount(-50)).toBe("฿50.00");
+    });
+
+    it("formats with custom locale", () => {
+      expect(formatAmount(1250.5, "th-TH")).toBe("฿1,250.50");
+    });
+  });
+
+  describe("formatNet", () => {
+    it("formats positive amount with + sign", () => {
+      expect(formatNet(1250.5)).toBe("+฿1,250.50");
+    });
+
+    it("formats zero with + sign", () => {
+      expect(formatNet(0)).toBe("+฿0.00");
+    });
+
+    it("formats negative amount with - sign", () => {
+      expect(formatNet(-42.1)).toBe("-฿42.10");
+    });
+
+    it("formats with custom locale", () => {
+      expect(formatNet(100, "th-TH")).toBe("+฿100.00");
+    });
+  });
+
   describe("formatCompactCurrency", () => {
     it("formats small amounts without k suffix", () => {
       expect(formatCompactCurrency(75)).toBe("฿75");

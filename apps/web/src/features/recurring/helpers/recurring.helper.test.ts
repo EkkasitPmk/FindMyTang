@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import type { TranslationKey } from "@/shared/lib/configs/translations.config";
 import {
   calculateMonthlyEquivalent,
   calculateRecurringMetrics,
@@ -11,8 +12,8 @@ import {
 import {
   RecurringCycle,
   RecurringStatus,
-  type RecurringExpense,
-} from "@/shared/lib/types/recurring.type";
+} from "@/shared/lib/storages/dexie.storage";
+import type { RecurringExpense } from "@/shared/lib/types/recurring.type";
 
 describe("recurring.helper", () => {
   describe("calculateMonthlyEquivalent", () => {
@@ -39,6 +40,12 @@ describe("recurring.helper", () => {
     it("handles zero or negative amount gracefully", () => {
       expect(calculateMonthlyEquivalent(0, RecurringCycle.MONTHLY)).toBe(0);
       expect(calculateMonthlyEquivalent(-50, RecurringCycle.MONTHLY)).toBe(0);
+    });
+
+    it("returns raw amount for unknown cycle fallback", () => {
+      expect(
+        calculateMonthlyEquivalent(500, "UNKNOWN" as unknown as RecurringCycle),
+      ).toBe(500);
     });
   });
 
@@ -101,6 +108,23 @@ describe("recurring.helper", () => {
       // Netflix is in 3 days, iCloud in 5 days -> Netflix is closest
       expect(metrics.upcomingDueItem?.name).toBe("Netflix");
     });
+
+    it("returns null for upcomingDueItem when no items are due within 7 days", () => {
+      const farAwayItems: RecurringExpense[] = [
+        {
+          id: "1",
+          name: "Far Away",
+          amount: 100,
+          billingCycle: RecurringCycle.MONTHLY,
+          nextBillingDate: "2026-11-30T00:00:00.000Z",
+          status: RecurringStatus.ACTIVE,
+          createdAt: "",
+          updatedAt: "",
+        },
+      ];
+      const metrics = calculateRecurringMetrics(farAwayItems, fixedToday);
+      expect(metrics.upcomingDueItem).toBeNull();
+    });
   });
 
   describe("getNextBillingDate (Anchor Day Calculation)", () => {
@@ -141,6 +165,17 @@ describe("recurring.helper", () => {
       // Must roll forward past today to Nov 15!
       expect(nextDate.startsWith("2026-11-15")).toBe(true);
     });
+
+    it("accepts Date instances for currentNextBillingDate and fromDate", () => {
+      const currentBilling = new Date("2026-10-15T00:00:00.000Z");
+      const fromDate = new Date("2026-10-18T00:00:00.000Z");
+      const nextDate = getNextBillingDate(
+        currentBilling,
+        RecurringCycle.MONTHLY,
+        fromDate,
+      );
+      expect(nextDate.startsWith("2026-11-15")).toBe(true);
+    });
   });
 
   describe("getDueStatus", () => {
@@ -171,6 +206,12 @@ describe("recurring.helper", () => {
         expectedOverdue: false,
         expectedLabel: "ตัดรอบในอีก 3 วัน",
       },
+      {
+        scenario: "future beyond 7 days without translation",
+        billingDate: "2026-11-20T00:00:00.000Z",
+        expectedOverdue: false,
+        expectedLabel: "ตัดรอบ 20 Nov 2026",
+      },
     ])(
       "detects $scenario correctly",
       ({ billingDate, expectedOverdue, expectedLabel }) => {
@@ -179,6 +220,50 @@ describe("recurring.helper", () => {
         expect(status.label).toBe(expectedLabel);
       },
     );
+
+    it("uses translation function for all status cases", () => {
+      const mockT = vi.fn((key: TranslationKey) => `trans_${key}`);
+
+      // Overdue
+      const overdueStatus = getDueStatus(
+        "2026-10-15T00:00:00.000Z",
+        today,
+        mockT,
+      );
+      expect(overdueStatus.label).toBe("trans_recurringDueOverdue");
+
+      // Due today
+      const todayStatus = getDueStatus(
+        "2026-10-19T00:00:00.000Z",
+        today,
+        mockT,
+      );
+      expect(todayStatus.label).toBe("trans_recurringDueToday");
+
+      // Due tomorrow
+      const tomorrowStatus = getDueStatus(
+        "2026-10-20T00:00:00.000Z",
+        today,
+        mockT,
+      );
+      expect(tomorrowStatus.label).toBe("trans_recurringDueTomorrow");
+
+      // Due within 7 days
+      const inDaysStatus = getDueStatus(
+        "2026-10-23T00:00:00.000Z",
+        today,
+        mockT,
+      );
+      expect(inDaysStatus.label).toBe("trans_recurringDueInDays");
+
+      // Due beyond 7 days
+      const futureStatus = getDueStatus(
+        "2026-11-20T00:00:00.000Z",
+        today,
+        mockT,
+      );
+      expect(futureStatus.label).toBe("20 Nov 2026");
+    });
   });
 
   describe("sortRecurringExpenses", () => {
@@ -243,6 +328,14 @@ describe("recurring.helper", () => {
         RecurringCycle.YEARLY,
       );
       expect(next.toISOString().startsWith("2027-10-18")).toBe(true);
+    });
+
+    it("defaults to advancing 1 month for unknown cycle", () => {
+      const next = advanceCycle(
+        "2026-10-01T00:00:00.000Z",
+        "UNKNOWN" as unknown as RecurringCycle,
+      );
+      expect(next.toISOString().startsWith("2026-11-01")).toBe(true);
     });
   });
 

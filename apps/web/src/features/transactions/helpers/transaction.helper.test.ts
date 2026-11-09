@@ -5,6 +5,7 @@ import {
   createDefaultFormValues,
   getActiveItemId,
   getTypeLabel,
+  getTransactionTypeOptions,
   parseErrorMessage,
   checkIsLoading,
   checkIsTxLoading,
@@ -215,6 +216,26 @@ describe("transaction.helper", () => {
       });
     });
 
+    it("should not save recent asset id when assetId is empty", () => {
+      const data = {
+        amount: 100,
+        note: "Balance adjustment",
+        transactionDate: "2026-07-08T00:00:00.000Z",
+        assetId: "",
+      };
+
+      submitTransaction({
+        transactionType: "ADJUSTMENT",
+        data,
+        createTransaction: mockCreateTransaction,
+        updateTransaction: mockUpdateTransaction,
+        toast: mockToast,
+        t: mockTranslate,
+      });
+
+      expect(mockCreateMutate).toHaveBeenCalled();
+    });
+
     it("should call updateTransaction for editing transaction", () => {
       const data = {
         amount: 200,
@@ -246,6 +267,44 @@ describe("transaction.helper", () => {
           categoryId: "cat-1",
           attachmentUrl: undefined,
           file: null,
+        },
+      });
+    });
+
+    it("should build update payload for external transfer with removedAttachment and file", () => {
+      const mockFile = new File(["test"], "test.png", { type: "image/png" });
+      const data = {
+        amount: 200,
+        note: "Updated",
+        transactionDate: "2026-07-08T00:00:00.000Z",
+        assetId: "asset-1",
+        toAssetId: "EXTERNAL",
+      };
+
+      submitTransaction({
+        transactionType: "TRANSFER",
+        data,
+        file: mockFile,
+        createTransaction: mockCreateTransaction,
+        updateTransaction: mockUpdateTransaction,
+        editId: "tx-1",
+        removedAttachment: true,
+        toast: mockToast,
+        t: mockTranslate,
+      });
+
+      expect(mockUpdateMutate).toHaveBeenCalledWith({
+        id: "tx-1",
+        data: {
+          type: "TRANSFER",
+          assetId: "asset-1",
+          amount: 200,
+          note: "Updated",
+          transactionDate: data.transactionDate,
+          toAssetId: null,
+          categoryId: null,
+          attachmentUrl: null,
+          file: mockFile,
         },
       });
     });
@@ -341,6 +400,19 @@ describe("transaction.helper", () => {
       expect(values.assetId).toBe("asset-123");
       expect(values.categoryId).toBe("cat-456");
       expect(values.toAssetId).toBe("asset-789");
+    });
+
+    it("should set toAssetId to EXTERNAL for existing TRANSFER without toAssetId", () => {
+      const mockTx = {
+        amount: 300,
+        note: "Transfer out",
+        transactionDate: "2026-07-08T12:00:00.000Z",
+        assetId: "asset-1",
+        type: "TRANSFER",
+      } as unknown as TransactionResponse;
+
+      const values = createDefaultFormValues(mockTx);
+      expect(values.toAssetId).toBe("EXTERNAL");
     });
   });
 
@@ -442,12 +514,61 @@ describe("transaction.helper", () => {
     });
   });
 
+  describe("getTransactionTypeOptions", () => {
+    it("returns all 4 types when editId is not provided", () => {
+      const opts = getTransactionTypeOptions(undefined, undefined);
+      expect(opts).toEqual([
+        { label: "expense", value: "EXPENSE" },
+        { label: "income", value: "INCOME" },
+        { label: "transfer", value: "TRANSFER" },
+        { label: "adjustment", value: "ADJUSTMENT" },
+      ]);
+    });
+
+    it("returns only TRANSFER option when editing TRANSFER", () => {
+      const opts = getTransactionTypeOptions("tx-1", "TRANSFER");
+      expect(opts).toEqual([{ label: "transfer", value: "TRANSFER" }]);
+    });
+
+    it("returns only ADJUSTMENT option when editing ADJUSTMENT", () => {
+      const opts = getTransactionTypeOptions("tx-1", "ADJUSTMENT");
+      expect(opts).toEqual([{ label: "adjustment", value: "ADJUSTMENT" }]);
+    });
+
+    it("returns EXPENSE and INCOME options when editing EXPENSE or INCOME", () => {
+      const optsExpense = getTransactionTypeOptions("tx-1", "EXPENSE");
+      expect(optsExpense).toEqual([
+        { label: "expense", value: "EXPENSE" },
+        { label: "income", value: "INCOME" },
+      ]);
+
+      const optsIncome = getTransactionTypeOptions("tx-1", "INCOME");
+      expect(optsIncome).toEqual([
+        { label: "expense", value: "EXPENSE" },
+        { label: "income", value: "INCOME" },
+      ]);
+    });
+
+    it("falls through to all options when editId exists but existingType is unknown/undefined", () => {
+      const opts = getTransactionTypeOptions("tx-1", undefined);
+      expect(opts).toHaveLength(4);
+    });
+  });
+
   describe("recent assets helper", () => {
     beforeEach(() => {
       window.localStorage.clear();
     });
 
     describe("getRecentAssetIds", () => {
+      it("returns empty array when window is undefined (SSR)", () => {
+        const origWindow = globalThis.window;
+        vi.stubGlobal("window", undefined);
+        expect(getRecentAssetIds()).toEqual([]);
+        expect(saveRecentAssetId("asset-1")).toEqual([]);
+        vi.stubGlobal("window", origWindow);
+      });
+
       it("returns empty array when nothing is stored", () => {
         expect(getRecentAssetIds()).toEqual([]);
       });
@@ -468,6 +589,12 @@ describe("transaction.helper", () => {
         expect(getRecentAssetIds()).toEqual(["asset-1", "asset-2"]);
 
         window.localStorage.setItem(RECENT_ASSET_IDS_KEY, "invalid-json{");
+        expect(getRecentAssetIds()).toEqual([]);
+
+        window.localStorage.setItem(
+          RECENT_ASSET_IDS_KEY,
+          JSON.stringify({ not: "an array" }),
+        );
         expect(getRecentAssetIds()).toEqual([]);
       });
     });
@@ -499,6 +626,14 @@ describe("transaction.helper", () => {
 
         expect(resEmpty).toEqual(["asset-1"]);
         expect(resExternal).toEqual(["asset-1"]);
+      });
+
+      it("returns empty array when localStorage.setItem throws", () => {
+        vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+          throw new Error("Quota exceeded");
+        });
+        const res = saveRecentAssetId("asset-1");
+        expect(res).toEqual([]);
       });
     });
 

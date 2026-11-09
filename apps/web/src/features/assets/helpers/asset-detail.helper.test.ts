@@ -27,6 +27,10 @@ describe("asset-detail.helper", () => {
     it("returns current year when availableYears is empty", () => {
       expect(getEffectiveYear("Select", [], "2026")).toBe("2026");
     });
+
+    it("returns currentYearStr if first available year is empty string", () => {
+      expect(getEffectiveYear("2024", [""], "2026")).toBe("2026");
+    });
   });
 
   describe("getAvailableMonths", () => {
@@ -71,6 +75,10 @@ describe("asset-detail.helper", () => {
         getEffectiveMonth("Select", ["February", "January"], "March"),
       ).toBe("February");
     });
+
+    it("returns currentMonthStr if first available month is empty string", () => {
+      expect(getEffectiveMonth("Select", [""], "March")).toBe("March");
+    });
   });
 
   describe("shouldShowTransactionsLoading", () => {
@@ -80,10 +88,28 @@ describe("asset-detail.helper", () => {
       ).toBe(true);
     });
 
+    it("returns false in search mode even if available dates are pending", () => {
+      expect(
+        shouldShowTransactionsLoading(true, true, false, false, false),
+      ).toBe(false);
+    });
+
     it("returns true when transactions are fetching and pending", () => {
       expect(
         shouldShowTransactionsLoading(false, false, true, false, true),
       ).toBe(true);
+    });
+
+    it("returns true when search mode is active and fetching even if not pending", () => {
+      expect(
+        shouldShowTransactionsLoading(true, false, true, false, false),
+      ).toBe(true);
+    });
+
+    it("returns false when normal mode is fetching but not pending", () => {
+      expect(
+        shouldShowTransactionsLoading(false, false, true, false, false),
+      ).toBe(false);
     });
 
     it("returns false when fetching next page", () => {

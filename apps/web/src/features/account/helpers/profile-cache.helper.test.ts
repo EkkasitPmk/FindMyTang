@@ -25,4 +25,18 @@ describe("syncProfileCache", () => {
       queryKey: ["auth", "me"],
     });
   });
+
+  it("only invalidates queries when profile is not provided", async () => {
+    const queryClient = {
+      setQueryData: vi.fn(),
+      invalidateQueries: vi.fn().mockResolvedValue(undefined),
+    };
+
+    await syncProfileCache(queryClient as never);
+
+    expect(queryClient.setQueryData).not.toHaveBeenCalled();
+    expect(queryClient.invalidateQueries).toHaveBeenCalledWith({
+      queryKey: ["auth", "me"],
+    });
+  });
 });

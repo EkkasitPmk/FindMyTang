@@ -11,12 +11,18 @@ describe("drilldown.helper", () => {
   describe("getTxTime", () => {
     it("returns null for midnight or T00:00:00", () => {
       expect(getTxTime("2026-09-30T00:00:00.000Z")).toBeNull();
+      const localMidnight = new Date(2026, 8, 30, 0, 0, 0);
+      expect(getTxTime(localMidnight.toString())).toBeNull();
     });
 
     it("returns HH:mm when time is present", () => {
       // Create local date with specific time
       const date = new Date(2026, 8, 30, 14, 25);
       expect(getTxTime(date.toISOString())).toBe("14:25");
+      const midnightMinutes = new Date(2026, 8, 30, 0, 15, 0);
+      expect(getTxTime(midnightMinutes.toString())).toBe("00:15");
+      const midnightSeconds = new Date(2026, 8, 30, 0, 0, 30);
+      expect(getTxTime(midnightSeconds.toString())).toBe("00:00");
     });
   });
 
@@ -65,6 +71,10 @@ describe("drilldown.helper", () => {
       const style = getAssetBadgeStyle();
       expect(style.color).toBe("var(--chart-2)");
       expect(style.backgroundColor).toBe("var(--surface-secondary)");
+
+      const nonHex = getAssetBadgeStyle("blue");
+      expect(nonHex.color).toBe("blue");
+      expect(nonHex.backgroundColor).toBe("var(--surface-secondary)");
     });
   });
 

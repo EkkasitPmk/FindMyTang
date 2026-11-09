@@ -35,6 +35,23 @@ describe("navigation helper", () => {
     expect(isGuestNavBlocked("/settings/account", true)).toBe(true);
     expect(isGuestNavBlocked("/dashboard", true)).toBe(false);
     expect(isGuestNavBlocked("/settings/account", false)).toBe(false);
+
+    // Test with guestLocked nav item
+    const lockedItem = {
+      href: "/locked-feature",
+      guestLocked: true,
+      label: "Locked Feature",
+      translationKey: "navDashboard" as const,
+      icon: navItems[0].icon,
+      mobilePlacement: "more" as const,
+    };
+    navItems.push(lockedItem);
+    try {
+      expect(isGuestNavBlocked("/locked-feature", true)).toBe(true);
+      expect(isGuestNavBlocked("/other-feature", true)).toBe(false);
+    } finally {
+      navItems.pop();
+    }
   });
 
   it("shows bottom navigation for primary routes and nested routes", () => {

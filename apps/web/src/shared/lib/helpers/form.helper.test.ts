@@ -45,6 +45,47 @@ describe("form.helper", () => {
       expect(toast.error).toHaveBeenCalledWith("Unknown error");
     });
 
+    it("should handle a single string message", () => {
+      const mockSetError = vi.fn();
+      const mockError = {
+        response: {
+          data: {
+            message: "Single error occurred",
+          },
+        },
+      };
+
+      handleFormError(mockError, mockSetError, "Default Error");
+      expect(toast.error).toHaveBeenCalledWith("Single error occurred");
+    });
+
+    it("should call setError for multiple fields when mapping is an array", () => {
+      const mockSetError = vi.fn();
+      const mockError = {
+        response: {
+          data: {
+            message: "date is invalid",
+          },
+        },
+      };
+
+      const mapping = {
+        date: ["startDate", "endDate"],
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      handleFormError<any>(mockError, mockSetError, "Default Error", mapping);
+
+      expect(mockSetError).toHaveBeenCalledWith("startDate", {
+        type: "server",
+        message: "date is invalid",
+      });
+      expect(mockSetError).toHaveBeenCalledWith("endDate", {
+        type: "server",
+        message: "date is invalid",
+      });
+    });
+
     it("should toast all errors if mapping is not provided", () => {
       const mockSetError = vi.fn();
       const mockError = {

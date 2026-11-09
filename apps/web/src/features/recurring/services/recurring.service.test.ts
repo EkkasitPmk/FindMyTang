@@ -59,20 +59,36 @@ vi.mock("@/shared/lib/storages/dexie.storage", async (importOriginal) => {
         }),
       },
       categories: {
-        get: vi.fn(async (id: string) => ({
-          id,
-          name: "ความบันเทิง",
-          type: "EXPENSE",
-          color: "#E50914",
-        })),
+        get: vi.fn(async (id: string) => {
+          if (id === "missing-cat") return undefined;
+          if (id === "null-cat") {
+            return {
+              id,
+              name: "Null Cat",
+              type: "EXPENSE",
+              color: null,
+              icon: null,
+            };
+          }
+          return {
+            id,
+            name: "ความบันเทิง",
+            type: "EXPENSE",
+            color: "#E50914",
+            icon: "film",
+          };
+        }),
       },
       assets: {
-        get: vi.fn(async (id: string) => ({
-          id,
-          name: "KBank",
-          type: "BANK",
-          balance: 5000,
-        })),
+        get: vi.fn(async (id: string) => {
+          if (id === "missing-asset") return undefined;
+          return {
+            id,
+            name: "KBank",
+            type: "BANK",
+            balance: 5000,
+          };
+        }),
       },
     },
   };
@@ -174,26 +190,88 @@ describe("recurring.service", () => {
         amount: 419,
         billingCycle: RecurringCycle.MONTHLY,
         nextBillingDate: "2026-11-01T00:00:00.000Z",
+        categoryId: "cat-1",
+        assetId: "asset-1",
       });
 
       expect(created.id).toBeDefined();
       expect(created.amount).toBe(419);
+      expect(created.category?.name).toBe("ความบันเทิง");
+      expect(created.asset?.name).toBe("KBank");
 
-      // Read
+      // Also create an item with missing category and asset to test fallback branches
+      const createdWithMissing = await createRecurringExpenseApi({
+        name: "Missing Links",
+        amount: 100,
+        billingCycle: RecurringCycle.MONTHLY,
+        nextBillingDate: "2026-11-01T00:00:00.000Z",
+        categoryId: "missing-cat",
+        assetId: "missing-asset",
+      });
+      expect(createdWithMissing.category).toBeUndefined();
+      expect(createdWithMissing.asset).toBeUndefined();
+
+      // Create an item with no categoryId/assetId, custom currency and note, and test null color/icon
+      const createdWithNullFields = await createRecurringExpenseApi({
+        name: "Null Cat Item",
+        amount: 250,
+        currency: "USD",
+        status: RecurringStatus.PAUSED,
+        note: "Note text",
+        billingCycle: RecurringCycle.MONTHLY,
+        nextBillingDate: "2026-11-01T00:00:00.000Z",
+        categoryId: "null-cat",
+      });
+      expect(createdWithNullFields.currency).toBe("USD");
+      expect(createdWithNullFields.status).toBe(RecurringStatus.PAUSED);
+      expect(createdWithNullFields.category?.color).toBeNull();
+      expect(createdWithNullFields.category?.icon).toBeNull();
+      expect(createdWithNullFields.asset).toBeUndefined();
+
+      // Create an item with purely defaults (no categoryId, no assetId)
+      const createdPureDefaults = await createRecurringExpenseApi({
+        name: "Pure Defaults",
+        amount: 50,
+        billingCycle: RecurringCycle.MONTHLY,
+        nextBillingDate: "2026-11-01T00:00:00.000Z",
+      });
+      expect(createdPureDefaults.category).toBeUndefined();
+      expect(createdPureDefaults.asset).toBeUndefined();
+
+      // Read with status filter
+      const activeList = await getRecurringExpensesApi(RecurringStatus.ACTIVE);
+      expect(activeList).toHaveLength(3);
+
+      const pausedList = await getRecurringExpensesApi(RecurringStatus.PAUSED);
+      expect(pausedList).toHaveLength(1);
+
+      // Read all
       const list = await getRecurringExpensesApi();
-      expect(list).toHaveLength(1);
+      expect(list).toHaveLength(4);
       expect(list[0].name).toBe("Netflix");
 
-      // Update
+      // Update without amount (fallback to existing.amount)
+      const updatedWithoutAmount = await updateRecurringExpenseApi(created.id, {
+        name: "Netflix Premium",
+      });
+      expect(updatedWithoutAmount.amount).toBe(419);
+      expect(updatedWithoutAmount.name).toBe("Netflix Premium");
+
+      // Update with amount
       const updated = await updateRecurringExpenseApi(created.id, {
         amount: 449,
       });
       expect(updated.amount).toBe(449);
 
+      // Update non-existent item throws error
+      await expect(
+        updateRecurringExpenseApi("non-existent-id", { amount: 100 }),
+      ).rejects.toThrow("Recurring expense with id non-existent-id not found");
+
       // Delete
       await deleteRecurringExpenseApi(created.id);
       const listAfterDelete = await getRecurringExpensesApi();
-      expect(listAfterDelete).toHaveLength(0);
+      expect(listAfterDelete).toHaveLength(3);
     });
   });
 
@@ -256,6 +334,56 @@ describe("recurring.service", () => {
           nextBillingDate: expect.any(String),
         }),
       );
+    });
+
+    it("updates categoryId and uses explicit nextBillingDate when provided", async () => {
+      vi.spyOn(
+        transactionService,
+        "createTransactionApi",
+      ).mockResolvedValueOnce({
+        id: "tx-2",
+        amount: 200,
+        type: "EXPENSE" as TransactionType,
+        date: "2026-10-22",
+        assetId: "asset-1",
+      } as unknown as TransactionResponse);
+
+      vi.mocked(http.patch).mockResolvedValueOnce({
+        data: {
+          id: "rec-2",
+          name: "Spotify",
+          amount: 200,
+          billingCycle: RecurringCycle.MONTHLY,
+          nextBillingDate: "2026-12-01T00:00:00.000Z",
+          status: RecurringStatus.ACTIVE,
+        },
+      });
+
+      const itemWithoutCat = {
+        id: "rec-2",
+        name: "Spotify",
+        amount: 200,
+        currency: "THB",
+        billingCycle: RecurringCycle.MONTHLY,
+        nextBillingDate: "2026-10-22T00:00:00.000Z",
+        status: RecurringStatus.ACTIVE,
+        createdAt: "2026-09-22T00:00:00.000Z",
+        updatedAt: "2026-09-22T00:00:00.000Z",
+      };
+
+      const result = await logRecurringExpensePaymentApi(itemWithoutCat, {
+        amount: 200,
+        paymentDate: "2026-10-22",
+        assetId: "asset-1",
+        categoryId: "cat-new",
+        nextBillingDate: "2026-12-01T00:00:00.000Z",
+      });
+
+      expect(http.patch).toHaveBeenCalledWith("/recurring/rec-2", {
+        nextBillingDate: "2026-12-01T00:00:00.000Z",
+        categoryId: "cat-new",
+      });
+      expect(result.transaction.id).toBe("tx-2");
     });
   });
 });

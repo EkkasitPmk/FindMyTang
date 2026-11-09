@@ -62,4 +62,17 @@ describe("recurring.server", () => {
 
     await expect(getRecurringExpensesServer()).resolves.toBeNull();
   });
+
+  it("logs error and returns null when an exception occurs", async () => {
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    mockCookies.mockRejectedValueOnce(new Error("Cookies failure"));
+
+    const result = await getRecurringExpensesServer();
+    expect(result).toBeNull();
+    expect(consoleSpy).toHaveBeenCalledWith(
+      "Failed to load recurring expenses on the server",
+      expect.any(Error),
+    );
+    consoleSpy.mockRestore();
+  });
 });

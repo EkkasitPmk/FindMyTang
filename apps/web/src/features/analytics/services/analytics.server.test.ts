@@ -4,6 +4,7 @@ vi.mock("next/headers", () => ({ cookies: vi.fn() }));
 
 import { cookies } from "next/headers";
 import {
+  getAssetDistributionServer,
   getCategoryBreakdownServer,
   getDrilldownServer,
   getMonthlyTrendsServer,
@@ -19,6 +20,7 @@ describe("analytics.server", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.stubGlobal("fetch", vi.fn());
+    vi.spyOn(console, "error").mockImplementation(() => {});
   });
 
   it("does not read cloud analytics without an access token", async () => {
@@ -75,5 +77,31 @@ describe("analytics.server", () => {
     } as Response);
 
     await expect(getMonthlyTrendsServer(2030)).resolves.toBeNull();
+  });
+
+  it("fetches asset distribution when authenticated", async () => {
+    mockCookies.mockResolvedValue({
+      has: () => true,
+      toString: () => "access_token=token",
+    } as never);
+    const assetDistribution = {
+      totalAssets: 1000,
+      distribution: [],
+    };
+    vi.mocked(fetch).mockResolvedValue({
+      ok: true,
+      json: async () => assetDistribution,
+    } as Response);
+
+    await expect(getAssetDistributionServer()).resolves.toEqual(
+      assetDistribution,
+    );
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining("/analytics/assets"),
+      expect.objectContaining({
+        cache: "no-store",
+        headers: { cookie: "access_token=token" },
+      }),
+    );
   });
 });

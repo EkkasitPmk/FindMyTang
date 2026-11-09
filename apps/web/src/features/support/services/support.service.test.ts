@@ -46,4 +46,32 @@ describe("submitSupportRequest", () => {
       ),
     ).rejects.toThrow("Rejected");
   });
+
+  it("throws when access key is not configured", async () => {
+    vi.stubEnv("NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY", "");
+
+    await expect(
+      submitSupportRequest(
+        { subject: "Contact", fields: {} },
+        { language: "th", isGuest: false },
+      ),
+    ).rejects.toThrow("Web3Forms access key is not configured");
+  });
+
+  it("throws with fallback message when Web3Forms rejects without message", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: false,
+        json: async () => ({ success: false }),
+      }),
+    );
+
+    await expect(
+      submitSupportRequest(
+        { subject: "Contact", fields: {} },
+        { language: "en", isGuest: false },
+      ),
+    ).rejects.toThrow("Support request failed");
+  });
 });

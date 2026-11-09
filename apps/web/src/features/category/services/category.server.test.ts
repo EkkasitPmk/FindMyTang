@@ -52,4 +52,17 @@ describe("category.server", () => {
 
     await expect(getCategoriesServer(false)).resolves.toBeNull();
   });
+
+  it("logs error and returns null when an exception occurs", async () => {
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    mockCookies.mockRejectedValueOnce(new Error("Cookies failure"));
+
+    const result = await getCategoriesServer();
+    expect(result).toBeNull();
+    expect(consoleSpy).toHaveBeenCalledWith(
+      "Failed to load categories on the server",
+      expect.any(Error),
+    );
+    consoleSpy.mockRestore();
+  });
 });
