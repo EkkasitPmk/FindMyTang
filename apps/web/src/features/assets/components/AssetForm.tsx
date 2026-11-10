@@ -119,10 +119,12 @@ export default function AssetForm({
                 </div>
                 <Button
                   variant="unstyled"
+                  hoverScale={1}
+                  tapScale={1}
                   type="button"
                   onClick={() => setIsOpen(!isOpen)}
                   className={cn(
-                    "w-full h-12 pl-10 pr-4 text-left bg-background border rounded-lg outline-none transition-all cursor-pointer flex items-center justify-between",
+                    "w-full h-12 pl-10 pr-4 text-left bg-background border rounded-lg outline-none transition-colors cursor-pointer flex items-center justify-between",
                     errors.type
                       ? "border-error focus:border-error"
                       : "border-border/20 focus:border-primary/50 focus:ring-2 focus:ring-primary/20",
@@ -154,6 +156,8 @@ export default function AssetForm({
                     <li key={type}>
                       <Button
                         variant="unstyled"
+                        hoverScale={1}
+                        tapScale={1}
                         type="button"
                         className={cn(
                           "w-full px-4 py-2.5 text-sm flex items-center justify-between hover:bg-surface-secondary cursor-pointer text-left transition-colors",
@@ -328,7 +332,10 @@ export default function AssetForm({
                   {t("includeInSnapshotDesc")}
                 </span>
               </div>
-              <button
+              <Button
+                variant="unstyled"
+                hoverScale={1}
+                tapScale={1}
                 type="button"
                 role="switch"
                 aria-checked={includeInSnapshot}
@@ -344,7 +351,7 @@ export default function AssetForm({
                     includeInSnapshot ? "translate-x-5" : "translate-x-0",
                   )}
                 />
-              </button>
+              </Button>
             </div>
 
             {/* Savings Split Section */}

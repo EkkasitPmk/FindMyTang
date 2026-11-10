@@ -5,6 +5,7 @@ import {
   calculateNetTotal,
   getTopRowText,
   getNetTotalConfig,
+  isInternalTransferOnly,
 } from "@/shared/lib/helpers/transaction-list.helper";
 import { cn } from "@/shared/lib/utils/core.util";
 
@@ -22,9 +23,7 @@ export function TransactionGroupHeader({
   className,
 }: Readonly<TransactionGroupHeaderProps>) {
   const netTotal = calculateNetTotal(group.items);
-  const isTransferOnly = group.items.every(
-    (transaction) => transaction.type === "TRANSFER",
-  );
+  const isOnlyInternalTransfers = isInternalTransferOnly(group.items);
   const txDate = new Date(group.items[0].transactionDate);
   const diffDays = getDiffDays(txDate);
   const topRow = getTopRowText(diffDays, (key) => t(key as TranslationKey));
@@ -57,10 +56,10 @@ export function TransactionGroupHeader({
       <span
         className={cn(
           "text-base",
-          isTransferOnly ? "text-secondary-text" : netTotalColorClass,
+          isOnlyInternalTransfers ? "text-secondary-text" : netTotalColorClass,
         )}
       >
-        {isTransferOnly
+        {isOnlyInternalTransfers
           ? "—"
           : `${netTotalPrefix}฿${Math.abs(netTotal).toLocaleString(locale, {
               minimumFractionDigits: 2,

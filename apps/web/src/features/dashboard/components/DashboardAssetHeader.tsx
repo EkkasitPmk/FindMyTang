@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronRight, LayoutGrid, LayoutList } from "lucide-react";
 import { motion } from "motion/react";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useAssets } from "@/shared/lib/hooks/useAssets.hook";
 import { useAssetUIStore } from "@/features/assets/hooks/assets.hook";
@@ -63,33 +64,57 @@ export default function DashboardAssetHeader({
     <div className="flex items-center justify-between mb-2">
       <span className="text-lg font-medium">{title}</span>
       <div className="flex items-center gap-3">
-        <div className="flex items-center p-0.5 bg-surface-secondary/80 rounded-lg border border-border/50">
-          <button
+        <div className="relative flex items-center p-0.5 bg-surface-secondary/80 rounded-lg border border-border/50">
+          <Button
+            variant="unstyled"
+            hoverScale={1}
+            tapScale={0.95}
             type="button"
             onClick={() => setDashboardAssetView("list")}
-            className={`p-1 rounded-md transition-all cursor-pointer ${
-              viewMode === "list"
-                ? "bg-surface text-primary shadow-xs"
-                : "text-secondary-text hover:text-primary-text"
-            }`}
+            className="relative p-1 rounded-md transition-colors cursor-pointer text-secondary-text hover:text-primary-text"
             aria-label="List view"
             aria-pressed={viewMode === "list"}
           >
-            <LayoutList size={15} />
-          </button>
-          <button
+            {viewMode === "list" && (
+              <motion.div
+                layoutId="dashboardAssetViewIndicator"
+                className="absolute inset-0 bg-surface rounded-md shadow-xs border border-border/40"
+                transition={{ type: "spring", stiffness: 450, damping: 32 }}
+              />
+            )}
+            <span
+              className={`relative z-10 flex items-center justify-center transition-colors ${
+                viewMode === "list" ? "text-primary" : ""
+              }`}
+            >
+              <LayoutList size={15} />
+            </span>
+          </Button>
+          <Button
+            variant="unstyled"
+            hoverScale={1}
+            tapScale={0.95}
             type="button"
             onClick={() => setDashboardAssetView("grid")}
-            className={`p-1 rounded-md transition-all cursor-pointer ${
-              viewMode === "grid"
-                ? "bg-surface text-primary shadow-xs"
-                : "text-secondary-text hover:text-primary-text"
-            }`}
+            className="relative p-1 rounded-md transition-colors cursor-pointer text-secondary-text hover:text-primary-text"
             aria-label="Grid view"
             aria-pressed={viewMode === "grid"}
           >
-            <LayoutGrid size={15} />
-          </button>
+            {viewMode === "grid" && (
+              <motion.div
+                layoutId="dashboardAssetViewIndicator"
+                className="absolute inset-0 bg-surface rounded-md shadow-xs border border-border/40"
+                transition={{ type: "spring", stiffness: 450, damping: 32 }}
+              />
+            )}
+            <span
+              className={`relative z-10 flex items-center justify-center transition-colors ${
+                viewMode === "grid" ? "text-primary" : ""
+              }`}
+            >
+              <LayoutGrid size={15} />
+            </span>
+          </Button>
         </div>
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
           <Link

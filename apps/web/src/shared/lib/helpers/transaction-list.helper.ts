@@ -5,8 +5,21 @@ export const calculateNetTotal = (items: TransactionResponse[]) => {
     if (transaction.type === "INCOME") return acc + transaction.amount;
     if (transaction.type === "EXPENSE") return acc - transaction.amount;
     if (transaction.type === "ADJUSTMENT") return acc + transaction.amount;
+    if (transaction.type === "TRANSFER" && !transaction.toAssetId) {
+      return acc - transaction.amount;
+    }
     return acc;
   }, 0);
+};
+
+export const isInternalTransferOnly = (items: TransactionResponse[]) => {
+  return (
+    items.length > 0 &&
+    items.every(
+      (transaction) =>
+        transaction.type === "TRANSFER" && Boolean(transaction.toAssetId),
+    )
+  );
 };
 
 const getFutureWeekText = (weeks: number, t: (key: string) => string) => {

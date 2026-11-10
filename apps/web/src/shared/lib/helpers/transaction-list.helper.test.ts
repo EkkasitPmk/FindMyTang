@@ -3,24 +3,52 @@ import {
   calculateNetTotal,
   getTopRowText,
   getNetTotalConfig,
+  isInternalTransferOnly,
 } from "./transaction-list.helper";
 import { TransactionResponse } from "@/shared/lib/types/transaction.type";
 
-const transaction = (type: TransactionResponse["type"], amount: number) =>
-  ({ type, amount }) as TransactionResponse;
+const transaction = (
+  type: TransactionResponse["type"],
+  amount: number,
+  toAssetId?: string | null,
+) => ({ type, amount, toAssetId }) as TransactionResponse;
 
 describe("transaction-list.helper", () => {
   describe("calculateNetTotal", () => {
-    it("sums income, subtracts expense, adds adjustment, and ignores transfer", () => {
+    it("sums income, subtracts expense, adds adjustment, subtracts external transfer out, and ignores internal transfer", () => {
       expect(
         calculateNetTotal([
           transaction("INCOME", 1000),
-          transaction("TRANSFER", 500),
+          transaction("TRANSFER", 500, "asset-2"), // internal transfer -> ignored
+          transaction("TRANSFER", 300, null), // external transfer out -> subtracted
           transaction("EXPENSE", 200),
           transaction("ADJUSTMENT", 50),
           transaction("ADJUSTMENT", -20),
         ]),
-      ).toBe(830);
+      ).toBe(530);
+    });
+  });
+
+  describe("isInternalTransferOnly", () => {
+    it("returns true only when every item is an internal transfer", () => {
+      expect(
+        isInternalTransferOnly([transaction("TRANSFER", 500, "asset-2")]),
+      ).toBe(true);
+
+      expect(
+        isInternalTransferOnly([
+          transaction("TRANSFER", 500, "asset-2"),
+          transaction("TRANSFER", 300, null),
+        ]),
+      ).toBe(false);
+
+      expect(isInternalTransferOnly([transaction("TRANSFER", 500, null)])).toBe(
+        false,
+      );
+
+      expect(isInternalTransferOnly([transaction("INCOME", 1000)])).toBe(false);
+
+      expect(isInternalTransferOnly([])).toBe(false);
     });
   });
 

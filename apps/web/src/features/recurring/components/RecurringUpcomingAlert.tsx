@@ -3,6 +3,7 @@ import { useTranslation } from "@/shared/lib/hooks/useTranslation.hook";
 import { RecurringExpense } from "@/shared/lib/types/recurring.type";
 import { getDueStatus } from "../helpers/recurring.helper";
 import { AlertCircle } from "lucide-react";
+import { Button } from "@/shared/components/animate-ui/components/buttons/button";
 import { useRecurringLogModalStore } from "../hooks/recurring-sheet.hook";
 
 interface RecurringUpcomingAlertProps {
@@ -41,30 +42,31 @@ export default function RecurringUpcomingAlert({
       .replace("{amount}", formattedAmount);
   }
 
-  const isOverdue = dueStatus.isOverdue;
+  let dueBadgeColor =
+    "bg-muted text-muted-foreground border-border/40 hover:bg-muted/60";
+  if (dueStatus.isOverdue) {
+    dueBadgeColor =
+      "bg-rose-500/10 border-rose-500/30 text-rose-600 dark:text-rose-400 hover:bg-rose-500/15";
+  } else if (dueStatus.daysRemaining <= 3) {
+    dueBadgeColor =
+      "bg-amber-500/10 border-amber-500/30 text-amber-300 dark:text-amber-400 hover:bg-amber-500/15";
+  }
 
   return (
-    <button
+    <Button
+      variant="unstyled"
+      hoverScale={1.01}
+      tapScale={0.99}
       type="button"
       onClick={() => openLog(item)}
-      className={`w-full text-left rounded-xl p-3 border transition-colors cursor-pointer ${
-        isOverdue
-          ? "bg-rose-500/10 border-rose-500/30 text-rose-900 dark:text-rose-200 hover:bg-rose-500/15"
-          : "bg-amber-500/10 border-amber-500/30 text-amber-900 dark:text-amber-200 hover:bg-amber-500/15"
-      }`}
+      className={`w-full text-left rounded-xl p-3 border transition-colors cursor-pointer ${dueBadgeColor}`}
     >
       <div className="flex items-center gap-2.5 min-w-0">
-        <AlertCircle
-          className={`size-4 shrink-0 ${
-            isOverdue
-              ? "text-rose-600 dark:text-rose-400"
-              : "text-amber-600 dark:text-amber-400"
-          }`}
-        />
+        <AlertCircle className="size-4 shrink-0" />
         <p className="text-xs font-medium leading-relaxed wrap-break-word">
           {alertMessage}
         </p>
       </div>
-    </button>
+    </Button>
   );
 }

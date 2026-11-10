@@ -91,13 +91,16 @@ export function RecurringDatePicker({
           {label} *
         </label>
         {dueTodayLabel && (
-          <button
+          <Button
+            variant="unstyled"
+            hoverScale={1}
+            tapScale={0.95}
             type="button"
             onClick={handleSetToday}
             className="text-[11px] px-2 py-0.5 rounded-md bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
           >
             {dueTodayLabel}
-          </button>
+          </Button>
         )}
       </div>
 
@@ -117,7 +120,7 @@ export function RecurringDatePicker({
               if (!isCalendarOpen) handleOpenCalendar();
             }}
             className={cn(
-              "relative w-full flex items-center gap-2.5 bg-background rounded-lg border border-border/50 px-3.5 h-12 text-left cursor-pointer transition-all hover:bg-surface-secondary/40 focus:ring-2 focus:ring-primary/20",
+              "relative w-full flex items-center gap-2.5 bg-background rounded-lg border border-border/50 px-3.5 h-12 text-left cursor-pointer transition-all hover:bg-surface-secondary/40 outline-none focus:outline-none focus:ring-0",
               isCalendarOpen && "rounded-bl-none rounded-br-none border-b-0",
             )}
           >
