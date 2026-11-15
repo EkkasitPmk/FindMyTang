@@ -7,6 +7,7 @@ export function useTransactionAttachment(
   getErrorMessage: (key: "errProcessAttachment") => string,
 ) {
   const [file, setFile] = useState<File | null>(null);
+  const [isLoadingAttachment, setIsLoadingAttachment] = useState(false);
   const [removedAttachment, setRemovedAttachment] = useState(false);
   const [isPhotoMenuOpen, setIsPhotoMenuOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -17,16 +18,20 @@ export function useTransactionAttachment(
     if (!originalFile) return;
 
     try {
+      setIsLoadingAttachment(true);
       setFile(await compressImageFile(originalFile));
     } catch {
       event.target.value = "";
       toast.error(getErrorMessage("errProcessAttachment"));
+    } finally {
+      setIsLoadingAttachment(false);
     }
   };
 
   const handleRemoveFile = () => {
     setFile(null);
     setRemovedAttachment(true);
+    setIsLoadingAttachment(false);
   };
 
   const handleTakeAPhoto = () => {
@@ -42,6 +47,7 @@ export function useTransactionAttachment(
   return {
     file,
     setFile,
+    isLoadingAttachment,
     removedAttachment,
     setRemovedAttachment,
     isPhotoMenuOpen,

@@ -1,5 +1,11 @@
 import { cn } from "@/shared/lib/utils/core.util";
-import { ArrowDown, Calendar as CalendarLucide, Camera, X } from "lucide-react";
+import {
+  ArrowDown,
+  Calendar as CalendarLucide,
+  Camera,
+  Loader2,
+  X,
+} from "lucide-react";
 import { UseFormRegister } from "react-hook-form";
 import { CreateTransactionFormValues } from "../schemas/transaction.form.schema";
 import { useImagePreview } from "../hooks/useImagePreview.hook";
@@ -40,6 +46,7 @@ interface TransactionMoreDetailsProps {
   notePlaceholder?: string;
   isExternalTransfer?: boolean;
   isLoadingTx?: boolean;
+  isLoadingAttachment?: boolean;
 }
 
 export default function TransactionMoreDetails({
@@ -66,12 +73,27 @@ export default function TransactionMoreDetails({
   notePlaceholder,
   isExternalTransfer,
   isLoadingTx,
+  isLoadingAttachment,
 }: Readonly<TransactionMoreDetailsProps>) {
   const { t } = useTranslation();
   const filePreview = useImagePreview(file);
   const noteField = register("note");
+  const isWaitingPreview =
+    isLoadingAttachment || (Boolean(file) && !filePreview);
 
   const renderAttachment = () => {
+    if (isWaitingPreview) {
+      return (
+        <div className="relative flex h-113 w-full items-center justify-center rounded-xl border border-border bg-surface-secondary/50 p-2">
+          <Loader2
+            className="h-8 w-8 animate-spin text-primary"
+            role="status"
+            aria-label="Loading"
+          />
+        </div>
+      );
+    }
+
     if (file && filePreview) {
       return (
         <TransactionAttachmentPreview

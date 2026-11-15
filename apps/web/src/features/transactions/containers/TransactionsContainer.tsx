@@ -98,6 +98,7 @@ export default function TransactionsContainer({
   const {
     file,
     setFile,
+    isLoadingAttachment,
     removedAttachment,
     setRemovedAttachment,
     isPhotoMenuOpen,
@@ -457,6 +458,7 @@ export default function TransactionsContainer({
               setIsPhotoMenuOpen,
               file,
               attachmentUrl,
+              isLoadingAttachment,
               onRemoveFile: handleRemoveFile,
               onTakeAPhoto: handleTakeAPhoto,
               onSelectAPhoto: handleSelectAPhoto,
