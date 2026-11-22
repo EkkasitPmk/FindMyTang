@@ -56,14 +56,6 @@ export function TransactionItemDetails({
           )}
           <div className="flex items-center justify-between">
             <p className="text-secondary-text capitalize">
-              {t("description")}:
-            </p>
-            <p className="min-w-0 flex-1 wrap-break-word whitespace-pre-wrap text-right font-medium">
-              {transaction.note || "-"}
-            </p>
-          </div>
-          <div className="flex items-center justify-between">
-            <p className="text-secondary-text capitalize">
               {t("categoryUppercase")}:
             </p>
             <p className="font-medium">{transaction.category?.name || "-"}</p>
@@ -89,14 +81,6 @@ export function TransactionItemDetails({
               <p className="font-medium">{transaction.asset?.name || "-"}</p>
             </div>
           )}
-          <div className="flex items-center justify-between">
-            <p className="text-secondary-text capitalize">
-              {t("description")}:
-            </p>
-            <p className="min-w-0 flex-1 wrap-break-word whitespace-pre-wrap text-right font-medium">
-              {transaction.note || "-"}
-            </p>
-          </div>
         </>
       )}
 
@@ -141,14 +125,6 @@ export function TransactionItemDetails({
               <p className="font-medium">{transaction.category.name}</p>
             </div>
           )}
-          <div className="flex items-center justify-between">
-            <p className="text-secondary-text capitalize">
-              {t("description")}:
-            </p>
-            <p className="min-w-0 flex-1 wrap-break-word whitespace-pre-wrap text-right font-medium">
-              {transaction.note || "-"}
-            </p>
-          </div>
         </>
       )}
 
@@ -156,6 +132,20 @@ export function TransactionItemDetails({
         <p className="text-secondary-text capitalize">{t("date")}:</p>
         <p className="font-medium">{timeDisplay}</p>
       </div>
+
+      {transaction.note?.trim() ? (
+        <div className="flex flex-col gap-0.5 pt-0.5">
+          <p className="text-secondary-text capitalize">{t("description")}:</p>
+          <p className="font-medium text-left wrap-break-word whitespace-pre-wrap">
+            {transaction.note}
+          </p>
+        </div>
+      ) : (
+        <div className="flex items-center justify-between">
+          <p className="text-secondary-text capitalize">{t("description")}:</p>
+          <p className="font-medium">-</p>
+        </div>
+      )}
 
       {cachedAttachmentUrl && (
         <div className="mt-2 flex items-center justify-between">
