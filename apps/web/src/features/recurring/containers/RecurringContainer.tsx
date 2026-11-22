@@ -147,7 +147,7 @@ export default function RecurringContainer({
           ))}
 
           {filteredItems.length === 0 && (
-            <div className="text-center py-8 text-xs text-muted-foreground">
+            <div className="text-center py-18 text-base text-muted-foreground">
               {t("recurringNoItemsFilter")}
             </div>
           )}
