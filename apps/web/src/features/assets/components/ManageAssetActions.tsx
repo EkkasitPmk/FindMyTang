@@ -67,7 +67,7 @@ export default function ManageAssetActions({
 
   return (
     <>
-      {(!isArchived || !compact) && (
+      {!isArchived && (
         <AssetActionButton
           compact={compact}
           label={t("edit")}
