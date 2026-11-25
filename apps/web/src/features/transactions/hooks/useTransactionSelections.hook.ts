@@ -56,14 +56,20 @@ export function useTransactionSelections({
     [categories, targetCategoryType, watchCategoryId],
   );
   const safeAssets = useMemo(() => {
-    const raw = assets ?? [];
+    const raw =
+      assets?.filter(
+        (asset) =>
+          (!asset.isArchived && !asset.deletedAt) ||
+          asset.id === watchAssetId ||
+          asset.id === watchToAssetId,
+      ) ?? [];
     return sortAssetsByRecent(raw, getRecentAssetIds());
-  }, [assets]);
+  }, [assets, watchAssetId, watchToAssetId]);
 
   const activeCategoryId = useMemo(() => {
     if (transactionType === "TRANSFER") {
       return filteredCategories.some((c) => c.id === watchCategoryId)
-        ? (watchCategoryId ?? null)
+        ? (watchCategoryId as string)
         : null;
     }
     return getActiveItemId(watchCategoryId, filteredCategories);
